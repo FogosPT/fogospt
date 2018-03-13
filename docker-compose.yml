@@ -1,0 +1,10 @@
+version: '2'
+services:
+    container:
+        build: ./container
+        ports:
+            - "8097:8097"
+        volumes:
+            - ./fogospt:/var/www/app
+        environment:
+            - APP_ENV=development
