@@ -155,25 +155,32 @@ function plot(id) {
 
 
 function status(id) {
+    $('#status').empty();
     var url = 'https://fogos.pt/fires/status?id=' + id;
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
             data = JSON.parse(data);
-            direction = ['l', 'r'];
+            console.log(data);
             if (data.success) {
                 for (i in data.data) {
-                    dir = direction[i % 2];
-                    content = '<li>';
-                    content += '<div class="direction-' + dir + '">';
-                    content += '<div class="flag-wrapper">';
-                    content += '<span class="flag">' + data.data[i].status + '</span>';
-                    content += '<span class="time-wrapper"><span class="time">' + data.data[i].label + '</span></span>';
+
+                    content = '<div>';
+                    content += '<span class="dot"></span>';
+                    content += '<div>';
+                    content += '<p class="status-hour">' + data.data[i].label + '</p>';
+                    content += '<p class="status-label">' + data.data[i].status + '</p>';
                     content += '</div>';
                     content += '</div>';
-                    content += '</li>';
-                    $('.timeline').append(content);
+                    // content += '<div class="direction-' + dir + '">';
+                    // content += '<div class="flag-wrapper">';
+                    // content += '<span class="flag">' + data.data[i].status + '</span>';
+                    // content += '<span class="time-wrapper"><span class="time">' + data.data[i].label + '</span></span>';
+                    // content += '</div>';
+                    // content += '</div>';
+                    // content += '</li>';
+                    $('#status').append(content);
 
                 }
             }

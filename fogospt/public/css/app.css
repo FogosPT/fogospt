@@ -676,3 +676,28 @@ main #data-social-media iframe {
   margin: 1em 0 0 0.75em;
 }
 
+.dot {
+  height: 25px;
+  width: 25px;
+  background-color: #fe5353;
+  border-radius: 50%;
+  display: block;
+  float: left;
+  margin-left: -15px;
+}
+
+#status {
+  border-left: 4px solid #fe5353;
+}
+
+#status .status-hour {
+  margin-left: 15px;
+  margin-bottom: 0;
+  color: #ff512f;
+}
+
+#status .status-label {
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+

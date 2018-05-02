@@ -29,7 +29,7 @@
 
         <script src="js/main.js"></script>
 
-        <title>Document</title>
+        <title>Beta Fogos.pt</title>
     </head>
     <body>
     <header id="header" class="fixed-top" role="banner">
@@ -82,7 +82,7 @@
             <div class="col-12 card">
                 <div class="card-body">
                     <h4 class="card-title">Estado</h4>
-                    <div id="status"><ul class="timeline"></ul></div>
+                    <div id="status"></div>
                 </div>
             </div>
 
