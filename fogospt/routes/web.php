@@ -11,6 +11,6 @@
 |
 */
 
-Route::get( '/{path?}', function(){
-    return view( 'app' );
-} )->where('path', '.*');
+Route::get('/', function () {
+    return view('index');
+});
