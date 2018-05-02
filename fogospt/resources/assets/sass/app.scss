@@ -108,12 +108,19 @@ img, svg {
 
 main {
   transition: opacity .5s linear;
-  padding: 11.7rem 0 0;
+  padding-top: 95px;
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 
   .sidebar{
     flex-direction: column;
     padding-top:20px;
+    order: 2;
+    display: none;
+    width: 100%;
+    background: #f5f5f5;
   }
 
   .card {
@@ -279,7 +286,6 @@ main {
     margin-bottom: 0;
   }
   main {
-    padding: 7rem 0 0;
     flex-direction: column;
 
     .sidebar {
@@ -294,8 +300,9 @@ main {
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) {
   main {
-    padding: 6rem 0 0;
     height: 100%;
+    margin-top: 0;
+
 
     .sidebar {
       order: 2;
@@ -320,6 +327,8 @@ main {
 @media (min-width: 992px) {
   main {
     flex-direction:row;
+    margin-top: 0;
+
 
     .sidebar {
       order: 0;
@@ -336,6 +345,8 @@ main {
 @media (min-width: 1200px) {
   main {
     flex-direction:row;
+    margin-top: 0;
+
 
     .sidebar {
       order: 0;
