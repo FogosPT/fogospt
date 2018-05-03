@@ -7,14 +7,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css"
+          integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
 
 
     {{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">--}}
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="/css/app.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -31,7 +32,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
-    <script src="js/main.js"></script>
+    <script src="/js/main.js"></script>
 
     <title>Beta Fogos.pt</title>
 </head>
@@ -40,7 +41,7 @@
     <nav class="navbar navbar-dark">
         <div class="container flex-column flex-sm-row justify-content-center justify-content-sm-between">
             <div>
-                <a class="navbar-brand" href="#"><img src="img/logo.svg" width="240px"></a>
+                <a class="navbar-brand" href="#"><img src="/img/logo.svg" width="240px"></a>
             </div>
         </div>
     </nav>
@@ -49,49 +50,55 @@
     <div class="sidebar">
 
         <div class="row">
-            <div class="card col-12">
-                <div class="card-body">
-                    <h4 class="card-title">Local</h4>
-                    <p class="f-local"></p>
-                    <h4 class="card-title">Início</h4>
-                    <p class="f-start"></p>
-                    <h4 class="card-title">Estado</h4>
-                    <p class="f-status"></p>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Local</h4>
+                        <p class="f-local"></p>
+                        <h4 class="card-title">Início</h4>
+                        <p class="f-start"></p>
+                        <h4 class="card-title">Natureza</h4>
+                        <p class="f-nature"></p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="card col-12">
-                <div class="card-body">
-                    <h4 class="card-title">Meios</h4>
-                    <table class="table table-sm">
-                        <tbody class="active">
-                        <tr>
-                            <td class="float-left">
-                                <i class="fa fa-user" aria-hidden="true"></i> <span class="f-man"></span>
-                            </td>
-                            <td class="float-left">
-                                <i class="fa fa-plane" aria-hidden="true"></i> <span class="f-aerial"></span>
-                            </td>
-                            <td class="float-left">
-                                <i class="fa fa-truck" aria-hidden="true"></i> <span class="f-terrain"></span>
-                            </td>
-                        </tr>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Meios</h4>
+                        <table class="table table-sm">
+                            <tbody class="active">
+                            <tr>
+                                <td class="float-left">
+                                    <i class="fa fa-user" aria-hidden="true"></i> <span class="f-man"></span>
+                                </td>
+                                <td class="float-left">
+                                    <i class="fa fa-plane" aria-hidden="true"></i> <span class="f-aerial"></span>
+                                </td>
+                                <td class="float-left">
+                                    <i class="fa fa-truck" aria-hidden="true"></i> <span class="f-terrain"></span>
+                                </td>
+                            </tr>
 
-                        </tbody>
-                    </table>
-                    <canvas style="padding: 0 5px" id="myChart" width="400" height="150"></canvas>
+                            </tbody>
+                        </table>
+                        <canvas style="padding: 0 5px" id="myChart" width="400" height="150"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
 
         <div class="row">
-            <div class="card col-12">
-                <div class="card-body">
-                    <h4 class="card-title">Estado</h4>
-                    <div id="status"></div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Estado</h4>
+                        <div id="status"></div>
+                    </div>
                 </div>
             </div>
         </div>

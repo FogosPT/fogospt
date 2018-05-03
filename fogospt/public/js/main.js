@@ -52,13 +52,15 @@ $(document).ready(function () {
                         $('.f-man').text(item.man);
                         $('.f-aerial').text(item.aerial);
                         $('.f-terrain').text(item.terrain);
-                        $('.f-status').text(item.status);
+                        $('.f-nature').text(item.natureza
+                        );
                         $('.f-start').text(item.date + ' ' + item.hour);
 
 
                         window.history.pushState('obj', 'newtitle', '/fogo/' + item.id);
                         status(item.id);
                         plot(item.id);
+                        addPageview();
                     });
 
                 }
@@ -164,4 +166,10 @@ function status(id) {
         }
     });
 
+}
+
+function addPageview(){
+    if(window.ga){
+        ga('send', 'pageview', location.pathname);
+    }
 }

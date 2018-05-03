@@ -11,6 +11,8 @@ class FireController extends Controller
     {
         if(!$id){
             return view('index');
+        } else {
+            return view('index');
         }
 
         $fire = LegacyApi::getFire($id);
