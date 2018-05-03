@@ -1,7 +1,4 @@
 $(document).ready(function () {
-    // mapboxgl.accessToken = 'ZdKY[PHwJ.2e@wff9>&46LD^7D&pepEKcW9J3JKgv2bMLY2c&EYAN&$4gskreqWF';
-    // mapboxgl.accessToken = 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ';
-
     var mymap = L.map('map').setView([ 40.5050025, -7.9053189], 7);
 
 
@@ -11,14 +8,6 @@ $(document).ready(function () {
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
-
-
-    // var map = new mapboxgl.Map({
-    //     container: 'map',
-    //     style: 'mapbox://styles/mapbox/streets-v9',
-    //     center: {lat: 40.5050025, lng: -7.9053189},
-    //     zoom: 8
-    // });
 
     var url = 'https://fogos.pt/new/fires';
     $.ajax({
@@ -58,25 +47,6 @@ $(document).ready(function () {
                         plot(item.id);
                     });
 
-
-                    // var marker = new mapboxgl.Marker(el)
-                    //     .setLngLat(coords)
-                    //     .addTo(map);
-
-
-                    // var marker = new mapboxgl.Marker(el)
-                    //     .setLngLat(coords)
-                    //     .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
-                    //         .setHTML('<h3>title</h3><p>desc</p>'))
-                    //     .addTo(map);
-                    //
-                    // var el = marker.getElement();
-                    //     el.classList.add(item.statusColor);
-
-                    // console.log(el);
-
-
-                    // console.log(marker);
                 }
             }
 
@@ -166,21 +136,13 @@ function status(id) {
             console.log(data);
             if (data.success) {
                 for (i in data.data) {
-
-                    content = '<div>';
+                    var content = '<div>';
                     content += '<span class="dot"></span>';
                     content += '<div>';
                     content += '<p class="status-hour">' + data.data[i].label + '</p>';
                     content += '<p class="status-label">' + data.data[i].status + '</p>';
                     content += '</div>';
                     content += '</div>';
-                    // content += '<div class="direction-' + dir + '">';
-                    // content += '<div class="flag-wrapper">';
-                    // content += '<span class="flag">' + data.data[i].status + '</span>';
-                    // content += '<span class="time-wrapper"><span class="time">' + data.data[i].label + '</span></span>';
-                    // content += '</div>';
-                    // content += '</div>';
-                    // content += '</li>';
                     $('#status').append(content);
 
                 }

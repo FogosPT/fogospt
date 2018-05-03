@@ -44,7 +44,7 @@
     <main role="main" class="mb-auto">
         <div class="sidebar">
 
-            <div class="col-12 card">
+            <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Local</h4>
                     <p class="f-local"></p>
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="col-12 card">
+            <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Meios</h4>
                     <table class="table table-sm">
@@ -79,14 +79,12 @@
             </div>
 
 
-            <div class="col-12 card">
+            <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Estado</h4>
                     <div id="status"></div>
                 </div>
             </div>
-
-
 
             <div class="scrollbar" id="style-1">
                 <div class="force-overflow"></div>
