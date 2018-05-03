@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('index');
 });
+
+
+Route::get('/fogo/{id}', 'FireController@get');

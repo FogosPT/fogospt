@@ -29,12 +29,24 @@ $(document).ready(function () {
                     marker.properties = {};
                     marker.properties.item = item;
 
+                    marker.setIcon(L.divIcon({
+                        className: 'count-icon-emergency',
+                        html: '<i class="fas fa-map-marker map-marker status-'+ item.statusCode +'"></i>',
+                        iconSize: [40, 40]
+                    }));
+
+
                     marker.addTo(mymap).on('click',function (e) {
-                        console.log(e);
-                        console.log(e.latlng);
+                        $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
                         mymap.setView(e.latlng,10);
+
+
+                        var $icon = $(e.target._icon);
+                        $icon.find('i').addClass('active');
+                        $icon.find('i').removeClass('fa-map-marker');
+                        $icon.find('i').addClass('fa-map-marker-alt');
+
                         var item = e.sourceTarget.properties.item;
-                        console.log(item);
                         $('.sidebar').css({'display':'flex'});
                         $('.f-local').text(item.location);
                         $('.f-man').text(item.man);
@@ -43,6 +55,8 @@ $(document).ready(function () {
                         $('.f-status').text(item.status);
                         $('.f-start').text(item.date + ' ' + item.hour);
 
+
+                        window.history.pushState('obj', 'newtitle', '/fogo/' + item.id);
                         status(item.id);
                         plot(item.id);
                     });
