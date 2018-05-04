@@ -9,6 +9,11 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
 
+    mymap.on('click',function (e) {
+       $('.sidebar').removeClass('active');
+       $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
+    });
+
     var url = 'https://fogos.pt/new/fires';
     $.ajax({
         url: url,
@@ -47,7 +52,7 @@ $(document).ready(function () {
                         $icon.find('i').addClass('fa-map-marker-alt');
 
                         var item = e.sourceTarget.properties.item;
-                        $('.sidebar').css({'display':'flex'});
+                        $('.sidebar').addClass('active');
                         $('.f-local').text(item.location);
                         $('.f-man').text(item.man);
                         $('.f-aerial').text(item.aerial);

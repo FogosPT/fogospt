@@ -179,6 +179,10 @@ main {
     display: none;
     width: 100%;
     background: #f5f5f5;
+
+    &.active{
+      display: flex;
+    }
   }
 
   .card {
