@@ -60,6 +60,7 @@ $(document).ready(function () {
                         window.history.pushState('obj', 'newtitle', '/fogo/' + item.id);
                         status(item.id);
                         plot(item.id);
+                        danger(item.id);
                         addPageview();
                     });
 
@@ -162,6 +163,59 @@ function status(id) {
                     $('#status').append(content);
 
                 }
+            }
+        }
+    });
+
+}
+
+function danger(id) {
+    var url = 'https://fogos.pt/fires/danger?id=' + id;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success) {
+                var hoje = data.data[0].hoje;
+                content = '<div class="fire-status row align-items-stretch">'
+                if (hoje === 'Reduzido') {
+                    content += '<div class="col-12 col-md text-center status-max" data-status="Maximo">Máximo</div>' +
+                        '<div class="col-12 col-md text-center status-vhigh" data-status="MuitoElevado">Muito Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-high" data-status="Elevado">Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-mod " data-status="Moderado">Moderado</div>' +
+                        '<div class="col-12 col-md text-center status-min active" data-status="Reduzido">Reduzido</div>';
+                } else if (hoje === 'Moderado') {
+                    content += '<div class="col-12 col-md text-center status-max" data-status="Maximo">Máximo</div>' +
+                        '<div class="col-12 col-md text-center status-vhigh" data-status="MuitoElevado">Muito Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-high" data-status="Elevado">Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-mod active" data-status="Moderado">Moderado</div>' +
+                        '<div class="col-12 col-md text-center status-min" data-status="Reduzido">Reduzido</div>';
+                } else if (hoje === 'Elevado') {
+                    content += '<div class="col-12 col-md text-center status-max" data-status="Maximo">Máximo</div>' +
+                        '<div class="col-12 col-md text-center status-vhigh" data-status="MuitoElevado">Muito Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-high active" data-status="Elevado">Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-mod" data-status="Moderado">Moderado</div>' +
+                        '<div class="col-12 col-md text-center status-min" data-status="Reduzido">Reduzido</div>';
+                } else if (hoje === 'Muito Elevado') {
+                    content += '<div class="col-12 col-md text-center status-max" data-status="Maximo">Máximo</div>' +
+                        '<div class="col-12 col-md text-center status-vhigh active" data-status="MuitoElevado">Muito Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-high" data-status="Elevado">Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-mod" data-status="Moderado">Moderado</div>' +
+                        '<div class="col-12 col-md text-center status-min" data-status="Reduzido">Reduzido</div>';
+                } else if (hoje === 'Máximo') {
+                    content += '<div class="col-12 col-md text-center status-max" data-status="Maximo">Máximo</div>' +
+                        '<div class="col-12 col-md text-center status-vhigh active" data-status="MuitoElevado">Muito Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-high" data-status="Elevado">Elevado</div>' +
+                        '<div class="col-12 col-md text-center status-mod" data-status="Moderado">Moderado</div>' +
+                        '<div class="col-12 col-md text-center status-min" data-status="Reduzido">Reduzido</div>';
+                }
+
+
+                content += '    </div>';
+                $('.f-danger').html(content);
+            } else {
+                alert('Upps, concelho não encontrado. Por favor envie um mail para mail@fogos.pt a indicar que não conseguiu encontrar o perigo de incendio. Obrigado!')
             }
         }
     });

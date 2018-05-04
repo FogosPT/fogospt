@@ -226,7 +226,7 @@ main {
     > * {
       padding-top: 10px;
       padding-bottom: 10px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
     }
@@ -372,12 +372,12 @@ main {
     .card {
       margin-bottom: 2rem;
     }
-    .fire-status {
-      margin-bottom: 2rem;
-      [data-status] {
-        display: flex;
-      }
-    }
+    //.fire-status {
+    //  margin-bottom: 2rem;
+    //  [data-status] {
+    //    display: flex;
+    //  }
+    //}
   }
 }
 
@@ -446,47 +446,47 @@ main {
 }
 
 
-.fire-status {
-  background: #e4e4e4;
-  margin: 0 0 1rem 0;
-  border-radius: .25rem;
-  overflow: hidden;
-}
-.fire-status > * {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.fire-status .show {
-  display: flex;
-}
-.fire-status .status-max.active {
-  color: #fff;
-  background-color: #6f263d;
-  display: flex;
-}
-.fire-status .status-vhigh.active {
-  color: #fff;
-  background-color: #cb333b;
-  display: flex;
-}
-.fire-status .status-high.active {
-  color: #fff;
-  background-color: #e87722;
-  display: flex;
-}
-.fire-status .status-mod.active {
-  color: #665d00;
-  background-color: #ffe900;
-  display: flex;
-}
-.fire-status .status-min.active {
-  color: #fff;
-  background-color: #509e2f;
-  display: flex;
-}
+//.fire-status {
+//  background: #e4e4e4;
+//  margin: 0 0 1rem 0;
+//  border-radius: .25rem;
+//  overflow: hidden;
+//}
+//.fire-status > * {
+//  padding-top: 10px;
+//  padding-bottom: 10px;
+//  display: none;
+//  align-items: center;
+//  justify-content: center;
+//}
+//.fire-status .show {
+//  display: flex;
+//}
+//.fire-status .status-max.active {
+//  color: #fff;
+//  background-color: #6f263d;
+//  display: flex;
+//}
+//.fire-status .status-vhigh.active {
+//  color: #fff;
+//  background-color: #cb333b;
+//  display: flex;
+//}
+//.fire-status .status-high.active {
+//  color: #fff;
+//  background-color: #e87722;
+//  display: flex;
+//}
+//.fire-status .status-mod.active {
+//  color: #665d00;
+//  background-color: #ffe900;
+//  display: flex;
+//}
+//.fire-status .status-min.active {
+//  color: #fff;
+//  background-color: #509e2f;
+//  display: flex;
+//}
 
 .timeline {
   position: relative;

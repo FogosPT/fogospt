@@ -238,9 +238,7 @@ main .fire-status {
 main .fire-status > * {
   padding-top: 10px;
   padding-bottom: 10px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -428,16 +426,6 @@ main #data-social-media iframe {
   main .card {
     margin-bottom: 2rem;
   }
-
-  main .fire-status {
-    margin-bottom: 2rem;
-  }
-
-  main .fire-status [data-status] {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
 }
 
 @media (min-width: 992px) {
@@ -508,71 +496,6 @@ main #data-social-media iframe {
 
 .marker.87D37C {
   background-image: url("https://fogos.pt/assets/images/markers/66FF33.png");
-}
-
-.fire-status {
-  background: #e4e4e4;
-  margin: 0 0 1rem 0;
-  border-radius: .25rem;
-  overflow: hidden;
-}
-
-.fire-status > * {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  display: none;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-}
-
-.fire-status .show {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.fire-status .status-max.active {
-  color: #fff;
-  background-color: #6f263d;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.fire-status .status-vhigh.active {
-  color: #fff;
-  background-color: #cb333b;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.fire-status .status-high.active {
-  color: #fff;
-  background-color: #e87722;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.fire-status .status-mod.active {
-  color: #665d00;
-  background-color: #ffe900;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.fire-status .status-min.active {
-  color: #fff;
-  background-color: #509e2f;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
 }
 
 .timeline {

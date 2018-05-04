@@ -59,6 +59,8 @@
                         <p class="f-start"></p>
                         <h4 class="card-title">Natureza</h4>
                         <p class="f-nature"></p>
+                        <h4 class="card-title">Risco de Incêndio</h4>
+                        <div class="f-danger"></div>
                     </div>
                 </div>
             </div>
