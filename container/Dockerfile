@@ -113,9 +113,10 @@ RUN set -ex \
 COPY php-fpm-worker.conf /etc/supervisor/conf.d
 COPY nginx-worker.conf /etc/supervisor/conf.d
 
-ENV NGINX_VERSION 1.12.2-1~jessie
+ENV NGINX_VERSION 1.14.0-1~jessie
 
 RUN echo "deb http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list \
+    && curl -O "https://nginx.org/keys/nginx_signing.key" && apt-key add ./nginx_signing.key \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y --force-yes \
 						ca-certificates \
@@ -135,6 +136,5 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 
 EXPOSE 8097
 
-CMD ["service", "nginx", "start"]
-CMD ["php-fpm"]
+CMD service nginx start && php-fpm
 #CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf" , "-n"]
