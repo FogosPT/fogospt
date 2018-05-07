@@ -46,6 +46,8 @@
 ```
 $ git clone https://github.com/FogosPT/fogospt.git
 $ docker-compose up
+$ cd fogospt
+$ composer install
 $ npm install
 $ npm run dev
 ```
