@@ -4,7 +4,7 @@
             <div class="card-body">
                 <h4 class="card-title">Estado</h4>
                 <div class="f-status">
-                    @isset($fire['status'])
+                    @isset($fire['statusHistory'])
                         @include('elements.status')
                     @endisset
                 </div>
