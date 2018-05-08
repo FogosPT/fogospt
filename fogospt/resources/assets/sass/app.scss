@@ -174,15 +174,10 @@ main {
 
   .sidebar{
     flex-direction: column;
-    padding-top:20px;
-    order: 2;
-    display: none;
+    order: 1;
     width: 100%;
     background: #f5f5f5;
-
-    &.active{
-      display: flex;
-    }
+    flex-basis: 100%;
   }
 
   .card {
@@ -351,9 +346,6 @@ main {
     flex-direction: column;
 
     .sidebar {
-      order: 2;
-      display: none;
-      width: 100%;
       background: #f5f5f5;
     }
   }
@@ -367,9 +359,6 @@ main {
 
 
     .sidebar {
-      order: 2;
-      display: none;
-      width: 100%;
       background: #f5f5f5;
     }
 
@@ -394,11 +383,23 @@ main {
 
     .sidebar {
       order: 0;
-      display: none;
-      width: 520px;
+      flex-basis: 40%;
       height: 100%;
       background: #f5f5f5;
       overflow-y: scroll;
+    }
+
+    #map {
+      position: absolute;
+      top: 95px;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      transition: width .3s;
+    }
+
+    .sidebar.active + #map {
+      width: 60%;
     }
   }
 }
@@ -406,19 +407,14 @@ main {
 // Extra large devices (large desktops, 1200px and up)
 @media (min-width: 1200px) {
   main {
-    flex-direction:row;
-    margin-top: 0;
-
-
     .sidebar {
-      order: 0;
-      display: none;
-      width: 620px;
-      height: 100%;
-      background: #f5f5f5;
-      overflow-y: scroll;
+      flex-basis: 33.33%;
+    }
+    .sidebar.active + #map {
+      width: 66.66%;
     }
   }
+
 }
 
 #map {
