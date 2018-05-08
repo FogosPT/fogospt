@@ -1,5 +1,5 @@
 <div id="status">
-    @foreach( $fire['status'] as $status)
+    @foreach( $fire['statusHistory'] as $status)
         <div>
             <span class="dot"></span>
             <div>

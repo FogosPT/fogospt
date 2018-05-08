@@ -1,39 +1,42 @@
 $(document).ready(function () {
+  if ($("#map")[0]) {
+
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox.streets',
+      accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
 
     addRisk(mymap);
     mymap.on('click', function (e) {
-        mymap.setView(e.latlng);
-        window.history.pushState('obj', 'Fogos.pt', '/');
-        $('.sidebar').removeClass('active');
-        $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
+      mymap.setView(e.latlng);
+      window.history.pushState('obj', 'Fogos.pt', '/');
+      $('.sidebar').removeClass('active');
+      $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
     });
 
     var res = window.location.pathname.match(/^\/fogo\/(\d+)/);
     if (res && res.length === 2) {
-        plot(res[1]);
+      plot(res[1]);
     }
 
     var url = 'https://fogos.pt/new/fires';
     $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            data = JSON.parse(data);
-            if (data.success) {
-                for (i in data.data) {
-                    addMaker(data.data[i], mymap)
-                }
-            }
+      url: url,
+      method: 'GET',
+      success: function (data) {
+        data = JSON.parse(data);
+        if (data.success) {
+          for (i in data.data) {
+            addMaker(data.data[i], mymap)
+          }
         }
+      }
     });
+  }
 });
 
 function addMaker(item, mymap) {

@@ -2,46 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Libs\LegacyApi;
 
 class FireController extends Controller
 {
-    public function get(Request $request, $id)
+    public $fire;
+
+    public function get($id)
     {
-        if(!$id){
+        if (!$id) {
             return view('index');
         }
 
-        $fire = $this->getFireById($id);
+        $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $fire['data']['risk'] = $risk['data'][0]['hoje'];
-        $fire['data']['status'] = $status['data'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'];
+        $this->fire['statusHistory'] = $status['data'];
 
-        return view('index', array('fire' => $fire['data']));
+        return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
 
-    public function getGeneralCard(Request $request, $id)
+    public function getGeneralCard($id)
     {
-        $fire = $this->getFireById($id);
+        $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
-        $fire['data']['risk'] = $risk['data'][0]['hoje'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'];
 
-        return view('elements.risk', array('fire' => $fire['data']));
+        return view('elements.risk', array('fire' => $this->fire));
     }
 
-    public function getStatusCard(Request $request, $id)
+    public function getStatusCard($id)
     {
-        $fire = $this->getFireById($id);
+        $this->setFireById($id);
         $status = LegacyApi::getStatusByFire($id);
-        $fire['data']['status'] = $status['data'];
+        $this->fire['statusHistory'] = $status['data'];
 
-        return view('elements.status', array('fire' => $fire['data']));
+        return view('elements.status', array('fire' => $this->fire));
     }
 
-    private function getFireById($id)
+    private function setFireById($id)
     {
-        return LegacyApi::getFire($id);
+        $this->fire = LegacyApi::getFire($id)['data'];
     }
 }
