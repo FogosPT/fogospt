@@ -15,6 +15,20 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/sobre', function () {
+    return view('about');
+});
+
+Route::get('/informacoes', function () {
+    return view('information');
+});
+
+Route::get('/manifesto', function () {
+    return view('manifest');
+});
+
+
+
 
 Route::get('/fogo/{id}', 'FireController@get');
 Route::get('/views/risk/{id}', 'FireController@getGeneralCard');
