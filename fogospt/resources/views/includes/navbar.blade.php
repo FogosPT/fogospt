@@ -10,10 +10,10 @@
   </button>
         <div class="collapse navbar-collapse" id="menuTopo">
       <div class="navbar-nav float-right text-right pr-3">
-        <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(atual)</span></a>
-        <a class="nav-item nav-link" href="/sobre">Sobre</a>
-        <a class="nav-item nav-link" href="/informacoes">Informações</a>
-        <a class="nav-item nav-link" href="/manifesto">Manifesto</a>
+        <a class="nav-item nav-link active" href="/">@lang('includes.menu.home')<span class="sr-only">@lang('includes.menu.active') }}</span></a>
+        <a class="nav-item nav-link" href="/sobre">@lang('includes.menu.about')</a>
+        <a class="nav-item nav-link" href="/informacoes">@lang('includes.menu.information')</a>
+        <a class="nav-item nav-link" href="/manifesto">@lang('includes.menu.manifest')</a>
       </div>
     </div>
     </nav>
