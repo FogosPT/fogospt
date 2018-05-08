@@ -4,23 +4,45 @@ namespace App\Http\Controllers;
 
 class GenericController extends Controller
 {
+    protected $pageName;
+
+    /**
+     * @return mixed
+     */
+    public function getPageName()
+    {
+        return $this->pageName;
+    }
+
+    /**
+     * @param mixed $pageName
+     */
+    public function setPageName($pageName)
+    {
+        $this->pageName = $pageName;
+    }
+
     public function getIndex()
     {
-        return view('index');
+        $this->setPageName('');
+        return view('index')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getAbout()
     {
-        return view('about');
+        $this->setPageName('Sobre');
+        return view('about')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getInformation()
     {
-        return view('information');
+        $this->setPageName('Informação');
+        return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getManifest()
     {
-        return view('manifest');
+        $this->setPageName('Manifesto');
+        return view('manifest')->with(['metadata' => $this->generateMetadata()]);
     }
 }
