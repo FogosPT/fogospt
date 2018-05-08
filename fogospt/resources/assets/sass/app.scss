@@ -39,8 +39,47 @@ body {
 }
 
 header {
+  height: 80px;
   .navbar {
     padding: 0rem 1rem;
+    .navbar-toggler {
+      border: 0;
+      &:focus {
+        outline: none;
+      }
+      .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      }
+      &[aria-expanded=true] {
+        & + .navbar-collapse {
+          transform: translate3d(0, 0, 0);
+        }
+        .navbar-toggler-icon {
+          background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M7.222,7.222 L22.778,22.778 M7.222,22.778 L22.778,7.222' /%3E%3C/svg%3E");
+        }
+      }
+    }
+
+    .navbar-collapse {
+      position: fixed;
+      right: 0;
+      top: 80px;
+      bottom: 0;
+      width: 200px;
+      background: #fff;
+      transition: transform .3s !important;
+      display: block;
+      transform: translate3d(100%, 0, 0);
+      &.collapsing {
+        height: auto !important;
+      }
+      a {
+        color: #ff512f !important;
+      }
+      a:hover {
+        color: #f09819 !important;
+      }
+    }
   }
   nav {
     background: -moz-linear-gradient(-45deg, #ff512f 0%, #f09819 100%);
@@ -108,7 +147,7 @@ img, svg {
 
 main {
   transition: opacity .5s linear;
-  padding-top: 95px;
+  padding-top: 80px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -391,7 +430,7 @@ main {
 
     #map {
       position: absolute;
-      top: 95px;
+      top: 80px;
       right: 0;
       bottom: 0;
       width: 100%;
