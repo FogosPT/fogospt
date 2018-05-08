@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Libs\LegacyApi;
 
 class FireController extends Controller
 {
-    public function get(Request $request, $id)
+    public function get($id)
     {
-        if(!$id){
+        if (!$id) {
             return view('index');
         }
 
@@ -22,7 +21,7 @@ class FireController extends Controller
         return view('index', array('fire' => $fire['data']));
     }
 
-    public function getGeneralCard(Request $request, $id)
+    public function getGeneralCard($id)
     {
         $fire = $this->getFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
@@ -31,7 +30,7 @@ class FireController extends Controller
         return view('elements.risk', array('fire' => $fire['data']));
     }
 
-    public function getStatusCard(Request $request, $id)
+    public function getStatusCard($id)
     {
         $fire = $this->getFireById($id);
         $status = LegacyApi::getStatusByFire($id);

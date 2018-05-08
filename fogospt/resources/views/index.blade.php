@@ -1,24 +1,10 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+@extends('app')
 
-<head>
-    @include('includes.head')
-    @include('includes.meta')
-</head>
-<body>
+@section('content')
+    <main role="main" class="mb-auto">
+        @include('includes.sidebar')
+        <div id="map"></div>
+    </main>
+@endsection
 
-@include('includes.navbar')
-
-<main role="main" class="mb-auto">
-    @include('includes.sidebar')
-    <div id="map"></div>
-</main>
-
-@include('includes.scripts')
-<script>
-    $("#menuTopo").find('a.active').removeClass('active');
-    $("#menuTopo").find('a[href="/"]').addClass('active');
-</script>
-</body>
-</html>
 
