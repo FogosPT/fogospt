@@ -15,7 +15,10 @@
 </main>
 
 @include('includes.scripts')
-
+<script>
+    $("#menuTopo").find('a.active').removeClass('active');
+    $("#menuTopo").find('a[href="/"]').addClass('active');
+</script>
 </body>
 </html>
 
