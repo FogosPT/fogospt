@@ -3,7 +3,7 @@
       content="fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv">
 <meta property="og:title" content="{{$metadata['title']}}">
 <meta property="og:site_name" content="beta.fogos.pt">
-<meta property="og:url" content="https://beta.fogos.pt">
+<meta property="og:url" content="{{$metadata['url']}}">
 <meta property="og:description" content="{{$metadata['description']}}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://fogos.pt/assets/logo.png">
