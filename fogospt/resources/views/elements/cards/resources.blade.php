@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Meios</h4>
+                <h4 class="card-title">@lang('elements.cards.resources.units')</h4>
                 <div class="assets d-flex align-items-center justify-content-center">
                     <img class="assets-icon" src="/img/fireman.svg">
                     <span class="assets-nr f-man">
