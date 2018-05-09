@@ -742,8 +742,13 @@ main #data-social-media iframe {
   background-color: #FF6E02;
 }
 
-.dot.status-6 {
+.dot.status-5 {
   background-image: url("/img/ico_fire.svg");
+  background-color: #B81E1F;
+}
+
+.dot.status-6 {
+  background-image: url("/img/ico_pointer.svg");
   background-color: #B81E1F;
 }
 
@@ -755,6 +760,11 @@ main #data-social-media iframe {
 .dot.status-8 {
   background-image: url("/img/ico_fire.svg");
   background-color: #FFB202;
+}
+
+.dot.status-9 {
+  background-image: url("/img/ico_watch.svg");
+  background-color: #65C4ED;
 }
 
 .dot.status-10 {
@@ -770,11 +780,6 @@ main #data-social-media iframe {
 .dot.status-12 {
   background-image: url("/img/ico_fake.svg");
   background-color: #BDBDBD;
-}
-
-.dot.status-00 {
-  background-image: url("/img/ico_watch.svg");
-  background-color: #65C4ED;
 }
 
 #status {

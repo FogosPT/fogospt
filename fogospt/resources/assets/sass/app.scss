@@ -723,9 +723,14 @@ main {
     background-image: url('/img/ico_alarm.svg');
     background-color:$c-orange; 
   }
+  // em curso
+  &.status-5 {
+    background-image: url('/img/ico_fire.svg');
+    background-color:$c-red; 
+  }
   // chegada ao t0
   &.status-6 {
-    background-image: url('/img/ico_fire.svg');
+    background-image: url('/img/ico_pointer.svg');
     background-color:$c-red; 
   }
   // em resolução
@@ -737,6 +742,11 @@ main {
   &.status-8 {
     background-image: url('/img/ico_fire.svg');
     background-color:$c-yellow; 
+  }
+  // vigilancia
+  &.status-9 {
+    background-image: url('/img/ico_watch.svg');
+    background-color:$c-blue; 
   }
   // encerrada
   &.status-10 {
@@ -752,11 +762,6 @@ main {
   &.status-12 {
     background-image: url('/img/ico_fake.svg');
     background-color:$c-grey; 
-  }
-  // vigilancia
-  &.status-00 {
-    background-image: url('/img/ico_watch.svg');
-    background-color:$c-blue; 
   }
 }
 
