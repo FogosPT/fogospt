@@ -1,6 +1,6 @@
 <meta name="Description" content="{{$metadata['description']}}">
 <meta name="Keywords"
-      content="fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv">
+      content="@lang('includes.meta.content')">
 <meta property="og:title" content="{{$metadata['title']}}">
 <meta property="og:site_name" content="beta.fogos.pt">
 <meta property="og:url" content="{{$metadata['url']}}">
