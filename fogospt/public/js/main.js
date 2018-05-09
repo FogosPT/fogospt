@@ -23,7 +23,19 @@ $(document).ready(function () {
       plot(res[1]);
     }
 
-    var url = 'https://fogos.pt/new/fires';
+      window.fogosLayers = [];
+      window.fogosLayers[3] = L.layerGroup();
+      window.fogosLayers[4] = L.layerGroup();
+      window.fogosLayers[5] = L.layerGroup();
+      window.fogosLayers[6] = L.layerGroup();
+      window.fogosLayers[7] = L.layerGroup();
+      window.fogosLayers[8] = L.layerGroup();
+      window.fogosLayers[9] = L.layerGroup();
+      window.fogosLayers[10] = L.layerGroup();
+      window.fogosLayers[11] = L.layerGroup();
+      window.fogosLayers[12] = L.layerGroup();
+
+      var url = 'https://fogos.pt/new/fires';
     $.ajax({
       url: url,
       method: 'GET',
@@ -33,6 +45,21 @@ $(document).ready(function () {
           for (i in data.data) {
             addMaker(data.data[i], mymap)
           }
+
+            var obj = {};
+            obj["Despacho"] = window.fogosLayers[3];
+            obj["Despacho de 1º Alerta"] = window.fogosLayers[4];
+            obj["Chegada ao TO"] = window.fogosLayers[6];
+            obj["Em Curso"] = window.fogosLayers[5];
+            obj["Em Resolução"] = window.fogosLayers[7];
+            obj["Conclusão"] = window.fogosLayers[8];
+            obj["Vigilância"] = window.fogosLayers[9];
+            obj["Encerrada"] = window.fogosLayers[10];
+            obj["Falso Alarme"] = window.fogosLayers[11];
+            obj["Falso Alerta"] = window.fogosLayers[12];
+
+            layerControl2 = L.control.layers(null, obj, {position: 'topright'});
+            layerControl2.addTo(mymap);
         }
       }
     });
@@ -56,7 +83,11 @@ function addMaker(item, mymap) {
         iconSize: [40, 40]
     }));
 
-    marker.addTo(mymap).on('click', function (e) {
+    window.fogosLayers[item.statusCode].addLayer(marker);
+
+    marker.addTo(mymap);
+
+    marker.on('click', function (e) {
         $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
 
         mymap.setView(e.latlng, 10);
@@ -67,7 +98,7 @@ function addMaker(item, mymap) {
         $icon.find('i').addClass('fa-map-marker-alt');
 
         var item = e.sourceTarget.properties.item;
-        $('.sidebar').addClass('active');
+        $('.sidebar').addClass('active').scrollTop(0);
         $('.f-local').text(item.location);
         $('.f-man').text(item.man);
         $('.f-aerial').text(item.aerial);
@@ -216,13 +247,13 @@ function addRisk(mymap) {
                     },
                 });
 
-                overlayPane = {
+                window.overlayPane = extend(window.overlayPane, {
                     "Concelhos": concelhosLayer,
                     "Risco Hoje": riscosHoje,
-                };
+                });
 
-                layerControl = L.control.layers(null, overlayPane, {position: 'topright'});
-                layerControl.addTo(mymap);
+                window.layerControl = L.control.layers(null, window.overlayPane, {position: 'topright'});
+                window.layerControl.addTo(mymap);
             }
         }
     });
@@ -232,4 +263,16 @@ function addPageview() {
     if (window.ga) {
         ga('send', 'pageview', location.pathname);
     }
+}
+
+function extend() {
+    for (var o = {}, i = 0; i < arguments.length; i++) {
+        // if (arguments[i].constructor !== Object) continue;
+        for (var k in arguments[i]) {
+            if (arguments[i].hasOwnProperty(k)) {
+                o[k] = arguments[i][k].constructor === Object ? extend(o[k] || {}, arguments[i][k]) : arguments[i][k];
+            }
+        }
+    }
+    return o;
 }

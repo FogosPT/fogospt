@@ -17,28 +17,28 @@ class FireController extends Controller
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $fire['data']['risk'] = $risk['data'][0]['hoje'];
-        $fire['data']['status'] = $status['data'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'];
+        $this->fire['statusHistory'] = $status['data'];
 
-        return view('index', array('fire' => $fire, 'metadata' => $this->generateMetadata()));
+        return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
 
     public function getGeneralCard($id)
     {
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
-        $fire['data']['risk'] = $risk['data'][0]['hoje'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'];
 
-        return view('elements.risk', array('fire' => $fire));
+        return view('elements.risk', array('fire' => $this->fire));
     }
 
     public function getStatusCard($id)
     {
         $this->setFireById($id);
         $status = LegacyApi::getStatusByFire($id);
-        $fire['data']['status'] = $status['data'];
+        $this->fire['statusHistory'] = $status['data'];
 
-        return view('elements.status', array('fire' => $fire));
+        return view('elements.status', array('fire' => $this->fire));
     }
 
     private function setFireById($id)

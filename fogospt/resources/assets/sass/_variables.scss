@@ -8,8 +8,26 @@ $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // danger
+$status-max: #711313;
+$status-vhigh: #B81E1F;
+$status-high: #FF6E02;
+$status-mod: #FFB202;
+$status-min: #6ABF59;
+
+// timeline
+$c-darkred: #711313;
+$c-red: #B81E1F;
+$c-orange: #FF6E02;
+$c-yellow: #FFB202;
+$c-green: #6ABF59;
+$c-blue: #65C4ED;
+$c-grey: #BDBDBD;
+
+
+/* old danger colors
 $status-max: #6f263d;
 $status-vhigh: #cb333b;
 $status-high: #e87722;
 $status-mod: #ffe900;
 $status-min: #509e2f;
+*/

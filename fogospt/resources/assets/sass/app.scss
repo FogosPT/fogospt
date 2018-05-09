@@ -39,8 +39,51 @@ body {
 }
 
 header {
+  height: 80px;
   .navbar {
     padding: 0rem 1rem;
+    text-transform: uppercase;
+    .navbar-nav {
+      padding-top: 1rem;
+    }
+    .navbar-toggler {
+      border: 0;
+      &:focus {
+        outline: none;
+      }
+      .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      }
+      &[aria-expanded=true] {
+        & + .navbar-collapse {
+          transform: translate3d(0, 0, 0);
+        }
+        .navbar-toggler-icon {
+          background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M7.222,7.222 L22.778,22.778 M7.222,22.778 L22.778,7.222' /%3E%3C/svg%3E");
+        }
+      }
+    }
+
+    .navbar-collapse {
+      position: fixed;
+      right: 0;
+      top: 80px;
+      bottom: 0;
+      width: 200px;
+      background: #fff;
+      transition: transform .3s !important;
+      display: block;
+      transform: translate3d(100%, 0, 0);
+      &.collapsing {
+        height: auto !important;
+      }
+      a {
+        color: #ff512f !important;
+      }
+      a:hover {
+        color: #f09819 !important;
+      }
+    }
   }
   nav {
     background: -moz-linear-gradient(-45deg, #ff512f 0%, #f09819 100%);
@@ -108,7 +151,7 @@ img, svg {
 
 main {
   transition: opacity .5s linear;
-  padding-top: 95px;
+  padding-top: 80px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -174,20 +217,16 @@ main {
 
   .sidebar{
     flex-direction: column;
-    padding-top:20px;
-    order: 2;
-    display: none;
+    order: 1;
     width: 100%;
     background: #f5f5f5;
-
-    &.active{
-      display: flex;
-    }
+    flex-basis: 100%;
   }
 
   .card {
     margin-bottom: 1rem;
-    border: 1px solid #f5f5f5;
+    border: 0;
+    border-radius: 0;
     background: white;
     //overflow: hidden;
     .table {
@@ -214,51 +253,54 @@ main {
       color: #007bff
     }
   }
-  .table {
-    & td, & th {
-      border: none;
-      text-transform: uppercase;
-      font-size: 40px;
-      color: #555;
+  .fire-status {
+    margin: 0 0 1rem 0;
+    color: #fff;
+    text-transform: uppercase;
+    li {
+      padding: 10px 6px;
+      border-radius: 3px;
+      transition: width .3s;
+      &:not(:first-child) {
+        margin-left: 2px;
+      }
+      &.status-max {
+        background-color: $status-max
+      }
+      &.status-vhigh {
+        background-color: $status-vhigh
+      }
+      &.status-high {
+        background-color: $status-high
+      }
+      &.status-mod {
+        //color: darken($status-mod, 30);
+        background-color: $status-mod
+      }
+      &.status-min {
+        background-color: $status-min
+      }
+      &.active {
+        width: 100%;
+        &:before {
+          content: attr(data-status);
+        }
+      }  
     }
   }
-  .fire-status {
-    background: #e4e4e4;
-    margin: 0 0 1rem 0;
-    border-radius: .25rem;
-    overflow: hidden;
-    > * {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .status-max.active {
-      color: #fff;
-      background-color: $status-max
-    }
-    .status-vhigh.active {
-      color: #fff;
-      background-color: $status-vhigh
-    }
-    .status-high.active {
-      color: #fff;
-      background-color: $status-high
-    }
-    .status-mod.active {
-      color: darken($status-mod, 30);
-      background-color: $status-mod
-    }
-    .status-min.active {
-      color: #fff;
-      background-color: $status-min
-    }
-    [data-status] {
-      display: none;
-      &.active {
-        display: flex;
+  .assets {
+    padding-bottom: .5rem;
+    .assets-icon {
+      height: 55px;
+      margin-right: .5rem;
+      &:not(:first-child) {
+        margin-left: 1.5rem;
       }
+    }
+    .assets-nr {
+      font-size: 40px;
+      color: #333;
+      font-weight: 300;
     }
   }
   .link-list {
@@ -351,9 +393,6 @@ main {
     flex-direction: column;
 
     .sidebar {
-      order: 2;
-      display: none;
-      width: 100%;
       background: #f5f5f5;
     }
   }
@@ -364,17 +403,12 @@ main {
   main {
     height: 100%;
     margin-top: 0;
-
-
     .sidebar {
-      order: 2;
-      display: none;
-      width: 100%;
       background: #f5f5f5;
     }
 
     .card {
-      margin-bottom: 2rem;
+      margin-bottom: .5rem;
     }
     //.fire-status {
     //  margin-bottom: 2rem;
@@ -394,11 +428,24 @@ main {
 
     .sidebar {
       order: 0;
-      display: none;
-      width: 520px;
+      flex-basis: 40%;
       height: 100%;
       background: #f5f5f5;
       overflow-y: scroll;
+    }
+
+    #map {
+      position: absolute;
+      top: 80px;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      transition: width .3s;
+      min-height: 0;
+    }
+
+    .sidebar.active + #map {
+      width: 60%;
     }
   }
 }
@@ -406,24 +453,18 @@ main {
 // Extra large devices (large desktops, 1200px and up)
 @media (min-width: 1200px) {
   main {
-    flex-direction:row;
-    margin-top: 0;
-
-
     .sidebar {
-      order: 0;
-      display: none;
-      width: 620px;
-      height: 100%;
-      background: #f5f5f5;
-      overflow-y: scroll;
+      flex-basis: 33.33%;
+    }
+    .sidebar.active + #map {
+      width: 66.66%;
     }
   }
+
 }
 
 #map {
   width: 100%;
-  height: 100%;
 }
 
 .marker {
@@ -660,17 +701,74 @@ main {
 }
 
 .dot {
-  height: 25px;
-  width: 25px;
-  background-color: #fe5353;
+  height: 24px;
+  width: 24px;
   border-radius: 50%;
   display: block;
   float: left;
-  margin-left: -15px;
+  margin-left: -13px;
+  background: no-repeat center / 60%;
+  // inicio
+  &.status-99 {
+    background-image: url('/img/ico_fire.svg');
+    background-color:$c-darkred; 
+  }
+  // despacho
+  &.status-3 {
+    background-image: url('/img/ico_alarm.svg');
+    background-color:$c-red; 
+  }
+  // despacho de 1ºalerta
+  &.status-4 {
+    background-image: url('/img/ico_alarm.svg');
+    background-color:$c-orange; 
+  }
+  // em curso
+  &.status-5 {
+    background-image: url('/img/ico_fire.svg');
+    background-color:$c-red; 
+  }
+  // chegada ao t0
+  &.status-6 {
+    background-image: url('/img/ico_pointer.svg');
+    background-color:$c-red; 
+  }
+  // em resolução
+  &.status-7 {
+    background-image: url('/img/ico_fire.svg');
+    background-color:$c-orange; 
+  }
+  // conclusão
+  &.status-8 {
+    background-image: url('/img/ico_fire.svg');
+    background-color:$c-yellow; 
+  }
+  // vigilancia
+  &.status-9 {
+    background-image: url('/img/ico_watch.svg');
+    background-color:$c-blue; 
+  }
+  // encerrada
+  &.status-10 {
+    background-image: url('/img/ico_pointer.svg');
+    background-color:$c-green; 
+  }
+  // falso alarme
+  &.status-11 {
+    background-image: url('/img/ico_fake.svg');
+    background-color:$c-grey; 
+  }
+  // falso alerta
+  &.status-12 {
+    background-image: url('/img/ico_fake.svg');
+    background-color:$c-grey; 
+  }
 }
 
 #status{
-  border-left: 4px solid #fe5353;
+  border-left: 2px solid #BDBDBD;
+  margin-top: 1rem;
+  margin-left: 13px;
 
   .status-hour{
     margin-left: 15px;

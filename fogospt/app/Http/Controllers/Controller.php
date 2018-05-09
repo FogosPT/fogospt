@@ -28,7 +28,8 @@ class Controller extends BaseController
         $metadata = array(
             'pageTitle' => $pageTitle,
             'title' => $title,
-            'description' => $description
+            'description' => $description,
+            'url' => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
         );
 
         return $metadata;
