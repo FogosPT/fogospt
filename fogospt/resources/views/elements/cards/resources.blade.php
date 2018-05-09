@@ -10,13 +10,13 @@
                             {{ $fire['man'] }}
                         @endisset
                     </span>
-                    <img class="assets-icon" src="/img/firetruck.svg">
+                    <img class="assets-icon" src="/img/plane.svg">
                     <span class="assets-nr f-aerial">
                             @isset($fire['aerial'])
                             {{ $fire['aerial'] }}
                         @endisset
                     </span>
-                    <img class="assets-icon" src="/img/plane.svg">
+                    <img class="assets-icon" src="/img/firetruck.svg">
                     <span class="assets-nr f-terrain">
                             @isset($fire['terrain'])
                             {{ $fire['terrain'] }}
