@@ -26,6 +26,7 @@ $(document).ready(function () {
       window.fogosLayers = [];
       window.fogosLayers[3] = L.layerGroup();
       window.fogosLayers[4] = L.layerGroup();
+      window.fogosLayers[5] = L.layerGroup();
       window.fogosLayers[6] = L.layerGroup();
       window.fogosLayers[7] = L.layerGroup();
       window.fogosLayers[8] = L.layerGroup();
@@ -49,6 +50,7 @@ $(document).ready(function () {
             obj["Despacho"] = window.fogosLayers[3];
             obj["Despacho de 1º Alerta"] = window.fogosLayers[4];
             obj["Chegada ao TO"] = window.fogosLayers[6];
+            obj["Em Curso"] = window.fogosLayers[5];
             obj["Em Resolução"] = window.fogosLayers[7];
             obj["Conclusão"] = window.fogosLayers[8];
             obj["Vigilância"] = window.fogosLayers[9];
