@@ -3,11 +3,11 @@
 @section('content')
     <main role="main" class="mb-auto">
         <div class="modal-body">
-            <p>@lang('pages.about.entries_from')</p>
-            <p>@lang('pages.about.update_interval')</p>
-            <p>@lang('pages.about.near_location')</p>
-            <p>@lang('pages.about.suggestion_bugs')</p>
-            <p>@lang('pages.about.made_by')</p>
+            <p>Registos retirados da <a href="http://www.prociv.pt/">Página da Protecção Civil Portuguesa</a></p>
+            <p>Actualizações de 10 em 10 minutos</p>
+            <p>Localização aproximada.</p>
+            <p>Sugestões / Bugs - <a href="mailto:mail@fogos.pt">mail@fogos.pt</a></p>
+            <p>Made with ♥ by <a href="https://twitter.com/tomahock">Tomahock</a></p>
         </div>
     </main>
 @endsection
