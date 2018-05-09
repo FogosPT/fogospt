@@ -96,7 +96,7 @@ function addMaker(item, mymap) {
         $icon.find('i').addClass('fa-map-marker-alt');
 
         var item = e.sourceTarget.properties.item;
-        $('.sidebar').addClass('active');
+        $('.sidebar').addClass('active').scrollTop(0);
         $('.f-local').text(item.location);
         $('.f-man').text(item.man);
         $('.f-aerial').text(item.aerial);
