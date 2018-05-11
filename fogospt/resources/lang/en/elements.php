@@ -2,23 +2,23 @@
     return [
         'cards' => [
             'general' => [
-                'place' => 'Local',
-                'start_at' => 'Início',
-                'nature' => 'Natureza',
-                'fireRisk' => 'Risco de Incêndio'
+                'place' => 'Place',
+                'start_at' => 'Start',
+                'nature' => 'Nature',
+                'fireRisk' => 'Fire Risl'
             ],
             'resources' => [
-                'units' => 'Meios',
+                'units' => 'Means',
             ],
             'status' => [
-                'status' => 'Estado'
+                'status' => 'Status'
             ]
         ],
         'riskLevels' => [
-            'maximum' => 'Máximo',
-            'veryHigh' => 'Muito Elevado',
-            'high' => 'Elevado',
-            'moderate' => 'Moderado',
-            'reduced' => 'Reduzidos'
+            'maximum' => 'Max',
+            'veryHigh' => 'Very high',
+            'high' => 'High',
+            'moderate' => 'Moderate',
+            'reduced' => 'Low'
         ]
     ];
