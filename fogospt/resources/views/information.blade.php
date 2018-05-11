@@ -3,31 +3,26 @@
 @section('content')
     <main role="main" class="mb-auto">
         <div class="modal-body">
-            <h3>Estados das Ocorrências</h3>
+            <h3>@lang('pages.information.statesOfOccurrences.title')</h3>
             <ul>
-                <li>DESPACHO 1º ALERTA – Meios em trânsito para o teatro de operações.</li>
-                <li>CHEGADA AO TO – chega ao teatro de operações.</li>
-                <li>EM CURSO - Incêndio em evolução sem limitação de área</li>
-                <li>EM RESOLUÇÃO – Incêndio sem perigo de propagação para além do perímetro já atingido</li>
-                <li>EM CONCLUSÃO – Incêndio extinto, com pequenos focos de combustão dentro do perímetro do incêndio
-                </li>
-                <li>VIGILÂNCIA – Meios no local para actuar em caso de necessidade</li>
-                <li>ENCERRADA – Entrada, nas respectivas entidades, de todos os meios envolvidos</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.firstAlertdispatch')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.arrivalToOccurrence')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.ongoing')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.inResolution')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.inConclusion')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.surveillance')</li>
+                <li>@lang('pages.information.statesOfOccurrences.items.closed')</li>
             </ul>
-            <h3>Meios</h3>
+            <h3>@lang('pages.information.typeOfUnits.title')</h3>
             <ul>
-                <li>HUMANOS - Bombeiros, Força Especial de Bombeiros, PSP, Forças Armadas, INEM, Equipas Sapadores
-                    Florestais, GNR, GIPS Grupo Intervenção de Proteção e Socorro
+                <li>@lang('pages.information.typeOfUnits.items.humans')
                 </li>
-                <li>TERRESTRES - Veículos rodoviários</li>
-                <li>AEREOS - Helicópteros / Aviões</li>
+                <li>@lang('pages.information.typeOfUnits.items.terrestrial')</li>
+                <li>@lang('pages.information.typeOfUnits.items.air')</li>
             </ul>
-            <p>Os números disponibilizados são os totais de meios accionados. O número pode diferir do que se encontra
-                no terreno, uma vez que os meios accionados podem ainda estar em trânsito.</p>
-            <p>As horas indicadas tanto no gráfico de meios como na linha do tempo dos estados do incêndios, são as
-                horas que o nosso sistema detetou uma mudança de dados por parte da ANPC podendo não corresponder ao
-                momento exato em que essa alteração ocorreu.</p>
-            <p>Risco de incêndio recolhido do IPMA.</p>
+            <p>@lang('pages.information.numberDescription')</p>
+            <p>@lang('pages.information.hoursDescription')</p>
+            <p>@lang('pages.information.source')</p>
         </div>
     </main>
 @endsection
