@@ -30,20 +30,25 @@ class GenericController extends Controller
 
     public function getAbout()
     {
-        $this->setPageName('Sobre');
+        $this->setPageName(__('includes.menu.about'));
         return view('about')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getInformation()
     {
-        $this->setPageName('Informação');
+        $this->setPageName(__('includes.menu.information'));
         return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getManifest()
     {
-        $this->setPageName('Manifesto');
+        $this->setPageName(__('includes.menu.manifest'));
         return view('manifest')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getPartnerships() {
+	    $this->setPageName(__('includes.menu.partnerships'));
+	    return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
     }
 
 	/**

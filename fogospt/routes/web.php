@@ -15,6 +15,7 @@ Route::get('/', 'GenericController@getIndex')->name('home');
 Route::get('/sobre', 'GenericController@getAbout')->name('about');
 Route::get('/informacoes', 'GenericController@getInformation')->name('information');
 Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
+Route::get('/partnerships', 'GenericController@getPartnerships')->name('partnerships');
 Route::get('/change-language/{lang}', 'GenericController@getChangeLanguage')->name('changeLanguage');
 Route::get('/fogo/{id}', 'FireController@get');
 Route::get('/views/risk/{id}', 'FireController@getGeneralCard');

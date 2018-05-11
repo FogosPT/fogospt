@@ -14,6 +14,7 @@
                 </span></a>
                 <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
                 <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
+                <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
                 <a class="nav-item nav-link" href="{{route('manifest')}}">@lang('includes.menu.manifest')</a>
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">

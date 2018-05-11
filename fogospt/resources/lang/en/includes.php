@@ -6,6 +6,7 @@
             'about'       => 'About',
             'information' => 'Informations',
             'manifest'    => 'Manifest',
+            'partnerships' => 'Partnerships',
             'active'      => '(Actual)'
         ],
         'meta' => [

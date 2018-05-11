@@ -1,6 +1,8 @@
 @extends('app')
 @section('content')
-    <main role="main" class="mb-auto">
-        <div>MANIFEST</div>
-    </main>
+    <div class="container">
+        <main role="main" class="mb-auto margin-top-10" >
+            <div>MANIFEST</div>
+        </main>
+    </div>
 @endsection
