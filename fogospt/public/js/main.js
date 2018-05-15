@@ -1,70 +1,99 @@
 $(document).ready(function () {
-  if ($("#map")[0]) {
+});
+if ($("#map")[0]) {
 
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
-      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-      maxZoom: 18,
-      id: 'mapbox.streets',
-      accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
 
     addRisk(mymap);
     mymap.on('click', function (e) {
-      mymap.setView(e.latlng);
-      window.history.pushState('obj', 'Fogos.pt', '/');
-      $('.sidebar').removeClass('active');
-      $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
+        mymap.setView(e.latlng);
+        window.history.pushState('obj', 'Fogos.pt', '/');
+        $('.sidebar').removeClass('active');
+        $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
     });
+
+    url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+    prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+    clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+    pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+    wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+
+    var tempLayer = L.tileLayer(url, {});
+    var precLayer = L.tileLayer(prec_url, {});
+    var cloudLayer = L.tileLayer(prec_url, {});
+    var pressureLayer = L.tileLayer(prec_url, {});
+    var windLayer = L.tileLayer(prec_url, {});
+
+    var baseMaps = {
+        "Temperatura": tempLayer,
+        "Precipitação": precLayer,
+        "Nuvens": cloudLayer,
+        "Pressão": pressureLayer,
+        "Vento": windLayer,
+    };
+
+    L.control.layers(baseMaps).addTo(mymap);
+
+    // // tempLayer = L.tileLayer(url);
+    // // x =  L.layerGroup().addLayer(tempLayer);
+    //
+    //
+    // xx = L.control.layers(null, x, {position: 'topright'});
+    // xx.addTo(mymap);
 
     var res = window.location.pathname.match(/^\/fogo\/(\d+)/);
     if (res && res.length === 2) {
-      plot(res[1]);
+        plot(res[1]);
     }
 
-      window.fogosLayers = [];
-      window.fogosLayers[3] = L.layerGroup();
-      window.fogosLayers[4] = L.layerGroup();
-      window.fogosLayers[5] = L.layerGroup();
-      window.fogosLayers[6] = L.layerGroup();
-      window.fogosLayers[7] = L.layerGroup();
-      window.fogosLayers[8] = L.layerGroup();
-      window.fogosLayers[9] = L.layerGroup();
-      window.fogosLayers[10] = L.layerGroup();
-      window.fogosLayers[11] = L.layerGroup();
-      window.fogosLayers[12] = L.layerGroup();
+    window.fogosLayers = [];
+    window.fogosLayers[3] = L.layerGroup();
+    window.fogosLayers[4] = L.layerGroup();
+    window.fogosLayers[5] = L.layerGroup();
+    window.fogosLayers[6] = L.layerGroup();
+    window.fogosLayers[7] = L.layerGroup();
+    window.fogosLayers[8] = L.layerGroup();
+    window.fogosLayers[9] = L.layerGroup();
+    window.fogosLayers[10] = L.layerGroup();
+    window.fogosLayers[11] = L.layerGroup();
+    window.fogosLayers[12] = L.layerGroup();
 
-      var url = 'https://fogos.pt/new/fires';
+    var url = 'https://fogos.pt/new/fires';
     $.ajax({
-      url: url,
-      method: 'GET',
-      success: function (data) {
-        data = JSON.parse(data);
-        if (data.success) {
-          for (i in data.data) {
-            addMaker(data.data[i], mymap)
-          }
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success) {
+                for (i in data.data) {
+                    addMaker(data.data[i], mymap)
+                }
 
-            var obj = {};
-            obj["Despacho"] = window.fogosLayers[3];
-            obj["Despacho de 1º Alerta"] = window.fogosLayers[4];
-            obj["Chegada ao TO"] = window.fogosLayers[6];
-            obj["Em Curso"] = window.fogosLayers[5];
-            obj["Em Resolução"] = window.fogosLayers[7];
-            obj["Conclusão"] = window.fogosLayers[8];
-            obj["Vigilância"] = window.fogosLayers[9];
-            obj["Encerrada"] = window.fogosLayers[10];
-            obj["Falso Alarme"] = window.fogosLayers[11];
-            obj["Falso Alerta"] = window.fogosLayers[12];
+                var obj = {};
+                obj["Despacho"] = window.fogosLayers[3];
+                obj["Despacho de 1º Alerta"] = window.fogosLayers[4];
+                obj["Chegada ao TO"] = window.fogosLayers[6];
+                obj["Em Curso"] = window.fogosLayers[5];
+                obj["Em Resolução"] = window.fogosLayers[7];
+                obj["Conclusão"] = window.fogosLayers[8];
+                obj["Vigilância"] = window.fogosLayers[9];
+                obj["Encerrada"] = window.fogosLayers[10];
+                obj["Falso Alarme"] = window.fogosLayers[11];
+                obj["Falso Alerta"] = window.fogosLayers[12];
 
-            layerControl2 = L.control.layers(null, obj, {position: 'topright'});
-            layerControl2.addTo(mymap);
+                layerControl2 = L.control.layers(null, obj, {position: 'topright'});
+                layerControl2.addTo(mymap);
+            }
         }
-      }
     });
-  }
-});
+}
 
 function addMaker(item, mymap) {
     var coords = [item.lat, item.lng];
