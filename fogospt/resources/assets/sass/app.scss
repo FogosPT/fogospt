@@ -221,6 +221,9 @@ main {
     width: 100%;
     background: #f5f5f5;
     flex-basis: 100%;
+    .row{
+      margin: 0;
+    }
   }
 
   .card {

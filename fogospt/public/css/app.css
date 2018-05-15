@@ -251,6 +251,10 @@ main .sidebar {
       flex-basis: 100%;
 }
 
+main .sidebar .row {
+  margin: 0;
+}
+
 main .card {
   margin-bottom: 1rem;
   border: 0;
