@@ -27,9 +27,9 @@ if ($("#map")[0]) {
 
     var tempLayer = L.tileLayer(url, {});
     var precLayer = L.tileLayer(prec_url, {});
-    var cloudLayer = L.tileLayer(prec_url, {});
-    var pressureLayer = L.tileLayer(prec_url, {});
-    var windLayer = L.tileLayer(prec_url, {});
+    var cloudLayer = L.tileLayer(clouds_url, {});
+    var pressureLayer = L.tileLayer(pressure_url, {});
+    var windLayer = L.tileLayer(wind_url, {});
 
     var baseMaps = {
         "Temperatura": tempLayer,
