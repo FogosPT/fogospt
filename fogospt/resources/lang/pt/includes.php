@@ -6,6 +6,7 @@
             'about'       => 'Sobre',
             'information' => 'Informações',
             'manifest'    => 'Manifesto',
+            'partnerships' => 'Parcerias',
             'active'      => '(actual)'
         ],
         'meta' => [

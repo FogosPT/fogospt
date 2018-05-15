@@ -435,6 +435,10 @@ main #data-social-media iframe {
   height: 100vh;
 }
 
+.margin-top-10 {
+  margin-top: 10px;
+}
+
 @-webkit-keyframes loading {
   0%, 100% {
     -webkit-transform: scale(0);
