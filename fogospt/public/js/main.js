@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    if ($(".notifications")[0])
+    {
+      toggleNotification();
+    }
 });
 if ($("#map")[0]) {
 
@@ -304,4 +308,31 @@ function extend() {
         }
     }
     return o;
+}
+
+function toggleNotification()
+{
+  $(".custom-control-input").click( function(){
+    if( $(this).is(':checked') ) {
+        if ($(this).data("type") == "site")
+        {
+          /*const messaging = firebase.messaging();
+          messaging.requestPermission()
+            .then(function() {
+              toastr.success('Registado com sucesso')
+              // TODO(developer): Retrieve an Instance ID token for use with FCM.
+              // ...
+            })
+            .catch(function(err) {
+              console.log('Unable to get permission to notify.', err);
+            });*/
+          
+          console.log("registar no browser")
+        } else {
+            console.log("register por sms")
+        }
+    } else {
+        console.log("remover registo");
+    }
+  });
 }

@@ -858,3 +858,7 @@ main #data-social-media iframe {
 .notifications .custom-checkbox .custom-control-input:focus ~ .custom-control-indicator {
   box-shadow: none !important;
 }
+
+.toast-top-right {
+  margin-top: 70px !important;
+}
