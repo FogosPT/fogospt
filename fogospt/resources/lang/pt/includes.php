@@ -5,6 +5,7 @@
             'home'        => 'Home',
             'about'       => 'Sobre',
             'information' => 'Informações',
+            'notifications' => 'Notificações',
             'manifest'    => 'Manifesto',
             'partnerships' => 'Parcerias',
             'active'      => '(actual)'

@@ -37,5 +37,25 @@ return [
                 horas que o nosso sistema detetou uma mudança de dados por parte da ANPC podendo não corresponder ao
                 momento exato em que essa alteração ocorreu.',
 		'source'              => 'Risco de incêndio recolhido do IPMA.'
+	],
+	'notifications' => [
+		'aveiro' => 'Aveiro',
+		'beja' => 'Beja',
+		'braga' => 'Braga',
+		'braganca' => 'Bragança',
+		'casteloBranco' => 'Castelo Branco',
+		'coimbra' => 'Coimbra',
+		'evora' => 'Évora',
+		'faro' => 'Faro',
+		'guarda' => 'Guarda',
+		'leiria' => 'Leiria',
+		'lisboa' => 'Lisboa',
+		'portalegre' => 'Portalegre',
+		'porto' => 'Porto',
+		'santarem' => 'Santarém',
+		'setubal' => 'Setúbal',
+		'vianadoCastelo' => 'Viana do Castelo',
+		'vilaReal' => 'Vila Real',
+		'viseu' => 'Viseu'
 	]
 ];

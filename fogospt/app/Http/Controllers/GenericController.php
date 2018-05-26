@@ -40,6 +40,12 @@ class GenericController extends Controller
         return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
+	public function getNotifications()
+	{
+		$this->setPageName(__('includes.menu.notifications'));
+		return view('notifications')->with(['metadata' => $this->generateMetadata()]);
+	}
+
     public function getManifest()
     {
         $this->setPageName(__('includes.menu.manifest'));
