@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
 
+
 class FireController extends Controller
 {
     public $fire;
@@ -17,8 +18,11 @@ class FireController extends Controller
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
+        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        
         $this->fire['risk'] = $risk['data'][0]['hoje'];
         $this->fire['statusHistory'] = $status['data'];
+        $this->fire['meteo'] = $meteo;
 
         return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
@@ -39,6 +43,15 @@ class FireController extends Controller
         $this->fire['statusHistory'] = $status['data'];
 
         return view('elements.status', array('fire' => $this->fire));
+    }
+
+    public function getMeteoCard($id)
+    {
+        $this->setFireById($id);
+        $meteo= LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $this->fire['meteo'] = $meteo;
+
+        return view('elements.meteo', array('fire' => $this->fire));
     }
 
     private function setFireById($id)

@@ -139,6 +139,7 @@ function addMaker(item, mymap) {
         status(item.id);
         plot(item.id);
         danger(item.id);
+        meteo(item.id);
         addPageview();
     });
 
@@ -232,6 +233,18 @@ function danger(id) {
         method: 'GET',
         success: function (data) {
             $('.f-danger').html(data);
+        }
+    });
+
+}
+
+function meteo(id) {
+    var url = '/views/meteo/' + id;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            $('.f-meteo').html(data);
         }
     });
 

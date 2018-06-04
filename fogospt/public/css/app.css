@@ -237,6 +237,16 @@ main #map .map-marker.status-12 {
   color: #7e8c8d;
 }
 
+main .inactive {
+  display: none;
+}
+
+main .active {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
 main .sidebar {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -350,9 +360,9 @@ main .assets .assets-icon:not(:first-child) {
 }
 
 main .assets .assets-nr {
-  font-size: 40px;
+  font-size: 1.9rem;
   color: #333;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 main .link-list {
@@ -435,10 +445,6 @@ main #data-social-media iframe {
   height: 100vh;
 }
 
-.margin-top-10 {
-  margin-top: 10px;
-}
-
 @-webkit-keyframes loading {
   0%, 100% {
     -webkit-transform: scale(0);
@@ -488,6 +494,12 @@ main #data-social-media iframe {
 
   main .sidebar {
     background: #f5f5f5;
+  }
+
+  main .assets .assets-nr {
+    font-size: 2.9rem;
+    color: #333;
+    font-weight: 300;
   }
 
   main .card {

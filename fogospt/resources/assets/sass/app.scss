@@ -214,13 +214,19 @@ main {
       }
     }
   }
-
+  .inactive{
+    display: none;
+  }
+  .active {
+    display: flex;
+  }
   .sidebar{
     flex-direction: column;
     order: 1;
     width: 100%;
     background: #f5f5f5;
     flex-basis: 100%;
+   
     .row{
       margin: 0;
     }
@@ -301,9 +307,9 @@ main {
       }
     }
     .assets-nr {
-      font-size: 40px;
+      font-size: 1.9rem;
       color: #333;
-      font-weight: 300;
+      font-weight: 400;
     }
   }
   .link-list {
@@ -409,6 +415,13 @@ main {
     .sidebar {
       background: #f5f5f5;
     }
+    .assets{
+      .assets-nr {
+        font-size: 2.9rem;
+        color: #333;
+        font-weight: 300;
+      }
+    }
 
     .card {
       margin-bottom: .5rem;
@@ -420,6 +433,7 @@ main {
     //  }
     //}
   }
+ 
 }
 
 // Large devices (desktops, 992px and up)
@@ -436,7 +450,7 @@ main {
       background: #f5f5f5;
       overflow-y: scroll;
     }
-
+    
     #map {
       position: absolute;
       top: 80px;
