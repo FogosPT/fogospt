@@ -102,16 +102,8 @@ class LegacyApi
         $body = $response->getBody();
         $result = json_decode($body->getContents(), true);
         
-       /* IF CITY ID
-        $data = file_get_contents('../resources/assets/city.list.json');
-        $data =  json_decode($data, true);
-        //$idMeteo = self::getIdMeteo($data, $result['data']);
-
-       //
-        
-        */
             
-                return $result;
+        return $result;
     }
     
 }
