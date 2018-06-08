@@ -13,6 +13,10 @@
             'status' => [
                 'status' => 'Status'
             ]
+            ,
+            'meteo' => [
+                'title' => 'Meteo'
+            ]
         ],
         'riskLevels' => [
             'maximum' => 'Max',

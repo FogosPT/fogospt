@@ -20,3 +20,4 @@ Route::get('/change-language/{lang}', 'GenericController@getChangeLanguage')->na
 Route::get('/fogo/{id}', 'FireController@get');
 Route::get('/views/risk/{id}', 'FireController@getGeneralCard');
 Route::get('/views/status/{id}', 'FireController@getStatusCard');
+Route::get('/views/meteo/{id}', 'FireController@getMeteoCard');

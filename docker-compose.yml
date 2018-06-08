@@ -1,10 +1,20 @@
 version: '2'
 services:
     container:
-        build: ./container
+        build: 
+            context: ./container
+            args:
+                - INSTALL_XDEBUG=true
+           
         ports:
             - "8097:8097"
+            - "9000:9000"
+            - "9001:9001"
         volumes:
             - ./fogospt:/var/www/app
         environment:
             - APP_ENV=development
+            - XDEBUG_CONFIG=remote_host=127.0.0.1 remote_port=9000 remote_connect_back=0 
+
+
+
