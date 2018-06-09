@@ -30,6 +30,8 @@ function requestAuth() {
             if (currentToken) {
                 store.set('notificationsAuth', true);
                 store.set('token', currentToken);
+                $('.no-auth').hide();
+                $('.auth').show();
             } else {
                 alert('Upps, Ocorreu um erro! Tente mais tarde. 1');
             }
@@ -68,7 +70,7 @@ function toggleNotification() {
                 console.log("register por sms")
             }
         } else {
-            //todo this! :) 
+            //todo this! :)
             console.log("remover registo");
         }
     });
