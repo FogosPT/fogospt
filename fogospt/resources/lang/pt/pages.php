@@ -56,6 +56,10 @@ return [
 		'setubal' => 'Setúbal',
 		'vianadoCastelo' => 'Viana do Castelo',
 		'vilaReal' => 'Vila Real',
-		'viseu' => 'Viseu'
+		'viseu' => 'Viseu',
+
+        'important' => 'Ocorrências importantes',
+        'alerts' => 'Alertas',
 	]
+
 ];

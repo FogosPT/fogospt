@@ -9,9 +9,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
-<script src="/js/concelhos.js"></script>
-<script src="/js/main.js"></script>
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-29689840-9"></script>
 <script>

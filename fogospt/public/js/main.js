@@ -1,11 +1,4 @@
 $(document).ready(function () {
-    if ($(".notifications")[0])
-    {
-      toggleNotification();
-    }
-});
-if ($("#map")[0]) {
-
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
@@ -97,7 +90,7 @@ if ($("#map")[0]) {
             }
         }
     });
-}
+});
 
 function addMaker(item, mymap) {
     var coords = [item.lat, item.lng];
@@ -321,31 +314,4 @@ function extend() {
         }
     }
     return o;
-}
-
-function toggleNotification()
-{
-  $(".custom-control-input").click( function(){
-    if( $(this).is(':checked') ) {
-        if ($(this).data("type") == "site")
-        {
-          /*const messaging = firebase.messaging();
-          messaging.requestPermission()
-            .then(function() {
-              toastr.success('Registado com sucesso')
-              // TODO(developer): Retrieve an Instance ID token for use with FCM.
-              // ...
-            })
-            .catch(function(err) {
-              console.log('Unable to get permission to notify.', err);
-            });*/
-          
-          console.log("registar no browser")
-        } else {
-            console.log("register por sms")
-        }
-    } else {
-        console.log("remover registo");
-    }
-  });
 }

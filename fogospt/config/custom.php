@@ -5,6 +5,16 @@ return [
 		'pt',
 		'en'
 	],
+    'notifications' => [
+        [
+            "name" => 'pages.notifications.important',
+            "value" => "important"
+        ],
+        [
+            "name" => 'pages.notifications.alerts',
+            "value" => "alerts"
+        ],
+    ],
 	'districts' => [
 		[
 			"name" => 'pages.notifications.aveiro',

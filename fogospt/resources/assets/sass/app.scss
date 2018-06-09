@@ -6,26 +6,22 @@
 // Bootstrap
 //@import '~bootstrap/scss/bootstrap';
 
-#style-1::-webkit-scrollbar-track
-{
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+#style-1::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   background-color: #F5F5F5;
 }
 
-#style-1::-webkit-scrollbar
-{
+#style-1::-webkit-scrollbar {
   width: 12px;
   background-color: #F5F5F5;
 }
 
-#style-1::-webkit-scrollbar-thumb
-{
+#style-1::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   background-color: #555;
 }
-
 
 html, body {
   height: 100%;
@@ -157,77 +153,77 @@ main {
   width: 100%;
   height: 100%;
 
-  #map{
-    .map-marker{
-      font-size:30px;
+  #map {
+    .map-marker {
+      font-size: 30px;
 
-      &.active{
+      &.active {
         font-size: 50px;
       }
 
-      &.status-0{
+      &.status-0 {
         color: black;
       }
 
-      &.status-1{
+      &.status-1 {
         color: black;
       }
 
-      &.status-2{
+      &.status-2 {
         color: black;
       }
 
-      &.status-3{
+      &.status-3 {
         color: #ce773c;
       }
 
-      &.status-4{
+      &.status-4 {
         color: #ce773c;
       }
 
-      &.status-5{
+      &.status-5 {
         color: #ef4836;
       }
 
-      &.status-6{
+      &.status-6 {
         color: black;
       }
 
-      &.status-7{
+      &.status-7 {
         color: #58abe3;
       }
 
-      &.status-8{
+      &.status-8 {
         color: #86d37c;
       }
 
-      &.status-9{
+      &.status-9 {
         color: #a1ded0;
       }
 
-      &.status-10{
+      &.status-10 {
         color: #7e8c8d;
       }
 
-      &.status-12{
+      &.status-12 {
         color: #7e8c8d;
       }
     }
   }
-  .inactive{
+  .inactive {
     display: none;
   }
   .active {
     display: flex;
   }
-  .sidebar{
+  .sidebar {
     flex-direction: column;
     order: 1;
     width: 100%;
     background: #f5f5f5;
     flex-basis: 100%;
-   
-    .row{
+
+    .row {
       margin: 0;
     }
   }
@@ -294,7 +290,7 @@ main {
         &:before {
           content: attr(data-status);
         }
-      }  
+      }
     }
   }
   .assets {
@@ -415,7 +411,7 @@ main {
     .sidebar {
       background: #f5f5f5;
     }
-    .assets{
+    .assets {
       .assets-nr {
         font-size: 2.9rem;
         color: #333;
@@ -433,15 +429,14 @@ main {
     //  }
     //}
   }
- 
+
 }
 
 // Large devices (desktops, 992px and up)
 @media (min-width: 992px) {
   main {
-    flex-direction:row;
+    flex-direction: row;
     margin-top: 0;
-
 
     .sidebar {
       order: 0;
@@ -450,7 +445,7 @@ main {
       background: #f5f5f5;
       overflow-y: scroll;
     }
-    
+
     #map {
       position: absolute;
       top: 80px;
@@ -506,7 +501,6 @@ main {
     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
   }
 }
-
 
 //.fire-status {
 //  background: #e4e4e4;
@@ -568,13 +562,13 @@ main {
   width: 6px;
   height: 100%;
   margin-left: -3px;
-  background: rgb(80,80,80);
-  background: -moz-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(30,87,153,1)), color-stop(100%,rgba(125,185,232,1)));
-  background: -webkit-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
-  background: -o-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
-  background: -ms-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
-  background: linear-gradient(to bottom, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: rgb(80, 80, 80);
+  background: -moz-linear-gradient(top, rgba(80, 80, 80, 0) 0%, rgb(80, 80, 80) 8%, rgb(80, 80, 80) 92%, rgba(80, 80, 80, 0) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(30, 87, 153, 1)), color-stop(100%, rgba(125, 185, 232, 1)));
+  background: -webkit-linear-gradient(top, rgba(80, 80, 80, 0) 0%, rgb(80, 80, 80) 8%, rgb(80, 80, 80) 92%, rgba(80, 80, 80, 0) 100%);
+  background: -o-linear-gradient(top, rgba(80, 80, 80, 0) 0%, rgb(80, 80, 80) 8%, rgb(80, 80, 80) 92%, rgba(80, 80, 80, 0) 100%);
+  background: -ms-linear-gradient(top, rgba(80, 80, 80, 0) 0%, rgb(80, 80, 80) 8%, rgb(80, 80, 80) 92%, rgba(80, 80, 80, 0) 100%);
+  background: linear-gradient(to bottom, rgba(80, 80, 80, 0) 0%, rgb(80, 80, 80) 8%, rgb(80, 80, 80) 92%, rgba(80, 80, 80, 0) 100%);
 
   z-index: 5;
 }
@@ -614,7 +608,7 @@ main {
 .flag {
   position: relative;
   display: inline;
-  background: rgb(248,248,248);
+  background: rgb(248, 248, 248);
   padding: 6px 10px;
   border-radius: 5px;
 
@@ -623,15 +617,15 @@ main {
 }
 
 .direction-l .flag {
-  -webkit-box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  -moz-box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
+  -webkit-box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
+  box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .direction-r .flag {
-  -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  -moz-box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
+  -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .direction-l .flag:before,
@@ -663,7 +657,7 @@ main {
   width: 0;
   margin-top: -8px;
   border: solid transparent;
-  border-left-color: rgb(248,248,248);
+  border-left-color: rgb(248, 248, 248);
   border-width: 8px;
   pointer-events: none;
 }
@@ -677,7 +671,7 @@ main {
   width: 0;
   margin-top: -8px;
   border: solid transparent;
-  border-right-color: rgb(248,248,248);
+  border-right-color: rgb(248, 248, 248);
   border-width: 8px;
   pointer-events: none;
 }
@@ -702,7 +696,7 @@ main {
 .time {
   display: inline-block;
   padding: 4px 6px;
-  background: rgb(248,248,248);
+  background: rgb(248, 248, 248);
 }
 
 .desc {
@@ -728,73 +722,138 @@ main {
   // inicio
   &.status-99 {
     background-image: url('/img/ico_fire.svg');
-    background-color:$c-darkred; 
+    background-color: $c-darkred;
   }
   // despacho
   &.status-3 {
     background-image: url('/img/ico_alarm.svg');
-    background-color:$c-red; 
+    background-color: $c-red;
   }
   // despacho de 1ºalerta
   &.status-4 {
     background-image: url('/img/ico_alarm.svg');
-    background-color:$c-orange; 
+    background-color: $c-orange;
   }
   // em curso
   &.status-5 {
     background-image: url('/img/ico_fire.svg');
-    background-color:$c-red; 
+    background-color: $c-red;
   }
   // chegada ao t0
   &.status-6 {
     background-image: url('/img/ico_pointer.svg');
-    background-color:$c-red; 
+    background-color: $c-red;
   }
   // em resolução
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
-    background-color:$c-orange; 
+    background-color: $c-orange;
   }
   // conclusão
   &.status-8 {
     background-image: url('/img/ico_fire.svg');
-    background-color:$c-yellow; 
+    background-color: $c-yellow;
   }
   // vigilancia
   &.status-9 {
     background-image: url('/img/ico_watch.svg');
-    background-color:$c-blue; 
+    background-color: $c-blue;
   }
   // encerrada
   &.status-10 {
     background-image: url('/img/ico_pointer.svg');
-    background-color:$c-green; 
+    background-color: $c-green;
   }
   // falso alarme
   &.status-11 {
     background-image: url('/img/ico_fake.svg');
-    background-color:$c-grey; 
+    background-color: $c-grey;
   }
   // falso alerta
   &.status-12 {
     background-image: url('/img/ico_fake.svg');
-    background-color:$c-grey; 
+    background-color: $c-grey;
   }
 }
 
-#status{
+#status {
   border-left: 2px solid #BDBDBD;
   margin-top: 1rem;
   margin-left: 13px;
 
-  .status-hour{
+  .status-hour {
     margin-left: 15px;
     margin-bottom: 0;
     color: #ff512f;
   }
 
-  .status-label{
+  .status-label {
     margin-left: 15px;
     margin-bottom: 15px;
   }
+}
+
+.notifications {
+  display: block !important;
+
+  .auth{
+    display:none;
+  }
+
+  .custom-checkbox {
+    min-height: 1rem;
+    padding-left: 0;
+    margin-right: 0;
+    cursor: pointer;
+
+    .custom-control-indicator {
+      content: "";
+      display: inline-block;
+      position: relative;
+      width: 30px;
+      height: 10px;
+      background-color: #818181;
+      border-radius: 15px;
+      margin-right: 10px;
+      -webkit-transition: background .3s ease;
+      transition: background .3s ease;
+      vertical-align: middle;
+      margin: 0 16px;
+      box-shadow: none;
+
+      &:after {
+        content: "";
+        position: absolute;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background-color: #f1f1f1;
+        border-radius: 21px;
+        box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
+        left: -2px;
+        top: -4px;
+        -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+        transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+      }
+    }
+
+    .custom-control-input:checked ~ .custom-control-indicator {
+      background-color: #ff512f;
+      background-image: none;
+      box-shadow: none !important;
+    }
+
+    .custom-control-input:checked ~ .custom-control-indicator:after {
+      background-color: #ff512f;
+      left: 15px;
+    }
+
+    .custom-control-input:focus ~ .custom-control-indicator {
+      box-shadow: none !important;
+    }
+  }
+}
+
+.toast-top-right {
+  margin-top: 70px !important;
 }

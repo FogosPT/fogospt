@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 class GenericController extends Controller
 {
     protected $pageName;
@@ -40,11 +42,11 @@ class GenericController extends Controller
         return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
-	public function getNotifications()
-	{
-		$this->setPageName(__('includes.menu.notifications'));
-		return view('notifications')->with(['metadata' => $this->generateMetadata()]);
-	}
+    public function getNotifications()
+    {
+        $this->setPageName(__('includes.menu.notifications'));
+        return view('notifications')->with(['metadata' => $this->generateMetadata()]);
+    }
 
     public function getManifest()
     {
@@ -52,27 +54,55 @@ class GenericController extends Controller
         return view('manifest')->with(['metadata' => $this->generateMetadata()]);
     }
 
-    public function getPartnerships() {
-	    $this->setPageName(__('includes.menu.partnerships'));
-	    return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
+    public function getPartnerships()
+    {
+        $this->setPageName(__('includes.menu.partnerships'));
+        return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
     }
 
-	/**
-	 * Sets the app language based on user action
-	 * in the case user try to set the app language
-	 * to a language that we dont have a record as supported language
-	 * it will fallback for the default app locale
-	 *
-	 * @param $lang string language shortname
-	 *
-	 * @return \Illuminate\Http\RedirectResponse
-	 */
-    public function getChangeLanguage($lang) {
-	    if (in_array($lang, config('custom.availableLocales'))) {
-		    session(['userLocale' => $lang]);
-	    } else {
-		    session(['userLocale' => config('app.locale')]);
-	    }
-	    return redirect()->back();
+    public function subscribe(Request $request)
+    {
+        $headers = array
+        (
+            'Authorization: key=' . env('FIREBASE_TOKEN'),
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+
+        $token = $request->get('token');
+        $topic = $request->get('topic');
+
+//        $token = 'dfFet1wLDLw:APA91bE7exvP7qelJLPPaPpKymL8fODkynMJ5Za3Zke36CtiaEsy9DMFR1xzlMsqn8eWu59unLTuAQMbrD7A29htBnKWNKbCPlAk2M3QVyTeDbaSYmMbdjeaRvHN49eT0Do_1rQPnhnZ';
+        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array());
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        var_dump($httpcode);
+        echo "The Result : " . $result;
+    }
+
+    /**
+     * Sets the app language based on user action
+     * in the case user try to set the app language
+     * to a language that we dont have a record as supported language
+     * it will fallback for the default app locale
+     *
+     * @param $lang string language shortname
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function getChangeLanguage($lang)
+    {
+        if (in_array($lang, config('custom.availableLocales'))) {
+            session(['userLocale' => $lang]);
+        } else {
+            session(['userLocale' => config('app.locale')]);
+        }
+        return redirect()->back();
     }
 }
