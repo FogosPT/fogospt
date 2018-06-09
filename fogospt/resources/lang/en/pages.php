@@ -33,5 +33,25 @@ return [
 		'numberDescription'   => 'The displayed numbers match the total number of dispatched units. This number may differ from the units on site, as some of the dispatched units may still be in transit.',
 		'hoursDescription'    => 'The time displayed both on the units graph and on the fire status timeline are the ones in which our system detected a change of data on ANPC information and it may not match the exact time that change occurred.',
 		'source'              => 'Fire risk data retrieved from IPMA (Portuguese Institute for Sea and Atmosphere).'
+	],
+	'notifications' => [
+		'aveiro' => 'Aveiro',
+		'beja' => 'Beja',
+		'braga' => 'Braga',
+		'braganca' => 'Bragança',
+		'casteloBranco' => 'Castelo Branco',
+		'coimbra' => 'Coimbra',
+		'evora' => 'Évora',
+		'faro' => 'Faro',
+		'guarda' => 'Guarda',
+		'leiria' => 'Leiria',
+		'lisboa' => 'Lisboa',
+		'portalegre' => 'Portalegre',
+		'porto' => 'Porto',
+		'santarem' => 'Santarém',
+		'setubal' => 'Setúbal',
+		'vianadoCastelo' => 'Viana do Castelo',
+		'vilaReal' => 'Vila Real',
+		'viseu' => 'Viseu'
 	]
 ];

@@ -819,3 +819,58 @@ main #data-social-media iframe {
   margin-bottom: 15px;
 }
 
+
+.notifications {
+  display: block !important;
+}
+.notifications .custom-checkbox {
+  min-height: 1rem;
+  padding-left: 0;
+  margin-right: 0;
+  cursor: pointer;
+}
+.notifications .custom-checkbox .custom-control-indicator {
+  content: "";
+  display: inline-block;
+  position: relative;
+  width: 30px;
+  height: 10px;
+  background-color: #818181;
+  border-radius: 15px;
+  margin-right: 10px;
+  -webkit-transition: background .3s ease;
+  transition: background .3s ease;
+  vertical-align: middle;
+  margin: 0 16px;
+  box-shadow: none;
+}
+.notifications .custom-checkbox .custom-control-indicator:after {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: #f1f1f1;
+  border-radius: 21px;
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
+  left: -2px;
+  top: -4px;
+  -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+  transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+}
+.notifications .custom-checkbox .custom-control-input:checked ~ .custom-control-indicator {
+  background-color: #ff512f;
+  background-image: none;
+  box-shadow: none !important;
+}
+.notifications .custom-checkbox .custom-control-input:checked ~ .custom-control-indicator:after {
+  background-color: #ff512f;
+  left: 15px;
+}
+.notifications .custom-checkbox .custom-control-input:focus ~ .custom-control-indicator {
+  box-shadow: none !important;
+}
+
+.toast-top-right {
+  margin-top: 70px !important;
+}
