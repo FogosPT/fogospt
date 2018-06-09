@@ -1,4 +1,10 @@
 $(document).ready(function () {
+    const messaging = firebase.messaging();
+
+    messaging.onMessage(function(payload) {
+        toastr.warning(payload.notification.body);
+    });
+
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {

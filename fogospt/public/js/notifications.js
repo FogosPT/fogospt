@@ -6,7 +6,6 @@ $(document).ready(function () {
     $('.js-notifications-auth').on('click', requestAuth);
 
     const messaging = firebase.messaging();
-    console.log(messaging);
 
     messaging.onMessage(function(payload) {
         toastr.warning(payload.notification.body);

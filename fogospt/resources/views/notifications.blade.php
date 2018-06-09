@@ -5,22 +5,7 @@
 @endpush
 
 @push('scripts')
-    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="js/vendor/store2.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
-    <script>
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M",
-            authDomain: "admob-app-id-6663345165.firebaseapp.com",
-            databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
-            projectId: "admob-app-id-6663345165",
-            storageBucket: "admob-app-id-6663345165.appspot.com",
-            messagingSenderId: "726949968874"
-        };
-        firebase.initializeApp(config);
-    </script>
-
     <script src="js/notifications.js"></script>
 @endpush
 
