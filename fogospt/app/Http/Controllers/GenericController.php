@@ -73,7 +73,6 @@ class GenericController extends Controller
         $token = $request->get('token');
         $topic = $request->get('topic');
 
-//        $token = 'dfFet1wLDLw:APA91bE7exvP7qelJLPPaPpKymL8fODkynMJ5Za3Zke36CtiaEsy9DMFR1xzlMsqn8eWu59unLTuAQMbrD7A29htBnKWNKbCPlAk2M3QVyTeDbaSYmMbdjeaRvHN49eT0Do_1rQPnhnZ';
         curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
