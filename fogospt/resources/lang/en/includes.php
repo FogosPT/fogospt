@@ -8,6 +8,7 @@
             'notifications' => 'Notifications',
             'manifest'    => 'Manifest',
             'partnerships' => 'Partnerships',
+            'stats' => 'Stats',
             'active'      => 'Now'
         ],
         'meta' => [

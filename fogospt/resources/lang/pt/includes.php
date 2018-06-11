@@ -8,6 +8,7 @@
             'notifications' => 'Notificações',
             'manifest'    => 'Manifesto',
             'partnerships' => 'Parcerias',
+            'stats' => 'Estatísticas',
             'active'      => '(actual)'
         ],
         'meta' => [

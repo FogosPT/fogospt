@@ -276,6 +276,9 @@ main .card .table {
   margin-top: 1rem;
 }
 
+main h1,
+main h2,
+main h3,
 main h4 {
   font-weight: 300;
   text-transform: uppercase;

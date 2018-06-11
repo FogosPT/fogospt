@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
 
 class GenericController extends Controller
@@ -58,6 +59,17 @@ class GenericController extends Controller
     {
         $this->setPageName(__('includes.menu.partnerships'));
         return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getStats()
+    {
+        $this->setPageName(__('includes.menu.stats'));
+        $now = LegacyApi::getNow();
+        $data = array(
+            'now' => $now['data']
+        );
+
+        return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function subscribe(Request $request)

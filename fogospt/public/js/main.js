@@ -79,11 +79,6 @@ $(document).ready(function () {
                 $controls = $(layerControl2.getContainer());
                 $controls.find('a').css({'background-image': 'none', 'font-size': '33px', 'text-align': 'center', 'color':'#333333'}).append('<i class="fas fa-map-marker"></i>');
 
-
-
-
-
-
                 var cloudLayer = L.OWM.cloudsClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
                 var precLayer = L.OWM.precipitationClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
                 var rainLayer = L.OWM.rainClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});

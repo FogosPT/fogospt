@@ -53,7 +53,24 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
+        } catch (ClientException $e) {
+            return ['error' => $e->getMessage()];
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
 
+        $body = $response->getBody();
+        $result = json_decode($body->getContents(), true);
+        return $result;
+    }
+
+    public static function getNow()
+    {
+        $client = self::getClient();
+        $url = self::$url . '/v1/now';
+
+        try {
+            $response = $client->request('GET', $url);
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {

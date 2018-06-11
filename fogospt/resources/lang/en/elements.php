@@ -15,7 +15,11 @@
             ]
             ,
             'meteo' => [
-                'title' => 'Meteo'
+                'title' => 'Meteo',
+                'temp_atual' => 'Now',
+                'temp_min' => 'Min',
+                'temp_max' => 'Max',
+                'estado_atual' => 'Now',
             ]
         ],
         'riskLevels' => [

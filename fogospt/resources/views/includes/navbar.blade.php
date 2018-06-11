@@ -12,11 +12,12 @@
             <div class="navbar-nav float-right text-right pr-4">
                 <a class="nav-item nav-link active" href="{{route('home')}}">@lang('includes.menu.home')<span class="sr-only">@lang('includes.menu.active')
                 </span></a>
-                <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
                 <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
+                <a class="nav-item nav-link" href="{{route('stats')}}">@lang('includes.menu.stats')</a>
                 <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
                 <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
-                <a class="nav-item nav-link" href="{{route('manifest')}}">@lang('includes.menu.manifest')</a>
+                <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
+                {{--<a class="nav-item nav-link" href="{{route('manifest')}}">@lang('includes.menu.manifest')</a>--}}
                 <a class="nav-item nav-link" href="https://aldeiasegura.pt" target="_blank">Aldeia Segura</a>
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
