@@ -313,6 +313,12 @@ function addRisk(mymap) {
                     },
                 });
 
+                // for phantom
+                if(getParameterByName('risk')){
+                    riscoHoje.addTo(mymap);
+                    $('main #map .map-marker').hide();
+                }
+
                 var url = 'https://fogos.pt/v1/risk-tomorrow';
                 $.ajax({
                     url: url,
@@ -326,6 +332,13 @@ function addRisk(mymap) {
                                     return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
                                 },
                             });
+
+
+                            // for phantom
+                            if(getParameterByName('risk-tomorrow')){
+                                riscoTomorrow.addTo(mymap);
+                                $('main #map .map-marker').hide();
+                            }
 
                             var url = 'https://fogos.pt/v1/risk-after';
                             $.ajax({
@@ -360,6 +373,16 @@ function addRisk(mymap) {
             }
         }
     });
+}
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function addPageview() {
