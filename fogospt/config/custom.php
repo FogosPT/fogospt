@@ -34,7 +34,7 @@ return [
 		],
 		[
 			"name" => 'pages.notifications.casteloBranco',
-			"value" => "Castelo Branco"
+			"value" => "CasteloBranco"
 		],
 		[
 			"name" => 'pages.notifications.coimbra',
@@ -42,7 +42,7 @@ return [
 		],
 		[
 			"name" => 'pages.notifications.evora',
-			"value" => "Évora"
+			"value" => "Evora"
 		],
 		[
 			"name" => 'pages.notifications.faro',
@@ -74,7 +74,7 @@ return [
 		],
 		[
 			"name" => 'pages.notifications.setubal',
-			"value" => "Setúbal"
+			"value" => "Setubal"
 		],
 		[
 			"name" => 'pages.notifications.vianadoCastelo',
@@ -82,7 +82,7 @@ return [
 		],
 		[
 			"name" => 'pages.notifications.vilaReal',
-			"value" => "Vila Real"
+			"value" => "VilaReal"
 		],
 		[
 			"name" => 'pages.notifications.viseu',
