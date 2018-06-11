@@ -29,18 +29,19 @@
                                             {{ $data['now']['man'] }}
                                         @endisset
                                     </span>
-                                    <img class="assets-icon" src="/img/plane.svg">
-                                    <span class="assets-nr f-aerial">
-                                    @isset($data['now']['aerial'])
-                                            {{ $data['now']['aerial'] }}
-                                        @endisset
-                                    </span>
                                     <img class="assets-icon" src="/img/firetruck.svg">
                                     <span class="assets-nr f-terrain">
                                         @isset($data['now']['cars'])
                                             {{ $data['now']['cars'] }}
                                         @endisset
                                     </span>
+                                    <img class="assets-icon" src="/img/plane.svg">
+                                    <span class="assets-nr f-aerial">
+                                    @isset($data['now']['aerial'])
+                                            {{ $data['now']['aerial'] }}
+                                        @endisset
+                                    </span>
+
                                 </div>
 
                             </div>
