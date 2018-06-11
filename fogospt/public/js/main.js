@@ -79,17 +79,18 @@ $(document).ready(function () {
                 $controls = $(layerControl2.getContainer());
                 $controls.find('a').css({'background-image': 'none', 'font-size': '33px', 'text-align': 'center', 'color':'#333333'}).append('<i class="fas fa-map-marker"></i>');
 
-                url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
 
-                var tempLayer = L.tileLayer(url, {});
-                var precLayer = L.tileLayer(prec_url, {});
-                var cloudLayer = L.tileLayer(clouds_url, {});
-                var pressureLayer = L.tileLayer(pressure_url, {});
-                var windLayer = L.tileLayer(wind_url, {});
+
+
+
+
+                var cloudLayer = L.OWM.cloudsClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var precLayer = L.OWM.precipitationClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var rainLayer = L.OWM.rainClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var pressureLayer = L.OWM.pressure({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var tempLayer = L.OWM.temperature({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var windLayer = L.OWM.wind({legendPosition: 'bottomright', showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+
 
                 var baseMaps = {
                     'Temperatura': tempLayer,
@@ -97,7 +98,33 @@ $(document).ready(function () {
                     "Nuvens": cloudLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
+                    "Chuva" : rainLayer
                 };
+
+                // var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+
+
+                // //
+                // // url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                // // prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                // // clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                // // pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                // // wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                // //
+                // // var tempLayer = L.tileLayer(url, {});
+                // // var precLayer = L.tileLayer(prec_url, {});
+                // // var cloudLayer = L.tileLayer(clouds_url, {});
+                // // var pressureLayer = L.tileLayer(pressure_url, {});
+                // // var windLayer = L.tileLayer(wind_url, {});
+                //
+                // var baseMaps = {
+                //     'Temperatura': tempLayer,
+                //     "Precipitação": precLayer,
+                //     "Nuvens": cloudLayer,
+                //     "Pressão": pressureLayer,
+                //     "Vento": windLayer,
+                // };
 
 
 
