@@ -3,7 +3,7 @@
 @endisset
 
 @empty($fire)
-    <div class="sidebar inactive">
+    <div class="sidebar">
 @endempty
 
 @include('elements.cards.general')

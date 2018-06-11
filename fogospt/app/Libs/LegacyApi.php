@@ -17,7 +17,6 @@ class LegacyApi
 {
     private static $url = 'https://fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
-    private static $weatherKey = 'INSERT KEY';
 
     private static function getClient()
     {
@@ -88,7 +87,7 @@ class LegacyApi
     public static function getMeteoByFire($lat,$lng)
     {
         $client = self::getClient();
-        $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. self::$weatherKey . '&units=metric&lang=pt';
+        $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
 
         try {
             $response = $client->request('GET', $weatherUrl);
