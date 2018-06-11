@@ -22,35 +22,6 @@ $(document).ready(function () {
         $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
     });
 
-    url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-    prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-    clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-    pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-    wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-
-    var tempLayer = L.tileLayer(url, {});
-    var precLayer = L.tileLayer(prec_url, {});
-    var cloudLayer = L.tileLayer(clouds_url, {});
-    var pressureLayer = L.tileLayer(pressure_url, {});
-    var windLayer = L.tileLayer(wind_url, {});
-
-    var baseMaps = {
-        "Temperatura": tempLayer,
-        "Precipitação": precLayer,
-        "Nuvens": cloudLayer,
-        "Pressão": pressureLayer,
-        "Vento": windLayer,
-    };
-
-    L.control.layers(baseMaps).addTo(mymap);
-
-    // // tempLayer = L.tileLayer(url);
-    // // x =  L.layerGroup().addLayer(tempLayer);
-    //
-    //
-    // xx = L.control.layers(null, x, {position: 'topright'});
-    // xx.addTo(mymap);
-
     var res = window.location.pathname.match(/^\/fogo\/(\d+)/);
     if (res && res.length === 2) {
         plot(res[1]);
@@ -91,11 +62,51 @@ $(document).ready(function () {
                 obj["Falso Alarme"] = window.fogosLayers[11];
                 obj["Falso Alerta"] = window.fogosLayers[12];
 
+                obj["Despacho"].addTo(mymap);
+                obj["Despacho de 1º Alerta"].addTo(mymap);
+                obj["Chegada ao TO"].addTo(mymap);
+                obj["Em Curso"].addTo(mymap);
+                obj["Em Resolução"].addTo(mymap);
+                obj["Conclusão"].addTo(mymap);
+                obj["Vigilância"].addTo(mymap);
+                obj["Encerrada"].addTo(mymap);
+                obj["Falso Alarme"].addTo(mymap);
+                obj["Falso Alerta"].addTo(mymap);
+
                 layerControl2 = L.control.layers(null, obj, {position: 'topright'});
+
                 layerControl2.addTo(mymap);
+                $controls = $(layerControl2.getContainer());
+                $controls.find('a').css({'background-image': 'none', 'font-size': '33px', 'text-align': 'center', 'color':'#333333'}).append('<i class="fas fa-map-marker"></i>');
+
+                url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+                wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
+
+                var tempLayer = L.tileLayer(url, {});
+                var precLayer = L.tileLayer(prec_url, {});
+                var cloudLayer = L.tileLayer(clouds_url, {});
+                var pressureLayer = L.tileLayer(pressure_url, {});
+                var windLayer = L.tileLayer(wind_url, {});
+
+                var baseMaps = {
+                    'Temperatura': tempLayer,
+                    "Precipitação": precLayer,
+                    "Nuvens": cloudLayer,
+                    "Pressão": pressureLayer,
+                    "Vento": windLayer,
+                };
+
+
+
+                L.control.layers(baseMaps,null,{collapsed:false}).addTo(mymap);
             }
         }
     });
+
+
 });
 
 function addMaker(item, mymap) {
@@ -265,19 +276,7 @@ function getColor(d) {
 
 
 function addRisk(mymap) {
-
-    var concelhosStyle = {
-        "color": "#ff7800",
-        "weight": 2,
-        "opacity": 1,
-        "stroke": true,
-        "fill": false
-    };
-
-    var concelhosLayer = L.geoJSON(concelhos, {
-        style: concelhosStyle
-    });
-
+    // lel
     var url = 'https://fogos.pt/v1/risk-today';
     $.ajax({
         url: url,
@@ -285,20 +284,57 @@ function addRisk(mymap) {
         success: function (data) {
             data = JSON.parse(data);
             if (data.success) {
-                var riscosHoje = L.geoJson(concelhos, {
+                var riscoHoje = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm;
                         return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
                     },
                 });
 
-                window.overlayPane = extend(window.overlayPane, {
-                    "Concelhos": concelhosLayer,
-                    "Risco Hoje": riscosHoje,
+                var url = 'https://fogos.pt/v1/risk-tomorrow';
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        if (data.success) {
+                            var riscoTomorrow = L.geoJson(concelhos, {
+                                style: function (feature) {
+                                    var d = data.data.local[feature.properties.DICO].data.rcm;
+                                    return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
+                                },
+                            });
+
+                            var url = 'https://fogos.pt/v1/risk-after';
+                            $.ajax({
+                                url: url,
+                                method: 'GET',
+                                success: function (data) {
+                                    data = JSON.parse(data);
+                                    if (data.success) {
+                                        var riscoAfter = L.geoJson(concelhos, {
+                                            style: function (feature) {
+                                                var d = data.data.local[feature.properties.DICO].data.rcm;
+                                                return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
+                                            },
+                                        });
+
+
+                                        var baseMaps = {
+                                            'Risco Hoje': riscoHoje,
+                                            'Risco Amanhã': riscoTomorrow,
+                                            'Risco Depois': riscoAfter,
+                                        };
+
+                                        L.control.layers(baseMaps,null,{collapsed:false}).addTo(mymap);
+                                    }
+                                }
+                            });
+
+                        }
+                    }
                 });
 
-                window.layerControl = L.control.layers(null, window.overlayPane, {position: 'topright'});
-                window.layerControl.addTo(mymap);
             }
         }
     });
@@ -312,7 +348,6 @@ function addPageview() {
 
 function extend() {
     for (var o = {}, i = 0; i < arguments.length; i++) {
-        // if (arguments[i].constructor !== Object) continue;
         for (var k in arguments[i]) {
             if (arguments[i].hasOwnProperty(k)) {
                 o[k] = arguments[i][k].constructor === Object ? extend(o[k] || {}, arguments[i][k]) : arguments[i][k];
