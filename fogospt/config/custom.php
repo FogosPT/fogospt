@@ -58,7 +58,7 @@ return [
 		],
 		[
 			"name" => 'pages.notifications.lisboa',
-			"value" => "Leiria"
+			"value" => "Lisboa"
 		],
 		[
 			"name" => 'pages.notifications.portalegre',
