@@ -364,7 +364,11 @@ function addRisk(mymap) {
 
 function addPageview() {
     if (window.ga) {
-        ga('send', 'pageview', location.pathname);
+        if ("ga" in window) {
+            var tracker = window.ga.getAll()[0];
+            if (tracker)
+                tracker.send("pageview");
+        }
     }
 }
 

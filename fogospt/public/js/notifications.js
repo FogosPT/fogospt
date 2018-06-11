@@ -18,9 +18,20 @@ $(document).ready(function () {
     }
 });
 
+function sendEvent(category, what, value = null) {
+    if (window.ga) {
+        if ("ga" in window) {
+            var tracker = window.ga.getAll()[0];
+            if (tracker)
+                tracker.send("event", category, what, "click", value);
+        }
+    }
+}
+
 function requestAuth() {
     const messaging = firebase.messaging();
 
+    sendEvent('notifications', 'allow');
     messaging.requestPermission().then(function() {
         console.log('Notification permission granted.');
         console.log(messaging);
@@ -31,6 +42,7 @@ function requestAuth() {
                 store.set('token', currentToken);
                 $('.no-auth').hide();
                 $('.auth').show();
+                sendEvent('notifications', 'allowed');
             } else {
                 alert('Upps, Ocorreu um erro! Tente mais tarde. 1');
             }
@@ -49,9 +61,10 @@ function toggleNotification() {
 
                 const url = '/notifications/subscribe';
 
+                const topic =  $(this).data('value');
                 const data = {
                     'token' : store.get('token'),
-                    'topic' : $(this).data('value')
+                    'topic' : topic
                 };
 
                 $.ajax({
@@ -61,6 +74,7 @@ function toggleNotification() {
                     success: function(e){
                         toastr.success('Registado com sucesso');
                         store.set($(this).data('value'), true);
+                        sendEvent('notifications', 'subscribed', topic );
                     },
                 });
 
