@@ -36,13 +36,6 @@ function plot() {
                             borderColor: '#EFC800'
                         },
                             {
-                                label: 'Aéreos',
-                                data: aerial,
-                                fill: false,
-                                backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
-                            },
-                            {
                                 label: 'Terrestres',
                                 data: terrain,
                                 fill: false,
@@ -50,7 +43,14 @@ function plot() {
                                 borderColor: '#6D720B'
                             },
                             {
-                                label: 'Incêndio ativos',
+                                label: 'Aéreos',
+                                data: aerial,
+                                fill: false,
+                                backgroundColor: '#4E88B2',
+                                borderColor: '#4E88B2'
+                            },
+                            {
+                                label: 'Incêndios ativos',
                                 data: total,
                                 fill: false,
                                 backgroundColor: '#ff512f',

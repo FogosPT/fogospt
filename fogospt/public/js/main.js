@@ -213,18 +213,17 @@ function plot(id) {
                             borderColor: '#EFC800'
                         },
                             {
-                                label: 'Aéreos',
-                                data: aerial,
-                                fill: false,
-                                backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
-                            },
-                            {
                                 label: 'Terrestres',
                                 data: terrain,
                                 fill: false,
                                 backgroundColor: '#6D720B',
                                 borderColor: '#6D720B'
+                            },{
+                                label: 'Aéreos',
+                                data: aerial,
+                                fill: false,
+                                backgroundColor: '#4E88B2',
+                                borderColor: '#4E88B2'
                             }]
                     },
                     options: {
