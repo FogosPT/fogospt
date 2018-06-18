@@ -5,7 +5,7 @@
                 <h4 class="card-title">@lang('elements.cards.general.place')</h4>
                 <p class="f-local">
                     @isset($fire['location'])
-                        {{ $fire['location'] }}
+                        {{ $fire['location'] }} - {{ $fire['localidade'] }}
                     @endisset
                 </p>
                 <h4 class="card-title">@lang('elements.cards.general.start_at')</h4>
