@@ -69,6 +69,14 @@ class GenericController extends Controller
         return view('list', ['data' => $fires['data']])->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function getWarnings()
+    {
+        $this->setPageName(__('includes.menu.warnings'));
+        $warnings = LegacyApi::getWarnings();
+
+        return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+    }
+
     public function getStats()
     {
         $this->setPageName(__('includes.menu.stats'));

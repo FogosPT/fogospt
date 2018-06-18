@@ -14,6 +14,7 @@
 Route::get('/', 'GenericController@getIndex')->name('home');
 Route::get('/sobre', 'GenericController@getAbout')->name('about');
 Route::get('/list', 'GenericController@getList')->name('list');
+Route::get('/avisos', 'GenericController@getWarnings')->name('warnings');
 Route::get('/informacoes', 'GenericController@getInformation')->name('information');
 Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
 Route::get('/parceiros', 'GenericController@getPartnerships')->name('partnerships');

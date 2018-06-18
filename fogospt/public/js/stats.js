@@ -26,6 +26,7 @@ function plot() {
                 var ctx = document.getElementById("myChart");
                 var myLineChart = new Chart(ctx, {
                     type: 'line',
+                    omitXLabels: true,
                     data: {
                         labels: labels,
                         datasets: [{
@@ -61,11 +62,14 @@ function plot() {
                         elements: {
                             line: {
                                 tension: 0, // disables bezier curves
+                                showXLabels: 5,
                             }
                         },
                         scales: {
-                            yAxes: [{
-                                ticks: {}
+                            xAxes: [{
+                                ticks: {
+                                    stepSize:20
+                                }
                             }]
                         }
                     }

@@ -235,7 +235,7 @@ function plot(id) {
                         scales: {
                             yAxes: [{
                                 ticks: {}
-                            }]
+                            }],
                         }
                     }
                 });
