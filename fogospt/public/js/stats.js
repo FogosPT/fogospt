@@ -1,9 +1,10 @@
 $(document).ready(function () {
     plot();
+    plotWeekStats();
 });
 
 function plot() {
-    var url = 'https://fogos.pt/v1/now/data';
+    var url = 'https://api-beta.fogos.pt/v1/now/data';
     $.ajax({
         url: url,
         method: 'GET',
@@ -70,6 +71,70 @@ function plot() {
                                 ticks: {
                                     stepSize:20
                                 }
+                            }]
+                        }
+                    }
+                });
+            } else {
+                $('#info').find('canvas').remove();
+                $('#info').append('<p>Não há dados disponiveis</p> ');
+            }
+        }
+    });
+}
+
+function plotWeekStats() {
+    var url = 'https://api-beta.fogos.pt/v1/stats/week';
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success && data.data.length) {
+                labels = [];
+                var total = [];
+                var falseFires = [];
+                for (d in data.data) {
+                    labels.push(data.data[d].label);
+                    falseFires.push(data.data[d].false);
+                    total.push(data.data[d].total);
+                }
+
+                var ctx = document.getElementById("myChartStatsWeek");
+                var myLineChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total',
+                            data: total,
+                            fill: false,
+                            backgroundColor: '#fe5130',
+                            borderColor: '#fe5130'
+                        },
+                            {
+                                label: 'Falsos Alarmes',
+                                data: falseFires,
+                                fill: false,
+                                backgroundColor: '#000000',
+                                borderColor: '#000000'
+                            },
+                            ]
+                    },
+                    options: {
+                        elements: {
+                            line: {
+                                tension: 0, // disables bezier curves
+                                showXLabels: 5,
+                            }
+                        },
+                        responsive: true,
+                        scales: {
+                            xAxes: [{
+                                stacked: true,
+                            }],
+                            yAxes: [{
+                                stacked: true
                             }]
                         }
                     }

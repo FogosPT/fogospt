@@ -82,7 +82,7 @@ class GenericController extends Controller
         $this->setPageName(__('includes.menu.stats'));
         $now = LegacyApi::getNow();
         $data = array(
-            'now' => $now['data']
+            'now' => $now['data'],
         );
 
         return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);

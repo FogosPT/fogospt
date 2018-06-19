@@ -57,6 +57,20 @@
             </div>
 
 
+            <div class="card flex-column flex-md-row align-items-stretch">
+                <div class="col-6 col-md-12 px-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Últimos dias</h4>
+                            <canvas style="padding: 0 5px" id="myChartStatsWeek" class="col-12 col-md-12 px-0"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
         </div>
     </main>
 @endsection
