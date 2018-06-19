@@ -10,7 +10,7 @@
                 </div>
             </div>
 
-            <div class="card flex-column flex-md-row align-items-stretch phantom-hide">
+            <div class="card flex-column flex-md-row align-items-stretch">
                 <div class="col-12 col-md-6 px-0">
                     <div class="card">
                         <div class="card-body">
@@ -57,7 +57,7 @@
             </div>
 
 
-            <div class="card flex-column flex-md-row align-items-stretch">
+            <div class="card flex-column flex-md-row align-items-stretch phantom-hide">
                 <div class="col-6 col-md-12 px-0">
                     <div class="card">
                         <div class="card-body">
