@@ -69,6 +69,30 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card flex-column flex-md-row align-items-stretch">
+                        <div class="col-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Ontem</h4>
+                                    <canvas style="padding: 0 5px" id="myChartStatsYesterday"
+                                            class="col-12 px-0"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card flex-column flex-md-row align-items-stretch">
+                        <div class="col-12 col-md-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Últimos dias</h4>
+                                    <canvas style="padding: 0 5px" id="myChartStatsWeek"
+                                            class="col-12 col-md-12 px-0"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -83,9 +107,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-12 col-md-6">
                     <div class="card flex-column flex-md-row align-items-stretch">
                         <div class="col-12 px-0">
                             <div class="card">
@@ -97,37 +119,11 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
-                <div class="col-12 col-md-6">
-                    <div class="card flex-column flex-md-row align-items-stretch">
-                        <div class="col-12 px-0">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Ontem</h4>
-                                    <canvas style="padding: 0 5px" id="myChartStatsYesterday"
-                                            class="col-12 px-0"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-
-
-            <div class="card flex-column flex-md-row align-items-stretch">
-                <div class="col-12 col-md-6 px-0">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Últimos dias</h4>
-                            <canvas style="padding: 0 5px" id="myChartStatsWeek" class="col-12 col-md-12 px-0"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
     </main>
 @endsection
 
