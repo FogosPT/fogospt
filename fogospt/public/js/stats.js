@@ -4,6 +4,7 @@ $(document).ready(function () {
     plotStats8hours();
     plotStats8hoursYesterday();
     plotStatsYesterdayDistricts();
+    plotStatsLastNight();
     plotStatsDistricts();
 
     if(getParameterByName('phantom')){
@@ -224,6 +225,49 @@ function plotStats8hours() {
                         }
                     }
                 });
+            } else {
+                $('#info').find('canvas').remove();
+                $('#info').append('<p>Não há dados disponiveis</p> ');
+            }
+        }
+    });
+}
+
+function plotStatsLastNight() {
+    console.log('x');
+    var url = 'https://api-beta.fogos.pt/v1/stats/last-night';
+
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success && data.data) {
+                var labels = [];
+                var total = [];
+                var colors = [];
+
+                for (d in data.data.distritos) {
+                    labels.push(d);
+                    total.push(data.data.distritos[d]);
+                    colors.push(dColors[d]);
+                }
+
+                var ctx = document.getElementById("myChartStatsLastNight");
+                var myLineChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Incêndios',
+                            data: total,
+                            backgroundColor: colors,
+                        },
+                        ]
+                    },
+                });
+
+                console.log(myLineChart);
             } else {
                 $('#info').find('canvas').remove();
                 $('#info').append('<p>Não há dados disponiveis</p> ');

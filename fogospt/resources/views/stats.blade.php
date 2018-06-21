@@ -10,7 +10,7 @@
                 </div>
             </div>
 
-            <div class="card flex-column flex-md-row align-items-stretch">
+            <section class="card flex-column flex-md-row align-items-stretch stats">
                 <div class="col-12 col-md-6 px-0">
                     <div class="card">
                         <div class="card-body">
@@ -54,11 +54,11 @@
                     </div>
                 </div>
                 <canvas style="padding: 0 5px" id="myChart" class="col-12 col-md-6 px-0"></canvas>
-            </div>
+            </section>
 
-            <div class="row phantom-hide">
-                <div class="col-12 col-md-6">
-                    <div class="card flex-column flex-md-row align-items-stretch">
+            <section class="row phantom-hide">
+                <section class="col-12 col-md-6">
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
@@ -68,9 +68,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="card flex-column flex-md-row align-items-stretch">
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
@@ -80,9 +80,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="card flex-column flex-md-row align-items-stretch">
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
                         <div class="col-12 col-md-12 px-0">
                             <div class="card">
                                 <div class="card-body">
@@ -92,11 +92,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </section>
+                </section>
 
-                <div class="col-12 col-md-6">
-                    <div class="card flex-column flex-md-row align-items-stretch">
+                <section class="col-12 col-md-6">
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
@@ -106,9 +106,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="card flex-column flex-md-row align-items-stretch">
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
@@ -118,12 +118,29 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
+
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
+                        <div class="col-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Última noite</h4>
+                                    <canvas style="padding: 0 5px" id="myChartStatsLastNight"
+                                            class="col-12 px-0"></canvas>
+                                    <div class="d-flex justify-content-between">
+                                        <p>
+                                            <small>Incêndios entre as 21h e as 09h</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
 
-                </div>
+                </section>
 
-            </div>
+            </section>
     </main>
 @endsection
 
