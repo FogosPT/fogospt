@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 
 
-                L.control.layers(baseMaps,null,{collapsed:false}).addTo(mymap);
+                L.control.layers(null,baseMaps,{collapsed:false}).addTo(mymap);
             }
         }
     });
@@ -335,7 +335,6 @@ function addRisk(mymap) {
                                 },
                             });
 
-
                             // for phantom
                             if(getParameterByName('risk-tomorrow')){
                                 riscoTomorrow.addTo(mymap);
@@ -356,14 +355,13 @@ function addRisk(mymap) {
                                             },
                                         });
 
-
                                         var baseMaps = {
                                             'Risco Hoje': riscoHoje,
                                             'Risco Amanhã': riscoTomorrow,
                                             'Risco Depois': riscoAfter,
                                         };
 
-                                        L.control.layers(baseMaps,null,{collapsed:false}).addTo(mymap);
+                                        L.control.layers(null,baseMaps,{collapsed:false}).addTo(mymap);
                                     }
                                 }
                             });
