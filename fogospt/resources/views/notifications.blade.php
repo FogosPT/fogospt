@@ -7,7 +7,7 @@
 
 @section('content')
     <div class="container">
-        <main role="main" class="mb-auto margin-top-10 notifications">
+        <main role="main" class="mb-auto margin-top-10 notifications bg-white">
             <div class="row">
                 <div class="col-12">
                     <h1>@lang('includes.menu.notifications')</h1>

@@ -9,6 +9,8 @@
             'manifest'    => 'Manifest',
             'partnerships' => 'Partnerships',
             'stats' => 'Stats',
+            'list' => 'List',
+            'warnings' => 'Warnings',
             'active'      => 'Now'
         ],
         'meta' => [

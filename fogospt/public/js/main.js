@@ -132,7 +132,10 @@ $(document).ready(function () {
 });
 
 function addMaker(item, mymap) {
-    var coords = [item.lat, item.lng];
+    var x = randomGeo(item.lat, item.lng);
+    console.log(item.lat, item.lng);
+    var coords = [x['latitude'], x['longitude']];
+    console.log(coords);
 
     var el = document.createElement('div');
     el.className = 'marker';
@@ -403,4 +406,33 @@ function extend() {
         }
     }
     return o;
+}
+
+//https://stackoverflow.com/questions/31192451/generate-random-geo-coordinates-within-specific-radius-from-seed-point
+//Create random lat/long coordinates in a specified radius around a center point
+function randomGeo(latitude, longitude)  {
+    var radius = 50;
+    var y0 = latitude;
+    var x0 = longitude;
+    var rd = radius / 111300; //about 111300 meters in one degree
+
+    var u = Math.random();
+    var v = Math.random();
+
+    var w = rd * Math.sqrt(u);
+    var t = 2 * Math.PI * v;
+    var x = w * Math.cos(t);
+    var y = w * Math.sin(t);
+
+    //Adjust the x-coordinate for the shrinking of the east-west distances
+    var xp = x / Math.cos(y0);
+
+    var newlat = y + y0;
+    var newlon = x + x0;
+    var newlon2 = xp + x0;
+
+    return {
+        'latitude': newlat.toFixed(5),
+        'longitude': newlon2.toFixed(5),
+    }
 }

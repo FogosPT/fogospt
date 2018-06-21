@@ -61,6 +61,12 @@ return [
         'now' => [
             'stats' => ':date - :total Fires ongoing* - :man humans, :cars cars e :aerial air.',
             'footer' => 'Fires with the status \'1ST ALERT DISPATCH\' or  \'ONGOING\''
-        ]
+        ],
+        'now-text' => 'Now',
+        'today' => 'Today',
+        'yesterday' => 'Yesterday',
+        'last-night' => 'Last Night',
+        'last-night-footer' => 'Wildfires between 21pm and 09am',
+        'last-days' => 'Last Days',
     ]
 ];

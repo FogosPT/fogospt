@@ -9,6 +9,8 @@
             'manifest'    => 'Manifesto',
             'partnerships' => 'Parcerias',
             'stats' => 'Estatísticas',
+            'list' => 'Lista',
+            'warnings' => 'Avisos',
             'active'      => '(actual)'
         ],
         'meta' => [

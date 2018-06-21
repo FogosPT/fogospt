@@ -14,7 +14,7 @@
                 <div class="col-12 col-md-6 px-0">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Agora</h4>
+                            <h4 class="card-title">@lang('pages.stats.now-text')</h4>
                             <div class="d-flex justify-content-between">
                                 <div class="assets d-flex align-items-center justify-content-center">
                                     <img class="assets-icon" src="/img/logo_flame.svg">
@@ -62,7 +62,7 @@
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Hoje</h4>
+                                    <h4 class="card-title">@lang('pages.stats.today')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStats8hours"
                                             class="col-12 px-0"></canvas>
                                 </div>
@@ -74,7 +74,7 @@
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Ontem</h4>
+                                    <h4 class="card-title">@lang('pages.stats.yesterday')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStatsYesterday"
                                             class="col-12 px-0"></canvas>
                                 </div>
@@ -86,7 +86,7 @@
                         <div class="col-12 col-md-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Últimos dias</h4>
+                                    <h4 class="card-title">@lang('pages.stats.last-days')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStatsWeek"
                                             class="col-12 col-md-12 px-0"></canvas>
                                 </div>
@@ -100,7 +100,7 @@
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Hoje</h4>
+                                    <h4 class="card-title">@lang('pages.stats.today')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStatsToday"
                                             class="col-12 px-0"></canvas>
                                 </div>
@@ -112,7 +112,7 @@
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Ontem</h4>
+                                    <h4 class="card-title">@lang('pages.stats.yesterday')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStats8hoursYesterday"
                                             class="col-12 px-0"></canvas>
                                 </div>
@@ -124,12 +124,12 @@
                         <div class="col-12 px-0">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Última noite</h4>
+                                    <h4 class="card-title">@lang('pages.stats.last-night')</h4>
                                     <canvas style="padding: 0 5px" id="myChartStatsLastNight"
                                             class="col-12 px-0"></canvas>
                                     <div class="d-flex justify-content-between">
                                         <p>
-                                            <small>Incêndios entre as 21h e as 09h</small>
+                                            <small>@lang('pages.stats.last-night-footer')</small>
                                         </p>
                                     </div>
                                 </div>

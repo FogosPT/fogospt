@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <main role="main" class="mb-auto margin-top-10">
+        <main role="main" class="mb-auto margin-top-10 bg-white">
             <div class="row">
                 <div class="col-sm">
                     <div class="card" style="width: 18rem;">

@@ -2,10 +2,10 @@
     return [
         'cards' => [
             'general' => [
-                'place' => 'Place',
+                'place' => 'Location',
                 'start_at' => 'Start',
                 'nature' => 'Nature',
-                'fireRisk' => 'Fire Risl'
+                'fireRisk' => 'Fire Risk'
             ],
             'resources' => [
                 'units' => 'Means',
@@ -23,10 +23,10 @@
             ]
         ],
         'riskLevels' => [
-            'maximum' => 'Max',
-            'veryHigh' => 'Very high',
-            'high' => 'High',
-            'moderate' => 'Moderate',
-            'reduced' => 'Low'
+            'Máximo' => 'Max',
+            'Muito Elevado' => 'Very high',
+            'Elevado' => 'High',
+            'Moderado' => 'Moderate',
+            'Reduzido' => 'Low'
         ]
     ];

@@ -25,6 +25,7 @@
                 <a class="nav-item nav-link" href="https://facebook.com/fogospt" target="_blank">Facebook <i class="fab fa-facebook-square"></i></a>
                 <a class="nav-item nav-link" href="https://play.google.com/store/apps/details?id=com.tomahock.fogos" target="_blank">Android <i class="fab fa-google-play"></i></a>
                 <a class="nav-item nav-link" href="https://itunes.apple.com/us/app/fogos.pt/id1126944255" target="_blank">iPhone <i class="fab fa-app-store-ios"></i></a>
+                <a class="nav-item nav-link" href="https://github.com/fogospt" target="_blank">Github <i class="fab fa-github-square"></i></a>
 
                 {{--<a class="nav-item nav-link" href="{{route('manifest')}}">@lang('includes.menu.manifest')</a>--}}
                 <a class="nav-item nav-link" href="https://aldeiasegura.pt" target="_blank">Aldeia Segura</a>

@@ -22,10 +22,10 @@
             ]
         ],
         'riskLevels' => [
-            'maximum' => 'Máximo',
-            'veryHigh' => 'Muito Elevado',
-            'high' => 'Elevado',
-            'moderate' => 'Moderado',
-            'reduced' => 'Reduzidos'
+            'Máximo' => 'Máximo',
+            'Muito Elevado' => 'Muito Elevado',
+            'Elevado' => 'Elevado',
+            'Moderado' => 'Moderado',
+            'Reduzido' => 'Reduzidos'
         ]
     ];
