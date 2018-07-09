@@ -87,9 +87,9 @@ header {
     }
   }
   nav {
-    background: -moz-linear-gradient(-45deg, #ff512f 0%, #f09819 100%);
-    background: -webkit-linear-gradient(-45deg, #ff512f 0%, #f09819 100%);
-    background: linear-gradient(135deg, #ff512f 0%, #f09819 100%);
+    background: -moz-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
+    background: -webkit-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
+    background: linear-gradient(135deg, #f09819 0%, #ff512f 100%);
   }
   .compare {
     font-size: .875rem;
@@ -731,7 +731,7 @@ main {
   margin-left: -13px;
   background: no-repeat center / 60%;
   // inicio
-  &.status-99 {
+  &.status-important {
     background-image: url('/img/ico_fire.svg');
     background-color: $c-darkred;
   }
@@ -784,6 +784,11 @@ main {
   &.status-12 {
     background-image: url('/img/ico_fake.svg');
     background-color: $c-grey;
+  }
+
+  &.active{
+    height: 48px;
+    width: 48px;
   }
 }
 

@@ -6,6 +6,11 @@ $status-mod: #ffe900;
 $status-min: #509e2f;
 */
 
+.fa-map-marker g g path {
+  stroke: black;
+  stroke-width: 10;
+}
+
 #style-1::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
@@ -98,7 +103,7 @@ header .navbar .navbar-collapse a:hover {
 }
 
 header nav {
-  background: linear-gradient(135deg, #ff512f 0%, #f09819 100%);
+  background: linear-gradient(135deg, #f09819 0%, #ff512f 100%);
 }
 
 header .compare {
@@ -750,7 +755,7 @@ main #data-social-media iframe {
   background: no-repeat center / 60%;
 }
 
-.dot.status-99 {
+.dot.status-important {
   background-image: url("/img/ico_fire.svg");
   background-color: #711313;
 }
@@ -803,6 +808,11 @@ main #data-social-media iframe {
 .dot.status-12 {
   background-image: url("/img/ico_fake.svg");
   background-color: #BDBDBD;
+}
+
+.dot.active {
+  height: 48px;
+  width: 48px;
 }
 
 #status {

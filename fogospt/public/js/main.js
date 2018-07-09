@@ -19,7 +19,7 @@ $(document).ready(function () {
         mymap.setView(e.latlng);
         window.history.pushState('obj', 'Fogos.pt', '/');
         $('.sidebar').removeClass('active');
-        $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
+        $('#map').find('.active').removeClass('active');
     });
 
     var res = window.location.pathname.match(/^\/fogo\/(\d+)/);
@@ -129,13 +129,12 @@ $(document).ready(function () {
     });
 
 
+
 });
 
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng);
-    console.log(item.lat, item.lng);
     var coords = [x['latitude'], x['longitude']];
-    console.log(coords);
 
     var el = document.createElement('div');
     el.className = 'marker';
@@ -145,9 +144,27 @@ function addMaker(item, mymap) {
     marker.properties = {};
     marker.properties.item = item;
 
+    isActive = window.location.pathname.split('/')[2];
+
+    if(item.important ){
+        if(isActive && isActive === item.id){
+            iconHtml = '<i class="dot status-99 active"></i>';
+            mymap.setView(coords, 10);
+        } else {
+            iconHtml = '<i class="dot status-99"></i>';
+        }
+    } else {
+        if(isActive && isActive === item.id){
+            iconHtml = '<i class="dot status-' + item.statusCode + ' active"></i>';
+            mymap.setView(coords, 10);
+        } else {
+            iconHtml = '<i class="dot status-' + item.statusCode + '"></i>';
+        }
+    }
+
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
-        html: '<i class="fas fa-map-marker map-marker status-' + item.statusCode + '"></i>',
+        html: iconHtml,
         iconSize: [40, 40]
     }));
 
@@ -156,14 +173,12 @@ function addMaker(item, mymap) {
     marker.addTo(mymap);
 
     marker.on('click', function (e) {
-        $('#map').find('.fa-map-marker-alt').removeClass('active').addClass('fa-map-marker').removeClass('fa-map-marker-alt');
+        $('#map').find('.active').removeClass('active');
 
         mymap.setView(e.latlng, 10);
 
         var $icon = $(e.target._icon);
         $icon.find('i').addClass('active');
-        $icon.find('i').removeClass('fa-map-marker');
-        $icon.find('i').addClass('fa-map-marker-alt');
 
         var item = e.sourceTarget.properties.item;
         $('.sidebar').addClass('active').scrollTop(0);

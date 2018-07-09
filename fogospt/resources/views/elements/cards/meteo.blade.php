@@ -8,6 +8,12 @@
                         @include('elements.meteo')
                     @endisset
                 </div>
+                <h4 class="card-title">@lang('elements.cards.general.fireRisk')</h4>
+                <div class="f-danger">
+                    @isset($fire['risk'])
+                        @include('elements.risk')
+                    @endisset
+                </div>
             </div>
         </div>
     </div>
