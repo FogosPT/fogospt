@@ -50,7 +50,7 @@ function requestAuth() {
             alert('Upps, Ocorreu um erro! Tente mais tarde. 2');
         });
     }).catch(function(err) {
-        console.log('Unable to get permission to notify.', err);
+        console.l   og('Unable to get permission to notify.', err);
     });
 }
 
@@ -62,7 +62,7 @@ function toggleNotification() {
                 const url = '/notifications/subscribe';
 
                 const topic =  $(this).data('value');
-                const data = {
+                const data   = {
                     'token' : store.get('token'),
                     'topic' : topic
                 };

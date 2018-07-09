@@ -12,13 +12,15 @@ return [
         'statesOfOccurrences' => [
             'title' => 'Estados das Ocorrências',
             'items' => [
-                'firstAlertdispatch' => 'DESPACHO 1º ALERTA – Meios em trânsito para o teatro de operações.',
-                'arrivalToOccurrence' => 'CHEGADA AO TO – chega ao teatro de operações.',
-                'ongoing' => 'EM CURSO - Incêndio em evolução sem limitação de área',
-                'inResolution' => 'EM RESOLUÇÃO – Incêndio sem perigo de propagação para além do perímetro já atingido',
-                'inConclusion' => 'EM CONCLUSÃO – Incêndio extinto, com pequenos focos de combustão dentro do perímetro do incêndio',
-                'surveillance' => 'VIGILÂNCIA – Meios no local para actuar em caso de necessidade',
-                'closed' => 'ENCERRADA – Entrada, nas respectivas entidades, de todos os meios envolvidos'
+                'firstAlertdispatch' => 'Despacho de 1º alerta – Meios em trânsito para o teatro de operações.',
+                'arrivalToOccurrence' => 'Chegada ao TO – chegada ao teatro de operações.',
+                'ongoing' => 'Em curso - Incêndio em evolução sem limitação de área',
+                'inResolution' => 'Em resolução – Incêndio sem perigo de propagação para além do perímetro já atingido',
+                'inConclusion' => 'Em conclusão – Incêndio extinto, com pequenos focos de combustão dentro do perímetro do incêndio',
+                'surveillance' => 'Vigilância – Meios no local para actuar em caso de necessidade',
+                'closed' => 'Encerrada – Entrada, nas respectivas entidades, de todos os meios envolvidos​',
+                'fake' => 'Falso alerta',
+                'false' => 'Falso alarme'
             ]
         ],
         'typeOfUnits' => [

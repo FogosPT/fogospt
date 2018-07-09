@@ -186,6 +186,18 @@ main {
   height: 100%;
 }
 
+main .list-none {
+  list-style: none;
+}
+
+main .list-none li {
+  margin: 4px 0;
+}
+
+main .list-none li i {
+  margin-right: 5px;
+}
+
 main #map .map-marker {
   font-size: 30px;
 }
@@ -756,6 +768,11 @@ main #data-social-media iframe {
 }
 
 .dot.status-important {
+  background-image: url("/img/ico_fire.svg");
+  background-color: #711313;
+}
+
+.dot.status-99 {
   background-image: url("/img/ico_fire.svg");
   background-color: #711313;
 }
