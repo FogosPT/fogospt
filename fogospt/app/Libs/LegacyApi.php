@@ -15,7 +15,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class LegacyApi
 {
-    private static $url = 'https://api-beta.fogos.pt';
+    private static $url = 'https://api-lb.fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
 
     private static function getClient()

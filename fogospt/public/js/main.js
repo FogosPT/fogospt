@@ -39,7 +39,7 @@ $(document).ready(function () {
     window.fogosLayers[11] = L.layerGroup();
     window.fogosLayers[12] = L.layerGroup();
 
-    var url = 'https://fogos.pt/new/fires';
+    var url = 'https://api-lb.fogos.pt/new/fires';
     $.ajax({
         url: url,
         method: 'GET',
@@ -200,7 +200,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://fogos.pt/fires/data?id=' + id;
+    var url = 'https://api-lb.fogos.pt/fires/data?id=' + id;
     $.ajax({
         url: url,
         method: 'GET',
@@ -316,7 +316,7 @@ function getColor(d) {
 
 function addRisk(mymap) {
     // lel
-    var url = 'https://fogos.pt/v1/risk-today';
+    var url = 'https://api-lb.fogos.pt/v1/risk-today';
     $.ajax({
         url: url,
         method: 'GET',
@@ -336,7 +336,7 @@ function addRisk(mymap) {
                     $('main #map .map-marker').hide();
                 }
 
-                var url = 'https://fogos.pt/v1/risk-tomorrow';
+                var url = 'https://api-lb.fogos.pt/v1/risk-tomorrow';
                 $.ajax({
                     url: url,
                     method: 'GET',
@@ -356,7 +356,7 @@ function addRisk(mymap) {
                                 $('main #map .map-marker').hide();
                             }
 
-                            var url = 'https://fogos.pt/v1/risk-after';
+                            var url = 'https://api-lb.fogos.pt/v1/risk-after';
                             $.ajax({
                                 url: url,
                                 method: 'GET',
