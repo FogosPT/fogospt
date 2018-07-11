@@ -38,6 +38,7 @@ $(document).ready(function () {
     window.fogosLayers[10] = L.layerGroup();
     window.fogosLayers[11] = L.layerGroup();
     window.fogosLayers[12] = L.layerGroup();
+    window.fogosLayers[80] = L.layerGroup();
 
     var url = 'https://api-lb.fogos.pt/new/fires';
     $.ajax({
