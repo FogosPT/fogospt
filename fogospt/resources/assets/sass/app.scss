@@ -258,6 +258,14 @@ main {
     }
   }
 
+  .extra{
+    display:none;
+
+    &.active{
+      display:flex;
+    }
+  }
+
 
   h1,h2,h3,h4 {
     font-weight: 300;

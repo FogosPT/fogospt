@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
+use Illuminate\Http\Response;
 
 
 class FireController extends Controller
@@ -52,6 +53,18 @@ class FireController extends Controller
         $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
+    }
+
+    public function getExtraCard($id)
+    {
+        $this->setFireById($id);
+
+        if(!empty($this->fire['extra'])){
+            return view('elements.extra', array('fire' => $this->fire));
+        } else {
+            return \Response::json();
+        }
+
     }
 
     private function setFireById($id)

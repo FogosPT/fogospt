@@ -20,6 +20,9 @@
                 'temp_min' => 'Min',
                 'temp_max' => 'Max',
                 'estado_atual' => 'Now',
+            ],
+            'extra' => [
+                'title' => 'Extra info'
             ]
         ],
         'riskLevels' => [

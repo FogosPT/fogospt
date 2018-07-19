@@ -19,6 +19,9 @@
                 'temp_min' => 'Temperatura mínima',
                 'temp_max' => 'Temperatura máxima',
                 'estado_atual' => 'Estado do tempo',
+            ],
+            'extra' => [
+                'title' => 'Informação extra'
             ]
         ],
         'riskLevels' => [

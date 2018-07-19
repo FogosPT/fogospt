@@ -1,7 +1,7 @@
 $(document).ready(function () {
     const messaging = firebase.messaging();
 
-    messaging.onMessage(function(payload) {
+    messaging.onMessage(function (payload) {
         toastr.warning(payload.notification.body);
     });
 
@@ -13,6 +13,7 @@ $(document).ready(function () {
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
+
 
     addRisk(mymap);
     mymap.on('click', function (e) {
@@ -78,14 +79,49 @@ $(document).ready(function () {
 
                 layerControl2.addTo(mymap);
                 $controls = $(layerControl2.getContainer());
-                $controls.find('a').css({'background-image': 'none', 'font-size': '33px', 'text-align': 'center', 'color':'#333333'}).append('<i class="fas fa-map-marker"></i>');
+                $controls.find('a').css({
+                    'background-image': 'none',
+                    'font-size': '33px',
+                    'text-align': 'center',
+                    'color': '#333333'
+                }).append('<i class="fas fa-map-marker"></i>');
 
-                var cloudLayer = L.OWM.cloudsClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
-                var precLayer = L.OWM.precipitationClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
-                var rainLayer = L.OWM.rainClassic({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
-                var pressureLayer = L.OWM.pressure({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
-                var tempLayer = L.OWM.temperature({legendPosition: 'bottomright',showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
-                var windLayer = L.OWM.wind({legendPosition: 'bottomright', showLegend: true, opacity: 0.5, appId: '793b3a933c50946491eeb8aad4339ad2'});
+                var cloudLayer = L.OWM.cloudsClassic({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
+                var precLayer = L.OWM.precipitationClassic({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
+                var rainLayer = L.OWM.rainClassic({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
+                var pressureLayer = L.OWM.pressure({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
+                var tempLayer = L.OWM.temperature({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
+                var windLayer = L.OWM.wind({
+                    legendPosition: 'bottomright',
+                    showLegend: true,
+                    opacity: 0.5,
+                    appId: '793b3a933c50946491eeb8aad4339ad2'
+                });
 
 
                 var baseMaps = {
@@ -94,11 +130,10 @@ $(document).ready(function () {
                     "Nuvens": cloudLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
-                    "Chuva" : rainLayer
+                    "Chuva": rainLayer
                 };
 
                 // var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-
 
 
                 // //
@@ -123,12 +158,10 @@ $(document).ready(function () {
                 // };
 
 
-
-                L.control.layers(null,baseMaps,{collapsed:false}).addTo(mymap);
+                L.control.layers(null, baseMaps, {collapsed: false}).addTo(mymap);
             }
         }
     });
-
 
 
 });
@@ -147,15 +180,15 @@ function addMaker(item, mymap) {
 
     isActive = window.location.pathname.split('/')[2];
 
-    if(item.important ){
-        if(isActive && isActive === item.id){
+    if (item.important) {
+        if (isActive && isActive === item.id) {
             iconHtml = '<i class="dot status-99 active"></i>';
             mymap.setView(coords, 10);
         } else {
             iconHtml = '<i class="dot status-99"></i>';
         }
     } else {
-        if(isActive && isActive === item.id){
+        if (isActive && isActive === item.id) {
             iconHtml = '<i class="dot status-' + item.statusCode + ' active"></i>';
             mymap.setView(coords, 10);
         } else {
@@ -195,6 +228,7 @@ function addMaker(item, mymap) {
         plot(item.id);
         danger(item.id);
         meteo(item.id);
+        extra(item.id);
         addPageview();
     });
 
@@ -237,7 +271,7 @@ function plot(id) {
                                 fill: false,
                                 backgroundColor: '#6D720B',
                                 borderColor: '#6D720B'
-                            },{
+                            }, {
                                 label: 'Aéreos',
                                 data: aerial,
                                 fill: false,
@@ -304,6 +338,25 @@ function meteo(id) {
 
 }
 
+function extra(id) {
+    var url = '/views/extra/' + id;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+            if (data && data.length !== 0) {
+                $('.f-extra').html(data);
+                $('.extra').addClass('active');
+            } else {
+                $('.extra').removeClass('active');
+            }
+
+        }
+    });
+
+}
+
 
 function getColor(d) {
     return d === 1 ? '#509e2f' :
@@ -332,7 +385,7 @@ function addRisk(mymap) {
                 });
 
                 // for phantom
-                if(getParameterByName('risk')){
+                if (getParameterByName('risk')) {
                     riscoHoje.addTo(mymap);
                     $('main #map .map-marker').hide();
                 }
@@ -352,7 +405,7 @@ function addRisk(mymap) {
                             });
 
                             // for phantom
-                            if(getParameterByName('risk-tomorrow')){
+                            if (getParameterByName('risk-tomorrow')) {
                                 riscoTomorrow.addTo(mymap);
                                 $('main #map .map-marker').hide();
                             }
@@ -367,7 +420,12 @@ function addRisk(mymap) {
                                         var riscoAfter = L.geoJson(concelhos, {
                                             style: function (feature) {
                                                 var d = data.data.local[feature.properties.DICO].data.rcm;
-                                                return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
+                                                return {
+                                                    weight: 1.0,
+                                                    color: '#666',
+                                                    fillOpacity: 0.6,
+                                                    fillColor: getColor(d)
+                                                };
                                             },
                                         });
 
@@ -377,7 +435,7 @@ function addRisk(mymap) {
                                             'Risco Depois': riscoAfter,
                                         };
 
-                                        L.control.layers(null,baseMaps,{collapsed:false}).addTo(mymap);
+                                        L.control.layers(null, baseMaps, {collapsed: false}).addTo(mymap);
                                     }
                                 }
                             });
@@ -424,7 +482,7 @@ function extend() {
 
 //https://stackoverflow.com/questions/31192451/generate-random-geo-coordinates-within-specific-radius-from-seed-point
 //Create random lat/long coordinates in a specified radius around a center point
-function randomGeo(latitude, longitude)  {
+function randomGeo(latitude, longitude) {
     var radius = 50;
     var y0 = latitude;
     var x0 = longitude;

@@ -292,6 +292,16 @@ main .card.stats {
   margin-bottom: 2rem;
 }
 
+main .extra {
+  display: none;
+}
+
+main .extra.active {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
 main h1,
 main h2,
 main h3,

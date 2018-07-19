@@ -7,8 +7,8 @@
 @endempty
 
 @include('elements.cards.general')
-
 @include('elements.cards.resources')
+@include('elements.cards.extra')
 @include('elements.cards.status')
 @include('elements.cards.meteo')
 
