@@ -1,1 +1,3 @@
-<p>{{ $fire['extra'] }}</p>
+@isset($fire)
+    <p>{{ $fire['extra'] }}</p>
+@endisset
