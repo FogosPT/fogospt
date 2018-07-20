@@ -7,34 +7,34 @@ $(document).ready(function () {
     plotStatsLastNight();
     plotStatsDistricts();
 
-    if(getParameterByName('phantom')){
+    if (getParameterByName('phantom')) {
         $('.phantom-hide').hide();
     }
 });
 
 var dColors = {
-    'Aveiro' : '#77CBCF',
-    'Beja' : '#7D9BD3',
-    'Braga' : '#9782D7',
-    'Bragança' : '#31987E',
-    'Castelo Branco' : '#C86195',
-    'Coimbra' : '#CD7066',
-    'Évora' : '#CF9269',
-    'Faro' : '#56C3A1',
-    'Guarda' : '#CD9C68',
-    'Leiria' : '#CEB76A',
-    'Lisboa' : '#CED06D',
-    'Portalegre' : '#653522',
-    'Porto' : '#612422',
-    'Santarém' : '#442A7C',
-    'Setúbal' : '#2F2A78',
-    'Viana do Castelo' : '#882B82',
-    'Vila Real' : '#4A6223',
-    'Viseu' : '#57852F',
+    'Aveiro': '#77CBCF',
+    'Beja': '#7D9BD3',
+    'Braga': '#9782D7',
+    'Bragança': '#31987E',
+    'Castelo Branco': '#C86195',
+    'Coimbra': '#CD7066',
+    'Évora': '#CF9269',
+    'Faro': '#56C3A1',
+    'Guarda': '#CD9C68',
+    'Leiria': '#CEB76A',
+    'Lisboa': '#CED06D',
+    'Portalegre': '#653522',
+    'Porto': '#612422',
+    'Santarém': '#442A7C',
+    'Setúbal': '#2F2A78',
+    'Viana do Castelo': '#882B82',
+    'Vila Real': '#4A6223',
+    'Viseu': '#57852F',
 };
 
 function plot() {
-    var url = 'https://api-beta.fogos.pt/v1/now/data';
+    var url = 'https://api-lb.fogos.pt/v1/now/data';
     $.ajax({
         url: url,
         method: 'GET',
@@ -49,7 +49,7 @@ function plot() {
                 for (d in data.data) {
                     labels.push(data.data[d].label);
                     man.push(data.data[d].man);
-                    terrain.push(data.data[d].terrain);
+                    terrain.push(data.data[d].cars);
                     aerial.push(data.data[d].aerial);
                     total.push(data.data[d].total);
                 }
@@ -99,7 +99,7 @@ function plot() {
                         scales: {
                             xAxes: [{
                                 ticks: {
-                                    stepSize:20
+                                    stepSize: 20
                                 }
                             }]
                         }
@@ -114,7 +114,7 @@ function plot() {
 }
 
 function plotWeekStats() {
-    var url = 'https://api-beta.fogos.pt/v1/stats/week';
+    var url = 'https://api-lb.fogos.pt/v1/stats/week';
     $.ajax({
         url: url,
         method: 'GET',
@@ -149,7 +149,7 @@ function plotWeekStats() {
                                 backgroundColor: '#000000',
                                 borderColor: '#000000'
                             },
-                            ]
+                        ]
                     },
                     options: {
                         elements: {
@@ -178,7 +178,7 @@ function plotWeekStats() {
 }
 
 function plotStats8hours() {
-    var url = 'https://api-beta.fogos.pt/v1/stats/8hours';
+    var url = 'https://api-lb.fogos.pt/v1/stats/8hours';
     $.ajax({
         url: url,
         method: 'GET',
@@ -234,8 +234,7 @@ function plotStats8hours() {
 }
 
 function plotStatsLastNight() {
-    console.log('x');
-    var url = 'https://api-beta.fogos.pt/v1/stats/last-night';
+    var url = 'https://api-lb.fogos.pt/v1/stats/last-night';
 
     $.ajax({
         url: url,
@@ -267,7 +266,6 @@ function plotStatsLastNight() {
                     },
                 });
 
-                console.log(myLineChart);
             } else {
                 $('#info').find('canvas').remove();
                 $('#info').append('<p>Não há dados disponiveis</p> ');
@@ -277,7 +275,7 @@ function plotStatsLastNight() {
 }
 
 function plotStats8hoursYesterday() {
-    var url = 'https://api-beta.fogos.pt/v1/stats/8hours/yesterday';
+    var url = 'https://api-lb.fogos.pt/v1/stats/8hours/yesterday';
     $.ajax({
         url: url,
         method: 'GET',
@@ -333,7 +331,7 @@ function plotStats8hoursYesterday() {
 }
 
 function plotStatsYesterdayDistricts() {
-    var url = 'https://api-beta.fogos.pt/v1/stats/yesterday';
+    var url = 'https://api-lb.fogos.pt/v1/stats/yesterday';
 
     $.ajax({
         url: url,
@@ -365,7 +363,6 @@ function plotStatsYesterdayDistricts() {
                     },
                 });
 
-                console.log(myLineChart);
             } else {
                 $('#info').find('canvas').remove();
                 $('#info').append('<p>Não há dados disponiveis</p> ');
@@ -375,7 +372,7 @@ function plotStatsYesterdayDistricts() {
 }
 
 function plotStatsDistricts() {
-    var url = 'https://api-beta.fogos.pt/v1/stats/today';
+    var url = 'https://api-lb.fogos.pt/v1/stats/today';
 
     $.ajax({
         url: url,
@@ -407,7 +404,6 @@ function plotStatsDistricts() {
                     },
                 });
 
-                console.log(myLineChart);
             } else {
                 $('#info').find('canvas').remove();
                 $('#info').append('<p>Não há dados disponiveis</p> ');
@@ -416,7 +412,7 @@ function plotStatsDistricts() {
     });
 }
 
-var stringToColour = function(str) {
+var stringToColour = function (str) {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -428,7 +424,6 @@ var stringToColour = function(str) {
     }
     return colour;
 }
-
 
 
 function getParameterByName(name, url) {
