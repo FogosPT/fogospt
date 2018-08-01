@@ -21,6 +21,11 @@
                 'temp_max' => 'Max',
                 'estado_atual' => 'Now',
                 'humidity' => 'Humidity',
+                'pressure' => 'Atmospheric pressure',
+                'wind' => [
+                    'speed' => 'Wind Speed',
+                    'deg' => 'Wind direction'
+                ]
             ],
             'extra' => [
                 'title' => 'Extra info'

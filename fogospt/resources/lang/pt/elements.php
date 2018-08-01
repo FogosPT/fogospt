@@ -20,6 +20,11 @@
                 'temp_max' => 'Temperatura máxima',
                 'estado_atual' => 'Estado do tempo',
                 'humidity' => 'Humidade',
+                'pressure' => 'Pressão atmosférica',
+                'wind' => [
+                    'speed' => 'Velocidade do Vento',
+                    'deg' => 'Direcção do Vento'
+                ]
             ],
             'extra' => [
                 'title' => 'Informação extra'
