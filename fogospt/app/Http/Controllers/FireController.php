@@ -75,6 +75,11 @@ class FireController extends Controller
 
     }
 
+    public function getAll()
+    {
+        return \Response::json(LegacyApi::getFires());
+    }
+
     private function setFireById($id)
     {
         $this->fire = LegacyApi::getFire($id)['data'];

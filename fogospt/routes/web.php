@@ -21,6 +21,7 @@ Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
 
 
 Route::get('/fogo/{id}', 'FireController@get');
+Route::get('/new/fires', 'FireController@getAll');
 
 
 Route::get('/change-language/{lang}', 'GenericController@getChangeLanguage')->name('changeLanguage');
