@@ -15,7 +15,7 @@ class HelperFuncs
     {
         $cardinalDirections = array(
             'N' => array(348.75, 360),
-            'N' => array(0, 11.25),
+            'N2' => array(0, 11.25),
             'NNE' => array(11.25, 33.75),
             'NE' => array(33.75, 56.25),
             'ENE' => array(56.25, 78.75),
@@ -34,7 +34,7 @@ class HelperFuncs
         );
         foreach ($cardinalDirections as $dir => $angles) {
             if ($deg >= $angles[0] && $deg < $angles[1]) {
-                $cardinal = $dir;
+                $cardinal = str_replace("2", "", $dir);
             }
         }
         return $cardinal;
