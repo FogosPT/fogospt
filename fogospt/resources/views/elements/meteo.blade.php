@@ -10,7 +10,7 @@
             @lang('elements.cards.meteo.temp_max'):&nbsp;{{$fire['meteo']['main']['temp_max']}}ºC
         </div>
         <div class="temp_min">
-            @lang('elements.cards.meteo.wind.speed'):&nbsp;{{$fire['meteo']['wind']['speed']}} fireconm/s
+            @lang('elements.cards.meteo.wind.speed'):&nbsp;{{$fire['meteo']['wind']['speed']}} m/s
         </div>
         <div class="temp_min">
             @lang('elements.cards.meteo.wind.deg'):&nbsp;{{$fire['meteo']['wind']['deg']}}º
