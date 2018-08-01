@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
 
@@ -20,6 +21,8 @@ class FireController extends Controller
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+
+        $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
