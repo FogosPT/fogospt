@@ -22,7 +22,7 @@ class FireController extends Controller
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
-        $this->fire['statusHistory'] = $status['data'];
+        $this->fire['statusHistory'] = $status['data'] ? $status['data'] : false;
         $this->fire['meteo'] = $meteo;
 
         return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
