@@ -11,7 +11,7 @@ namespace App\Libs;
 
 class HelperFuncs
 {
-    static public function Oind_cardinals($deg)
+    static public function wind_cardinals($deg)
     {
         $cardinalDirections = array(
             'N' => array(348.75, 360),
