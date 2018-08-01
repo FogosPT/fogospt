@@ -10,7 +10,7 @@
             @lang('elements.cards.meteo.temp_max'):&nbsp;{{$fire['meteo']['main']['temp_max']}}ºC
         </div>
         <div class="temp_min">
-            @lang('elements.cards.meteo.wind.speed'):&nbsp;{{$fire['meteo']['wind']['speed']}}m/s
+            @lang('elements.cards.meteo.wind.speed'):&nbsp;{{$fire['meteo']['wind']['speed']}} m/s
         </div>
         <div class="temp_min">
             @lang('elements.cards.meteo.wind.deg'):&nbsp;{{$fire['meteo']['wind']['deg']}}º
@@ -19,7 +19,7 @@
             @lang('elements.cards.meteo.humidity'):&nbsp;{{$fire['meteo']['main']['humidity']}}%
         </div>
         <div class="temp_min">
-            @lang('elements.cards.meteo.pressure'):&nbsp;{{$fire['meteo']['main']['pressure']}}%
+            @lang('elements.cards.meteo.pressure'):&nbsp;{{$fire['meteo']['main']['pressure']}} hPa
         </div>
         <div class="temp_min">
             @lang('elements.cards.meteo.estado_atual'):&nbsp;{{$fire['meteo']['weather'][0]['description']}}&nbsp; <img
