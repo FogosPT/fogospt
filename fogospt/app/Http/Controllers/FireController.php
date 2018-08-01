@@ -22,7 +22,12 @@ class FireController extends Controller
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
-        $this->fire['statusHistory'] = $status['data'] ? $status['data'] : false;
+        if (isset($status['data'])) {
+            $this->fire['statusHistory'] = $status['data'];
+        } else {
+            $this->fire['statusHistory'] = false;
+        }
+
         $this->fire['meteo'] = $meteo;
 
         return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
@@ -49,7 +54,7 @@ class FireController extends Controller
     public function getMeteoCard($id)
     {
         $this->setFireById($id);
-        $meteo= LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
         $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
@@ -59,7 +64,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
 
-        if(!empty($this->fire['extra'])){
+        if (!empty($this->fire['extra'])) {
             return view('elements.extra', array('fire' => $this->fire));
         } else {
             return \Response::json();
