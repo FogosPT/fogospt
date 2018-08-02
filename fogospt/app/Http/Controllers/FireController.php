@@ -22,7 +22,9 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFire($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
-        $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
+        if(isset($meteo['wind']['deg'])){
+            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
+        }
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
