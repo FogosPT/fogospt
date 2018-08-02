@@ -15,7 +15,7 @@
 
     gtag('js', new Date());
 
-    gtag('config', {{env('GOOGLE_ANALYTICS')}});
+    gtag('config', '{{env('GOOGLE_ANALYTICS')}}');
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
