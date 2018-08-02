@@ -13,9 +13,11 @@
         <div class="temp_min">
             @lang('elements.cards.meteo.wind.speed'):&nbsp;{{ $fire['meteo']['wind']['speed'] * 3.6}} km/h
         </div>
-        <div class="temp_min">
-            @lang('elements.cards.meteo.wind.deg'):&nbsp;{{ $fire['meteo']['wind']['deg'] }}
-        </div>
+        @isset($fire['meteo']['wind']['deg'])
+            <div class="temp_min">
+                @lang('elements.cards.meteo.wind.deg'):&nbsp;{{ $fire['meteo']['wind']['deg'] }}
+            </div>
+        @endisset
         <div class="temp_min">
             @lang('elements.cards.meteo.humidity'):&nbsp;{{$fire['meteo']['main']['humidity']}}%
         </div>
