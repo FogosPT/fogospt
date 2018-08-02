@@ -1,7 +1,7 @@
 <meta name="Description" content="{{$metadata['description']}}">
 <meta name="Keywords"
       content="@lang('includes.meta.content')">
-<meta property="og:title" content="{{$metadata['title']}}">
+<meta property="og:title" content="Fogos.pt {{$metadata['title']}}">
 <meta property="og:site_name" content="Fogos.pt">
 <meta property="og:url" content="{{$metadata['url']}}">
 <meta property="og:description" content="{{$metadata['description']}}">
@@ -10,7 +10,7 @@
 <meta property="fb:app_id" content="966421526811840">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="@tomahock">
-<meta name="twitter:title" content="{{$metadata['title']}}">
+<meta name="twitter:title" content="Fogos.pt - {{$metadata['title']}}">
 <meta name="twitter:description" content="{{$metadata['description']}}">
 <meta name="twitter:image" content="https://fogos.pt/img/logo.png">
 

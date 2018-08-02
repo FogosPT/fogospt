@@ -5,7 +5,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-29689840-9"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{env('GOOGLE_ANALYTICS')}}"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -15,7 +15,7 @@
 
     gtag('js', new Date());
 
-    gtag('config', 'UA-29689840-9');
+    gtag('config', {{env('GOOGLE_ANALYTICS')}});
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
