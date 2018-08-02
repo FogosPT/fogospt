@@ -13,6 +13,7 @@ class HelperFuncs
 {
     static public function wind_cardinals($deg)
     {
+        $cardinal = null;
         $cardinalDirections = array(
             'N' => array(348.75, 360),
             'N2' => array(0, 11.25),
