@@ -98,12 +98,12 @@ $(document).ready(function () {
                     opacity: 0.5,
                     appId: '793b3a933c50946491eeb8aad4339ad2'
                 });
-                var rainLayer = L.OWM.rainClassic({
-                    legendPosition: 'bottomright',
-                    showLegend: true,
-                    opacity: 0.5,
-                    appId: '793b3a933c50946491eeb8aad4339ad2'
-                });
+                // var rainLayer = L.OWM.rainClassic({
+                //     legendPosition: 'bottomright',
+                //     showLegend: true,
+                //     opacity: 0.5,
+                //     appId: '793b3a933c50946491eeb8aad4339ad2'
+                // });
                 var pressureLayer = L.OWM.pressure({
                     legendPosition: 'bottomright',
                     showLegend: true,
@@ -130,7 +130,7 @@ $(document).ready(function () {
                     "Nuvens": cloudLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
-                    "Chuva": rainLayer
+                    // "Chuva": rainLayer
                 };
 
                 // var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
