@@ -125,6 +125,7 @@ $(document).ready(function () {
 
 
                 var baseLayers = {
+                    'Desativar Camadas':  L.tileLayer(''),
                     "Temperatura": tempLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
@@ -161,7 +162,7 @@ $(document).ready(function () {
                 // };
 
 
-                L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: "topleft"}).addTo(mymap);
+                L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: "topright"}).addTo(mymap);
             }
         }
     });
@@ -433,7 +434,7 @@ function addRisk(mymap) {
                                         });
 
                                         var baseMaps = {
-
+                                                'Desativar Risco':  L.tileLayer(''),
                                                 'Risco Hoje': riskToday,
                                                 'Risco Amanhã': riskTomorrow,
                                                 'Risco Depois': riskAfter,
@@ -443,7 +444,7 @@ function addRisk(mymap) {
 
                                         //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
                                         //map.addControl(riskLayerControl);
-                                        L.control.layers(baseMaps,null, {collapsed: false, position: 'topleft'}).addTo(mymap);
+                                        L.control.layers(baseMaps,null, {collapsed: false, position: 'topright'}).addTo(mymap);
                                     }
                                 }
                             });
