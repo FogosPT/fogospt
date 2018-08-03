@@ -11,6 +11,7 @@ use GuzzleHttp;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Redis;
 
 
 class LegacyApi
@@ -223,23 +224,31 @@ class LegacyApi
 
     public static function getMeteoByFire($lat,$lng)
     {
-        $client = self::getClient();
-        $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
+        if(env('APP_ENV') === 'production'){
+            $exists = Redis::get('weather:'.$lat.':'.$lng);
+            if($exists){
+                return $exists;
+            } else {
+                $client = self::getClient();
+                $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
 
-        try {
-            $response = $client->request('GET', $weatherUrl);
+                try {
+                    $response = $client->request('GET', $weatherUrl);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
+                } catch (ClientException $e) {
+                    return ['error' => $e->getMessage()];
+                } catch (RequestException $e) {
+                    return ['error' => $e->getMessage()];
+                }
+
+                $body = $response->getBody();
+                $result = json_decode($body->getContents(), true);
+
+                Redis::set('weather:'.$lat.':'.$lng, $result,'EX', 10800);
+
+                return $result;
+            }
         }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        
-            
-        return $result;
     }
     
 }
