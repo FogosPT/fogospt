@@ -227,7 +227,7 @@ class LegacyApi
         if(env('APP_ENV') === 'production'){
             $exists = Redis::get('weather:'.$lat.':'.$lng);
             if($exists){
-                return json_decode($exists);
+                return json_decode($exists,true);
             } else {
                 $client = self::getClient();
                 $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
