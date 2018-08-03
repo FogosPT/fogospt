@@ -105,33 +105,36 @@ $(document).ready(function () {
                 //     appId: '793b3a933c50946491eeb8aad4339ad2'
                 // });
                 var pressureLayer = L.OWM.pressure({
-                    legendPosition: 'bottomright',
+                    legendPosition: 'bottomleft',
                     showLegend: true,
                     opacity: 0.5,
                     appId: '793b3a933c50946491eeb8aad4339ad2'
                 });
                 var tempLayer = L.OWM.temperature({
-                    legendPosition: 'bottomright',
+                    legendPosition: 'bottomleft',
                     showLegend: true,
                     opacity: 0.5,
                     appId: '793b3a933c50946491eeb8aad4339ad2'
                 });
                 var windLayer = L.OWM.wind({
-                    legendPosition: 'bottomright',
+                    legendPosition: 'bottomleft',
                     showLegend: true,
                     opacity: 0.5,
                     appId: '793b3a933c50946491eeb8aad4339ad2'
                 });
 
 
-                var baseMaps = {
-                    'Temperatura': tempLayer,
-                    "Precipitação": precLayer,
-                    "Nuvens": cloudLayer,
+                var baseLayers = {
+                    "Temperatura": tempLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
                     // "Chuva": rainLayer
                 };
+
+                var overlayLayers = {
+                    "Precipitação": precLayer,
+                    "Nuvens": cloudLayer,
+                }
 
                 // var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 
@@ -158,7 +161,7 @@ $(document).ready(function () {
                 // };
 
 
-                L.control.layers(null, baseMaps, {collapsed: false}).addTo(mymap);
+                L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: "topleft"}).addTo(mymap);
             }
         }
     });
@@ -377,7 +380,7 @@ function addRisk(mymap) {
         success: function (data) {
             data = JSON.parse(data);
             if (data.success) {
-                var riscoHoje = L.geoJson(concelhos, {
+                var riskToday = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm;
                         return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
@@ -386,7 +389,7 @@ function addRisk(mymap) {
 
                 // for phantom
                 if (getParameterByName('risk')) {
-                    riscoHoje.addTo(mymap);
+                    riskToday.addTo(mymap);
                     $('main #map .map-marker').hide();
                 }
 
@@ -397,7 +400,7 @@ function addRisk(mymap) {
                     success: function (data) {
                         data = JSON.parse(data);
                         if (data.success) {
-                            var riscoTomorrow = L.geoJson(concelhos, {
+                            var riskTomorrow = L.geoJson(concelhos, {
                                 style: function (feature) {
                                     var d = data.data.local[feature.properties.DICO].data.rcm;
                                     return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)};
@@ -406,7 +409,7 @@ function addRisk(mymap) {
 
                             // for phantom
                             if (getParameterByName('risk-tomorrow')) {
-                                riscoTomorrow.addTo(mymap);
+                                riskTomorrow.addTo(mymap);
                                 $('main #map .map-marker').hide();
                             }
 
@@ -417,7 +420,7 @@ function addRisk(mymap) {
                                 success: function (data) {
                                     data = JSON.parse(data);
                                     if (data.success) {
-                                        var riscoAfter = L.geoJson(concelhos, {
+                                        var riskAfter = L.geoJson(concelhos, {
                                             style: function (feature) {
                                                 var d = data.data.local[feature.properties.DICO].data.rcm;
                                                 return {
@@ -430,12 +433,17 @@ function addRisk(mymap) {
                                         });
 
                                         var baseMaps = {
-                                            'Risco Hoje': riscoHoje,
-                                            'Risco Amanhã': riscoTomorrow,
-                                            'Risco Depois': riscoAfter,
+
+                                                'Risco Hoje': riskToday,
+                                                'Risco Amanhã': riskTomorrow,
+                                                'Risco Depois': riskAfter,
+
                                         };
 
-                                        L.control.layers(null, baseMaps, {collapsed: false}).addTo(mymap);
+
+                                        //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
+                                        //map.addControl(riskLayerControl);
+                                        L.control.layers(baseMaps,null, {collapsed: false, position: 'topleft'}).addTo(mymap);
                                     }
                                 }
                             });
