@@ -71,7 +71,7 @@ return [
         'now-text' => 'Agora',
         'today' => 'Hoje',
         'yesterday' => 'Ontem',
-        'last-night' => 'Última noites',
+        'last-night' => 'Última noite',
         'last-days' => 'Últimos dias',
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
     ]
