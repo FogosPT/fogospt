@@ -84,6 +84,13 @@ class FireController extends Controller
 
     private function setFireById($id)
     {
-        $this->fire = LegacyApi::getFire($id)['data'];
+        $fire = LegacyApi::getFire($id);
+
+        if(isset($fire['data'])){
+            $this->fire = $fire['data'];
+        } else {
+            $this->fire = null;
+        }
+
     }
 }
