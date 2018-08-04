@@ -15,9 +15,9 @@ class Controller extends BaseController
     {
         switch (get_class($this)){
             case "App\Http\Controllers\FireController":
-                $pageTitle = sprintf( "- Incêndio em %s - ", $this->fire['location']);
-                $title = sprintf( "[%s] Incêndio em %s", date("d-m-Y H:i"), $this->fire['location']);
-                $description = sprintf( "Estado: %s - Meios Humano: %d, Meios Terrestres: %d, Meios Aéreos: %d ", $this->fire['status'], $this->fire['man'], $this->fire['terrain'], $this->fire['aerial']);
+                $pageTitle = sprintf( "- Incêndio em %s - ", @$this->fire['location']);
+                $title = sprintf( "[%s] Incêndio em %s", date("d-m-Y H:i"), @$this->fire['location']);
+                $description = sprintf( "Estado: %s - Meios Humano: %d, Meios Terrestres: %d, Meios Aéreos: %d ", @$this->fire['status'], @$this->fire['man'], @$this->fire['terrain'], @$this->fire['aerial']);
                 break;
             default:
                 $pageTitle = sprintf( "- %s", $this->pageName);
