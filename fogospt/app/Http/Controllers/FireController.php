@@ -51,7 +51,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
         $status = LegacyApi::getStatusByFire($id);
-        $this->fire['statusHistory'] = $status['data'];
+        $this->fire['statusHistory'] = @$status['data'];
 
         return view('elements.status', array('fire' => $this->fire));
     }

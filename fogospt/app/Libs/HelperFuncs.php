@@ -35,9 +35,10 @@ class HelperFuncs
         );
         foreach ($cardinalDirections as $dir => $angles) {
             if ($deg >= $angles[0] && $deg < $angles[1]) {
-                $cardinal = str_replace("2", "", $dir);
+                return str_replace("2", "", $dir);
             }
         }
+
         return $cardinal;
     }
 }
