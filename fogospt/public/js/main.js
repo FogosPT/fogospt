@@ -48,6 +48,10 @@ $(document).ready(function () {
         success: function (data) {
             data = JSON.parse(data);
             if (data.success) {
+
+                for (i in data.data) {
+                    calculateImportanceValue(data.data[i]);
+                }
                 for (i in data.data) {
                     addMaker(data.data[i], mymap)
                 }
@@ -169,6 +173,67 @@ $(document).ready(function () {
 
 
 });
+const BASE_SIZE = 28;
+var DATA_FIRES = {number:0, topImportance:0, average:0};
+
+function calculateImportanceValue(data){
+    const manFactor = 1;
+    const terrainFactor = 3;
+    const aerialFactor = 7;
+
+    importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor;
+
+
+    DATA_FIRES.number += 1;
+    if (DATA_FIRES.topImportance < importance){
+        DATA_FIRES.topImportance = importance;
+    }
+
+    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance )/ (DATA_FIRES.number);
+
+    data.importance = importance;
+}
+
+
+function getPonderatedImportnaceFactor(importance) {
+
+    var importanceSize;
+    const percentageTop = 0.6;
+    if (importance > DATA_FIRES.average){
+        var topPercentage = importance / DATA_FIRES.topImportance;
+        topPercentage *= 1.3;
+
+
+        var avgPercentage = DATA_FIRES.average / importance;
+        avgPercentage *= 2;
+        if(avgPercentage >1){
+            avgPercentage = 1;
+        }
+
+        importanceSize = topPercentage-avgPercentage;
+
+        if(importanceSize >2){
+            importanceSize = 2;
+        }
+
+        if (importanceSize <1){
+            importanceSize = 1;
+        }
+    }
+
+    if (importance < DATA_FIRES.average){
+        var avgPercentage = importance / DATA_FIRES.average * 0.8;
+        if (avgPercentage < 0.5){
+           importanceSize = 0.5;
+        }else {
+            importanceSize = avgPercentage;
+        }
+    }
+
+    return importanceSize;
+
+}
+
 
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng);
@@ -186,19 +251,22 @@ function addMaker(item, mymap) {
 
     if (item.important) {
         if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-99 active"></i>';
+            iconHtml = '<i class="dot status-99 active"';
             mymap.setView(coords, 10);
         } else {
-            iconHtml = '<i class="dot status-99"></i>';
+            iconHtml = '<i class="dot status-99"';
         }
     } else {
         if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-' + item.statusCode + ' active"></i>';
+            iconHtml = '<i class="dot status-' + item.statusCode + ' active"';
             mymap.setView(coords, 10);
         } else {
-            iconHtml = '<i class="dot status-' + item.statusCode + '"></i>';
+            iconHtml = '<i class="dot status-' + item.statusCode + '"';
         }
     }
+
+    iconHtml += 'id='+item.id + '></i>';
+
 
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
@@ -206,9 +274,17 @@ function addMaker(item, mymap) {
         iconSize: [40, 40]
     }));
 
+
+
     window.fogosLayers[item.statusCode].addLayer(marker);
 
     marker.addTo(mymap);
+    var markerHtml = document.getElementById(item.id);
+
+    //Set costum size
+    var sizeFactor = getPonderatedImportnaceFactor(item.importance);
+    markerHtml.style.height = sizeFactor*BASE_SIZE + "px";
+    markerHtml.style.width = sizeFactor*BASE_SIZE + "px";
 
     marker.on('click', function (e) {
         $('#map').find('.active').removeClass('active');
@@ -237,6 +313,9 @@ function addMaker(item, mymap) {
     });
 
 }
+
+
+
 
 function plot(id) {
     var url = 'https://api-lb.fogos.pt/fires/data?id=' + id;
@@ -517,3 +596,6 @@ function randomGeo(latitude, longitude) {
         'longitude': newlon2.toFixed(5),
     }
 }
+
+
+

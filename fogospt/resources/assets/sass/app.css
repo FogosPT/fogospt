@@ -671,7 +671,8 @@ main #data-social-media iframe {
   border-radius: 50%;
   display: block;
   float: left;
-  margin-left: -13px;
+  /*Try correct coordinates*/
+  margin-left: 0px;
   background: no-repeat center / 60%;
 }
 
