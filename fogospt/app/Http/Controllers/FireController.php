@@ -42,7 +42,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
-        $this->fire['risk'] = $risk['data'][0]['hoje'];
+        $this->fire['risk'] = @$risk['data'][0]['hoje'];
 
         return view('elements.risk', array('fire' => $this->fire));
     }
