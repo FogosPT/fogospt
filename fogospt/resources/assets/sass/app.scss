@@ -748,7 +748,8 @@ main {
   border-radius: 50%;
   display: block;
   float: left;
-  margin-left: -13px;
+  /*Try correct coordinates*/
+  margin-left: 0px;
   background: no-repeat center / 60%;
   &.status-important {
     background-image: url('/img/ico_fire.svg');
@@ -764,7 +765,7 @@ main {
     background-image: url('/img/ico_alarm.svg');
     background-color: $c-red;
   }
-  // despacho de 1ºalerta
+  // despacho de 1_o_ alerta
   &.status-4 {
     background-image: url('/img/ico_alarm.svg');
     background-color: $c-orange;
@@ -779,12 +780,12 @@ main {
     background-image: url('/img/ico_pointer.svg');
     background-color: $c-red;
   }
-  // em resolução
+  // em resolucao
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
     background-color: $c-orange;
   }
-  // conclusão
+  // conclusao
   &.status-8 {
     background-image: url('/img/ico_fire.svg');
     background-color: $c-yellow;
