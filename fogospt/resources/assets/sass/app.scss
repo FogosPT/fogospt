@@ -747,18 +747,27 @@ main {
   width: 24px;
   border-radius: 50%;
   display: block;
-  float: left;
-  /*Try correct coordinates*/
-  margin-left: 0px;
+  /*Trying to correct coordinates*/
+
+  position:absolute; /*it can be fixed too*/
+  top: 50%;
+  left: 50%;
+  margin: 0 auto;
+
+  /*this to solve "the content will not be cut when the window is smaller than the content": */
+  max-width:100%;
+  max-height:100%;
+  overflow:auto;
+
   background: no-repeat center / 60%;
   &.status-important {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-darkred;
+    background-color: $c-vividRed;
   }
   // inicio
   &.status-99 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-darkred;
+    background-color: $c-red;
   }
   // despacho
   &.status-3 {
@@ -773,7 +782,7 @@ main {
   // em curso
   &.status-5 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-red;
+    background-color: $c-orange;
   }
   // chegada ao t0
   &.status-6 {
@@ -783,13 +792,21 @@ main {
   // em resolucao
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-orange;
+    background-color: $c-yellow;
   }
-  // conclusao
+
+/*  // conclusao
   &.status-8 {
     background-image: url('/img/ico_fire.svg');
     background-color: $c-yellow;
   }
+*/
+  // conclusao
+  &.status-8 {
+    background-image: url('/img/ico_fire.svg');
+    background-color: $c-grayRed;
+  }
+
   // vigilancia
   &.status-9 {
     background-image: url('/img/ico_watch.svg');
@@ -812,8 +829,28 @@ main {
   }
 
   &.active{
+    !important;
     height: 48px;
     width: 48px;
+  }
+
+  &.timeline{
+   height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  display: block;
+  float: left;
+  /*Try correct coordinates*/
+  margin-left: -13px;
+  background: no-repeat center / 60%;
+
+
+    position:static; /*it can be fixed too*/
+
+    /*this to solve "the content will not be cut when the window is smaller than the content": */
+    max-width:100%;
+    max-height:100%;
+    overflow:visible;
   }
 }
 

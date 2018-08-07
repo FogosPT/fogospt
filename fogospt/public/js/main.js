@@ -198,22 +198,18 @@ function calculateImportanceValue(data){
 function getPonderatedImportnaceFactor(importance) {
 
     var importanceSize;
-    const percentageTop = 0.6;
     if (importance > DATA_FIRES.average){
         var topPercentage = importance / DATA_FIRES.topImportance;
-        topPercentage *= 1.3;
+        topPercentage *= 2.3;
+        topPercentage += 0.5;
 
 
         var avgPercentage = DATA_FIRES.average / importance;
-        avgPercentage *= 2;
-        if(avgPercentage >1){
-            avgPercentage = 1;
-        }
 
         importanceSize = topPercentage-avgPercentage;
 
-        if(importanceSize >2){
-            importanceSize = 2;
+        if(importanceSize >1.75){
+            importanceSize = 1.75;
         }
 
         if (importanceSize <1){
@@ -271,7 +267,7 @@ function addMaker(item, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [40, 40]
+        iconSize: [60, 60]
     }));
 
 
