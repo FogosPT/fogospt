@@ -1,35 +1,61 @@
 /*
-Error: Invalid CSS after "  &.active{": expected "}", was "!important;"
-        on line 832 of app.scss
+Error: Invalid CSS after "&.": expected class name, was "87D37C"
+        on line 531 of app.scss
 
-827:     background-image: url('/img/ico_fake.svg');
-828:     background-color: $c-grey;
-829:   }
-830: 
-831:   &.active{
-832:     !important;
-833:     height: 48px;
-834:     width: 48px;
-835:   }
-836: 
-837:   &.timeline{
+526: 
+527:   &.CE773C {
+528:     background-image: url('https://fogos.pt/assets/images/markers/CE773C.png');
+529:   }
+530: 
+531:   &.87D37C {
+532:     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
+533:   }
+534: }
+535: 
+536: //.fire-status {
 
 Backtrace:
-app.scss:832
+app.scss:531
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:1278:in `expected'
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:1208:in `expected'
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:1203:in `tok!'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:679:in `block'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:747:in `declaration_or_ruleset'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:697:in `block_child'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:689:in `block_contents'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:678:in `block'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:670:in `ruleset'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:696:in `block_child'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:689:in `block_contents'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:137:in `stylesheet'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:41:in `parse'
-/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/engine.rb:414:in `_to_tree'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/static_parser.rb:194:in `class_selector'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/static_parser.rb:162:in `simple_selector_sequence'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/static_parser.rb:108:in `selector'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/static_parser.rb:83:in `selector_comma_sequence'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/parser.rb:1186:in `expr!'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/scss/static_parser.rb:20:in `parse_selector'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:434:in `visit_rule'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:135:in `with_frame'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:440:in `block (2 levels) in visit_rule'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:440:in `map'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:440:in `block in visit_rule'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:438:in `visit_rule'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:135:in `with_frame'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:52:in `map'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:167:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:166:in `visit_children'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:186:in `visit_root'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:157:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/visitors/perform.rb:10:in `visit'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/root_node.rb:36:in `css_tree'
+/usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/engine.rb:389:in `_render_with_sourcemap'
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/engine.rb:307:in `render_with_sourcemap'
 /usr/local/lib/ruby/gems/2.5.0/gems/sass-3.5.7/lib/sass/plugin/compiler.rb:462:in `update_stylesheet'
@@ -48,4 +74,4 @@ app.scss:832
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Invalid CSS after \"  &.active{\": expected \"}\", was \"!important;\"\A         on line 832 of app.scss\A \A 827:     background-image: url('/img/ico_fake.svg');\A 828:     background-color: $c-grey;\A 829:   }\A 830: \A 831:   &.active{\A 832:     !important;\A 833:     height: 48px;\A 834:     width: 48px;\A 835:   }\A 836: \A 837:   &.timeline{"; }
+  content: "Error: Invalid CSS after \"&.\": expected class name, was \"87D37C\"\A         on line 531 of app.scss\A \A 526: \A 527:   &.CE773C {\A 528:     background-image: url('https://fogos.pt/assets/images/markers/CE773C.png');\A 529:   }\A 530: \A 531:   &.87D37C {\A 532:     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');\A 533:   }\A 534: }\A 535: \A 536: //.fire-status {"; }

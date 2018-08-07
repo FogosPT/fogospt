@@ -245,22 +245,19 @@ function addMaker(item, mymap) {
 
     isActive = window.location.pathname.split('/')[2];
 
+    //Base iconHtml
+    iconHtml = '<i class="dot status-';
     if (item.important) {
-        if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-99 active"';
-            mymap.setView(coords, 10);
-        } else {
-            iconHtml = '<i class="dot status-99"';
-        }
-    } else {
-        if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-' + item.statusCode + ' active"';
-            mymap.setView(coords, 10);
-        } else {
-            iconHtml = '<i class="dot status-' + item.statusCode + '"';
-        }
+        iconHtml += '99';
+    }else{
+        iconHtml += item.statusCode;
+    }
+    if (isActive && isActive === item.id) {
+        iconHtml += 'active';
+        mymap.setView(coords, 10);
     }
 
+    iconHtml += '"';
     iconHtml += 'id='+item.id + '></i>';
 
 
@@ -271,20 +268,27 @@ function addMaker(item, mymap) {
     }));
 
 
-
     window.fogosLayers[item.statusCode].addLayer(marker);
 
     marker.addTo(mymap);
-    var markerHtml = document.getElementById(item.id);
-
-    //Set costum size
+    marker.id = item.id;
     var sizeFactor = getPonderatedImportnaceFactor(item.importance);
-    markerHtml.style.height = sizeFactor*BASE_SIZE + "px";
-    markerHtml.style.width = sizeFactor*BASE_SIZE + "px";
+
+    if (isActive && isActive === item.id) {
+        changeElementSizeById(item.id, 48 + sizeFactor);
+    }else{
+        changeElementSizeById(item.id, sizeFactor * BASE_SIZE);
+    }
+
+
 
     marker.on('click', function (e) {
-        $('#map').find('.active').removeClass('active');
-
+        var previouslyActive = $('#map').find('.active');
+        if (previouslyActive.length){
+            changeElementSizeById(previouslyActive[0].id, (parseFloat(previouslyActive[0].style.height) - 48) * BASE_SIZE);
+            previouslyActive.removeClass('active');
+        }
+        changeElementSizeById(marker.id, 48 + marker.sizeFactor);
         mymap.setView(e.latlng, 10);
 
         var $icon = $(e.target._icon);
@@ -593,5 +597,12 @@ function randomGeo(latitude, longitude) {
     }
 }
 
+function changeElementSizeById(id, size){
 
+    var markerHtml = document.getElementById(id);
+
+    //Set costum size
+    markerHtml.style.height = size + "px";
+    markerHtml.style.width = size + "px";
+}
 
