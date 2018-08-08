@@ -772,19 +772,33 @@ main #data-social-media iframe {
   width: 24px;
   border-radius: 50%;
   display: block;
-  float: left;
-  margin-left: -13px;
+  /*Trying to correct coordinates*/
+  position: absolute;
+  /*it can be fixed too*/
+  top: 50%;
+  left: 50%;
+  margin: 0 auto;
+  /*this to solve "the content will not be cut when the window is smaller than the content": */
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
   background: no-repeat center / 60%;
+  /*  // conclusao
+  &.status-8 {
+    background-image: url('/img/ico_fire.svg');
+    background-color: $c-yellow;
+  }
+*/
 }
 
 .dot.status-important {
   background-image: url("/img/ico_fire.svg");
-  background-color: #711313;
+  background-color: #ff410c;
 }
 
 .dot.status-99 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #711313;
+  background-color: #B81E1F;
 }
 
 .dot.status-3 {
@@ -799,7 +813,7 @@ main #data-social-media iframe {
 
 .dot.status-5 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #B81E1F;
+  background-color: #FF6E02;
 }
 
 .dot.status-6 {
@@ -809,12 +823,12 @@ main #data-social-media iframe {
 
 .dot.status-7 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #FF6E02;
+  background-color: #FFB202;
 }
 
 .dot.status-8 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #FFB202;
+  background-color: #b5a8a5;
 }
 
 .dot.status-9 {
@@ -840,6 +854,21 @@ main #data-social-media iframe {
 .dot.active {
   height: 48px;
   width: 48px;
+}
+
+.dot.timelineDot {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  display: block;
+  float: left;
+  /*Try correct coordinates*/
+  margin-left: -13px;
+  position: static;
+  /*this to solve "the content will not be cut when the window is smaller than the content": */
+  max-width: 100%;
+  max-height: 100%;
+  overflow: visible;
 }
 
 #status {

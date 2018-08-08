@@ -833,7 +833,7 @@ main {
     width: 48px;
   }
 
-  &.timeline{
+  &.timelineDot{
    height: 24px;
   width: 24px;
   border-radius: 50%;
@@ -841,10 +841,8 @@ main {
   float: left;
   /*Try correct coordinates*/
   margin-left: -13px;
-  background: no-repeat center / 60%;
 
-
-    position:static; /*it can be fixed too*/
+    position:static;
 
     /*this to solve "the content will not be cut when the window is smaller than the content": */
     max-width:100%;
