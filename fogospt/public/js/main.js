@@ -48,6 +48,10 @@ $(document).ready(function () {
         success: function (data) {
             data = JSON.parse(data);
             if (data.success) {
+
+                for (i in data.data) {
+                    calculateImportanceValue(data.data[i]);
+                }
                 for (i in data.data) {
                     addMaker(data.data[i], mymap)
                 }
@@ -169,6 +173,63 @@ $(document).ready(function () {
 
 
 });
+const BASE_SIZE = 28;
+var DATA_FIRES = {number:0, topImportance:0, average:0};
+
+function calculateImportanceValue(data){
+    const manFactor = 1;
+    const terrainFactor = 3;
+    const aerialFactor = 7;
+
+    importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor;
+
+
+    DATA_FIRES.number += 1;
+    if (DATA_FIRES.topImportance < importance){
+        DATA_FIRES.topImportance = importance;
+    }
+
+    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance )/ (DATA_FIRES.number);
+
+    data.importance = importance;
+}
+
+
+function getPonderatedImportnaceFactor(importance) {
+
+    var importanceSize;
+    if (importance > DATA_FIRES.average){
+        var topPercentage = importance / DATA_FIRES.topImportance;
+        topPercentage *= 2.3;
+        topPercentage += 0.5;
+
+
+        var avgPercentage = DATA_FIRES.average / importance;
+
+        importanceSize = topPercentage-avgPercentage;
+
+        if(importanceSize >1.75){
+            importanceSize = 1.75;
+        }
+
+        if (importanceSize <1){
+            importanceSize = 1;
+        }
+    }
+
+    if (importance < DATA_FIRES.average){
+        var avgPercentage = importance / DATA_FIRES.average * 0.8;
+        if (avgPercentage < 0.5){
+           importanceSize = 0.5;
+        }else {
+            importanceSize = avgPercentage;
+        }
+    }
+
+    return importanceSize;
+
+}
+
 
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng);
@@ -184,35 +245,52 @@ function addMaker(item, mymap) {
 
     isActive = window.location.pathname.split('/')[2];
 
+    //Base iconHtml
+    iconHtml = '<i class="dot status-';
     if (item.important) {
-        if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-99 active"></i>';
-            mymap.setView(coords, 10);
-        } else {
-            iconHtml = '<i class="dot status-99"></i>';
-        }
-    } else {
-        if (isActive && isActive === item.id) {
-            iconHtml = '<i class="dot status-' + item.statusCode + ' active"></i>';
-            mymap.setView(coords, 10);
-        } else {
-            iconHtml = '<i class="dot status-' + item.statusCode + '"></i>';
-        }
+        iconHtml += '99';
+    }else{
+        iconHtml += item.statusCode;
     }
+    if (isActive && isActive === item.id) {
+        iconHtml += 'active';
+        mymap.setView(coords, 10);
+    }
+
+    iconHtml += '"';
+    iconHtml += 'id='+item.id + '></i>';
+
 
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [40, 40]
+        iconSize: [60, 60],
+        forceZIndex: item.importance
     }));
+
 
     window.fogosLayers[item.statusCode].addLayer(marker);
 
     marker.addTo(mymap);
+    marker.id = item.id;
+    var sizeFactor = getPonderatedImportnaceFactor(item.importance);
+    marker.sizeFactor = sizeFactor;
+
+    if (isActive && isActive === item.id) {
+        changeElementSizeById(item.id, 48 + sizeFactor);
+    }else{
+        changeElementSizeById(item.id, sizeFactor * BASE_SIZE);
+    }
+
+
 
     marker.on('click', function (e) {
-        $('#map').find('.active').removeClass('active');
-
+        var previouslyActive = $('#map').find('.active');
+        if (previouslyActive.length){
+            changeElementSizeById(previouslyActive[0].id, (parseFloat(previouslyActive[0].style.height) - 48) * BASE_SIZE);
+            previouslyActive.removeClass('active');
+        }
+        changeElementSizeById(marker.id, 48 + marker.sizeFactor);
         mymap.setView(e.latlng, 10);
 
         var $icon = $(e.target._icon);
@@ -237,6 +315,9 @@ function addMaker(item, mymap) {
     });
 
 }
+
+
+
 
 function plot(id) {
     var url = 'https://api-lb.fogos.pt/fires/data?id=' + id;
@@ -517,3 +598,14 @@ function randomGeo(latitude, longitude) {
         'longitude': newlon2.toFixed(5),
     }
 }
+
+function changeElementSizeById(id, size){
+
+    var markerHtml = document.getElementById(id);
+
+    //Set costum size
+    markerHtml.style.height = size + "px";
+    markerHtml.style.width = size + "px";
+}
+
+
