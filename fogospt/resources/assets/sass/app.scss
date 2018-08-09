@@ -767,7 +767,7 @@ main {
   // inicio
   &.status-99 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-red;
+    background-color: $c-yellow;
   }
   // despacho
   &.status-3 {
@@ -782,7 +782,7 @@ main {
   // em curso
   &.status-5 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-orange;
+    background-color: $c-red;
   }
   // chegada ao t0
   &.status-6 {
@@ -792,7 +792,7 @@ main {
   // em resolucao
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-yellow;
+    background-color: $c-orange;
   }
 
 /*  // conclusao
