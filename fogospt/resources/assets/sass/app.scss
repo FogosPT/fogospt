@@ -750,13 +750,8 @@ main {
   /*Trying to correct coordinates*/
 
   position:absolute; /*it can be fixed too*/
-  top: 50%;
-  left: 50%;
   margin: 0 auto;
 
-  /*this to solve "the content will not be cut when the window is smaller than the content": */
-  max-width:100%;
-  max-height:100%;
   overflow:auto;
 
   background: no-repeat center / 60%;
@@ -767,7 +762,7 @@ main {
   // inicio
   &.status-99 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-red;
+    background-color: $c-yellow;
   }
   // despacho
   &.status-3 {
@@ -792,7 +787,7 @@ main {
   // em resolucao
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-yellow;
+    background-color: $c-red;
   }
 
 /*  // conclusao
@@ -841,6 +836,24 @@ main {
   float: left;
   /*Try correct coordinates*/
   margin-left: -13px;
+
+    position:static;
+
+    /*this to solve "the content will not be cut when the window is smaller than the content": */
+    max-width:100%;
+    max-height:100%;
+    overflow:visible;
+  }
+
+
+  &.dotInfo{
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    display: block;
+    float: left;
+    /*Try correct coordinates*/
+    margin-left: -13px;
 
     position:static;
 

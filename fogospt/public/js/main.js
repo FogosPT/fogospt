@@ -259,12 +259,15 @@ function addMaker(item, mymap) {
 
     iconHtml += '"';
     iconHtml += 'id='+item.id + '></i>';
+    var sizeFactor = getPonderatedImportnaceFactor(item.importance);
+    marker.sizeFactor = sizeFactor;
+    var size = sizeFactor * BASE_SIZE;
 
 
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [60, 60],
+        iconSize: [size, size],
         forceZIndex: item.importance
     }));
 
@@ -273,13 +276,12 @@ function addMaker(item, mymap) {
 
     marker.addTo(mymap);
     marker.id = item.id;
-    var sizeFactor = getPonderatedImportnaceFactor(item.importance);
-    marker.sizeFactor = sizeFactor;
+
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor);
     }else{
-        changeElementSizeById(item.id, sizeFactor * BASE_SIZE);
+        changeElementSizeById(item.id, size);
     }
 
 
