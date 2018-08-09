@@ -775,12 +775,8 @@ main #data-social-media iframe {
   /*Trying to correct coordinates*/
   position: absolute;
   /*it can be fixed too*/
-  top: 50%;
-  left: 50%;
   margin: 0 auto;
   /*this to solve "the content will not be cut when the window is smaller than the content": */
-  max-width: 100%;
-  max-height: 100%;
   overflow: auto;
   background: no-repeat center / 60%;
   /*  // conclusao
@@ -823,12 +819,12 @@ main #data-social-media iframe {
 
 .dot.status-7 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #FF6E02;
+  background-color: #B81E1F;
 }
 
 .dot.status-8 {
   background-image: url("/img/ico_fire.svg");
-  background-color: #b5a8a5;
+  background-color: #8e7e7d;
 }
 
 .dot.status-9 {

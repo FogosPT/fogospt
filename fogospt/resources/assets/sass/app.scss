@@ -750,13 +750,11 @@ main {
   /*Trying to correct coordinates*/
 
   position:absolute; /*it can be fixed too*/
-  top: 50%;
-  left: 50%;
   margin: 0 auto;
 
   /*this to solve "the content will not be cut when the window is smaller than the content": */
-  max-width:100%;
-  max-height:100%;
+  //max-width:100%;
+  //max-height:100%;
   overflow:auto;
 
   background: no-repeat center / 60%;
@@ -782,7 +780,7 @@ main {
   // em curso
   &.status-5 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-red;
+    background-color: $c-orange;
   }
   // chegada ao t0
   &.status-6 {
@@ -792,7 +790,7 @@ main {
   // em resolucao
   &.status-7 {
     background-image: url('/img/ico_fire.svg');
-    background-color: $c-orange;
+    background-color: $c-red;
   }
 
 /*  // conclusao
