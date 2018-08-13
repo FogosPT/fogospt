@@ -7,7 +7,9 @@
 @section('content')
     <main role="main" class="mb-auto">
         @include('includes.sidebar')
-        <div id="map"></div>
+        <div id="map">
+            <a href="http://mapbox.com/about/maps" class='mapbox-wordmark' target="_blank">Mapbox</a>
+        </div>
     </main>
 @endsection
 

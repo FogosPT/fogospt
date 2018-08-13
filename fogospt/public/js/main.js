@@ -14,6 +14,8 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap);
 
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>');
+
 
     addRisk(mymap);
     mymap.on('click', function (e) {
@@ -129,7 +131,7 @@ $(document).ready(function () {
 
 
                 var baseLayers = {
-                    'Desativar Camadas':  L.tileLayer(''),
+                    'Desativar Camadas': L.tileLayer(''),
                     "Temperatura": tempLayer,
                     "Pressão": pressureLayer,
                     "Vento": windLayer,
@@ -173,58 +175,57 @@ $(document).ready(function () {
 
 
 });
-const BASE_SIZE = 28;
-var DATA_FIRES = {number:0, topImportance:0, average:0};
+const BASE_SIZE = 20;
+var DATA_FIRES = {number: 0, topImportance: 0, average: 0};
 
-function calculateImportanceValue(data){
+function calculateImportanceValue(data) {
     const manFactor = 1;
     const terrainFactor = 3;
     const aerialFactor = 7;
 
-    importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor;
-
+    var importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor;
 
     DATA_FIRES.number += 1;
-    if (DATA_FIRES.topImportance < importance){
+    if (DATA_FIRES.topImportance < importance) {
         DATA_FIRES.topImportance = importance;
     }
 
-    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance )/ (DATA_FIRES.number);
+    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance) / (DATA_FIRES.number);
 
     data.importance = importance;
 }
 
 
 function getPonderatedImportnaceFactor(importance) {
-
     var importanceSize;
-    if (importance > DATA_FIRES.average){
+    if (importance > DATA_FIRES.average) {
         var topPercentage = importance / DATA_FIRES.topImportance;
         topPercentage *= 2.3;
         topPercentage += 0.5;
 
-
         var avgPercentage = DATA_FIRES.average / importance;
 
-        importanceSize = topPercentage-avgPercentage;
+        importanceSize = topPercentage - avgPercentage;
 
-        if(importanceSize >1.75){
+        if (importanceSize > 1.75) {
             importanceSize = 1.75;
         }
 
-        if (importanceSize <1){
+        if (importanceSize < 1) {
             importanceSize = 1;
         }
     }
 
-    if (importance < DATA_FIRES.average){
+    if (importance < DATA_FIRES.average) {
         var avgPercentage = importance / DATA_FIRES.average * 0.8;
-        if (avgPercentage < 0.5){
-           importanceSize = 0.5;
-        }else {
+        if (avgPercentage < 0.5) {
+            importanceSize = 0.5;
+        } else {
             importanceSize = avgPercentage;
         }
     }
+
+    console.log(importanceSize);
 
     return importanceSize;
 
@@ -249,21 +250,22 @@ function addMaker(item, mymap) {
     iconHtml = '<i class="dot status-';
     if (item.important) {
         iconHtml += '99';
-    }else{
+    } else {
         iconHtml += item.statusCode;
     }
     if (isActive && isActive === item.id) {
-        iconHtml += 'active';
+        iconHtml += ' active';
         mymap.setView(coords, 10);
     }
 
     iconHtml += '"';
-    iconHtml += 'id='+item.id + '></i>';
+    iconHtml += 'id=' + item.id + '></i>';
     var sizeFactor = getPonderatedImportnaceFactor(item.importance);
     marker.sizeFactor = sizeFactor;
     var size = sizeFactor * BASE_SIZE;
 
 
+    console.log(size);
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
@@ -280,15 +282,13 @@ function addMaker(item, mymap) {
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor);
-    }else{
+    } else {
         changeElementSizeById(item.id, size);
     }
 
-
-
     marker.on('click', function (e) {
         var previouslyActive = $('#map').find('.active');
-        if (previouslyActive.length){
+        if (previouslyActive.length) {
             changeElementSizeById(previouslyActive[0].id, (parseFloat(previouslyActive[0].style.height) - 48) * BASE_SIZE);
             previouslyActive.removeClass('active');
         }
@@ -317,8 +317,6 @@ function addMaker(item, mymap) {
     });
 
 }
-
-
 
 
 function plot(id) {
@@ -517,17 +515,20 @@ function addRisk(mymap) {
                                         });
 
                                         var baseMaps = {
-                                                'Desativar Risco':  L.tileLayer(''),
-                                                'Risco Hoje': riskToday,
-                                                'Risco Amanhã': riskTomorrow,
-                                                'Risco Depois': riskAfter,
+                                            'Desativar Risco': L.tileLayer(''),
+                                            'Risco Hoje': riskToday,
+                                            'Risco Amanhã': riskTomorrow,
+                                            'Risco Depois': riskAfter,
 
                                         };
 
 
                                         //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
                                         //map.addControl(riskLayerControl);
-                                        L.control.layers(baseMaps,null, {collapsed: false, position: 'topright'}).addTo(mymap);
+                                        L.control.layers(baseMaps, null, {
+                                            collapsed: false,
+                                            position: 'topright'
+                                        }).addTo(mymap);
                                     }
                                 }
                             });
@@ -601,7 +602,7 @@ function randomGeo(latitude, longitude) {
     }
 }
 
-function changeElementSizeById(id, size){
+function changeElementSizeById(id, size) {
 
     var markerHtml = document.getElementById(id);
 
