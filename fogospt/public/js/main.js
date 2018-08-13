@@ -21,8 +21,15 @@ $(document).ready(function () {
     mymap.on('click', function (e) {
         mymap.setView(e.latlng);
         window.history.pushState('obj', 'Fogos.pt', '/');
+
+        var previouslyActive = $('#map').find('.active');
+        if (previouslyActive.length) {
+            changeElementSizeById(previouslyActive[0].id, (parseFloat(previouslyActive[0].style.height) - 48) * BASE_SIZE);
+            previouslyActive.removeClass('active');
+        }
+
         $('.sidebar').removeClass('active');
-        $('#map').find('.active').removeClass('active');
+        // $('#map').find('.active').removeClass('active');
     });
 
     var res = window.location.pathname.match(/^\/fogo\/(\d+)/);
@@ -599,7 +606,6 @@ function randomGeo(latitude, longitude) {
 }
 
 function changeElementSizeById(id, size) {
-
     var markerHtml = document.getElementById(id);
 
     //Set costum size
