@@ -582,6 +582,7 @@ main #data-social-media iframe {
     -webkit-transition: width .3s;
     transition: width .3s;
     min-height: 0;
+    height: initial;
   }
 
   main .sidebar.active + #map {
@@ -602,6 +603,7 @@ main #data-social-media iframe {
 
 #map {
   width: 100%;
+  height: 100%;
 }
 
 .marker {

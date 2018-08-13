@@ -501,6 +501,7 @@ main {
       width: 100%;
       transition: width .3s;
       min-height: 0;
+      height: initial;
     }
 
     .sidebar.active + #map {
@@ -525,7 +526,7 @@ main {
 
 #map {
   width: 100%;
-  //height: 100%;
+  height: 100%;
 }
 
 .marker {
