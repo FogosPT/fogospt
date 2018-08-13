@@ -175,7 +175,7 @@ $(document).ready(function () {
 
 
 });
-const BASE_SIZE = 20;
+const BASE_SIZE = 22;
 var DATA_FIRES = {number: 0, topImportance: 0, average: 0};
 
 function calculateImportanceValue(data) {
@@ -264,8 +264,6 @@ function addMaker(item, mymap) {
     marker.sizeFactor = sizeFactor;
     var size = sizeFactor * BASE_SIZE;
 
-
-    console.log(size);
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
@@ -273,12 +271,10 @@ function addMaker(item, mymap) {
         forceZIndex: item.importance
     }));
 
-
     window.fogosLayers[item.statusCode].addLayer(marker);
 
     marker.addTo(mymap);
     marker.id = item.id;
-
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor);
