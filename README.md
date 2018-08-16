@@ -52,6 +52,11 @@ $ npm install
 $ npm run dev
 ```
 
+## Slack
+
+https://communityinviter.com/apps/fogospt/fogos-pt
+
+
 License
 ----
 Copyright 2018 
