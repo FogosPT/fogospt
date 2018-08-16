@@ -31,3 +31,5 @@
     };
     firebase.initializeApp(config);
 </script>
+
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="55340827-93d2-4bcc-a2e2-2e3ba451bafb" type="text/javascript" async></script>
