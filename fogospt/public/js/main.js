@@ -195,7 +195,6 @@ const BASE_SIZE = 22
 var DATA_FIRES = {number: 0, topImportance: 0, average: 0}
 
 function calculateImportanceValue (data) {
-  console.log(data)
   const manFactor = 1
   const terrainFactor = 3
   const aerialFactor = 7
