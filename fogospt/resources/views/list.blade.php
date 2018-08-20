@@ -29,12 +29,14 @@
 
                                 <h4 class="card-title">@lang('elements.cards.status.status')</h4>
                                 <div class="f-status">
+                                    @isset($fire['status'])
                                     <div class="list-status-container">
                                         <div>
                                             <div><span class="dot status-{{ $fire['statusCode'] }}"></span></div>
                                             <div><span class="status-label">{{ $fire['status'] }}</span></div>
                                         </div>
                                     </div>
+                                    @endisset
                                 </div>
                             </div>
                         </div>
