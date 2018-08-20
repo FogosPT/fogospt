@@ -900,6 +900,23 @@ main {
   }
 }
 
+/** List style **/
+.list-status-container {
+  margin-top: 1rem;
+  >div {
+    div:first-child {
+      margin-right: 6px;
+    }
+    div {
+      float: left;
+    }
+    .dot {
+      position: unset !important;
+    }
+  }
+
+}
+
 .notifications {
   display: block !important;
 
@@ -963,4 +980,9 @@ main {
 
 .toast-top-right {
   margin-top: 70px !important;
+}
+
+/** Helpers **/
+.margin-top-10 {
+  margin-top: 10px;
 }

@@ -1,9 +1,14 @@
 @extends('app')
 
 @section('content')
-    <div class="container">
-        <main role="main" class="mb-auto margin-top-10 bg-white">
+    <main role="main" class="mb-auto margin-top-10">
+        <div class="container">
             <div class="row">
+                <div class="col-12">
+                    <h1>@lang('includes.menu.partnerships')</h1>
+                </div>
+            </div>
+            <div class="row  bg-white">
                 <div class="col-sm">
                     <div class="card" style="width: 18rem;">
                         <div class="card-body">
@@ -23,6 +28,6 @@
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 @endsection

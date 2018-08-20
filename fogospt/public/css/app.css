@@ -916,6 +916,24 @@ main #data-social-media iframe {
   margin-bottom: 15px;
 }
 
+/** List style **/
+
+.list-status-container {
+  margin-top: 1rem;
+}
+
+.list-status-container > div div:first-child {
+  margin-right: 6px;
+}
+
+.list-status-container > div div {
+  float: left;
+}
+
+.list-status-container > div .dot {
+  position: unset !important;
+}
+
 .notifications {
   display: block !important;
 }
@@ -986,5 +1004,11 @@ main #data-social-media iframe {
 
 .toast-top-right {
   margin-top: 70px !important;
+}
+
+/** Helpers **/
+
+.margin-top-10 {
+  margin-top: 10px;
 }
 
