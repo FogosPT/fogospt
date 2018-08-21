@@ -47,34 +47,35 @@
                 </div>
             </div>
 
-            <section class="auth bg-white">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title">Gerais</h2>
-                        @foreach(config('custom.notifications') as $item)
-                            <div class="row justify-content-start">
-                                <div class="col-sm"><strong>@lang($item["name"])</strong></div>
-                                <div class="col-sm">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               data-value="{{$item["value"]}}"
-                                               data-type="site">
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-                                <div class="col-sm d-none">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               data-value="{{$item["value"]}}"
-                                               data-type="sms">
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
+            {{----}}
+            {{--<section class="auth bg-white">--}}
+                {{--<div class="card">--}}
+                    {{--<div class="card-body">--}}
+                        {{--<h2 class="card-title">Gerais</h2>--}}
+                        {{--@foreach(config('custom.notifications') as $item)--}}
+                            {{--<div class="row justify-content-start">--}}
+                                {{--<div class="col-sm"><strong>@lang($item["name"])</strong></div>--}}
+                                {{--<div class="col-sm">--}}
+                                    {{--<label class="custom-control custom-checkbox">--}}
+                                        {{--<input type="checkbox" class="custom-control-input"--}}
+                                               {{--data-value="{{$item["value"]}}"--}}
+                                               {{--data-type="site">--}}
+                                        {{--<span class="custom-control-indicator"></span>--}}
+                                    {{--</label>--}}
+                                {{--</div>--}}
+                                {{--<div class="col-sm d-none">--}}
+                                    {{--<label class="custom-control custom-checkbox">--}}
+                                        {{--<input type="checkbox" class="custom-control-input"--}}
+                                               {{--data-value="{{$item["value"]}}"--}}
+                                               {{--data-type="sms">--}}
+                                        {{--<span class="custom-control-indicator"></span>--}}
+                                    {{--</label>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--@endforeach--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</section>--}}
 
             <section class="auth bg-white">
                 <div class="card">
