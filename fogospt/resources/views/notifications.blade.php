@@ -15,7 +15,7 @@
             </div>
 
             <div class="row no-auth is-not-supported">
-                <div class="card">
+                <div class="card col-12">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12">
@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <section class="auth bg-white is-supported">
+            <section class="auth bg-white">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Gerais</h2>
@@ -76,7 +76,7 @@
                 </div>
             </section>
 
-            <section class="auth bg-white is-supported">
+            <section class="auth bg-white">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Distritos</h2>
