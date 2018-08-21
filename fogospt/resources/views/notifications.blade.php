@@ -21,12 +21,12 @@
                             <div class="col-6">
                                 <p>Para receber notificações de novos incêndios, ocorrências importantes ou outros
                                     avisos, clique no
-                                    botão ao lado.</p>
+                                    botão ao lado para iniciar a autorização.</p>
                             </div>
                             <div class="col-6">
                                 <button type="button"
                                         class="btn btn-outline-success btn-lg btn-block js-notifications-auth">Quero
-                                    receber notificações
+                                    receber notificações.
                                 </button>
                             </div>
                         </div>

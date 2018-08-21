@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    const messaging = firebase.messaging();
+
+    messaging.onMessage(function(payload) {
+        toastr.warning(payload.notification.body);
+    });
+
+
     plot();
     plotWeekStats();
     plotStats8hours();

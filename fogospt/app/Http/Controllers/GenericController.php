@@ -101,7 +101,7 @@ class GenericController extends Controller
         $token = $request->get('token');
         $topic = $request->get('topic');
 
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/web/{$topic}");
+        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/web-{$topic}");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POSTFIELDS, array());
@@ -109,8 +109,44 @@ class GenericController extends Controller
         $result = curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        var_dump($httpcode);
-        echo "The Result : " . $result;
+        if( $httpcode === 200){
+            return \Response::json(['success' => true]);
+        } else {
+            return \Response::json(['success' => false]);
+        }
+    }
+
+    public function unsubscribe(Request $request)
+    {
+        $headers = array
+        (
+            'Authorization: key=' . env('FIREBASE_TOKEN'),
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+
+        $token = $request->get('token');
+        $topic = $request->get('topic');
+
+        $params = array(
+            "to" => "/topics/web-" . $topic,
+            "registration_tokens" => [$token]
+        );
+
+        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1:batchRemove");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if( $httpcode === 200){
+            return \Response::json(['success' => true]);
+        } else {
+            return \Response::json(['success' => false]);
+        }
     }
 
     /**
