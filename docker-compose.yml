@@ -14,7 +14,17 @@ services:
             - ./fogospt:/var/www/app
         environment:
             - APP_ENV=development
-            - XDEBUG_CONFIG=remote_host=127.0.0.1 remote_port=9000 remote_connect_back=0 
+            - XDEBUG_CONFIG=remote_host=127.0.0.1 remote_port=9000 remote_connect_back=0
+        links:
+            - mongo
+    mongo:
+        image: mongo
+        restart: always
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: fogos
+            MONGO_INITDB_ROOT_PASSWORD: fogospt
 
 
 

@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
 		$PHPIZE_DEPS \
 		ca-certificates \
 		curl \
+		wget \
+		git \
 		libedit2 \
 		libsqlite3-0 \
 		libxml2 \
@@ -70,6 +72,12 @@ RUN set -xe \
 	&& { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
 	&& make clean \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps
+
+#install mongo libs
+RUN  apt-get update && apt-get install -y php-pear \
+    && apt-get install -y libcurl4-openssl-dev pkg-config libssl-dev \
+    && pecl install mongodb && echo "extension=mongodb.so" >> /usr/local/etc/php/php.ini \
+    && rm -r /var/lib/apt/lists/*
 
 #change here
 WORKDIR /var/www/app
