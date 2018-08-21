@@ -14,7 +14,20 @@
                 </div>
             </div>
 
-            <div class="row no-auth">
+            <div class="row no-auth is-not-supported">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>O seu browser não suporta notificações :'(</p>
+                                <p>Experimente usar o <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a> ou o <a href="https://www.mozilla.org/en-US/firefox/" target="_blank">Firefox</a>!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row no-auth is-supported">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -34,7 +47,7 @@
                 </div>
             </div>
 
-            <section class="auth bg-white">
+            <section class="auth bg-white is-supported">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Gerais</h2>
@@ -63,7 +76,7 @@
                 </div>
             </section>
 
-            <section class="auth bg-white">
+            <section class="auth bg-white is-supported">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Distritos</h2>

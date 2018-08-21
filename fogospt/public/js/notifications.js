@@ -1,20 +1,30 @@
 $(document).ready(function () {
-    toggleNotification();
-    setNotificationToggles();
 
-    $('.js-notifications-auth').on('click', requestAuth);
+    if(!window.PushManager){
+        $('.is-supported').hide();
+        $('.is-not-supported').show();
+    } else {
+        $('.is-supported').show();
+        $('.is-not-supported').hide();
 
-    const messaging = firebase.messaging();
+        toggleNotification();
+        setNotificationToggles();
 
-    messaging.onMessage(function(payload) {
-        toastr.warning(payload.notification.body);
-    });
+        $('.js-notifications-auth').on('click', requestAuth);
 
-    notificationsAuth = store.get('notificationsAuth');
-    if(notificationsAuth){
-        $('.no-auth').hide();
-        $('.auth').show();
+        const messaging = firebase.messaging();
+
+        messaging.onMessage(function(payload) {
+            toastr.warning(payload.notification.body);
+        });
+
+        notificationsAuth = store.get('notificationsAuth');
+        if(notificationsAuth){
+            $('.no-auth').hide();
+            $('.auth').show();
+        }
     }
+
 });
 
 function setNotificationToggles() {
