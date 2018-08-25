@@ -32,8 +32,10 @@ Route::get('/views/status/{id}', 'FireController@getStatusCard');
 Route::get('/views/meteo/{id}', 'FireController@getMeteoCard');
 Route::get('/views/extra/{id}', 'FireController@getExtraCard');
 
+Route::get('/notificacoes', 'GenericController@getNotifications')->name('notifications');
+Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');
+Route::post('/notifications/unsubscribe', 'GenericController@unsubscribe')->name('notifications-subscribe');
+
 if(ENV('APP_ENV') !== 'production'){
-    Route::get('/notificacoes', 'GenericController@getNotifications')->name('notifications');
-    Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');
     Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
 }

@@ -14,19 +14,32 @@
                 </div>
             </div>
 
-            <div class="row no-auth">
+            <div class="row no-auth is-not-supported">
+                <div class="card col-12">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>O seu browser não suporta notificações :'(</p>
+                                <p>Experimente usar o <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a> ou o <a href="https://www.mozilla.org/en-US/firefox/" target="_blank">Firefox</a>!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row no-auth is-supported">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
                                 <p>Para receber notificações de novos incêndios, ocorrências importantes ou outros
                                     avisos, clique no
-                                    botão ao lado.</p>
+                                    botão ao lado para iniciar a autorização.</p>
                             </div>
                             <div class="col-6">
                                 <button type="button"
                                         class="btn btn-outline-success btn-lg btn-block js-notifications-auth">Quero
-                                    receber notificações
+                                    receber notificações.
                                 </button>
                             </div>
                         </div>
@@ -34,34 +47,35 @@
                 </div>
             </div>
 
-            <section class="auth bg-white">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title">Gerais</h2>
-                        @foreach(config('custom.notifications') as $item)
-                            <div class="row justify-content-start">
-                                <div class="col-sm"><strong>@lang($item["name"])</strong></div>
-                                <div class="col-sm">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               data-value="{{$item["value"]}}"
-                                               data-type="site">
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-                                <div class="col-sm d-none">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               data-value="{{$item["value"]}}"
-                                               data-type="sms">
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
+            {{----}}
+            {{--<section class="auth bg-white">--}}
+                {{--<div class="card">--}}
+                    {{--<div class="card-body">--}}
+                        {{--<h2 class="card-title">Gerais</h2>--}}
+                        {{--@foreach(config('custom.notifications') as $item)--}}
+                            {{--<div class="row justify-content-start">--}}
+                                {{--<div class="col-sm"><strong>@lang($item["name"])</strong></div>--}}
+                                {{--<div class="col-sm">--}}
+                                    {{--<label class="custom-control custom-checkbox">--}}
+                                        {{--<input type="checkbox" class="custom-control-input"--}}
+                                               {{--data-value="{{$item["value"]}}"--}}
+                                               {{--data-type="site">--}}
+                                        {{--<span class="custom-control-indicator"></span>--}}
+                                    {{--</label>--}}
+                                {{--</div>--}}
+                                {{--<div class="col-sm d-none">--}}
+                                    {{--<label class="custom-control custom-checkbox">--}}
+                                        {{--<input type="checkbox" class="custom-control-input"--}}
+                                               {{--data-value="{{$item["value"]}}"--}}
+                                               {{--data-type="sms">--}}
+                                        {{--<span class="custom-control-indicator"></span>--}}
+                                    {{--</label>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--@endforeach--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</section>--}}
 
             <section class="auth bg-white">
                 <div class="card">

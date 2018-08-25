@@ -16,11 +16,7 @@
                 <a class="nav-item nav-link" href="{{route('warnings')}}">@lang('includes.menu.warnings')</a>
                 <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
                 <a class="nav-item nav-link" href="{{route('stats')}}">@lang('includes.menu.stats')</a>
-
-                @if(ENV('APP_ENV') !== 'production')
-                    <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
-                @endif
-
+                <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
                 <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
                 <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
 
