@@ -8,6 +8,11 @@
                         {{ $fire['location'] }} - {{ $fire['localidade'] }}
                     @endisset
                 </p>
+
+                @isset($fire['id'])
+                    <i class="fas fa-bell click-notification" data-id="{{$fire['id']}}"></i>
+                @endisset
+
                 <h4 class="card-title">@lang('elements.cards.general.start_at')</h4>
                 <p class="f-start">
                     @isset($fire['date'])

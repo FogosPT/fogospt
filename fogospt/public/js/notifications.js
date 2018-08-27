@@ -115,11 +115,11 @@ function toggleNotification() {
                         if(data.success){
                             toastr.success('Registado com sucesso');
                             store.set($that.data('value'), true);
-                            sendEvent('notifications', 'subscribed', topic );
+                            // sendEvent('notifications', 'subscribed', topic );
                         } else {
                             toastr.error('Ocorreu um erro');
                             store.set($that.data('value'), false);
-                            sendEvent('notifications', 'subscribed error', topic );
+                            // sendEvent('notifications', 'subscribed error', topic );
                         }
                     },
                 });

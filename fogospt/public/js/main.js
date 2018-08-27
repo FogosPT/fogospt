@@ -5,6 +5,35 @@ $(document).ready(function () {
         toastr.warning(payload.notification.body)
     })
 
+    $('.click-notification').on('click', function(e){
+        $that = $(e.currentTarget);
+
+        const url = '/notifications/subscribe';
+
+        const topic =  $that.data('value');
+        const data   = {
+            'token' : store.get('token'),
+            'topic' : $that.data('id')
+        };
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function(data){
+                if(data.success){
+                    toastr.success('Registado com sucesso');
+                    store.set($that.data('value'), true);
+                    sendEvent('notifications', 'subscribed', topic );
+                } else {
+                    toastr.error('Ocorreu um erro');
+                    store.set($that.data('value'), false);
+                    sendEvent('notifications', 'subscribed error', topic );
+                }
+            },
+        });
+    });
+
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
 
     var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
@@ -318,6 +347,7 @@ function addMaker(item, mymap) {
         $('.f-terrain').text(item.terrain)
         $('.f-nature').text(item.natureza)
         $('.f-start').text(item.date + ' ' + item.hour)
+        $('.click-notification').data('id', item.id)
 
         window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
         status(item.id)
