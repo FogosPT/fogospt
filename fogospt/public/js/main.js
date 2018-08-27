@@ -23,12 +23,11 @@ $(document).ready(function () {
             success: function(data){
                 if(data.success){
                     toastr.success('Registado com sucesso');
-                    store.set($that.data('value'), true);
-                    sendEvent('notifications', 'subscribed', topic );
+                    $('.notification-container').find('i').removeClass('far').addClass('fas')
+                    store.set('fire-' + window.location.pathname.split('/')[2], true);
                 } else {
                     toastr.error('Ocorreu um erro');
-                    store.set($that.data('value'), false);
-                    sendEvent('notifications', 'subscribed error', topic );
+                    store.set('fire-' + window.location.pathname.split('/')[2], false);
                 }
             },
         });
@@ -303,6 +302,16 @@ function addMaker(item, mymap) {
         mymap.setView(coords, 10)
     }
 
+    notificationsAuth = store.get('notificationsAuth');
+    if(notificationsAuth){
+        $('.notification-container').css({'display':'inline-block'});
+        let notifyFire = store.get('fire-' + item.id);
+        if(notifyFire){
+            $('.notification-container').find('i').removeClass('far').addClass('fas')
+        }
+
+    }
+
     iconHtml += '"'
     iconHtml += 'id=' + item.id + '></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
@@ -329,6 +338,7 @@ function addMaker(item, mymap) {
 
     marker.on('click', function (e) {
         var previouslyActive = $('#map').find('.active')
+
         if (previouslyActive.length) {
             changeElementSizeById(previouslyActive[0].id, (parseFloat(previouslyActive[0].style.height) - 48) * BASE_SIZE)
             previouslyActive.removeClass('active')
@@ -348,6 +358,17 @@ function addMaker(item, mymap) {
         $('.f-nature').text(item.natureza)
         $('.f-start').text(item.date + ' ' + item.hour)
         $('.click-notification').data('id', item.id)
+
+        if(notificationsAuth){
+            $('.notification-container').css({'display':'inline-block'});
+            let notifyFire = store.get('fire-' + item.id);
+            if(notifyFire){
+                $('.notification-container').find('i').removeClass('far').addClass('fas')
+            } else {
+                $('.notification-container').find('i').removeClass('fas').addClass('far')
+            }
+        }
+
 
         window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
         status(item.id)

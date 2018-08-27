@@ -529,6 +529,15 @@ main {
   height: 100%;
 }
 
+.notification-container{
+  display:none;
+  margin-left: 1rem;
+}
+
+.f-local{
+  display: inline-block;
+}
+
 .marker {
   background-size: cover;
   width: 20px;

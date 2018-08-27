@@ -10,7 +10,9 @@
                 </p>
 
                 @isset($fire['id'])
-                    <i class="fas fa-bell click-notification" data-id="{{$fire['id']}}"></i>
+                    <div class="notification-container">
+                        <i class="far fa-bell click-notification" data-id="{{$fire['id']}}"></i>
+                    </div>
                 @endisset
 
                 <h4 class="card-title">@lang('elements.cards.general.start_at')</h4>
