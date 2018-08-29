@@ -22,6 +22,7 @@ Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
 
 
 Route::get('/fogo/{id}', 'FireController@get');
+Route::get('/madeira/fogo/{id}', 'FireController@getMadeira');
 Route::get('/new/fires', 'FireController@getAll');
 
 
@@ -32,6 +33,11 @@ Route::get('/views/risk/{id}', 'FireController@getGeneralCard');
 Route::get('/views/status/{id}', 'FireController@getStatusCard');
 Route::get('/views/meteo/{id}', 'FireController@getMeteoCard');
 Route::get('/views/extra/{id}', 'FireController@getExtraCard');
+
+Route::get('/madeira/views/risk/{id}', 'FireController@getGeneralCardMadeira');
+Route::get('/madeira/views/status/{id}', 'FireController@getStatusCardMadeira');
+Route::get('/madeira/views/meteo/{id}', 'FireController@getMeteoCardMadeira');
+Route::get('/madeira/views/extra/{id}', 'FireController@getExtraCardMadeira');
 
 Route::get('/notificacoes', 'GenericController@getNotifications')->name('notifications');
 Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');

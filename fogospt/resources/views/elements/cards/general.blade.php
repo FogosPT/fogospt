@@ -9,11 +9,10 @@
                     @endisset
                 </p>
 
-                @isset($fire['id'])
-                    <div class="notification-container">
-                        <i class="far fa-bell click-notification" data-id="{{$fire['id']}}"></i>
-                    </div>
-                @endisset
+                <div class="notification-container">
+                    <i class="far fa-bell click-notification" data-id="@isset($fire['id']){{$fire['id']}}@endisset"></i>
+
+                </div>
 
                 <h4 class="card-title">@lang('elements.cards.general.start_at')</h4>
                 <p class="f-start">

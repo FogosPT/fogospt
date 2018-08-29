@@ -276,7 +276,6 @@ function getPonderatedImportanceFactor(importance, statusCode) {
 }
 
 function addMaker(item, mymap) {
-
     console.log(item);
     var x = randomGeo(parseFloat(item.lat), parseFloat(item.lng))
     var coords = [x['latitude'], x['longitude']]
@@ -289,7 +288,9 @@ function addMaker(item, mymap) {
     marker.properties = {}
     marker.properties.item = item
 
-    isActive = window.location.pathname.split('/')[2]
+    isActive = window.location.pathname.split('/')[3]
+
+    console.log(isActive)
 
     //Base iconHtml
     iconHtml = '<i class="dot status-'
@@ -305,7 +306,7 @@ function addMaker(item, mymap) {
 
     notificationsAuth = store.get('notificationsAuth');
     if(notificationsAuth){
-        $('.notification-container').css({'display':'inline-block'});
+        $('.click-notification').css({'display':'inline-block'});
         let notifyFire = store.get('fire-' + item.id);
         if(notifyFire){
             $('.notification-container').find('i').removeClass('far').addClass('fas')
@@ -351,6 +352,7 @@ function addMaker(item, mymap) {
         $icon.find('i').addClass('active')
 
         var item = e.sourceTarget.properties.item
+        console.log(item)
         $('.sidebar').addClass('active').scrollTop(0)
         $('.f-local').text(item.location)
         $('.f-man').text(item.man)
@@ -371,7 +373,7 @@ function addMaker(item, mymap) {
         }
 
 
-        window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
+        window.history.pushState('obj', 'newtitle', '/madeira/fogo/' + item.id)
         status(item.id)
         plot(item.id)
         danger(item.id)
@@ -383,7 +385,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://api-lb.fogos.pt/fires/data?id=' + id
+    var url = 'https://api-lb.fogos.pt/v1/madeira/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -451,7 +453,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/views/status/' + id
+    var url = '/madeira/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -462,7 +464,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/views/risk/' + id
+    var url = '/madeira/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -474,7 +476,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/views/meteo/' + id
+    var url = '/madeira/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -486,7 +488,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/views/extra/' + id
+    var url = '/madeira/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',

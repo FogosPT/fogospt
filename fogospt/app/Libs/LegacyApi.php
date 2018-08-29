@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Redis;
 
 class LegacyApi
 {
-    private static $url = 'https://api-lb.fogos.pt';
+    private static $url = 'https://api-beta.fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
 
     private static function getClient()
@@ -110,6 +110,27 @@ class LegacyApi
         return $result;
     }
 
+    public static function getMadeiraFire($id)
+    {
+        $client = self::getClient();
+
+        $url = self::$url . '/madeira/fires?id=' . $id;
+
+        try {
+            $response = $client->request('GET', $url);
+
+        } catch (ClientException $e) {
+            return ['error' => $e->getMessage()];
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        $body = $response->getBody();
+        $result = json_decode($body->getContents(), true);
+
+        return $result;
+    }
+
     public static function getRiskByFire($id)
     {
         $client = self::getClient();
@@ -150,6 +171,25 @@ class LegacyApi
     {
         $client = self::getClient();
         $url = self::$url . '/fires/status?id=' . $id;
+
+        try {
+            $response = $client->request('GET', $url);
+
+        } catch (ClientException $e) {
+            return ['error' => $e->getMessage()];
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        $body = $response->getBody();
+        $result = json_decode($body->getContents(), true);
+        return $result;
+    }
+
+    public static function getStatusByFireMadeira($id)
+    {
+        $client = self::getClient();
+        $url = self::$url . '/madeira/fires/status?id=' . $id;
 
         try {
             $response = $client->request('GET', $url);
