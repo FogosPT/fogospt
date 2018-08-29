@@ -27,8 +27,14 @@ class GenericController extends Controller
 
     public function getIndex()
     {
-        $this->setPageName('');
+        $this->setPageName('Início');
         return view('index')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getIndexMadeira()
+    {
+        $this->setPageName('Madeira - Início');
+        return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getAbout()

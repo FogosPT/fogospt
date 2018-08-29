@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'GenericController@getIndex')->name('home');
+Route::get('/madeira', 'GenericController@getIndexMadeira')->name('homeMadeira');
 Route::get('/sobre', 'GenericController@getAbout')->name('about');
 Route::get('/lista', 'GenericController@getList')->name('list');
 Route::get('/avisos', 'GenericController@getWarnings')->name('warnings');
