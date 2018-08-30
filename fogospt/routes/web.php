@@ -16,6 +16,7 @@ Route::get('/madeira', 'GenericController@getIndexMadeira')->name('homeMadeira')
 Route::get('/sobre', 'GenericController@getAbout')->name('about');
 Route::get('/lista', 'GenericController@getList')->name('list');
 Route::get('/avisos', 'GenericController@getWarnings')->name('warnings');
+Route::get('/madeira/avisos', 'GenericController@getWarningsMadeira')->name('warningsMadeira');
 Route::get('/informacoes', 'GenericController@getInformation')->name('information');
 Route::get('/parceiros', 'GenericController@getPartnerships')->name('partnerships');
 Route::get('/estatisticas', 'GenericController@getStats')->name('stats');

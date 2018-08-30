@@ -68,6 +68,27 @@ class LegacyApi
         return $result;
     }
 
+    public static function getWarningsMadeira()
+    {
+        $client = self::getClient();
+
+        $url = self::$url . '/v1/madeira/warnings';
+
+        try {
+            $response = $client->request('GET', $url);
+
+        } catch (ClientException $e) {
+            return ['error' => $e->getMessage()];
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        $body = $response->getBody();
+        $result = json_decode($body->getContents(), true);
+
+        return $result;
+    }
+
     public static function getWeekStats()
     {
         $client = self::getClient();

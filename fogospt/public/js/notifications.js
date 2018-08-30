@@ -49,6 +49,7 @@ function setNotificationToggles() {
         'VianadoCastelo',
         'VilaReal',
         'Viseu',
+        'Madeira',
     ];
 
     for( i in list){

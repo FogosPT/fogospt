@@ -83,6 +83,14 @@ class GenericController extends Controller
         return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function getWarningsMadeira()
+    {
+        $this->setPageName(__('includes.menu.warnings'));
+        $warnings = LegacyApi::getWarningsMadeira();
+
+        return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+    }
+
     public function getStats()
     {
         $this->setPageName(__('includes.menu.stats'));

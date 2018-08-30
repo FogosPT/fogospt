@@ -14,6 +14,7 @@
                 </span></a>
                 <a class="nav-item nav-link" href="{{route('list')}}">@lang('includes.menu.list')</a>
                 <a class="nav-item nav-link" href="{{route('warnings')}}">@lang('includes.menu.warnings')</a>
+                <a class="nav-item nav-link" href="{{route('warningsMadeira')}}">@lang('includes.menu.warnings-madeira')</a>
                 <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
                 <a class="nav-item nav-link" href="{{route('stats')}}">@lang('includes.menu.stats')</a>
                 <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
