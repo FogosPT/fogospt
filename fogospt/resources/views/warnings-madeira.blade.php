@@ -16,7 +16,7 @@
                                     {{ $warning['description'] }}
                                 </p>
                                 <p class="f-local">
-                                    {{ $warning['label'] }}
+                                    {{ $warning['dia_hora'] }}
                                 </p>
                             </div>
                         </div>
