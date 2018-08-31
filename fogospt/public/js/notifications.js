@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    if(!window.PushManager){
+    if(!window.PushManager || document.documentMode || /Edge/.test(navigator.userAgent)){
         $('.is-supported').hide();
         $('.is-not-supported').show();
     } else {
@@ -129,13 +129,13 @@ function toggleNotification() {
                         }
                     },
                 });
-                console.log("registar no browser")
+                console.log("registar no browser");
             } else {
-                console.log("register someday...")
+                console.log("register someday...");
             }
         } else {
             //todo this! :)
-            console.log("remover registo")
+            console.log("remover registo");
             if ($that.data("type") == "site") {
                 const url = '/notifications/unsubscribe';
 
@@ -161,7 +161,7 @@ function toggleNotification() {
                     },
                 });
             } else {
-                console.log("unregister someday...")
+                console.log("unregister someday...");
             }
         }
     });
