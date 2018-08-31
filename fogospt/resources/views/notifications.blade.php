@@ -111,6 +111,20 @@
                 </div>
             </section>
 
+            <section class="auth bg-white">
+                <div class="card col-12">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h3>Problemas com as notificações?</h3>
+                                <button type="button"
+                                        class="btn btn-outline-success btn-lg btn-block js-notifications-reset">Clique Aqui</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <div class="alert alert-warning alert-dismissible collapse" role="alert">
                 <strong>Holy guacamole!</strong> You should check in on some of those fields below.
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">

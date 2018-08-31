@@ -25,6 +25,11 @@ $(document).ready(function () {
         }
     }
 
+    $('.js-notifications-reset').on('click', function () {
+        localStorage.clear();
+        location.reload();
+    })
+
 });
 
 function setNotificationToggles() {
