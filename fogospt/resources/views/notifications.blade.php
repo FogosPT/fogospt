@@ -31,12 +31,12 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-12 col-sm-5 col-md-6">
                                 <p>Para receber notificações de novos incêndios, ocorrências importantes ou outros
                                     avisos, clique no
                                     botão ao lado para iniciar a autorização.</p>
                             </div>
-                            <div class="col-6">
+                            <div class="col-12 col-sm-7 col-md-6">
                                 <button type="button"
                                         class="btn btn-outline-success btn-lg btn-block js-notifications-auth">Quero
                                     receber notificações.
