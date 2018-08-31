@@ -53,6 +53,7 @@ return [
         'vianadoCastelo' => 'Viana do Castelo',
         'vilaReal' => 'Vila Real',
         'viseu' => 'Viseu',
+        'madeira' => 'Madeira',
 
         'important' => 'Important events',
         'alerts' => 'Alerts',
