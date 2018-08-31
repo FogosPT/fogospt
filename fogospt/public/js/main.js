@@ -303,8 +303,8 @@ function addMaker(item, mymap) {
     }
 
     notificationsAuth = store.get('notificationsAuth');
-    console.log(notificationsAuth);
     if(notificationsAuth){
+        $('.notification-container').css({'display':'inline-block'});
         $('.click-notification').css({'display':'inline-block'});
         let notifyFire = store.get('fire-' + item.id);
         if(notifyFire){
