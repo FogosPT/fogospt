@@ -28,7 +28,7 @@ $(document).ready(function () {
         'Satélite': satLayer
     }
 
-    L.control.layers(xx, {}, {collapsed: false, position: 'topleft'}).addTo(mymap)
+    L.control.layers(xx, {}, { collapsed: false, position: 'topleft' }).addTo(mymap)
 
     addRisk(mymap)
     mymap.on('click', function (e) {
@@ -63,7 +63,7 @@ $(document).ready(function () {
     window.fogosLayers[12] = L.layerGroup()
     window.fogosLayers[80] = L.layerGroup()
 
-    var url = 'https://api-lb.fogos.pt/new/fires'
+    var url = '/api/v2/new/fires'
     $.ajax({
         url: url,
         method: 'GET',
@@ -101,7 +101,7 @@ $(document).ready(function () {
                 obj['Falso Alarme'].addTo(mymap)
                 obj['Falso Alerta'].addTo(mymap)
 
-                layerControl2 = L.control.layers(null, obj, {position: 'topright'})
+                layerControl2 = L.control.layers(null, obj, { position: 'topright' })
 
                 layerControl2.addTo(mymap)
                 $controls = $(layerControl2.getContainer())
@@ -185,14 +185,14 @@ $(document).ready(function () {
                 //     "Vento": windLayer,
                 // };
 
-                L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: 'topright'}).addTo(mymap)
+                L.control.layers(baseLayers, overlayLayers, { collapsed: false, position: 'topright' }).addTo(mymap)
             }
         }
     })
 
 })
 const BASE_SIZE = 22
-var DATA_FIRES = {number: 0, topImportance: 0, average: 0}
+var DATA_FIRES = { number: 0, topImportance: 0, average: 0 }
 
 function calculateImportanceValue(data) {
     const manFactor = 1
@@ -361,19 +361,19 @@ function plot(id) {
                             backgroundColor: '#EFC800',
                             borderColor: '#EFC800'
                         },
-                            {
-                                label: 'Terrestres',
-                                data: terrain,
-                                fill: false,
-                                backgroundColor: '#6D720B',
-                                borderColor: '#6D720B'
-                            }, {
-                                label: 'Aéreos',
-                                data: aerial,
-                                fill: false,
-                                backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
-                            }]
+                        {
+                            label: 'Terrestres',
+                            data: terrain,
+                            fill: false,
+                            backgroundColor: '#6D720B',
+                            borderColor: '#6D720B'
+                        }, {
+                            label: 'Aéreos',
+                            data: aerial,
+                            fill: false,
+                            backgroundColor: '#4E88B2',
+                            borderColor: '#4E88B2'
+                        }]
                     },
                     options: {
                         elements: {
@@ -487,7 +487,7 @@ function addRisk(mymap) {
                 var riskToday = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm
-                        return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)}
+                        return { weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d) }
                     }
                 })
 
@@ -507,7 +507,7 @@ function addRisk(mymap) {
                             var riskTomorrow = L.geoJson(concelhos, {
                                 style: function (feature) {
                                     var d = data.data.local[feature.properties.DICO].data.rcm
-                                    return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)}
+                                    return { weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d) }
                                 }
                             })
 

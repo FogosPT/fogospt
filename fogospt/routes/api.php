@@ -17,4 +17,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::controller('/v2', \App\Http\Controllers\ApiController::class);
+Route::prefix('/v2')->group(function(){
+    Route::get('/new/fires', 'ApiController@getFires');
+});

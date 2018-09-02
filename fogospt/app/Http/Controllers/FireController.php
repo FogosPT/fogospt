@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
-
+use App\Models\Fire;
 
 class FireController extends Controller
 {
@@ -79,6 +79,7 @@ class FireController extends Controller
 
     public function getAll()
     {
+        dd(Fire::getAll());
         return \Response::json(LegacyApi::getFires());
     }
 
