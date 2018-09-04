@@ -68,7 +68,7 @@ $(document).ready(function () {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            //data = JSON.parse(data)
             if (data.success) {
 
                 for (i in data.data) {

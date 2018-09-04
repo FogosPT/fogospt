@@ -14,7 +14,8 @@ class Fire extends Eloquent
     {
         try {
             $results = [];
-            $baseResults = self::where('created', '>', new UTCDateTime(time() - 64800))
+            $currentTimeStamp = \Carbon\Carbon::now();
+            $baseResults = self::where('created', '>', $currentTimeStamp->subSeconds(64800))
                             ->orderBy('dateTime', 'DESC')
                             ->get();
 
@@ -22,12 +23,11 @@ class Fire extends Eloquent
                 $fireInfo['location'] = $fireInfo['location'] . ' - ' . $fireInfo['localidade'];
                 $results[] = $fireInfo;
             }
-            return $results;
 
 
             // get fire that are on going
-            $onGoingFires = self::where('created', '>', new UTCDateTime(time() - 1984800))
-                            ->where('created', '<', new UTCDateTime(time() - 64800))
+            $onGoingFires = self::where('created', '>', $currentTimeStamp->subSeconds(1984800))
+                            ->where('created', '<', $currentTimeStamp->subSeconds(64800))
                             ->where('status', 'Em curso')
                             ->orderBy('dateTime', 'DESC')
                             ->get();
@@ -38,8 +38,8 @@ class Fire extends Eloquent
             }
 
             // get fire that are on going
-            $importantFires = self::where('created', '>', new UTCDateTime(time() - 344800))
-                            ->where('created', '<', new UTCDateTime(time() - 64800))
+            $importantFires = self::where('created', '>', $currentTimeStamp->subSeconds(344800))
+                            ->where('created', '<', $currentTimeStamp->subSeconds(6480))
                             ->where('important', true)
                             ->orderBy('dateTime', 'DESC')
                             ->get();

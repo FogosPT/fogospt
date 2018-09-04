@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
+use App\Models\Fire;
 
 class GenericController extends Controller
 {
@@ -64,9 +65,9 @@ class GenericController extends Controller
     public function getList()
     {
         $this->setPageName(__('includes.menu.list'));
-        $fires = LegacyApi::getFires();
+        $fires = Fire::getAll();
 
-        return view('list', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('list', ['data' => @$fires])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarnings()
@@ -90,8 +91,7 @@ class GenericController extends Controller
 
     public function subscribe(Request $request)
     {
-        $headers = array
-        (
+        $headers = array(
             'Authorization: key=' . env('FIREBASE_TOKEN'),
             'Content-Type: application/json'
         );
@@ -109,7 +109,7 @@ class GenericController extends Controller
         $result = curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
+        if ($httpcode === 200) {
             return \Response::json(['success' => true]);
         } else {
             return \Response::json(['success' => false]);
@@ -118,8 +118,7 @@ class GenericController extends Controller
 
     public function unsubscribe(Request $request)
     {
-        $headers = array
-        (
+        $headers = array(
             'Authorization: key=' . env('FIREBASE_TOKEN'),
             'Content-Type: application/json'
         );
@@ -142,7 +141,7 @@ class GenericController extends Controller
         $result = curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
+        if ($httpcode === 200) {
             return \Response::json(['success' => true]);
         } else {
             return \Response::json(['success' => false]);

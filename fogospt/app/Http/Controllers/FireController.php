@@ -22,7 +22,7 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFire($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
-        if(isset($meteo['wind']['deg'])){
+        if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
 
@@ -74,24 +74,21 @@ class FireController extends Controller
         } else {
             return \Response::json();
         }
-
     }
 
     public function getAll()
     {
-        dd(Fire::getAll());
-        return \Response::json(LegacyApi::getFires());
+        return Fire::getAll();
     }
 
     private function setFireById($id)
     {
         $fire = LegacyApi::getFire($id);
 
-        if(isset($fire['data'])){
+        if (isset($fire['data'])) {
             $this->fire = $fire['data'];
         } else {
             $this->fire = null;
         }
-
     }
 }

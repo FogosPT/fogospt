@@ -13,7 +13,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Redis;
 
-
 class LegacyApi
 {
     private static $url = 'https://api-lb.fogos.pt';
@@ -26,27 +25,6 @@ class LegacyApi
         return $client;
     }
 
-    public static function getFires()
-    {
-        $client = self::getClient();
-
-        $url = self::$url . '/new/fires';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-
-        return $result;
-    }
-
     public static function getWarnings()
     {
         $client = self::getClient();
@@ -55,7 +33,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -76,7 +53,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -97,7 +73,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -106,7 +81,7 @@ class LegacyApi
 
         $body = $response->getBody();
         $result = json_decode($body->getContents(), true);
-        
+
         return $result;
     }
 
@@ -153,7 +128,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -172,7 +146,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -191,7 +164,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -210,7 +182,6 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-
         } catch (ClientException $e) {
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
@@ -222,19 +193,18 @@ class LegacyApi
         return $result;
     }
 
-    public static function getMeteoByFire($lat,$lng)
+    public static function getMeteoByFire($lat, $lng)
     {
-        if(env('APP_ENV') === 'production'){
+        if (env('APP_ENV') === 'production') {
             $exists = Redis::get('weather:'.$lat.':'.$lng);
-            if($exists){
-                return json_decode($exists,true);
+            if ($exists) {
+                return json_decode($exists, true);
             } else {
                 $client = self::getClient();
                 $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
 
                 try {
                     $response = $client->request('GET', $weatherUrl);
-
                 } catch (ClientException $e) {
                     return ['error' => $e->getMessage()];
                 } catch (RequestException $e) {
@@ -244,11 +214,10 @@ class LegacyApi
                 $body = $response->getBody();
                 $result = json_decode($body->getContents(), true);
 
-                Redis::set('weather:'.$lat.':'.$lng, json_encode($result),'EX', 10800);
+                Redis::set('weather:'.$lat.':'.$lng, json_encode($result), 'EX', 10800);
 
                 return $result;
             }
         }
     }
-    
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
-
 use App\Models\Fire;
+
 class ApiController extends Controller
 {
     private $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
@@ -12,10 +12,10 @@ class ApiController extends Controller
     public function getFires()
     {
         try {
-           return [
+            return [
                "success" => true,
                "data" => Fire::getAll()
-           ];
+            ];
         } catch (Exception $ex) {
             return ['error' => $ex->getMessage()];
         }
