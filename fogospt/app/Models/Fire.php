@@ -54,7 +54,7 @@ class Fire extends Eloquent
         }
     }
 
-    public static function getFiresByStatus($status)
+    public static function getByStatus($status)
     {
         try {
             $searchParam = "";
@@ -69,7 +69,7 @@ class Fire extends Eloquent
                     $searchParam = "CONCLUSÃO";
                 break;
                 case 'alert':
-                    $searchParam = new MongoRegex('/ALERTA/');
+                    $searchParam = new \MongoDB\BSON\Regex('/ALERTA/');
                 break;
             }
             return self::where('date', date('d-m-Y', time()))
@@ -79,7 +79,6 @@ class Fire extends Eloquent
             return $ex->getMessage();
         }
     }
-
     public static function getFire($id)
     {
         try {
@@ -89,6 +88,41 @@ class Fire extends Eloquent
         }
     }
 
+    public static function getWeekStats()
+    {
+        try {
+            $timestampLast = strtotime(date('Y-m-d 23:59'));
+            $timestampStart = strtotime(date('Y-m-d 00:00'));
+            $results = [];
+            for ($i = 0; $i <= 8; $i++) {
+                $start = strtotime("-{$i} days", $timestampLast);
+                $endDays = $i;
+                $end = strtotime("-{$endDays} days", $timestampStart);
+                $result = array(
+                    'label' => date('Y-m-d', $end),
+                    'total' => self::getTotalStatsTimestampRaw($end, $start),
+                    'false' => self::getTotalStatsTimestampRaw($end, $start, ['Falso Alarme', 'Falso Alerta']),
+                );
+                $results[] = $result;
+            }
+            return array_reverse($results);
+        } catch (Exception $ex) {
+            return $ex->getMessage();
+        }
+    }
+
+    public static function getTotalStatsTimestampRaw($end, $start, $status = [])
+    {
+        try {
+            $query = self::whereBetween('dateTime', [$start, $end]);
+            if (!empty($status)) {
+                $query->whereIn('status', $status);
+            }
+            return $query->count();
+        } catch (Exception $ex) {
+            return $ex->getMessage();
+        }
+    }
     private static function getActiveFires()
     {
         try {

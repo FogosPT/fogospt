@@ -26,6 +26,9 @@ Route::prefix('/v2')->group(function () {
     Route::get('/fires/{fireId}/status', 'ApiController@getStatusByFire');
     Route::get('/fires/{fireId}/data', 'ApiController@getDataByFire');
     Route::get('/fires/{fireId}/danger', 'ApiController@getDangerByFire');
+    Route::get('/warnings/{limit?}', 'ApiController@getWarnings');
+
+
 
     // Fires Madeira
     Route::get('/madeira/fires', 'ApiController@dummyMethod');
@@ -39,12 +42,11 @@ Route::prefix('/v2')->group(function () {
 
 
     // stats
-    Route::get('/stats/week/', 'ApiController@dummyMethod');
+    Route::get('/stats/week/', 'ApiController@getWeekStats');
     Route::get('/fires/8hours', 'ApiController@dummyMethod');
     Route::get('/fires/8hours/{day}', 'ApiController@dummyMethod');
     Route::get('/fires/last-night', 'ApiController@dummyMethod');
 
     // other
     Route::get('/now', 'ApiController@dummyMethod');
-    Route::get('/warnings/{limit?}', 'ApiController@getWarnings');
 });

@@ -16,7 +16,7 @@ class Warning extends Eloquent
             $queryRecords = self::orderBy('created', 'DESC')
                                 ->get()->take($limit);
             foreach ($queryRecords as $queryRecord) {
-                $queryRecord['label'] = $queryRecord['created']->toDateTime()->format('H:i');
+                $queryRecord['label'] = $queryRecord['created']->toDateTime()->format('d-m-Y H:i');
                 unset($queryRecord['created'], $queryRecord['updated']);
                 $results[] = $queryRecord;
             }

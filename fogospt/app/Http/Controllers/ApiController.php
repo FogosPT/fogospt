@@ -42,7 +42,7 @@ class ApiController extends Controller
         try {
             return [
                 'success' => true,
-                'data' => Fire::getById($id)
+                'data' => Fire::getFire($id)
             ];
         } catch (Exception $ex) {
             return  ['error' => $ex->getMessage()];
@@ -87,7 +87,7 @@ class ApiController extends Controller
             return ['error' => $ex->getMessage()];
         }
     }
-    public function getWarnings($limit)
+    public function getWarnings($limit = null)
     {
         try {
             return [
@@ -102,6 +102,10 @@ class ApiController extends Controller
     public function getWeekStats()
     {
         try {
+            return [
+                'success' => true,
+                'data' => Fire::getWeekStats()
+            ];
         } catch (Exception $ex) {
             return ['error' => $ex->getMessage()];
         }
