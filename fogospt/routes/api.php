@@ -22,11 +22,10 @@ Route::prefix('/v2')->group(function () {
     Route::get('/new/fires', 'ApiController@getFires');
     Route::get('/fires', 'ApiController@getFires');
     Route::get('/fires/{id}', 'ApiController@getFire');
-    Route::get('/fires/status', 'ApiController@dummyMethod');
-    Route::get('/fires/status/{id}', 'ApiController@dummyMethod');
-    Route::get('/fires/status/{status}', 'ApiController@dummyMethod');
-    Route::get('/fires/data/{id}', 'ApiController@dummyMethod');
-    Route::get('/fires/danger/{id}', 'ApiController@dummyMethod');
+    Route::get('/fires/status/{status}', 'ApiController@getFiresByStatus');
+    Route::get('/fires/{fireId}/status', 'ApiController@getStatusByFire');
+    Route::get('/fires/{fireId}/data', 'ApiController@getDataByFire');
+    Route::get('/fires/{fireId}/danger', 'ApiController@getDangerByFire');
 
     // Fires Madeira
     Route::get('/madeira/fires', 'ApiController@dummyMethod');

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
 use App\Models\Fire;
+use App\Models\HistoryStatus;
+use App\Models\History;
+use App\Models\HistoryDanger;
 
 class ApiController extends Controller
 {
@@ -13,14 +16,76 @@ class ApiController extends Controller
     {
         try {
             return [
-               "success" => true,
-               "data" => Fire::getAll()
+               'success' => true,
+               'data' => Fire::getAll()
             ];
         } catch (Exception $ex) {
             return ['error' => $ex->getMessage()];
         }
     }
 
+    public function getFiresByStatus($status)
+    {
+        try {
+            return [
+                'success' => true,
+                'data' => Fire::getByStatus($status)
+            ];
+        } catch (Exception $ex) {
+            return  ['error' => $ex->getMessage()];
+        }
+    }
+
+    public function getFire($id)
+    {
+        try {
+            return [
+                'success' => true,
+                'data' => Fire::getById($id)
+            ];
+        } catch (Exception $ex) {
+            return  ['error' => $ex->getMessage()];
+        }
+    }
+
+    public function getStatusByFire($fireId)
+    {
+        try {
+            return [
+                'success' => true,
+                'data' => HistoryStatus::getLastRecordsById($fireId)
+            ];
+        } catch (Exception $ex) {
+            return ['error' => $ex->getMessage()];
+        }
+    }
+    public function getDataByFire($fireId)
+    {
+        try {
+            return [
+                'success' => true,
+                'data' => History::getLastRecordsById($fireId)
+            ];
+        } catch (Exception $ex) {
+            return ['error' => $ex->getMessage()];
+        }
+    }
+
+    public function getDangerByFire($fireId)
+    {
+        try {
+            $fire = Fire::getFire($fireId);
+            return [
+                'success' => true,
+                'data' => [
+                    'fire' => $fire,
+                    'danger' => HistoryDanger::getByCounty($fire->concelho)
+                ]
+            ];
+        } catch (Exception $ex) {
+            return ['error' => $ex->getMessage()];
+        }
+    }
     public function getWarnings()
     {
         try {
@@ -36,32 +101,6 @@ class ApiController extends Controller
             return ['error' => $ex->getMessage()];
         }
     }
-
-
-    public function getFire($id)
-    {
-        try {
-        } catch (Exception $ex) {
-            return ['error' => $ex->getMessage()];
-        }
-    }
-
-    public function getRiskByFire()
-    {
-        try {
-        } catch (Exception $ex) {
-            return ['error' => $ex->getMessage()];
-        }
-    }
-
-    public function getStatusByFire()
-    {
-        try {
-        } catch (Exception $ex) {
-            return ['error' => $ex->getMessage()];
-        }
-    }
-
     public function getStats8HoursToday()
     {
         try {
@@ -117,6 +156,5 @@ class ApiController extends Controller
 
     public function dummyMethod()
     {
-
     }
 }

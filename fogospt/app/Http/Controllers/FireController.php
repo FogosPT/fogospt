@@ -6,6 +6,9 @@ use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
 use App\Models\Fire;
+use App\Models\HistoryStatus;
+use App\Models\History;
+use App\Models\HistoryDanger;
 
 class FireController extends Controller
 {
@@ -18,17 +21,15 @@ class FireController extends Controller
         }
 
         $this->setFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
-        $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
+        $risk = HistoryDanger::getByCounty($this->fire->concelho);
+        $status = HistoryStatus::getLastRecordsById($id);
+        $meteo = LegacyApi::getMeteoByFire($this->fire->lat, $this->fire->lng);
         if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
-
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
-        if (isset($status['data'])) {
-            $this->fire['statusHistory'] = $status['data'];
+        $this->fire['risk'] = $risk->hoje;
+        if (!empty($status)) {
+            $this->fire['statusHistory'] = $status;
         } else {
             $this->fire['statusHistory'] = false;
         }
@@ -41,18 +42,16 @@ class FireController extends Controller
     public function getGeneralCard($id)
     {
         $this->setFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
-
+        $risk = HistoryDanger::getByCounty($this->fire->concelho);
+        $this->fire['risk'] = $risk->hoje;
         return view('elements.risk', array('fire' => $this->fire));
     }
 
     public function getStatusCard($id)
     {
         $this->setFireById($id);
-        $status = LegacyApi::getStatusByFire($id);
-        $this->fire['statusHistory'] = @$status['data'];
-
+        $status = HistoryStatus::getLastRecordsById($id);
+        $this->fire['statusHistory'] = $status;
         return view('elements.status', array('fire' => $this->fire));
     }
 
@@ -83,10 +82,9 @@ class FireController extends Controller
 
     private function setFireById($id)
     {
-        $fire = LegacyApi::getFire($id);
-
-        if (isset($fire['data'])) {
-            $this->fire = $fire['data'];
+        $fire = Fire::getFire($id);
+        if (!empty($fire)) {
+            $this->fire = $fire;
         } else {
             $this->fire = null;
         }

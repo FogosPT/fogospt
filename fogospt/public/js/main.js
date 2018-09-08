@@ -331,7 +331,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://api-lb.fogos.pt/fires/data?id=' + id
+    var url = '/api/v2/fires/' + id + '/data'
     $.ajax({
         url: url,
         method: 'GET',
