@@ -91,19 +91,15 @@ class Fire extends Eloquent
     public static function getWeekStats()
     {
         try {
-            $timestampLast = strtotime(date('Y-m-d 23:59'));
-            $timestampStart = strtotime(date('Y-m-d 00:00'));
             $results = [];
             for ($i = 0; $i <= 8; $i++) {
-                $start = strtotime("-{$i} days", $timestampLast);
-                $endDays = $i;
-                $end = strtotime("-{$endDays} days", $timestampStart);
-                $result = array(
-                    'label' => date('Y-m-d', $end),
-                    'total' => self::getTotalStatsTimestampRaw($end, $start),
-                    'false' => self::getTotalStatsTimestampRaw($end, $start, ['Falso Alarme', 'Falso Alerta']),
+                $start =  \Carbon\Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d 00:00'))->subDays($i);
+                $end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d 23:59'))->subDays($i);
+                $results[] = array(
+                    'label' => $end->format('Y-m-d'),
+                    'total' => self::getTotalStatsTimestampRaw($start, $end),
+                    'false' => self::getTotalStatsTimestampRaw($start, $end, ['Falso Alarme', 'Falso Alerta']),
                 );
-                $results[] = $result;
             }
             return array_reverse($results);
         } catch (Exception $ex) {
@@ -111,10 +107,10 @@ class Fire extends Eloquent
         }
     }
 
-    public static function getTotalStatsTimestampRaw($end, $start, $status = [])
+    public static function getTotalStatsTimestampRaw($start, $end, $status = [])
     {
         try {
-            $query = self::whereBetween('dateTime', [$start, $end]);
+            $query = self::where('dateTime', '>', $start)->where('dateTime', '<', $end);
             if (!empty($status)) {
                 $query->whereIn('status', $status);
             }
