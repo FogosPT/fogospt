@@ -3,25 +3,17 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-use \MongoDB\BSON\UTCDateTime;
+use MongoDB\BSON\UTCDateTime;
 
-class HistoryStatus extends Eloquent
+class Warning extends Eloquent
 {
-    protected $connection = 'historyStatus';
+    protected $connection = 'warnings';
     protected $collection  = 'data';
 
-    public static function getLastRecordsById($id, $limit = 50)
+    public static function getLast($limit = 50)
     {
         try {
-            $results = [
-                [
-                    'label' => Fire::getFire($id)['hour'],
-                    'status' => 'Inicio',
-                    'statusCode' => 99
-                ]
-            ];
-            $queryRecords = self::where('id', $id)
-                                ->orderBy('created', 'DESC')
+            $queryRecords = self::orderBy('created', 'DESC')
                                 ->get()->take($limit);
             foreach ($queryRecords as $queryRecord) {
                 $queryRecord['label'] = $queryRecord['created']->toDateTime()->format('H:i');

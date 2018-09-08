@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
 use App\Models\Fire;
+use App\Models\Warning;
 
 class GenericController extends Controller
 {
@@ -73,9 +74,9 @@ class GenericController extends Controller
     public function getWarnings()
     {
         $this->setPageName(__('includes.menu.warnings'));
-        $warnings = LegacyApi::getWarnings();
+        $warnings = Warning::getLast();
 
-        return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings', ['data' => $warnings])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getStats()

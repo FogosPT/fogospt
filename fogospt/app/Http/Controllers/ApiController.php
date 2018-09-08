@@ -7,6 +7,7 @@ use App\Models\Fire;
 use App\Models\HistoryStatus;
 use App\Models\History;
 use App\Models\HistoryDanger;
+use App\Models\Warning;
 
 class ApiController extends Controller
 {
@@ -86,9 +87,13 @@ class ApiController extends Controller
             return ['error' => $ex->getMessage()];
         }
     }
-    public function getWarnings()
+    public function getWarnings($limit)
     {
         try {
+            return [
+                'success' => true,
+                'data' => Warning::getLast($limit)
+            ];
         } catch (Exception $ex) {
             return ['error' => $ex->getMessage()];
         }

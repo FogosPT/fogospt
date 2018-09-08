@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use MongoDB\BSON\UTCDateTime;
 
 class History extends Eloquent
 {
@@ -17,13 +18,13 @@ class History extends Eloquent
                                 ->orderBy('created', 'DESC')
                                 ->get()->take($limit);
             foreach ($queryRecords as $queryRecord) {
+                $queryRecord['label'] = $queryRecord['created']->toDateTime()->format('H:i');
                 unset($queryRecord['created'], $r['updated']);
-                $queryRecord['label'] = date('H:i', $queryRecord['created']->sec);
-                $results[] = $r;
+                $results[] = $queryRecord;
             }
 
             $results[] =  [
-                    'label' => Fire::getFire($id)['hour'],
+                    'label' => Fire::getFire($id)->hour,
                     'man' => 0,
                     'terrain' => 0,
                     'aerial' => 0

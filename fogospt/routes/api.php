@@ -46,5 +46,5 @@ Route::prefix('/v2')->group(function () {
 
     // other
     Route::get('/now', 'ApiController@dummyMethod');
-    Route::get('/warnings', 'ApiController@dummyMethod');
+    Route::get('/warnings/{limit?}', 'ApiController@getWarnings');
 });
