@@ -33,7 +33,7 @@ $(document).ready(function () {
         });
     });
 
-    var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
+    var mymap = L.map('map').setView([32.753498, -16.982694], 10)
 
     var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -56,7 +56,7 @@ $(document).ready(function () {
         'Satélite': satLayer
     }
 
-    L.control.layers(xx, {}, { collapsed: false, position: 'topleft' }).addTo(mymap)
+    L.control.layers(xx, {}, {collapsed: false, position: 'topleft'}).addTo(mymap)
 
     addRisk(mymap)
     mymap.on('click', function (e) {
@@ -91,12 +91,12 @@ $(document).ready(function () {
     window.fogosLayers[12] = L.layerGroup()
     window.fogosLayers[80] = L.layerGroup()
 
-    var url = '/api/v2/new/fires'
+    var url = 'https://api-beta.fogos.pt/v1/madeira/fires'
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
-            //data = JSON.parse(data)
+            data = JSON.parse(data)
             if (data.success) {
 
                 for (i in data.data) {
@@ -129,7 +129,7 @@ $(document).ready(function () {
                 obj['Falso Alarme'].addTo(mymap)
                 obj['Falso Alerta'].addTo(mymap)
 
-                layerControl2 = L.control.layers(null, obj, { position: 'topright' })
+                layerControl2 = L.control.layers(null, obj, {position: 'topright'})
 
                 layerControl2.addTo(mymap)
                 $controls = $(layerControl2.getContainer())
@@ -213,14 +213,14 @@ $(document).ready(function () {
                 //     "Vento": windLayer,
                 // };
 
-                L.control.layers(baseLayers, overlayLayers, { collapsed: false, position: 'topright' }).addTo(mymap)
+                L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: 'topright'}).addTo(mymap)
             }
         }
     })
 
 })
 const BASE_SIZE = 22
-var DATA_FIRES = { number: 0, topImportance: 0, average: 0 }
+var DATA_FIRES = {number: 0, topImportance: 0, average: 0}
 
 function calculateImportanceValue(data) {
     const manFactor = 1
@@ -276,8 +276,8 @@ function getPonderatedImportanceFactor(importance, statusCode) {
 }
 
 function addMaker(item, mymap) {
-
-    var x = randomGeo(item.lat, item.lng)
+    console.log(item);
+    var x = randomGeo(parseFloat(item.lat), parseFloat(item.lng))
     var coords = [x['latitude'], x['longitude']]
 
     var el = document.createElement('div')
@@ -288,7 +288,9 @@ function addMaker(item, mymap) {
     marker.properties = {}
     marker.properties.item = item
 
-    isActive = window.location.pathname.split('/')[2]
+    isActive = window.location.pathname.split('/')[3]
+
+    console.log(isActive)
 
     //Base iconHtml
     iconHtml = '<i class="dot status-'
@@ -304,7 +306,6 @@ function addMaker(item, mymap) {
 
     notificationsAuth = store.get('notificationsAuth');
     if(notificationsAuth){
-        $('.notification-container').css({'display':'inline-block'});
         $('.click-notification').css({'display':'inline-block'});
         let notifyFire = store.get('fire-' + item.id);
         if(notifyFire){
@@ -351,6 +352,7 @@ function addMaker(item, mymap) {
         $icon.find('i').addClass('active')
 
         var item = e.sourceTarget.properties.item
+        console.log(item)
         $('.sidebar').addClass('active').scrollTop(0)
         $('.f-local').text(item.location)
         $('.f-man').text(item.man)
@@ -371,7 +373,7 @@ function addMaker(item, mymap) {
         }
 
 
-        window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
+        window.history.pushState('obj', 'newtitle', '/madeira/fogo/' + item.id)
         status(item.id)
         plot(item.id)
         danger(item.id)
@@ -383,7 +385,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = '/api/v2/fires/' + id + '/data'
+    var url = 'https://api-lb.fogos.pt/v1/madeira/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -413,19 +415,19 @@ function plot(id) {
                             backgroundColor: '#EFC800',
                             borderColor: '#EFC800'
                         },
-                        {
-                            label: 'Terrestres',
-                            data: terrain,
-                            fill: false,
-                            backgroundColor: '#6D720B',
-                            borderColor: '#6D720B'
-                        }, {
-                            label: 'Aéreos',
-                            data: aerial,
-                            fill: false,
-                            backgroundColor: '#4E88B2',
-                            borderColor: '#4E88B2'
-                        }]
+                            {
+                                label: 'Terrestres',
+                                data: terrain,
+                                fill: false,
+                                backgroundColor: '#6D720B',
+                                borderColor: '#6D720B'
+                            }, {
+                                label: 'Aéreos',
+                                data: aerial,
+                                fill: false,
+                                backgroundColor: '#4E88B2',
+                                borderColor: '#4E88B2'
+                            }]
                     },
                     options: {
                         elements: {
@@ -451,7 +453,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/views/status/' + id
+    var url = '/madeira/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -462,7 +464,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/views/risk/' + id
+    var url = '/madeira/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -474,7 +476,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/views/meteo/' + id
+    var url = '/madeira/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -486,7 +488,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/views/extra/' + id
+    var url = '/madeira/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -539,7 +541,7 @@ function addRisk(mymap) {
                 var riskToday = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm
-                        return { weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d) }
+                        return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)}
                     }
                 })
 
@@ -559,7 +561,7 @@ function addRisk(mymap) {
                             var riskTomorrow = L.geoJson(concelhos, {
                                 style: function (feature) {
                                     var d = data.data.local[feature.properties.DICO].data.rcm
-                                    return { weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d) }
+                                    return {weight: 1.0, color: '#666', fillOpacity: 0.6, fillColor: getColor(d)}
                                 }
                             })
 

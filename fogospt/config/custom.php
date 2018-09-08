@@ -87,6 +87,10 @@ return [
 		[
 			"name" => 'pages.notifications.viseu',
 			"value" => "Viseu"
-		]
+		],
+        [
+            "name" => 'pages.notifications.madeira',
+            "value" => "Madeira"
+        ]
 	]
 ];

@@ -29,8 +29,14 @@ class GenericController extends Controller
 
     public function getIndex()
     {
-        $this->setPageName('');
+        $this->setPageName('Início');
         return view('index')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getIndexMadeira()
+    {
+        $this->setPageName('Madeira - Início');
+        return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getAbout()
@@ -77,6 +83,14 @@ class GenericController extends Controller
         $warnings = Warning::getLast();
 
         return view('warnings', ['data' => $warnings])->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getWarningsMadeira()
+    {
+        $this->setPageName(__('includes.menu.warnings'));
+        $warnings = LegacyApi::getWarningsMadeira();
+
+        return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getStats()

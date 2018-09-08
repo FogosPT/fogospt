@@ -11,6 +11,7 @@
             'stats' => 'Estatísticas',
             'list' => 'Lista',
             'warnings' => 'Avisos',
+            'warnings-madeira' => 'Avisos Madeira',
             'active'      => '(actual)'
         ],
         'meta' => [

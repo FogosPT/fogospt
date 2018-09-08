@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    if(!window.PushManager){
+    if(!window.PushManager || document.documentMode || /Edge/.test(navigator.userAgent)){
         $('.is-supported').hide();
         $('.is-not-supported').show();
     } else {
@@ -24,6 +24,11 @@ $(document).ready(function () {
             $('.auth').show();
         }
     }
+
+    $('.js-notifications-reset').on('click', function () {
+        localStorage.clear();
+        location.reload();
+    })
 
 });
 
@@ -49,6 +54,7 @@ function setNotificationToggles() {
         'VianadoCastelo',
         'VilaReal',
         'Viseu',
+        'Madeira',
     ];
 
     for( i in list){
@@ -115,21 +121,21 @@ function toggleNotification() {
                         if(data.success){
                             toastr.success('Registado com sucesso');
                             store.set($that.data('value'), true);
-                            sendEvent('notifications', 'subscribed', topic );
+                            // sendEvent('notifications', 'subscribed', topic );
                         } else {
                             toastr.error('Ocorreu um erro');
                             store.set($that.data('value'), false);
-                            sendEvent('notifications', 'subscribed error', topic );
+                            // sendEvent('notifications', 'subscribed error', topic );
                         }
                     },
                 });
-                console.log("registar no browser")
+                console.log("registar no browser");
             } else {
-                console.log("register someday...")
+                console.log("register someday...");
             }
         } else {
             //todo this! :)
-            console.log("remover registo")
+            console.log("remover registo");
             if ($that.data("type") == "site") {
                 const url = '/notifications/unsubscribe';
 
@@ -155,7 +161,7 @@ function toggleNotification() {
                     },
                 });
             } else {
-                console.log("unregister someday...")
+                console.log("unregister someday...");
             }
         }
     });
