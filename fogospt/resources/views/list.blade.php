@@ -8,10 +8,12 @@
                     @foreach($data as $fire)
                         <div class="col-sm-12 col-md-4">
                             <div class="card">
+                              <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/{{$fire['lng']}},{{$fire['lat']}},15,0,00/450x300?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA">
                                 <div class="card-body">
                                     <h4 class="card-title">@lang('elements.cards.general.place')</h4>
                                     <p class="f-local">
                                         @isset($fire['location'])
+
                                             {{ $fire['location'] }} - {{ $fire['localidade'] }}
                                         @endisset
                                     </p>
@@ -51,8 +53,3 @@
 
 @push('scripts')
 @endpush
-
-
-
-
-
