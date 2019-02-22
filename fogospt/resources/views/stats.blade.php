@@ -181,8 +181,6 @@
    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
    crossorigin=""></script>
 
-
-   <script src="https://leafletjs.com/examples/choropleth/us-states.js"></script>
    <script src="/js/distritos.js"></script>
 
 @endpush
