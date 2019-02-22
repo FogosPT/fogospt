@@ -14,6 +14,8 @@ $(document).ready(function () {
     plotStatsLastNight();
     plotStatsDistricts();
 
+    plotStatsTotal();
+
     if (getParameterByName('phantom')) {
         $('.phantom-hide').hide();
     }
@@ -336,6 +338,179 @@ function plotStats8hoursYesterday() {
         }
     });
 }
+
+
+
+function plotStatsTotal() {
+
+    var values;
+
+    var url = 'https://api-lb.fogos.pt/v1/stats/today';
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success && data.data) {
+
+                // control that shows state info on hover
+                var info = L.control();
+
+                info.onAdd = function(map) {
+                    this._div = L.DomUtil.create('div', 'info');
+                    this.update();
+                    return this._div;
+                };
+
+
+                info.update = function(props, incendios) {
+                        this._div.innerHTML = '<h6>Incêndios totais</h6>' + (props ?
+                            '<b>' + props.name + '</b><br />' + incendios + ' incêndios</sup>' :
+                            'Clique num distrito');
+                };
+
+
+
+                info.addTo(map);
+
+
+                function getColor(d) {
+                    return d > 40 ? '#BD0026' :
+                        d > 20 ? '#E31A1C' :
+                        d > 10 ? '#FC4E2A' :
+                        d > 5 ? '#FD8D3C' :
+                        d > 0 ? '#FEB24C' :
+                        '#99ff66';
+                }
+
+                function style(feature) {
+
+
+                    var incendios = '0';
+
+                    if(data.data.distritos[feature.properties.name] != null){
+                        incendios = data.data.distritos[feature.properties.name];
+                    }
+
+
+                    return {
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7,
+                        fillColor: getColor(incendios)
+                    };
+                }
+
+                function highlightFeature(e) {
+                    var layer = e.target;
+
+                    layer.setStyle({
+                        weight: 5,
+                        color: '#666',
+                        dashArray: '',
+                        fillOpacity: 0.7
+                    });
+
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        layer.bringToFront();
+                    }
+
+
+                    var incendios = '0';
+
+                    if(data.data.distritos[layer.feature.properties.name] != null){
+                        incendios = data.data.distritos[layer.feature.properties.name];
+                    }
+
+                    info.update(layer.feature.properties,incendios);
+                }
+
+
+
+
+                var geojson;
+
+                function resetHighlight(e) {
+                    geojson.resetStyle(e.target);
+                    info.update();
+                }
+
+
+                function zoomToFeature(e) {
+                    map.fitBounds(e.target.getBounds());
+                }
+
+                function onEachFeature(feature, layer) {
+                    layer.on({
+                        mouseover: highlightFeature,
+                        mouseout: resetHighlight,
+                        click: zoomToFeature
+                    });
+                }
+
+                geojson = L.geoJson(distritos, {
+                    style: style,
+                    onEachFeature: onEachFeature
+                }).addTo(map);
+
+
+
+
+                var legend = L.control({
+                    position: 'bottomright'
+                });
+
+                legend.onAdd = function(map) {
+
+                    var div = L.DomUtil.create('div', 'info legend'),
+                        grades = [0, 1, 5, 10, 20, 40],
+                        labels = [],
+                        from, to;
+
+                    labels.push(
+                            '<i style="background:' + getColor(from + 1) + '"></i> ' +
+                            '0');
+                    for (var i = 1; i < grades.length; i++) {
+                        from = grades[i];
+                        to = grades[i + 1];
+
+                        labels.push(
+                            '<i style="background:' + getColor(from + 1) + '"></i> ' +
+                            from + (to ? '&ndash;' + to : '+'));
+                    }
+
+                    div.innerHTML = labels.join('<br>');
+                    return div;
+                };
+
+                legend.addTo(map);
+
+
+
+              }
+            }
+    });
+
+
+
+    var map = L.map('mapid').setView([39.6, -7.9], 7);
+    var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token='+window.mapboxKey, {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: window.mapboxKey
+    }).addTo(map)
+
+
+
+
+
+
+}
+
+
 
 function plotStatsYesterdayDistricts() {
     var url = 'https://api-lb.fogos.pt/v1/stats/yesterday';

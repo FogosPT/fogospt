@@ -1,5 +1,12 @@
 @extends('app')
 
+@push('head')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin="">
+
+@endpush
+
 @section('content')
     <main role="main" class="mb-auto margin-top-10">
         <div class="container">
@@ -93,6 +100,21 @@
                             </div>
                         </div>
                     </section>
+
+
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
+                        <div class="col-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">@lang('pages.stats.today')</h4>
+
+                                     <div id="mapid" style="height:700px; "></div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </section>
 
                 <section class="col-12 col-md-6">
@@ -138,6 +160,12 @@
                     </section>
 
 
+
+
+
+
+
+
                 </section>
 
             </section>
@@ -148,4 +176,13 @@
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script src="js/stats.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+
+   <script src="/js/distritos.js"></script>
+
+  <script> window.mapboxKey = '{{ env('MAPBOX_TOKEN') }}' </script>
+
 @endpush
