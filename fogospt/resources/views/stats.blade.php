@@ -175,6 +175,9 @@
 
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <script> window.mapboxKey = '{{ env('MAPBOX_TOKEN') }}' </script>
+
     <script src="js/stats.js"></script>
 
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
@@ -183,6 +186,5 @@
 
    <script src="/js/distritos.js"></script>
 
-  <script> window.mapboxKey = '{{ env('MAPBOX_TOKEN') }}' </script>
 
 @endpush
