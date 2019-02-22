@@ -183,4 +183,6 @@
 
    <script src="/js/distritos.js"></script>
 
+  <script> window.mapboxKey = '{{ env('MAPBOX_TOKEN') }}' </script>
+
 @endpush
