@@ -8,7 +8,9 @@
                     @foreach($data as $fire)
                         <div class="col-sm-12 col-md-4">
                             <div class="card">
-                              <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/{{$fire['lng']}},{{$fire['lat']}},15,0,00/450x300?access_token={{env('MAPBOX_TOKEN')}}">
+                              <a  href="{{route('fire', $fire['id'])}}" >
+                                <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/{{$fire['lng']}},{{$fire['lat']}},15,0,00/450x300?access_token={{env('MAPBOX_TOKEN')}}">
+                              </a>
                                 <div class="card-body">
 
                                     <h4 class="card-title">@lang('elements.cards.general.place')</h4>
