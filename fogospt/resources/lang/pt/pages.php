@@ -38,7 +38,22 @@ return [
         'hoursDescription' => 'As horas indicadas tanto no gráfico de meios como na linha do tempo dos estados do incêndios, são as
                 horas que o nosso sistema detetou uma mudança de dados por parte da ANPC podendo não corresponder ao
                 momento exato em que essa alteração ocorreu.',
-        'source' => 'Risco de incêndio recolhido do IPMA.'
+        'source' => 'Risco de incêndio recolhido do IPMA.',
+        'riskIndexes' => [
+            'title' => 'Índices de Risco de Incêndio',
+            'items' => [
+                'fwi' => '(FWI) Índice Meteorológico de Risco de Incêndio - Este é o índice final do sistema Canadiano, sendo calculado em função dos seus sub-índices ISI e BUI.',
+                'fmc' => '(FMC) Índice de Humidade dos Combustíveis Finos - Este índice, classifica os combustíveis finos mortos, de secagem rápida, quanto ao seu conteúdo em humidade. Corresponde assim ao grau de inflamabilidade destes combustíveis, que se encontram à superfície do solo. O conteúdo de humidade destes combustíveis às 12 UTC de um determinado dia, depende do conteúdo de humidade à mesma hora, do dia anterior, da precipitação (mm) ocorrida em 24 horas (12-12 UTC) e da temperatura (ºC) e da humidade relativa do ar (%) às 12 UTC do próprio dia. A intensidade do vento influência apenas na velocidade de secagem destes materiais.',
+                'isi' => '(ISI) Índice de Propagação Inicial -  Este índice de propagação inicial do fogo, depende do sub-índice FFMC e da intensidade do vento (Km/h) às 12 UTC.',
+                'bui' => '(BUI) Índice de Combustível Disponível - O índice de combustível disponível, é um factor de avaliação dos vegetais que podem alimentar um fogo (combustíveis "pesados" que se encontram no solo) e é calculado a partir de dois dos sub-índices: DMC e DC.',
+                'dc' => '(DC) Índice de Húmus - Este índice traduz o conteúdo de humidade do húmus e materiais lenhosos de tamanho médio que se encontram abaixo da superfície do solo até cerca de 8 cm. O índice de húmus é calculado a partir da precipitação ocorrida em 24 horas (12-12 UTC), da temperatura e humidade relativa do ar às 12 UTC e do índice de húmus da véspera.',
+                'dmc' => '(DMC) Índice de Seca - Este índice é um bom indicador dos efeitos da seca sazonal nos combustíveis florestais (húmus e materiais lenhosos de maiores dimensões), que se encontram abaixo da superfície do solo, entre 8 e 20 cm de profundidade. O índice de seca é obtido a partir da precipitação ocorrida em 24 horas, da temperatura às 12 UTC e do índice de seca verificado na véspera.'
+
+
+            ],
+            'source' => 'Informação retirada do IPMA.'
+        ]
+
     ],
     'notifications' => [
         'aveiro' => 'Aveiro',

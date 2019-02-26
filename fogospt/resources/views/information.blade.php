@@ -66,6 +66,29 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.riskIndexes.title')</h3>
+
+                            </div>
+
+                            <ul>
+                                <li>@lang('pages.information.riskIndexes.items.fwi')
+                                </li>
+                                <li>@lang('pages.information.riskIndexes.items.fmc')</li>
+                                <li>@lang('pages.information.riskIndexes.items.isi')</li>
+                                <li>@lang('pages.information.riskIndexes.items.bui')</li>
+                                <li>@lang('pages.information.riskIndexes.items.dc')</li>
+                                <li>@lang('pages.information.riskIndexes.items.dmc')</li>
+                            </ul>
+                            <p>@lang('pages.information.riskIndexes.source')</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
