@@ -272,12 +272,16 @@ $(document).ready(function () {
                 window.riskLayers[5].addLayer(dc);
 
                 var objRisk = {}
-                objRisk['Fire Weather Index'] = window.riskLayers[0]
-                objRisk['Initial Spread Index'] = window.riskLayers[1]
-                objRisk['Build Up Index'] = window.riskLayers[2]
-                objRisk['Fine Fuel Moisture Code'] = window.riskLayers[3]
-                objRisk['Duff Moisture Code'] = window.riskLayers[4]
-                objRisk['Drought Code'] = window.riskLayers[5]
+                objRisk['Índice de Risco de Incêndio'] = window.riskLayers[0]
+                objRisk['Índice de Propagação Inicial'] = window.riskLayers[1]
+                objRisk['Índice de Combustível Disponível'] = window.riskLayers[2]
+                objRisk['Índice de Humidade dos Combustíveis Finos'] = window.riskLayers[3]
+                objRisk['Índice de Seca'] = window.riskLayers[4]
+                objRisk['Índice de Húmus'] = window.riskLayers[5]
+
+
+
+
 
                 layerControl3 = L.control.layers(null, objRisk, {position: 'bottomright'})
 
