@@ -15,6 +15,16 @@ services:
         environment:
             - APP_ENV=development
             - XDEBUG_CONFIG=remote_host=127.0.0.1 remote_port=9000 remote_connect_back=0 
+    
+    PostgreSQL:
+        restart: always
+        image: sameersbn/postgresql:10-1
+        ports:
+            - "5432:5432"
+        environment:
+            - DEBUG=true
+            - DB_USER=x
+            - DB_PASS=x
 
 
 
