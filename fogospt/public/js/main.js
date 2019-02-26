@@ -185,6 +185,15 @@ $(document).ready(function () {
                     // "Chuva": rainLayer
                 }
 
+
+
+
+
+
+
+
+
+
                 var overlayLayers = {
                     'Precipitação': precLayer,
                     'Nuvens': cloudLayer
@@ -214,6 +223,68 @@ $(document).ready(function () {
                 // };
 
                 L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: 'topright'}).addTo(mymap)
+
+
+                var dateObj = new Date();
+                var month = dateObj.getUTCMonth() + 1; //months from 1-12
+                var day = dateObj.getUTCDate();
+                var year = dateObj.getUTCFullYear();
+
+                if(month<10){
+                  month = "0"+month;
+                }
+
+                if(day<10){
+                  day = "0"+day;
+                }
+                var fwiUrl = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.fwi&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=200&HEIGHT=347&TIME='+year+'-'+month+'-'+day;
+                var isiUrl = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.isi&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=596&HEIGHT=330&TIME='+year+'-'+month+'-'+day;
+                var buiUrl = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.bui&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=596&HEIGHT=330&TIME='+year+'-'+month+'-'+day;
+                var ffmcUrl = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.ffmc&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=596&HEIGHT=330&TIME='+year+'-'+month+'-'+day;
+                var dmcUrl = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.dmc&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=596&HEIGHT=330&TIME='+year+'-'+month+'-'+day;
+                var dcURL = 'http://ies-ows.jrc.ec.europa.eu/effis?LAYERS=mf010.dc&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SINGLETILE=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-9.52657060387,36.838268541,-6,42.280468655.0&WIDTH=596&HEIGHT=330&TIME='+year+'-'+month+'-'+day;
+
+                bBounds = L.latLngBounds([
+                    [36.838268541, -9.52657060387],
+                    [42.280468655, -6]]);
+
+               var fwi = L.imageOverlay(fwiUrl, bBounds,{opacity: 0.5})
+               var isi = L.imageOverlay(isiUrl, bBounds,{opacity: 0.5})
+               var bui = L.imageOverlay(buiUrl, bBounds,{opacity: 0.5})
+               var ffmc = L.imageOverlay(ffmcUrl, bBounds,{opacity: 0.5})
+               var dmc = L.imageOverlay(dmcUrl, bBounds,{opacity: 0.5})
+               var dc = L.imageOverlay(dcURL, bBounds,{opacity: 0.5})
+
+
+                window.riskLayers = []
+                window.riskLayers[0] = L.layerGroup()
+                window.riskLayers[1] = L.layerGroup()
+                window.riskLayers[2] = L.layerGroup()
+                window.riskLayers[3] = L.layerGroup()
+                window.riskLayers[4] = L.layerGroup()
+                window.riskLayers[5] = L.layerGroup()
+
+                window.riskLayers[0].addLayer(fwi);
+                window.riskLayers[1].addLayer(isi);
+                window.riskLayers[2].addLayer(bui);
+                window.riskLayers[3].addLayer(ffmc);
+                window.riskLayers[4].addLayer(dmc);
+                window.riskLayers[5].addLayer(dc);
+
+                var objRisk = {}
+                objRisk['Fire Weather Index'] = window.riskLayers[0]
+                objRisk['Initial Spread Index'] = window.riskLayers[1]
+                objRisk['Build Up Index'] = window.riskLayers[2]
+                objRisk['Fine Fuel Moisture Code'] = window.riskLayers[3]
+                objRisk['Duff Moisture Code'] = window.riskLayers[4]
+                objRisk['Drought Code'] = window.riskLayers[5]
+
+                layerControl3 = L.control.layers(null, objRisk, {position: 'bottomright'})
+
+                layerControl3.addTo(mymap)
+
+
+
             }
         }
     })
