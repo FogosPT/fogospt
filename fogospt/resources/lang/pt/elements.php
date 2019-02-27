@@ -28,6 +28,9 @@
             ],
             'extra' => [
                 'title' => 'Informação extra'
+            ],
+            'twitter' => [
+                'title' => 'Twitter'
             ]
         ],
         'riskLevels' => [

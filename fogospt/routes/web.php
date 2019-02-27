@@ -34,6 +34,8 @@ Route::get('/views/risk/{id}', 'FireController@getGeneralCard');
 Route::get('/views/status/{id}', 'FireController@getStatusCard');
 Route::get('/views/meteo/{id}', 'FireController@getMeteoCard');
 Route::get('/views/extra/{id}', 'FireController@getExtraCard');
+Route::get('/views/twitter/{id}', 'FireController@getTwitterCard');
+
 
 Route::get('/madeira/views/risk/{id}', 'FireController@getGeneralCardMadeira');
 Route::get('/madeira/views/status/{id}', 'FireController@getStatusCardMadeira');

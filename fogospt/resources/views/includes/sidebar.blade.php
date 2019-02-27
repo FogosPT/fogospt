@@ -11,5 +11,5 @@
 @include('elements.cards.extra')
 @include('elements.cards.status')
 @include('elements.cards.meteo')
-
+@include('elements.cards.twitter')
 </div>
