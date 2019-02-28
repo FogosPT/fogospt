@@ -35,7 +35,21 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        return view('index', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
+        $ch = curl_init();
+        $method_request = 'GET';
+        curl_setopt($ch, CURLOPT_URL, "https://files.sonnyt.com/tweetie/v3/?type=hashtag&params[count]=10&params[q]=fogosPT".$id);
+        // SSL important
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+
+        $feed = json_decode($output);
+
+        return view('index', array('fire' => $this->fire, 'feed'=>$feed, 'metadata' => $this->generateMetadata()));
     }
 
     public function getGeneralCard($id)
@@ -75,6 +89,28 @@ class FireController extends Controller
             return \Response::json();
         }
 
+    }
+
+
+    public function getTwitterCard($id)
+    {
+        $this->setFireById($id);
+
+
+        $ch = curl_init();
+        $method_request = 'GET';
+        curl_setopt($ch, CURLOPT_URL, "https://files.sonnyt.com/tweetie/v3/?type=hashtag&params[count]=10&params[q]=fogosPT".$id);
+        // SSL important
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+
+        $feed = json_decode($output);
+        return view('elements.twitter', array('fire' => $this->fire, 'feed'=>$feed));
     }
 
     public function getAll()

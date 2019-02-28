@@ -452,6 +452,7 @@ function addMaker(item, mymap) {
         danger(item.id)
         meteo(item.id)
         extra(item.id)
+        twitter(item.id)
         addPageview()
     })
 
@@ -573,6 +574,19 @@ function extra(id) {
                 $('.extra').removeClass('active')
             }
 
+        }
+    })
+
+}
+
+
+function twitter(id) {
+    var url = '/views/twitter/' + id
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            $('.f-twitter').html(data)
         }
     })
 
