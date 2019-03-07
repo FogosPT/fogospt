@@ -42,6 +42,9 @@ Route::get('/madeira/views/status/{id}', 'FireController@getStatusCardMadeira');
 Route::get('/madeira/views/meteo/{id}', 'FireController@getMeteoCardMadeira');
 Route::get('/madeira/views/extra/{id}', 'FireController@getExtraCardMadeira');
 
+Route::get('/lightnings', 'FireController@getLightnings');
+
+
 Route::get('/notificacoes', 'GenericController@getNotifications')->name('notifications');
 Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');
 Route::post('/notifications/unsubscribe', 'GenericController@unsubscribe')->name('notifications-subscribe');

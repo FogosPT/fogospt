@@ -212,4 +212,13 @@ class FireController extends Controller
         }
 
     }
+
+
+
+    public function getLightnings(){
+      $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
+      return $json;
+    }
+
+
 }
