@@ -2,7 +2,7 @@
     <a href="https://twitter.com/intent/tweet?button_hashtag=#fogosPT{{ $fire['id'] }}&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-lang="pt" data-show-count="false">Tweet #fogosPT{{ $fire['id'] }}</a>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-    @if(count($feed) > 0)
+    @if(is_array($feed) && count($feed) > 0)
 
     <div class="list-group">
 
