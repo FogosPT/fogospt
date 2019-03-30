@@ -127,13 +127,19 @@ class FireController extends Controller
         );
 
 
-        // Perform the request
         $twitter = new \TwitterAPIExchange($settings);
-        $feed = $twitter->setGetfield($getfield)
+        $result = $twitter->setGetfield($getfield)
             ->buildOauth($url, $requestMethod)
             ->performRequest();
 
-        $feed = json_decode($feed)->statuses;
+        $feed = array();
+
+        if ($result) {
+            $feed = json_decode($result);
+            if (isset($feed->statuses)) {
+                $feed = $feed->statuses;
+            }
+        }
 
 
         return view('elements.twitter', array('fire' => $this->fire, 'feed' => $feed));
