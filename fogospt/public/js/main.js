@@ -548,6 +548,8 @@ function addMaker(item, mymap) {
     meteo(item.id)
     extra(item.id)
     twitter(item.id)
+      console.log('go shares');
+    shares(item.id)
     addPageview()
   })
 
@@ -685,6 +687,18 @@ function twitter(id) {
       $('.f-twitter').html(data)
     }
   })
+}
+
+function shares(id) {
+    console.log('shares');
+    var url = '/views/shares/' + id
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function(data) {
+            $('.f-shares').html(data)
+        }
+    })
 
 }
 

@@ -31,6 +31,9 @@
             ],
             'twitter' => [
                 'title' => 'Twitter'
+            ],
+            'shares' => [
+                'title' => 'Partilhar'
             ]
         ],
         'riskLevels' => [

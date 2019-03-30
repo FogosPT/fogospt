@@ -259,6 +259,21 @@ main {
     .row {
       margin: 0;
     }
+
+    #social-links ul{
+      display: flex;
+      list-style: none;
+      justify-content: space-between;
+      padding:0;
+
+      li{
+        font-size:26px;
+
+        a{
+          color: $c-orange;
+        }
+      }
+    }
   }
 
   .card {

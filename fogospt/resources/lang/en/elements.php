@@ -1,44 +1,47 @@
 <?php
-    return [
-        'cards' => [
-            'general' => [
-                'place' => 'Location',
-                'start_at' => 'Start',
-                'nature' => 'Nature',
-                'fireRisk' => 'Fire Risk'
-            ],
-            'resources' => [
-                'units' => 'Means',
-            ],
-            'status' => [
-                'status' => 'Status'
-            ]
-            ,
-            'meteo' => [
-                'title' => 'Meteo',
-                'temp_atual' => 'Now',
-                'temp_min' => 'Min',
-                'temp_max' => 'Max',
-                'estado_atual' => 'Now',
-                'humidity' => 'Humidity',
-                'pressure' => 'Atmospheric pressure',
-                'wind' => [
-                    'speed' => 'Wind Speed',
-                    'deg' => 'Wind direction'
-                ]
-            ],
-            'extra' => [
-                'title' => 'Extra info'
-            ],
-            'twitter' => [
-                'title' => 'Twitter'
+return [
+    'cards' => [
+        'general' => [
+            'place' => 'Location',
+            'start_at' => 'Start',
+            'nature' => 'Nature',
+            'fireRisk' => 'Fire Risk'
+        ],
+        'resources' => [
+            'units' => 'Means',
+        ],
+        'status' => [
+            'status' => 'Status'
+        ]
+        ,
+        'meteo' => [
+            'title' => 'Meteo',
+            'temp_atual' => 'Now',
+            'temp_min' => 'Min',
+            'temp_max' => 'Max',
+            'estado_atual' => 'Now',
+            'humidity' => 'Humidity',
+            'pressure' => 'Atmospheric pressure',
+            'wind' => [
+                'speed' => 'Wind Speed',
+                'deg' => 'Wind direction'
             ]
         ],
-        'riskLevels' => [
-            'Máximo' => 'Max',
-            'Muito Elevado' => 'Very high',
-            'Elevado' => 'High',
-            'Moderado' => 'Moderate',
-            'Reduzido' => 'Low'
+        'extra' => [
+            'title' => 'Extra info'
+        ],
+        'twitter' => [
+            'title' => 'Twitter'
+        ],
+        'shares' => [
+            'title' => 'Share'
         ]
-    ];
+    ],
+    'riskLevels' => [
+        'Máximo' => 'Max',
+        'Muito Elevado' => 'Very high',
+        'Elevado' => 'High',
+        'Moderado' => 'Moderate',
+        'Reduzido' => 'Low'
+    ]
+];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
+use Jorenvh\Share\Share;
 
 
 class FireController extends Controller
@@ -65,7 +66,27 @@ class FireController extends Controller
             }
         }
 
-        return view('index', array('fire' => $this->fire, 'feed' => $feed, 'metadata' => $this->generateMetadata()));
+        $metadata = $this->generateMetadata();
+        $shares = new Share();
+        $s = $shares->page($metadata['url'])
+            ->facebook()
+            ->twitter()
+            ->whatsapp();
+
+        return view('index', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata));
+    }
+
+    public function getSharesCard($id)
+    {
+        $this->setFireById($id);
+        $metadata = $this->generateMetadata();
+        $shares = new Share();
+        $s = $shares->page($metadata['url'], $metadata['title'])
+            ->facebook()
+            ->twitter()
+            ->whatsapp();
+
+        return view('elements.shares', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
 
     public function getGeneralCard($id)
