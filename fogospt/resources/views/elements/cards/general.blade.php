@@ -27,7 +27,9 @@
                     @endisset
                 </p>
 
-                <p><small>Última atualização {{ date('H:i d-m-Y', $fire['updated']['sec'])}}</small></p>
+                @isset($fire['updated'])
+                    <p><small>Última atualização {{ date('H:i d-m-Y', $fire['updated']['sec'])}}</small></p>
+                @endisset
             </div>
         </div>
     </div>
