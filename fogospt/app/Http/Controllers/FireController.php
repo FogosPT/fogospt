@@ -36,33 +36,36 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
-
-        // Your specific requirements
-        $url = 'https://api.twitter.com/1.1/search/tweets.json';
-        $requestMethod = 'GET';
-        $getfield = "?q=#IF{$hashtag}&result_type=recent";
-
-        $settings = array(
-            'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
-            'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
-            'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-            'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-        );
-
-
-        // Perform the request
-        $twitter = new \TwitterAPIExchange($settings);
-        $result = $twitter->setGetfield($getfield)
-            ->buildOauth($url, $requestMethod)
-            ->performRequest();
-
         $feed = array();
 
-        if ($result) {
-            $feed = json_decode($result);
-            if (isset($feed->statuses)) {
-                $feed = $feed->statuses;
+        if (isset($this->fire['concelho'])) {
+            $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
+
+            // Your specific requirements
+            $url = 'https://api.twitter.com/1.1/search/tweets.json';
+            $requestMethod = 'GET';
+            $getfield = "?q=#IF{$hashtag}&result_type=recent";
+
+            $settings = array(
+                'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
+                'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
+                'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+                'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
+            );
+
+
+            // Perform the request
+            $twitter = new \TwitterAPIExchange($settings);
+            $result = $twitter->setGetfield($getfield)
+                ->buildOauth($url, $requestMethod)
+                ->performRequest();
+
+
+            if ($result) {
+                $feed = json_decode($result);
+                if (isset($feed->statuses)) {
+                    $feed = $feed->statuses;
+                }
             }
         }
 
