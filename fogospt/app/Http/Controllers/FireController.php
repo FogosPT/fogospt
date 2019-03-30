@@ -22,7 +22,7 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFire($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
-        if(isset($meteo['wind']['deg'])){
+        if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
 
@@ -35,7 +35,7 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        $hashtag =  preg_replace('/\s+/', '', $this->fire['concelho']);
+        $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
 
         // Your specific requirements
         $url = 'https://api.twitter.com/1.1/search/tweets.json';
@@ -52,17 +52,20 @@ class FireController extends Controller
 
         // Perform the request
         $twitter = new \TwitterAPIExchange($settings);
-        $feed= $twitter->setGetfield($getfield)
+        $result = $twitter->setGetfield($getfield)
             ->buildOauth($url, $requestMethod)
             ->performRequest();
 
-        if($feed){
-            $feed = json_decode($feed)->statuses;
-        } else {
-            $feed = array();
+        $feed = array();
+
+        if ($result) {
+            $feed = json_decode($result);
+            if (isset($feed->statuses)) {
+                $feed = $feed->statuses;
+            }
         }
 
-        return view('index', array('fire' => $this->fire, 'feed'=>$feed, 'metadata' => $this->generateMetadata()));
+        return view('index', array('fire' => $this->fire, 'feed' => $feed, 'metadata' => $this->generateMetadata()));
     }
 
     public function getGeneralCard($id)
@@ -109,7 +112,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
 
-        $hashtag =  preg_replace('/\s+/', '', $this->fire['concelho']);
+        $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
 
         // Your specific requirements
         $url = 'https://api.twitter.com/1.1/search/tweets.json';
@@ -126,14 +129,14 @@ class FireController extends Controller
 
         // Perform the request
         $twitter = new \TwitterAPIExchange($settings);
-        $feed= $twitter->setGetfield($getfield)
+        $feed = $twitter->setGetfield($getfield)
             ->buildOauth($url, $requestMethod)
             ->performRequest();
 
         $feed = json_decode($feed)->statuses;
 
 
-        return view('elements.twitter', array('fire' => $this->fire, 'feed'=>$feed));
+        return view('elements.twitter', array('fire' => $this->fire, 'feed' => $feed));
     }
 
     public function getAll()
@@ -152,7 +155,7 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFireMadeira($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
-        if(isset($meteo['wind']['deg'])){
+        if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
 
@@ -217,7 +220,7 @@ class FireController extends Controller
     {
         $fire = LegacyApi::getFire($id);
 
-        if(isset($fire['data'])){
+        if (isset($fire['data'])) {
             $this->fire = $fire['data'];
         } else {
             $this->fire = null;
@@ -228,7 +231,7 @@ class FireController extends Controller
     {
         $fire = LegacyApi::getMadeiraFire($id);
 
-        if(isset($fire['data'])){
+        if (isset($fire['data'])) {
             $this->fire = $fire['data'];
         } else {
             $this->fire = null;
@@ -237,10 +240,10 @@ class FireController extends Controller
     }
 
 
-
-    public function getLightnings(){
-      $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
-      return $json;
+    public function getLightnings()
+    {
+        $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
+        return $json;
     }
 
 
