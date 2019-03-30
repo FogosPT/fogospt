@@ -35,19 +35,29 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        $ch = curl_init();
-        $method_request = 'GET';
-        curl_setopt($ch, CURLOPT_URL, "https://files.sonnyt.com/tweetie/v3/?type=hashtag&params[count]=10&params[q]=fogosPT".$id);
-        // SSL important
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $hashtag =  preg_replace('/\s+/', '', $this->fire['concelho']);
 
-        $output = curl_exec($ch);
-        curl_close($ch);
+        // Your specific requirements
+        $url = 'https://api.twitter.com/1.1/search/tweets.json';
+        $requestMethod = 'GET';
+        $getfield = "?q=#IF{$hashtag}&result_type=recent";
+
+        $settings = array(
+            'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
+            'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
+            'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+            'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
+        );
 
 
-        $feed = json_decode($output);
+        // Perform the request
+        $twitter = new \TwitterAPIExchange($settings);
+        $feed= $twitter->setGetfield($getfield)
+            ->buildOauth($url, $requestMethod)
+            ->performRequest();
+
+        $feed = json_decode($feed)->statuses;
+
 
         return view('index', array('fire' => $this->fire, 'feed'=>$feed, 'metadata' => $this->generateMetadata()));
     }
@@ -96,20 +106,30 @@ class FireController extends Controller
     {
         $this->setFireById($id);
 
+        $hashtag =  preg_replace('/\s+/', '', $this->fire['concelho']);
 
-        $ch = curl_init();
-        $method_request = 'GET';
-        curl_setopt($ch, CURLOPT_URL, "https://files.sonnyt.com/tweetie/v3/?type=hashtag&params[count]=10&params[q]=fogosPT".$id);
-        // SSL important
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        // Your specific requirements
+        $url = 'https://api.twitter.com/1.1/search/tweets.json';
+        $requestMethod = 'GET';
+        $getfield = "?q=#IF{$hashtag}&result_type=recent";
 
-        $output = curl_exec($ch);
-        curl_close($ch);
+        $settings = array(
+            'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
+            'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
+            'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+            'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
+        );
 
 
-        $feed = json_decode($output);
+        // Perform the request
+        $twitter = new \TwitterAPIExchange($settings);
+        $feed= $twitter->setGetfield($getfield)
+            ->buildOauth($url, $requestMethod)
+            ->performRequest();
+
+        $feed = json_decode($feed)->statuses;
+
+
         return view('elements.twitter', array('fire' => $this->fire, 'feed'=>$feed));
     }
 
