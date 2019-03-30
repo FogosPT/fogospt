@@ -513,12 +513,18 @@ function addMaker(item, mymap) {
     $icon.find('i').addClass('active')
 
     var item = e.sourceTarget.properties.item
-    $('.sidebar').addClass('active').scrollTop(0)
+
+      var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
+
+
+
+      $('.sidebar').addClass('active').scrollTop(0)
     $('.f-local').text(item.location)
     $('.f-man').text(item.man)
     $('.f-aerial').text(item.aerial)
     $('.f-terrain').text(item.terrain)
     $('.f-nature').text(item.natureza)
+    $('.f-update').text(momentDate)
     $('.f-start').text(item.date + ' ' + item.hour)
     $('.click-notification').data('id', item.id)
 

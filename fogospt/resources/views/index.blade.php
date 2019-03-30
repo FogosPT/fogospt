@@ -22,6 +22,7 @@
     <script src="/js/concelhos.js"></script>
     <script src="/js/vendor/leaflet-openweathermap.js"></script>
     <script src="/js/vendor/store2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="/js/main.js"></script>
 
 @endpush
