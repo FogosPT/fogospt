@@ -56,8 +56,11 @@ class FireController extends Controller
             ->buildOauth($url, $requestMethod)
             ->performRequest();
 
-        $feed = json_decode($feed)->statuses;
-
+        if($feed){
+            $feed = json_decode($feed)->statuses;
+        } else {
+            $feed = array();
+        }
 
         return view('index', array('fire' => $this->fire, 'feed'=>$feed, 'metadata' => $this->generateMetadata()));
     }
