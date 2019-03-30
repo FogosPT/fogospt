@@ -1,1 +1,3 @@
-{!! $shares !!}
+@if( !empty($shares))
+    {!! $shares !!}
+@endif
