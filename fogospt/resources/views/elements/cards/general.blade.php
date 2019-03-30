@@ -26,6 +26,8 @@
                         {{ $fire['natureza'] }}
                     @endisset
                 </p>
+
+                <p><small>Última atualização {{ date('H:i d-m-Y', $fire['updated']['sec'])}}</small></p>
             </div>
         </div>
     </div>
