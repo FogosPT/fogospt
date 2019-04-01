@@ -225,7 +225,7 @@ class FireController extends Controller
         if(env('APP_ENV') === 'production'){
             $exists = Redis::get('twitter:'. $hashtag);
             if($exists){
-                return json_decode($exists,true);
+                return json_decode($exists);
             } else {
                 $url = 'https://api.twitter.com/1.1/search/tweets.json';
                 $requestMethod = 'GET';
