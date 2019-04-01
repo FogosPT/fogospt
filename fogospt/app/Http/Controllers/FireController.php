@@ -6,6 +6,7 @@ use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
 use Jorenvh\Share\Share;
+use Illuminate\Support\Facades\Redis;
 
 
 class FireController extends Controller
