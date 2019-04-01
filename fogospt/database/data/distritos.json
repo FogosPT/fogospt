@@ -1,0 +1,124 @@
+{
+  "rows": [
+    {
+      "key": "010000",
+      "value": {
+        "name": "AVEIRO"
+      }
+    },
+    {
+      "key": "020000",
+      "value": {
+        "name": "BEJA"
+      }
+    },
+    {
+      "key": "030000",
+      "value": {
+        "name": "BRAGA"
+      }
+    },
+    {
+      "key": "040000",
+      "value": {
+        "name": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "050000",
+      "value": {
+        "name": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "060000",
+      "value": {
+        "name": "COIMBRA"
+      }
+    },
+    {
+      "key": "070000",
+      "value": {
+        "name": "ÉVORA"
+      }
+    },
+    {
+      "key": "080000",
+      "value": {
+        "name": "FARO"
+      }
+    },
+    {
+      "key": "090000",
+      "value": {
+        "name": "GUARDA"
+      }
+    },
+    {
+      "key": "100000",
+      "value": {
+        "name": "LEIRIA"
+      }
+    },
+    {
+      "key": "110000",
+      "value": {
+        "name": "LISBOA"
+      }
+    },
+    {
+      "key": "120000",
+      "value": {
+        "name": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "130000",
+      "value": {
+        "name": "PORTO"
+      }
+    },
+    {
+      "key": "140000",
+      "value": {
+        "name": "SANTARÉM"
+      }
+    },
+    {
+      "key": "150000",
+      "value": {
+        "name": "SETÚBAL"
+      }
+    },
+    {
+      "key": "160000",
+      "value": {
+        "name": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "170000",
+      "value": {
+        "name": "VILA REAL"
+      }
+    },
+    {
+      "key": "180000",
+      "value": {
+        "name": "VISEU"
+      }
+    },
+    {
+      "key": "300000",
+      "value": {
+        "name": "MADEIRA"
+      }
+    },
+    {
+      "key": "400000",
+      "value": {
+        "name": "AÇORES"
+      }
+    }
+  ]
+}
