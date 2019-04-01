@@ -1,0 +1,2468 @@
+{
+  "rows": [
+    {
+      "key": "010100",
+      "value": {
+        "name": "ÁGUEDA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010200",
+      "value": {
+        "name": "ALBERGARIA-A-VELHA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010300",
+      "value": {
+        "name": "ANADIA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010400",
+      "value": {
+        "name": "AROUCA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010500",
+      "value": {
+        "name": "AVEIRO",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010600",
+      "value": {
+        "name": "CASTELO DE PAIVA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010700",
+      "value": {
+        "name": "ESPINHO",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010800",
+      "value": {
+        "name": "ESTARREJA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "010900",
+      "value": {
+        "name": "SANTA MARIA DA FEIRA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011000",
+      "value": {
+        "name": "ÍLHAVO",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011100",
+      "value": {
+        "name": "MEALHADA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011200",
+      "value": {
+        "name": "MURTOSA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011300",
+      "value": {
+        "name": "OLIVEIRA DE AZEMÉIS",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011400",
+      "value": {
+        "name": "OLIVEIRA DO BAIRRO",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011500",
+      "value": {
+        "name": "OVAR",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011600",
+      "value": {
+        "name": "SÃO JOÃO DA MADEIRA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011700",
+      "value": {
+        "name": "SEVER DO VOUGA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011800",
+      "value": {
+        "name": "VAGOS",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "011900",
+      "value": {
+        "name": "VALE DE CAMBRA",
+        "dId": "010000",
+        "dName": "AVEIRO"
+      }
+    },
+    {
+      "key": "020100",
+      "value": {
+        "name": "ALJUSTREL",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020200",
+      "value": {
+        "name": "ALMODÔVAR",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020300",
+      "value": {
+        "name": "ALVITO",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020400",
+      "value": {
+        "name": "BARRANCOS",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020500",
+      "value": {
+        "name": "BEJA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020600",
+      "value": {
+        "name": "CASTRO VERDE",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020700",
+      "value": {
+        "name": "CUBA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020800",
+      "value": {
+        "name": "FERREIRA DO ALENTEJO",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "020900",
+      "value": {
+        "name": "MÉRTOLA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "021000",
+      "value": {
+        "name": "MOURA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "021100",
+      "value": {
+        "name": "ODEMIRA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "021200",
+      "value": {
+        "name": "OURIQUE",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "021300",
+      "value": {
+        "name": "SERPA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "021400",
+      "value": {
+        "name": "VIDIGUEIRA",
+        "dId": "020000",
+        "dName": "BEJA"
+      }
+    },
+    {
+      "key": "030100",
+      "value": {
+        "name": "AMARES",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030200",
+      "value": {
+        "name": "BARCELOS",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030300",
+      "value": {
+        "name": "BRAGA",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030400",
+      "value": {
+        "name": "CABECEIRAS DE BASTO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030500",
+      "value": {
+        "name": "CELORICO DE BASTO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030600",
+      "value": {
+        "name": "ESPOSENDE",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030700",
+      "value": {
+        "name": "FAFE",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030800",
+      "value": {
+        "name": "GUIMARÃES",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "030900",
+      "value": {
+        "name": "PÓVOA DE LANHOSO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "031000",
+      "value": {
+        "name": "TERRAS DE BOURO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "031100",
+      "value": {
+        "name": "VIEIRA DO MINHO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "031200",
+      "value": {
+        "name": "VILA NOVA DE FAMALICÃO",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "031300",
+      "value": {
+        "name": "VILA VERDE",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "031400",
+      "value": {
+        "name": "VIZELA",
+        "dId": "030000",
+        "dName": "BRAGA"
+      }
+    },
+    {
+      "key": "040100",
+      "value": {
+        "name": "ALFÂNDEGA DA FÉ",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040200",
+      "value": {
+        "name": "BRAGANÇA",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040300",
+      "value": {
+        "name": "CARRAZEDA DE ANSIÃES",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040400",
+      "value": {
+        "name": "FREIXO DE ESPADA À CINTA",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040500",
+      "value": {
+        "name": "MACEDO DE CAVALEIROS",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040600",
+      "value": {
+        "name": "MIRANDA DO DOURO",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040700",
+      "value": {
+        "name": "MIRANDELA",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040800",
+      "value": {
+        "name": "MOGADOURO",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "040900",
+      "value": {
+        "name": "TORRE DE MONCORVO",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "041000",
+      "value": {
+        "name": "VILA FLOR",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "041100",
+      "value": {
+        "name": "VIMIOSO",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "041200",
+      "value": {
+        "name": "VINHAIS",
+        "dId": "040000",
+        "dName": "BRAGANÇA"
+      }
+    },
+    {
+      "key": "050100",
+      "value": {
+        "name": "BELMONTE",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050200",
+      "value": {
+        "name": "CASTELO BRANCO",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050300",
+      "value": {
+        "name": "COVILHÃ",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050400",
+      "value": {
+        "name": "FUNDÃO",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050500",
+      "value": {
+        "name": "IDANHA-A-NOVA",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050600",
+      "value": {
+        "name": "OLEIROS",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050700",
+      "value": {
+        "name": "PENAMACOR",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050800",
+      "value": {
+        "name": "PROENÇA-A-NOVA",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "050900",
+      "value": {
+        "name": "SERTÃ",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "051000",
+      "value": {
+        "name": "VILA DE REI",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "051100",
+      "value": {
+        "name": "VILA VELHA DE RÓDÃO",
+        "dId": "050000",
+        "dName": "CASTELO BRANCO"
+      }
+    },
+    {
+      "key": "060100",
+      "value": {
+        "name": "ARGANIL",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060200",
+      "value": {
+        "name": "CANTANHEDE",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060300",
+      "value": {
+        "name": "COIMBRA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060400",
+      "value": {
+        "name": "CONDEIXA-A-NOVA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060500",
+      "value": {
+        "name": "FIGUEIRA DA FOZ",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060600",
+      "value": {
+        "name": "GÓIS",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060700",
+      "value": {
+        "name": "LOUSÃ",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060800",
+      "value": {
+        "name": "MIRA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "060900",
+      "value": {
+        "name": "MIRANDA DO CORVO",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061000",
+      "value": {
+        "name": "MONTEMOR-O-VELHO",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061100",
+      "value": {
+        "name": "OLIVEIRA DO HOSPITAL",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061200",
+      "value": {
+        "name": "PAMPILHOSA DA SERRA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061300",
+      "value": {
+        "name": "PENACOVA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061400",
+      "value": {
+        "name": "PENELA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061500",
+      "value": {
+        "name": "SOURE",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061600",
+      "value": {
+        "name": "TÁBUA",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "061700",
+      "value": {
+        "name": "VILA NOVA DE POIARES",
+        "dId": "060000",
+        "dName": "COIMBRA"
+      }
+    },
+    {
+      "key": "070100",
+      "value": {
+        "name": "ALANDROAL",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070200",
+      "value": {
+        "name": "ARRAIOLOS",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070300",
+      "value": {
+        "name": "BORBA",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070400",
+      "value": {
+        "name": "ESTREMOZ",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070500",
+      "value": {
+        "name": "ÉVORA",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070600",
+      "value": {
+        "name": "MONTEMOR-O-NOVO",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070700",
+      "value": {
+        "name": "MORA",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070800",
+      "value": {
+        "name": "MOURÃO",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "070900",
+      "value": {
+        "name": "PORTEL",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "071000",
+      "value": {
+        "name": "REDONDO",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "071100",
+      "value": {
+        "name": "REGUENGOS DE MONSARAZ",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "071200",
+      "value": {
+        "name": "VENDAS NOVAS",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "071300",
+      "value": {
+        "name": "VIANA DO ALENTEJO",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "071400",
+      "value": {
+        "name": "VILA VIÇOSA",
+        "dId": "070000",
+        "dName": "ÉVORA"
+      }
+    },
+    {
+      "key": "080100",
+      "value": {
+        "name": "ALBUFEIRA",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080200",
+      "value": {
+        "name": "ALCOUTIM",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080300",
+      "value": {
+        "name": "ALJEZUR",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080400",
+      "value": {
+        "name": "CASTRO MARIM",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080500",
+      "value": {
+        "name": "FARO",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080600",
+      "value": {
+        "name": "LAGOA",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080700",
+      "value": {
+        "name": "LAGOS",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080800",
+      "value": {
+        "name": "LOULÉ",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "080900",
+      "value": {
+        "name": "MONCHIQUE",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081000",
+      "value": {
+        "name": "OLHÃO",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081100",
+      "value": {
+        "name": "PORTIMÃO",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081200",
+      "value": {
+        "name": "SÃO BRÁS DE ALPORTEL",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081300",
+      "value": {
+        "name": "SILVES",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081400",
+      "value": {
+        "name": "TAVIRA",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081500",
+      "value": {
+        "name": "VILA DO BISPO",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "081600",
+      "value": {
+        "name": "VILA REAL DE SANTO ANTÓNIO",
+        "dId": "080000",
+        "dName": "FARO"
+      }
+    },
+    {
+      "key": "090100",
+      "value": {
+        "name": "AGUIAR DA BEIRA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090200",
+      "value": {
+        "name": "ALMEIDA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090300",
+      "value": {
+        "name": "CELORICO DA BEIRA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090400",
+      "value": {
+        "name": "FIGUEIRA DE CASTELO RODRIGO",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090500",
+      "value": {
+        "name": "FORNOS DE ALGODRES",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090600",
+      "value": {
+        "name": "GOUVEIA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090700",
+      "value": {
+        "name": "GUARDA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090800",
+      "value": {
+        "name": "MANTEIGAS",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "090900",
+      "value": {
+        "name": "MÊDA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "091000",
+      "value": {
+        "name": "PINHEL",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "091100",
+      "value": {
+        "name": "SABUGAL",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "091200",
+      "value": {
+        "name": "SEIA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "091300",
+      "value": {
+        "name": "TRANCOSO",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "091400",
+      "value": {
+        "name": "VILA NOVA DE FOZ CÔA",
+        "dId": "090000",
+        "dName": "GUARDA"
+      }
+    },
+    {
+      "key": "100100",
+      "value": {
+        "name": "ALCOBAÇA",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100200",
+      "value": {
+        "name": "ALVAIÁZERE",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100300",
+      "value": {
+        "name": "ANSIÃO",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100400",
+      "value": {
+        "name": "BATALHA",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100500",
+      "value": {
+        "name": "BOMBARRAL",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100600",
+      "value": {
+        "name": "CALDAS DA RAINHA",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100700",
+      "value": {
+        "name": "CASTANHEIRA DE PÊRA",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100800",
+      "value": {
+        "name": "FIGUEIRÓ DOS VINHOS",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "100900",
+      "value": {
+        "name": "LEIRIA",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101000",
+      "value": {
+        "name": "MARINHA GRANDE",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101100",
+      "value": {
+        "name": "NAZARÉ",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101200",
+      "value": {
+        "name": "ÓBIDOS",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101300",
+      "value": {
+        "name": "PEDRÓGÃO GRANDE",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101400",
+      "value": {
+        "name": "PENICHE",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101500",
+      "value": {
+        "name": "POMBAL",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "101600",
+      "value": {
+        "name": "PORTO DE MÓS",
+        "dId": "100000",
+        "dName": "LEIRIA"
+      }
+    },
+    {
+      "key": "110100",
+      "value": {
+        "name": "ALENQUER",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110200",
+      "value": {
+        "name": "ARRUDA DOS VINHOS",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110300",
+      "value": {
+        "name": "AZAMBUJA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110400",
+      "value": {
+        "name": "CADAVAL",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110500",
+      "value": {
+        "name": "CASCAIS",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110600",
+      "value": {
+        "name": "LISBOA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110700",
+      "value": {
+        "name": "LOURES",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110800",
+      "value": {
+        "name": "LOURINHÃ",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "110900",
+      "value": {
+        "name": "MAFRA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111000",
+      "value": {
+        "name": "OEIRAS",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111100",
+      "value": {
+        "name": "SINTRA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111200",
+      "value": {
+        "name": "SOBRAL DE MONTE AGRAÇO",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111300",
+      "value": {
+        "name": "TORRES VEDRAS",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111400",
+      "value": {
+        "name": "VILA FRANCA DE XIRA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111500",
+      "value": {
+        "name": "AMADORA",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "111600",
+      "value": {
+        "name": "ODIVELAS",
+        "dId": "110000",
+        "dName": "LISBOA"
+      }
+    },
+    {
+      "key": "120100",
+      "value": {
+        "name": "ALTER DO CHÃO",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120200",
+      "value": {
+        "name": "ARRONCHES",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120300",
+      "value": {
+        "name": "AVIS",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120400",
+      "value": {
+        "name": "CAMPO MAIOR",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120500",
+      "value": {
+        "name": "CASTELO DE VIDE",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120600",
+      "value": {
+        "name": "CRATO",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120700",
+      "value": {
+        "name": "ELVAS",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120800",
+      "value": {
+        "name": "FRONTEIRA",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "120900",
+      "value": {
+        "name": "GAVIÃO",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121000",
+      "value": {
+        "name": "MARVÃO",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121100",
+      "value": {
+        "name": "MONFORTE",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121200",
+      "value": {
+        "name": "NISA",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121300",
+      "value": {
+        "name": "PONTE DE SOR",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121400",
+      "value": {
+        "name": "PORTALEGRE",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "121500",
+      "value": {
+        "name": "SOUSEL",
+        "dId": "120000",
+        "dName": "PORTALEGRE"
+      }
+    },
+    {
+      "key": "130100",
+      "value": {
+        "name": "AMARANTE",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130200",
+      "value": {
+        "name": "BAIÃO",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130300",
+      "value": {
+        "name": "FELGUEIRAS",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130400",
+      "value": {
+        "name": "GONDOMAR",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130500",
+      "value": {
+        "name": "LOUSADA",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130600",
+      "value": {
+        "name": "MAIA",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130700",
+      "value": {
+        "name": "MARCO DE CANAVESES",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130800",
+      "value": {
+        "name": "MATOSINHOS",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "130900",
+      "value": {
+        "name": "PAÇOS DE FERREIRA",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131000",
+      "value": {
+        "name": "PAREDES",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131100",
+      "value": {
+        "name": "PENAFIEL",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131200",
+      "value": {
+        "name": "PORTO",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131300",
+      "value": {
+        "name": "PÓVOA DE VARZIM",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131400",
+      "value": {
+        "name": "SANTO TIRSO",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131500",
+      "value": {
+        "name": "VALONGO",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131600",
+      "value": {
+        "name": "VILA DO CONDE",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131700",
+      "value": {
+        "name": "VILA NOVA DE GAIA",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "131800",
+      "value": {
+        "name": "TROFA",
+        "dId": "130000",
+        "dName": "PORTO"
+      }
+    },
+    {
+      "key": "140100",
+      "value": {
+        "name": "ABRANTES",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140200",
+      "value": {
+        "name": "ALCANENA",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140300",
+      "value": {
+        "name": "ALMEIRIM",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140400",
+      "value": {
+        "name": "ALPIARÇA",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140500",
+      "value": {
+        "name": "BENAVENTE",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140600",
+      "value": {
+        "name": "CARTAXO",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140700",
+      "value": {
+        "name": "CHAMUSCA",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140800",
+      "value": {
+        "name": "CONSTÂNCIA",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "140900",
+      "value": {
+        "name": "CORUCHE",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141000",
+      "value": {
+        "name": "ENTRONCAMENTO",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141100",
+      "value": {
+        "name": "FERREIRA DO ZÊZERE",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141200",
+      "value": {
+        "name": "GOLEGÃ",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141300",
+      "value": {
+        "name": "MAÇÃO",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141400",
+      "value": {
+        "name": "RIO MAIOR",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141500",
+      "value": {
+        "name": "SALVATERRA DE MAGOS",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141600",
+      "value": {
+        "name": "SANTARÉM",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141700",
+      "value": {
+        "name": "SARDOAL",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141800",
+      "value": {
+        "name": "TOMAR",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "141900",
+      "value": {
+        "name": "TORRES NOVAS",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "142000",
+      "value": {
+        "name": "VILA NOVA DA BARQUINHA",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "142100",
+      "value": {
+        "name": "OURÉM",
+        "dId": "140000",
+        "dName": "SANTARÉM"
+      }
+    },
+    {
+      "key": "150100",
+      "value": {
+        "name": "ALCÁCER DO SAL",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150200",
+      "value": {
+        "name": "ALCOCHETE",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150300",
+      "value": {
+        "name": "ALMADA",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150400",
+      "value": {
+        "name": "BARREIRO",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150500",
+      "value": {
+        "name": "GRÂNDOLA",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150600",
+      "value": {
+        "name": "MOITA",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150700",
+      "value": {
+        "name": "MONTIJO",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150800",
+      "value": {
+        "name": "PALMELA",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "150900",
+      "value": {
+        "name": "SANTIAGO DO CACÉM",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "151000",
+      "value": {
+        "name": "SEIXAL",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "151100",
+      "value": {
+        "name": "SESIMBRA",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "151200",
+      "value": {
+        "name": "SETÚBAL",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "151300",
+      "value": {
+        "name": "SINES",
+        "dId": "150000",
+        "dName": "SETÚBAL"
+      }
+    },
+    {
+      "key": "160100",
+      "value": {
+        "name": "ARCOS DE VALDEVEZ",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160200",
+      "value": {
+        "name": "CAMINHA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160300",
+      "value": {
+        "name": "MELGAÇO",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160400",
+      "value": {
+        "name": "MONÇÃO",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160500",
+      "value": {
+        "name": "PAREDES DE COURA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160600",
+      "value": {
+        "name": "PONTE DA BARCA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160700",
+      "value": {
+        "name": "PONTE DE LIMA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160800",
+      "value": {
+        "name": "VALENÇA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "160900",
+      "value": {
+        "name": "VIANA DO CASTELO",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "161000",
+      "value": {
+        "name": "VILA NOVA DE CERVEIRA",
+        "dId": "160000",
+        "dName": "VIANA DO CASTELO"
+      }
+    },
+    {
+      "key": "170100",
+      "value": {
+        "name": "ALIJÓ",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170200",
+      "value": {
+        "name": "BOTICAS",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170300",
+      "value": {
+        "name": "CHAVES",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170400",
+      "value": {
+        "name": "MESÃO FRIO",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170500",
+      "value": {
+        "name": "MONDIM DE BASTO",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170600",
+      "value": {
+        "name": "MONTALEGRE",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170700",
+      "value": {
+        "name": "MURÇA",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170800",
+      "value": {
+        "name": "PESO DA RÉGUA",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "170900",
+      "value": {
+        "name": "RIBEIRA DE PENA",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "171000",
+      "value": {
+        "name": "SABROSA",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "171100",
+      "value": {
+        "name": "SANTA MARTA DE PENAGUIÃO",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "171200",
+      "value": {
+        "name": "VALPAÇOS",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "171300",
+      "value": {
+        "name": "VILA POUCA DE AGUIAR",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "171400",
+      "value": {
+        "name": "VILA REAL",
+        "dId": "170000",
+        "dName": "VILA REAL"
+      }
+    },
+    {
+      "key": "180100",
+      "value": {
+        "name": "ARMAMAR",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180200",
+      "value": {
+        "name": "CARREGAL DO SAL",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180300",
+      "value": {
+        "name": "CASTRO DAIRE",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180400",
+      "value": {
+        "name": "CINFÃES",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180500",
+      "value": {
+        "name": "LAMEGO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180600",
+      "value": {
+        "name": "MANGUALDE",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180700",
+      "value": {
+        "name": "MOIMENTA DA BEIRA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180800",
+      "value": {
+        "name": "MORTÁGUA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "180900",
+      "value": {
+        "name": "NELAS",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181000",
+      "value": {
+        "name": "OLIVEIRA DE FRADES",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181100",
+      "value": {
+        "name": "PENALVA DO CASTELO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181200",
+      "value": {
+        "name": "PENEDONO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181300",
+      "value": {
+        "name": "RESENDE",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181400",
+      "value": {
+        "name": "SANTA COMBA DÃO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181500",
+      "value": {
+        "name": "SÃO JOÃO DA PESQUEIRA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181600",
+      "value": {
+        "name": "SÃO PEDRO DO SUL",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181700",
+      "value": {
+        "name": "SÁTÃO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181800",
+      "value": {
+        "name": "SERNANCELHE",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "181900",
+      "value": {
+        "name": "TABUAÇO",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "182000",
+      "value": {
+        "name": "TAROUCA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "182100",
+      "value": {
+        "name": "TONDELA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "182200",
+      "value": {
+        "name": "VILA NOVA DE PAIVA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "182300",
+      "value": {
+        "name": "VISEU",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "182400",
+      "value": {
+        "name": "VOUZELA",
+        "dId": "180000",
+        "dName": "VISEU"
+      }
+    },
+    {
+      "key": "310100",
+      "value": {
+        "name": "CALHETA",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310200",
+      "value": {
+        "name": "CÂMARA DE LOBOS",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310300",
+      "value": {
+        "name": "FUNCHAL",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310400",
+      "value": {
+        "name": "MACHICO",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310500",
+      "value": {
+        "name": "PONTA DO SOL",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310600",
+      "value": {
+        "name": "PORTO MONIZ",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310700",
+      "value": {
+        "name": "RIBEIRA BRAVA",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310800",
+      "value": {
+        "name": "SANTA CRUZ",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "310900",
+      "value": {
+        "name": "SANTANA",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "311000",
+      "value": {
+        "name": "SÃO VICENTE",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "320100",
+      "value": {
+        "name": "PORTO SANTO",
+        "dId": "300000",
+        "dName": "MADEIRA"
+      }
+    },
+    {
+      "key": "410100",
+      "value": {
+        "name": "VILA DO PORTO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420100",
+      "value": {
+        "name": "LAGOA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420200",
+      "value": {
+        "name": "NORDESTE",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420300",
+      "value": {
+        "name": "PONTA DELGADA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420400",
+      "value": {
+        "name": "POVOAÇÃO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420500",
+      "value": {
+        "name": "RIBEIRA GRANDE",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "420600",
+      "value": {
+        "name": "VILA FRANCA DO CAMPO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "430100",
+      "value": {
+        "name": "ANGRA DO HEROÍSMO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "430200",
+      "value": {
+        "name": "PRAIA DA VITÓRIA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "440100",
+      "value": {
+        "name": "SANTA CRUZ DA GRACIOSA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "450100",
+      "value": {
+        "name": "CALHETA DE SÃO JORGE",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "450200",
+      "value": {
+        "name": "VELAS",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "460100",
+      "value": {
+        "name": "LAJES DO PICO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "460200",
+      "value": {
+        "name": "MADALENA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "460300",
+      "value": {
+        "name": "SÃO ROQUE DO PICO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "470100",
+      "value": {
+        "name": "HORTA",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "480100",
+      "value": {
+        "name": "LAJES DAS FLORES",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "480200",
+      "value": {
+        "name": "SANTA CRUZ DAS FLORES",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    },
+    {
+      "key": "490100",
+      "value": {
+        "name": "CORVO",
+        "dId": "400000",
+        "dName": "AÇORES"
+      }
+    }
+  ]
+}
