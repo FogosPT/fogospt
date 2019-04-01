@@ -314,7 +314,7 @@ $(document).ready(function() {
 
 
   $.ajax({
-    url: 'http://127.0.0.1:8000/lightnings',
+    url: '/lightnings',
     dataType: "json",
     method: 'GET',
     success: function(data) {
@@ -335,7 +335,7 @@ $(document).ready(function() {
       for (i in data.data) {
         var date = new Date(data.data[i].timestamp)
         var hours = Math.floor((new Date() - date) / 3600000);
-        if (hours <= 24) {
+        if (hours <= 24 && insidePT([data.data[i].payload.longitude,data.data[i].payload.latitude])) {
           addLightning(data.data[i], mymap);
         }
       }
@@ -349,6 +349,22 @@ $(document).ready(function() {
 })
 
 
+function insidePT(point) {
+    var x = point[0], y = point[1];
+
+    var pt = portugal.geometry.coordinates[0][0];
+    var inside = false;
+
+    for (var i = 0, j = pt.length - 1; i < pt.length; j = i++) {
+        var xi = pt[i][0], yi = pt[i][1];
+        var xj = pt[j][0], yj = pt[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+};
 
 
 function addLightning(data, mymap) {
@@ -356,8 +372,7 @@ function addLightning(data, mymap) {
 
   marker.properties = {}
 
-  iconHtml = '<i class="dot status-99" ></i>'
-  iconHtml = '<img src="/img/lightning.png">'
+  iconHtml = '<i class="fas fa-bolt" style="color: #F96E5B"></i>'
 
   marker.sizeFactor = 1
 
