@@ -255,7 +255,7 @@ class FireController extends Controller
 
 
                 if(!empty($feed)){
-                    Redis::set('twitter:'. $hashtag, json_encode($result),'EX', 1080);
+                    Redis::set('twitter:'. $hashtag, json_encode($feed),'EX', 1080);
                 }
 
                 return $feed;
