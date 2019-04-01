@@ -39,34 +39,7 @@ class FireController extends Controller
         $feed = array();
 
         if (isset($this->fire['concelho'])) {
-            $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
-
-            // Your specific requirements
-            $url = 'https://api.twitter.com/1.1/search/tweets.json';
-            $requestMethod = 'GET';
-            $getfield = "?q=#IF{$hashtag}&result_type=recent";
-
-            $settings = array(
-                'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
-                'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
-                'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-                'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-            );
-
-
-            // Perform the request
-            $twitter = new \TwitterAPIExchange($settings);
-            $result = $twitter->setGetfield($getfield)
-                ->buildOauth($url, $requestMethod)
-                ->performRequest();
-
-
-            if ($result) {
-                $feed = json_decode($result);
-                if (isset($feed->statuses)) {
-                    $feed = $feed->statuses;
-                }
-            }
+          $feed = $this->getTwitter($this->fire['concelho']);
         }
 
         $metadata = $this->generateMetadata();
@@ -75,6 +48,7 @@ class FireController extends Controller
             ->facebook()
             ->twitter()
             ->whatsapp();
+
 
         return view('index', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata));
     }
@@ -88,6 +62,8 @@ class FireController extends Controller
             ->facebook()
             ->twitter()
             ->whatsapp();
+
+        $s = str_replace('views/shares', 'fogo', $s);
 
         return view('elements.shares', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
@@ -136,35 +112,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
 
-        $hashtag = preg_replace('/\s+/', '', $this->fire['concelho']);
-
-        // Your specific requirements
-        $url = 'https://api.twitter.com/1.1/search/tweets.json';
-        $requestMethod = 'GET';
-        $getfield = "?q=#IF{$hashtag}&result_type=recent";
-
-        $settings = array(
-            'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
-            'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
-            'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-            'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-        );
-
-
-        $twitter = new \TwitterAPIExchange($settings);
-        $result = $twitter->setGetfield($getfield)
-            ->buildOauth($url, $requestMethod)
-            ->performRequest();
-
-        $feed = array();
-
-        if ($result) {
-            $feed = json_decode($result);
-            if (isset($feed->statuses)) {
-                $feed = $feed->statuses;
-            }
-        }
-
+        $feed = $this->getTwitter($this->fire['concelho']);
 
         return view('elements.twitter', array('fire' => $this->fire, 'feed' => $feed));
     }
@@ -267,6 +215,80 @@ class FireController extends Controller
             $this->fire = null;
         }
 
+    }
+
+    private function getTwitter($concelho)
+    {
+        $hashtag = preg_replace('/\s+/', '', $concelho);
+
+        if(env('APP_ENV') === 'production'){
+            $exists = Redis::get('twitter:'. $hashtag);
+            if($exists){
+                return json_decode($exists,true);
+            } else {
+                $url = 'https://api.twitter.com/1.1/search/tweets.json';
+                $requestMethod = 'GET';
+                $getfield = "?q=#IF{$hashtag}&result_type=recent";
+
+                $settings = array(
+                    'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
+                    'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
+                    'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+                    'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
+                );
+
+
+                $twitter = new \TwitterAPIExchange($settings);
+                $result = $twitter->setGetfield($getfield)
+                    ->buildOauth($url, $requestMethod)
+                    ->performRequest();
+
+                $feed = array();
+
+                if ($result) {
+                    $feed = json_decode($result);
+                    if (isset($feed->statuses)) {
+                        $feed = $feed->statuses;
+                    }
+                }
+
+
+                if(!empty($feed)){
+                    Redis::set('twitter:'. $hashtag, json_encode($result),'EX', 1080);
+                }
+
+                return $feed;
+            }
+        } else {
+            $url = 'https://api.twitter.com/1.1/search/tweets.json';
+            $requestMethod = 'GET';
+            $getfield = "?q=#IF{$hashtag}&result_type=recent";
+
+            $settings = array(
+                'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
+                'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
+                'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+                'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
+            );
+
+
+            $twitter = new \TwitterAPIExchange($settings);
+            $result = $twitter->setGetfield($getfield)
+                ->buildOauth($url, $requestMethod)
+                ->performRequest();
+
+            $feed = array();
+
+            if ($result) {
+                $feed = json_decode($result);
+                if (isset($feed->statuses)) {
+                    $feed = $feed->statuses;
+                }
+            }
+
+            return $feed;
+
+        }
     }
 
 
