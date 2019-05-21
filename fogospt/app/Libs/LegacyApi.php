@@ -5,6 +5,7 @@
  * Date: 03/05/2018
  * Time: 19:08
  */
+
 namespace App\Libs;
 
 use GuzzleHttp;
@@ -127,7 +128,7 @@ class LegacyApi
 
         $body = $response->getBody();
         $result = json_decode($body->getContents(), true);
-        
+
         return $result;
     }
 
@@ -283,15 +284,15 @@ class LegacyApi
         return $result;
     }
 
-    public static function getMeteoByFire($lat,$lng)
+    public static function getMeteoByFire($lat, $lng)
     {
-        if(env('APP_ENV') === 'production'){
-            $exists = Redis::get('weather:'.$lat.':'.$lng);
-            if($exists){
-                return json_decode($exists,true);
+        if (env('APP_ENV') === 'production') {
+            $exists = Redis::get('weather:' . $lat . ':' . $lng);
+            if ($exists) {
+                return json_decode($exists, true);
             } else {
                 $client = self::getClient();
-                $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng. '&APPID='. env('OPENWEATHER_API') . '&units=metric&lang=pt';
+                $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng . '&APPID=' . env('OPENWEATHER_API') . '&units=metric&lang=pt';
 
                 try {
                     $response = $client->request('GET', $weatherUrl);
@@ -305,7 +306,7 @@ class LegacyApi
                 $body = $response->getBody();
                 $result = json_decode($body->getContents(), true);
 
-                Redis::set('weather:'.$lat.':'.$lng, json_encode($result),'EX', 10800);
+                Redis::set('weather:' . $lat . ':' . $lng, json_encode($result), 'EX', 10800);
 
                 return $result;
             }
@@ -314,10 +315,10 @@ class LegacyApi
 
     public static function getMobileContributors()
     {
-        if(env('APP_ENV') === 'production'){
+        if (env('APP_ENV') === 'production') {
             $exists = Redis::get('mobile:contributors');
-            if($exists){
-                return json_decode($exists,true);
+            if ($exists) {
+                return json_decode($exists, true);
             } else {
                 $url = 'https://api.github.com/repos/FogosPT/fogosmobile/contributors';
 
@@ -335,16 +336,23 @@ class LegacyApi
                 $body = $response->getBody();
                 $result = json_decode($body->getContents(), true);
 
-                return $result;
+                foreach ($result as &$r) {
+                    try {
+                        $data = $client->request('GET', $r['url']);
+                    } catch (ClientException $e) {
+                        return ['error' => $e->getMessage()];
+                    } catch (RequestException $e) {
+                        return ['error' => $e->getMessage()];
+                    }
 
-                $body = $response->getBody();
-                $result = json_decode($body->getContents(), true);
+                    $r = array_merge($r, $data);
+                }
 
-                Redis::set('mobile:contributors', json_encode($result),'EX', 108000);
+                Redis::set('mobile:contributors', json_encode($result), 'EX', 108000);
 
                 return $result;
             }
         }
     }
-    
+
 }
