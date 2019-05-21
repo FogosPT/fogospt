@@ -50,6 +50,10 @@ Route::get('/notificacoes', 'GenericController@getNotifications')->name('notific
 Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');
 Route::post('/notifications/unsubscribe', 'GenericController@unsubscribe')->name('notifications-subscribe');
 
+Route::group(['prefix' => 'v1'], function () {
+    Route::get('/mobile-contributors', 'ApiController@getMobileContributors')->name('getMobileContributors');
+});
+
 if(ENV('APP_ENV') !== 'production'){
     Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
 }
