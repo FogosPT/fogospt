@@ -10,15 +10,13 @@
                 @foreach($data as $warning)
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">{{ $warning['title'] }}</h4>
-                                <p class="f-local">
-                                    {{ $warning['description'] }}
-                                </p>
-                                <p class="f-local">
-                                    {{ $warning['dia_hora'] }}
-                                </p>
-                            </div>
+                          <div style="background-color: #F45E29; color: white;"  class="card-header">
+                          {{ $warning['dia_hora'] }}
+                          </div>
+                          <div class="card-body">
+                            <h4 class="card-title">{{ $warning['title'] }}</h4>
+                            <p class="card-text">{{ $warning['description'] }}</p>
+                          </div>
                         </div>
                     </div>
                 @endforeach
@@ -29,8 +27,3 @@
 
 @push('scripts')
 @endpush
-
-
-
-
-
