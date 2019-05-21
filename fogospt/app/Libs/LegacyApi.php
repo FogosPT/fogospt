@@ -338,12 +338,16 @@ class LegacyApi
 
                 foreach ($result as &$r) {
                     try {
-                        $data = $client->request('GET', $r['url']);
+                        $responseContributors = $client->request('GET', $r['url']);
+
                     } catch (ClientException $e) {
                         return ['error' => $e->getMessage()];
                     } catch (RequestException $e) {
                         return ['error' => $e->getMessage()];
                     }
+
+                    $bodyContributors = $responseContributors->getBody();
+                    $data = json_decode($bodyContributors->getContents(), true);
 
                     $r = array_merge($r, $data);
                 }
