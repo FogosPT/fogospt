@@ -5,7 +5,9 @@ return [
             'place' => 'Location',
             'start_at' => 'Start',
             'nature' => 'Nature',
-            'fireRisk' => 'Fire Risk'
+            'location' => 'Location',
+            'fireRisk' => 'Fire Risk',
+            'updated' => 'Last update'
         ],
         'resources' => [
             'units' => 'Means',

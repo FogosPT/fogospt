@@ -532,12 +532,14 @@ function addMaker(item, mymap) {
       var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
 
 
+    var location = '<a href="https://www.google.com/maps/search/' + item.lat +','+ item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' +item.lng;
 
-      $('.sidebar').addClass('active').scrollTop(0)
+    $('.sidebar').addClass('active').scrollTop(0)
     $('.f-local').text(item.location)
     $('.f-man').text(item.man)
     $('.f-aerial').text(item.aerial)
     $('.f-terrain').text(item.terrain)
+    $('.f-location').html(location)
     $('.f-nature').text(item.natureza)
     $('.f-update').text(momentDate)
     $('.f-start').text(item.date + ' ' + item.hour)
@@ -563,7 +565,6 @@ function addMaker(item, mymap) {
     meteo(item.id)
     extra(item.id)
     twitter(item.id)
-      console.log('go shares');
     shares(item.id)
     addPageview()
   })
@@ -705,7 +706,6 @@ function twitter(id) {
 }
 
 function shares(id) {
-    console.log('shares');
     var url = '/views/shares/' + id
     $.ajax({
         url: url,

@@ -5,7 +5,9 @@
                 'place' => 'Local',
                 'start_at' => 'Início',
                 'nature' => 'Natureza',
-                'fireRisk' => 'Risco de Incêndio'
+                'location' => 'Localização',
+                'fireRisk' => 'Risco de Incêndio',
+                'updated' => 'Última atualização'
             ],
             'resources' => [
                 'units' => 'Meios',

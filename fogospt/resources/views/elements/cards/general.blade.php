@@ -27,8 +27,16 @@
                     @endisset
                 </p>
 
+                <h4 class="card-title">@lang('elements.cards.general.location')</h4>
+                <p class="f-location">
+                    @isset($fire['lat'])
+                    <a href="https://www.google.com/maps/search/{{ $fire['lat'] }},{{$fire['lng']}}" target="_blank"><i class="far fa-map"></i></a>
+                        {{ $fire['lat'] }}, {{ $fire['lng'] }}
+                    @endisset
+                </p>
+
                 @isset($fire['updated'])
-                    <p><small>Última atualização <span class="f-update">{{ date('H:i d-m-Y', $fire['updated']['sec'])}}</span></small></p>
+                    <p><small>@lang('elements.cards.general.updated') <span class="f-update">{{ date('H:i d-m-Y', $fire['updated']['sec'])}}</span></small></p>
                 @endisset
             </div>
         </div>

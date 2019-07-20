@@ -51,6 +51,16 @@ body {
   background-color: #f5f5f5;
 }
 
+html a,
+body a {
+  color: #ff512f !important;
+}
+
+html a:hover,
+body a:hover {
+  color: #f09819 !important;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
