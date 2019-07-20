@@ -91,6 +91,9 @@ class FireController extends Controller
     {
         $this->setFireById($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        if (isset($meteo['wind']['deg'])) {
+            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
+        }
         $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
@@ -172,6 +175,9 @@ class FireController extends Controller
     {
         $this->setMadeiraFireById($id);
         $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        if (isset($meteo['wind']['deg'])) {
+            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
+        }
         $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
