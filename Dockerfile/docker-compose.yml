@@ -2,14 +2,14 @@ version: "3.7"
 
 services:
   php:
-    image: docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA:--latest}
+    image: docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA:-latest}
     build:
       context: Dockerfile/php
       dockerfile: Dockerfile
       target: php73
 
   nginx:
-    image: docker.pkg.github.com/fogospt/fogospt/nginx:fogospt-${GITHUB_SHA:--latest}
+    image: docker.pkg.github.com/fogospt/fogospt/nginx:fogospt-${GITHUB_SHA:-latest}
     build:
       context: Dockerfile/nginx
       dockerfile: Dockerfile
