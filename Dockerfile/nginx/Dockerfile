@@ -14,5 +14,5 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/c
     nginx-module-njs \
     gettext-base
 
-COPY general_nginx_security_headers.conf /etc/nginx/conf.d/general_nginx_security_headers.conf
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY Dockerfile/nginx/general_nginx_security_headers.conf /etc/nginx/conf.d/general_nginx_security_headers.conf
+COPY Dockerfile/nginx/nginx.conf /etc/nginx/nginx.conf

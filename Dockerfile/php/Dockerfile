@@ -8,9 +8,10 @@ CMD ["/usr/sbin/php-fpm7", "-F"]
 RUN adduser -DHSu 100 nginx -s /sbin/nologin
 RUN ln -sv /usr/sbin/php-fpm7 /usr/sbin/php-fpm
 WORKDIR /var/www
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-COPY ./file.conf /etc/php7/conf.d/file.conf
-COPY ./file.conf /etc/php7/php-fpm.d/file.conf
+COPY Dockerfile/php/file.conf /etc/php7/conf.d/file.conf
+COPY Dockerfile/php/file.conf /etc/php7/php-fpm.d/file.conf
 
 RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/cache/apk /etc/apk/cache && \
     apk add --update \
@@ -18,6 +19,7 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/c
     php7-fpm \
     php7-curl \
     php7-exif \
+    php7-fileinfo \
     php7-gd \
     php7-intl \
     php7-json \
@@ -27,6 +29,7 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/c
     php7-pdo_sqlite \
     php7-phar \
     php7-session \
+    php7-tokenizer \
     php7-zip
 
 FROM php73 AS php73-xdebug
