@@ -46,10 +46,10 @@ jobs:
         docker-buildx bake -f Dockerfile/docker-compose.yml
 
         echo "Building images that depend on the previous stage"
-        docker-buildx bake -f Dockerfile/docker-compose.stage-2.ym
+        docker-buildx bake -f Dockerfile/docker-compose.stage-2.yml
 
         echo "Building storage image"
-        docker-buildx bake -f Dockerfile/docker-compose.stage-3.ym
+        docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
     # - name: Docker login
     #   run: |
