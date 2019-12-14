@@ -14,8 +14,7 @@ jobs:
         DOCKER_CLI_EXPERIMENTAL: enabled
         DOCKER_BUILDKIT: 1
       run: |
-        mkdir -vp \
-          ~/.docker/cli-plugins/ \
+        mkdir -vp ~/.docker/cli-plugins/
         export PATH=~/.docker/cli-plugins/:$PATH
         ### install binaries
           curl --silent -L https://github.com/docker/buildx/releases/download/"$BUILDX_VER"/buildx-"$BUILDX_VER".linux-amd64 > ~/.docker/cli-plugins/docker-buildx
