@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:experimental
 
-## composer stage
-FROM php:fogospt AS composer-builder
+ARG GITHUB_SHA
+
+FROM docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA} AS composer-builder
 
 WORKDIR /src
 
@@ -19,4 +20,4 @@ WORKDIR /var/www
 
 COPY --from=composer-builder --chown=nginx:0 /src/vendor /var/www/vendor
 ## ideally here we copy only the files required for nginx to serve
-COPY --chown=nginx:0 fogospt/ /var/www/
+# COPY --chown=nginx:0 fogospt/ /var/www/

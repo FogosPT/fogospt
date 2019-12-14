@@ -48,4 +48,4 @@ WORKDIR /var/www
 COPY --from=node-builder --chown=nginx:0 /src/node_modules /var/www/node_modules
 # COPY --chown=nginx:0 fogospt/package.json /var/www/package.json
 ## ideally here we copy only the files required for nginx to serve
-COPY --chown=nginx:0 fogospt/ /var/www/
+# COPY --chown=nginx:0 fogospt/public /var/www/
