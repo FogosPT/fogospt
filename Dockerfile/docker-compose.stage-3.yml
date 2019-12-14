@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  storage:
+    image: docker.pkg.github.com/fogospt/fogospt/storage:fogospt-${GITHUB_SHA:--latest}
+    build:
+      context: .
+      dockerfile: Dockerfile/storage/Dockerfile
+      args:
+        - GITHUB_SHA=${GITHUB_SHA:--latest}
