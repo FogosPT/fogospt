@@ -1,0 +1,65 @@
+name: Build Docker images
+
+on: [push, pull_request]
+
+jobs:
+  build-buildx:
+    name: Build with Buildx bake
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: install buildx
+      env:
+        BUILDX_VER: v0.3.1
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKER_BUILDKIT: 1
+      run: |
+        mkdir -vp \
+          ~/.docker/cli-plugins/ \
+        export PATH=~/.docker/cli-plugins/:$PATH
+        ### install binaries
+          curl --silent -L https://github.com/docker/buildx/releases/download/"$BUILDX_VER"/buildx-"$BUILDX_VER".linux-amd64 > ~/.docker/cli-plugins/docker-buildx
+        chmod -v a+x ~/.docker/cli-plugins/docker-buildx
+
+    - name: checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 1
+
+    - name: buildx bake print
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKER_BUILDKIT: 1
+      run: |
+        export PATH=~/.docker/cli-plugins/:$PATH
+        echo "Show images to be built"
+        docker-buildx bake -f Dockerfile/docker-compose.yml -f Dockerfile/docker-compose.stage-2.yml -f Dockerfile/docker-compose.stage-3.yml --print
+
+    - name: buildx bake
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKER_BUILDKIT: 1
+      run: |
+        export PATH=~/.docker/cli-plugins/:$PATH
+
+        echo "Building images"
+        docker-buildx bake -f Dockerfile/docker-compose.yml
+
+        echo "Building images that depend on the previous stage"
+        docker-buildx bake -f Dockerfile/docker-compose.stage-2.ym
+
+        echo "Building storage image"
+        docker-buildx bake -f Dockerfile/docker-compose.stage-3.ym
+
+    # - name: Docker login
+    #   run: |
+    #     docker login -p -q docker.pkg.github.com --username fogospt --password ${{ secrets.PACKAGES_TOKEN }}
+    #     docker login -p -q --username fogospt --password ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    # - name: Push Docker images
+    #   env:
+    #     DOCKER_CLI_EXPERIMENTAL: enabled
+    #     DOCKER_BUILDKIT: 1
+    #     COMPOSE_DOCKER_CLI_BUILD: 1
+    #   run: |
+    #     docker-compose -f Dockerfile/docker-compose.yml -f docker-compose.stage-2.yml -f buildx.yml -f buildx.stage-2.yml push
