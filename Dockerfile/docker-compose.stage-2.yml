@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  php-xdebug:
+    image: docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA:--latest}-xdebug
+    build:
+      context: Dockerfile/php
+      dockerfile: Dockerfile
+      target: php73-xdebug
+
+  composer:
+    image: docker.pkg.github.com/fogospt/fogospt/composer:fogospt-${GITHUB_SHA:--latest}
+    build:
+      context: .
+      dockerfile: Dockerfile/composer/Dockerfile
+      args:
+        - GITHUB_SHA=${GITHUB_SHA:--latest}
+
+  node:
+    image: docker.pkg.github.com/fogospt/fogospt/node:fogospt-${GITHUB_SHA:--latest}
+    build:
+      context: .
+      dockerfile: Dockerfile/node/Dockerfile
