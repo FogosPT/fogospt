@@ -21,3 +21,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile/node/Dockerfile
+
+  node-dev:
+    image: docker.pkg.github.com/fogospt/fogospt/node:fogospt-dev
+    build:
+      context: .
+      dockerfile: Dockerfile/node/Dockerfile-dev

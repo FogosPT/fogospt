@@ -7,7 +7,7 @@ target "nginx" {
   dockerfile = "Dockerfile"
   tags = [
     "docker.pkg.github.com/fogospt/fogospt/nginx:fogospt-${GITHUB_SHA}"
-    "docker.pkg.github.com/fogospt/fogospt/nginx:fogospt-latest"
+    "docker.pkg.github.com/fogospt/fogospt/nginx:fogospt"
     ]
 }
 
@@ -16,7 +16,7 @@ target "php" {
   dockerfile = "Dockerfile"
   tags = [
     "docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA}"
-    "docker.pkg.github.com/fogospt/fogospt/php:fogospt-GITHUB_SHA:-latest"
+    "docker.pkg.github.com/fogospt/fogospt/php:fogospt"
   ]
   target = "php73"
 }

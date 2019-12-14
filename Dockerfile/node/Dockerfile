@@ -40,7 +40,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,target=/root/.npm \
 # COPY --chown=node fogospt/public /var/www/
 # ## ideally here we copy only the files required for node to serve
 
-FROM alpine AS node-storafe
+FROM alpine AS node-storage
 
 RUN adduser -DHSu 100 nginx -s /sbin/nologin
 WORKDIR /var/www
