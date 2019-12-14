@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 FROM nginx:stable-alpine AS nginx
 
 EXPOSE 443
@@ -10,9 +12,9 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/c
     nginx-module-xslt \
     nginx-module-geoip \
     nginx-module-image-filter \
-    nginx-module-perl \
+    nginx-mod-http-perl \
     nginx-module-njs \
-    gettext-base
+    gettext
 
-COPY Dockerfile/nginx/general_nginx_security_headers.conf /etc/nginx/conf.d/general_nginx_security_headers.conf
-COPY Dockerfile/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY general_nginx_security_headers.conf /etc/nginx/conf.d/general_nginx_security_headers.conf
+COPY nginx.conf /etc/nginx/nginx.conf

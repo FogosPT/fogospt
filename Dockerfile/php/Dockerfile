@@ -10,8 +10,8 @@ RUN ln -sv /usr/sbin/php-fpm7 /usr/sbin/php-fpm
 WORKDIR /var/www
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-COPY Dockerfile/php/file.conf /etc/php7/conf.d/file.conf
-COPY Dockerfile/php/file.conf /etc/php7/php-fpm.d/file.conf
+COPY file.conf /etc/php7/conf.d/file.conf
+COPY file.conf /etc/php7/php-fpm.d/file.conf
 
 RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/cache/apk /etc/apk/cache && \
     apk add --update \
