@@ -401,7 +401,7 @@ function calculateImportanceValue(data) {
   const terrainFactor = 3
   const aerialFactor = 7
 
-  var importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
+  var importance = data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
 
   DATA_FIRES.number += 1
   if (DATA_FIRES.topImportance < importance) {
