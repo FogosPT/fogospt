@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  node-dev:
+    image: docker.pkg.github.com/fogospt/fogospt/node:fogospt-dev
+    container_name: node-dev
+    volumes:
+      - storage:/var/www
+
+  php:
+    environment:
+      - APP_ENV=development
+
+### xdebug
+  # php:
+  #   image: docker.pkg.github.com/fogospt/fogospt/php:fogospt-${GITHUB_SHA:-latest}-xdebug
+  # environment:
+  #   - APP_ENV=development
+
+
+volumes:
+  storage:
+    name: FOGOSPT_STORAGE_DEV
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/fogospt
+      o: bind

@@ -1,0 +1,12 @@
+## this docker-compose file is used to override bind mount with NFS on MacOS when running images locally
+
+version: "3.7"
+
+volumes:
+  storage:
+    name: FOGOSPT_STORAGE_OSX
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,nolock
+      device: ":$PWD/fogospt"
