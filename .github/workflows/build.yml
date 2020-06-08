@@ -50,7 +50,7 @@ jobs:
         echo "Building storage image"
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
-    - name: Docker login
+     - name: Docker login
        run: |
          docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
 
