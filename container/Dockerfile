@@ -113,7 +113,7 @@ RUN set -ex \
 COPY php-fpm-worker.conf /etc/supervisor/conf.d
 COPY nginx-worker.conf /etc/supervisor/conf.d
 
-ENV NGINX_VERSION 1.14.2-1~jessie
+ENV NGINX_VERSION 1.16.0-1~jessie
 
 RUN echo "deb http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list \
     && curl -O "https://nginx.org/keys/nginx_signing.key" && apt-key add ./nginx_signing.key \

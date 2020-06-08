@@ -1,11 +1,13 @@
 <div id="status">
-    @foreach( $fire['statusHistory'] as $status)
-        <div>
-            <span class="dot status-{{ $status['statusCode'] }} timelineDot"></span>
+    @isset($fire['statusHistory'])
+        @foreach( $fire['statusHistory'] as $status)
             <div>
-                <p class="status-hour">{{ $status['label'] }}</p>
-                <p class="status-label">{{ $status['status'] }}</p>
+                <span class="dot status-{{ $status['statusCode'] }} timelineDot"></span>
+                <div>
+                    <p class="status-hour">{{ $status['label'] }}</p>
+                    <p class="status-label">{{ $status['status'] }}</p>
+                </div>
             </div>
-        </div>
-    @endforeach
+        @endforeach
+    @endisset
 </div>

@@ -35,12 +35,11 @@ $(document).ready(function() {
 
   var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
 
-  var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
-  }).addTo(mymap)
+    var normalLayer = L.mapboxGL({
+        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA',
+        style: 'mapbox://styles/fogospt/ckb6zx0ew3z741ip99o8l9mko'
+    }).addTo(mymap);
+
 
   var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -60,6 +59,8 @@ $(document).ready(function() {
     collapsed: false,
     position: 'topleft'
   }).addTo(mymap)
+
+  // var modisLayer = L.tileLayer.wms('https://firms.modaps.eosdis.nasa.gov/wms/key/a4f6d26529e6016f712ed67d7e7a2a5f/?REQUEST=GetMap&layers=fires_viirs_24,fires_modis_24&WIDTH=1024&HEIGHT=512&symbols=triangle,triangle&colors=240+40+40,250+200+50&size=5,2&BBOX=-180,-90,180,9').addTo(mymap);
 
   addRisk(mymap)
   mymap.on('click', function(e) {
