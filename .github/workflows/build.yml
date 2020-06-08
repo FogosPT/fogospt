@@ -50,14 +50,14 @@ jobs:
         echo "Building storage image"
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
-     - name: Docker login
-       run: |
-         docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
+    - name: Docker login
+      run: |
+        docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
 
-     - name: Push Docker images
-       env:
-         DOCKER_CLI_EXPERIMENTAL: enabled
-         DOCKER_BUILDKIT: 1
-         COMPOSE_DOCKER_CLI_BUILD: 1
-       run: |
-         docker-compose -f Dockerfile/docker-compose.yml -f docker-compose.stage-2.yml -f buildx.yml -f buildx.stage-2.yml push
+    - name: Push Docker images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
+      run: |
+        docker-compose -f Dockerfile/docker-compose.yml -f docker-compose.stage-2.yml -f buildx.yml -f buildx.stage-2.yml push
