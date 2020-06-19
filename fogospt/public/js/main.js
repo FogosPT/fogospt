@@ -344,6 +344,64 @@ $(document).ready(function() {
     }
   })
 
+  $.ajax({
+    url: '/v1/modis',
+    dataType: "json",
+    method: 'GET',
+    success: function(data) {
+      window.modisLayer = []
+      window.modisLayer[0] = L.layerGroup()
+
+      var objModis = {}
+      objModis['MODIS'] = window.modisLayer[0]
+
+
+      layerControl4 = L.control.layers(null, objModis, {
+        position: 'topleft',
+        collapsed: false,
+      })
+
+      layerControl4.addTo(mymap)
+
+      for (i in data) {
+        if(data[i].latitude && data[i].longitude) {
+          if (insidePT([data[i].longitude,data[i].latitude])) {
+            addModisPoint(data[i], mymap);
+          }
+
+        }
+      }
+
+      $.ajax({
+        url: '/v1/viirs',
+        dataType: "json",
+        method: 'GET',
+        success: function(data) {
+          window.modisLayer[1] = L.layerGroup()
+
+          var objviirs = {}
+          objviirs['VIIRS'] = window.modisLayer[1]
+
+
+          layerControl4 = L.control.layers(null, objviirs, {
+            position: 'topleft',
+            collapsed: false,
+          })
+
+          layerControl4.addTo(mymap)
+
+          for (i in data) {
+            if(data[i].latitude && data[i].longitude) {
+              if (insidePT([data[i].longitude,data[i].latitude])) {
+                addVIIRSPoint(data[i], mymap);
+              }
+            }
+          }
+        }
+      })
+    }
+  })
+
 
 
 
@@ -385,6 +443,46 @@ function addLightning(data, mymap) {
 
   window.lightningLayer[0].addLayer(marker)
 }
+
+
+function addModisPoint(data, mymap) {
+  console.log(data);
+  var marker = L.marker([data.latitude, data.longitude])
+
+  marker.properties = {}
+
+  iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
+
+  marker.sizeFactor = 2
+
+  marker.setIcon(L.divIcon({
+    className: 'count-icon-emergency',
+    html: iconHtml,
+    iconSize: [20, 20]
+  }))
+
+  window.modisLayer[0].addLayer(marker)
+}
+
+function addVIIRSPoint(data, mymap) {
+  console.log(data);
+  var marker = L.marker([data.latitude, data.longitude])
+
+  marker.properties = {}
+
+  iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
+
+  marker.sizeFactor = 2
+
+  marker.setIcon(L.divIcon({
+    className: 'count-icon-emergency',
+    html: iconHtml,
+    iconSize: [20, 20]
+  }))
+
+  window.modisLayer[1].addLayer(marker)
+}
+
 
 
 

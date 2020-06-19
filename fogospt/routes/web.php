@@ -52,6 +52,8 @@ Route::post('/notifications/unsubscribe', 'GenericController@unsubscribe')->name
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/mobile-contributors', 'ApiController@getMobileContributors')->name('getMobileContributors');
+    Route::get('/modis', 'ApiController@getModis')->name('getModis');
+    Route::get('/viirs', 'ApiController@getVIIRS')->name('getVIIRS');
 });
 
 if(ENV('APP_ENV') !== 'production'){
