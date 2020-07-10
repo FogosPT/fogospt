@@ -32,4 +32,6 @@
     firebase.initializeApp(config);
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+
 <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="55340827-93d2-4bcc-a2e2-2e3ba451bafb" type="text/javascript" async></script>

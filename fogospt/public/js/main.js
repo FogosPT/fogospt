@@ -453,13 +453,32 @@ function addModisPoint(data, mymap) {
 
   iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
 
-  marker.sizeFactor = 2
+  marker.sizeFactor = 3
 
   marker.setIcon(L.divIcon({
     className: 'count-icon-emergency',
     html: iconHtml,
-    iconSize: [20, 20]
+    iconSize: [30, 30]
   }))
+
+  console.log(data);
+
+  var confidence = '';
+  if(data.confidence === 'nominal'){
+    confidence = 'normal';
+  } else if(data.confidence === 'low'){
+    confidence = 'baixa';
+  } else if(data.confidence === 'high'){
+    confidence = 'alta';
+  } else {
+    confidence = data.confidence;
+  }
+
+  var date = data.acq_date  + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
+
+  date = moment.utc(date).local().format('DD-MM-YYYY HH:MM');
+  var content = '<p>Data: '+ date +'</p><p>Confiança: ' + confidence + '%</p>';
+  marker.bindPopup(content);
 
   window.modisLayer[0].addLayer(marker)
 }
@@ -472,13 +491,31 @@ function addVIIRSPoint(data, mymap) {
 
   iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
 
-  marker.sizeFactor = 2
+  marker.sizeFactor = 3
 
   marker.setIcon(L.divIcon({
     className: 'count-icon-emergency',
     html: iconHtml,
-    iconSize: [20, 20]
+    iconSize: [30, 30]
   }))
+
+
+  var confidence = '';
+  if(data.confidence === 'nominal'){
+    confidence = 'normal';
+  } else if(data.confidence === 'low'){
+    confidence = 'baixa';
+  } else if(data.confidence === 'high'){
+    confidence = 'alta';
+  } else {
+    confidence = data.confidence;
+  }
+
+  var date = data.acq_date  + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
+
+  date = moment.utc(data).local().format('DD-MM-YYYY HH:MM');
+  var content = '<p>Date: '+ date +'</p><p>Confiança: ' + confidence + '</p>';
+  marker.bindPopup(content);
 
   window.modisLayer[1].addLayer(marker)
 }
