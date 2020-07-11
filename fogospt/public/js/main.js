@@ -1,4 +1,20 @@
 $(document).ready(function() {
+
+  $.ajax({
+    type: "GET",
+    url: 'https://api.fogos.pt/v1/warnings/site',
+    success: function(data) {
+      data = JSON.parse(data);
+      console.log(data)
+      if (data.success && data.data[0] && data.data[0].active) {
+       console.log('cenas')
+        $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
+        $('#warning-site').modal('show');
+      }
+    },
+  });
+
+
   const messaging = firebase.messaging()
 
   messaging.onMessage(function(payload) {
@@ -446,7 +462,6 @@ function addLightning(data, mymap) {
 
 
 function addModisPoint(data, mymap) {
-  console.log(data);
   var marker = L.marker([data.latitude, data.longitude])
 
   marker.properties = {}
@@ -460,8 +475,6 @@ function addModisPoint(data, mymap) {
     html: iconHtml,
     iconSize: [30, 30]
   }))
-
-  console.log(data);
 
   var confidence = '';
   if(data.confidence === 'nominal'){
@@ -484,7 +497,6 @@ function addModisPoint(data, mymap) {
 }
 
 function addVIIRSPoint(data, mymap) {
-  console.log(data);
   var marker = L.marker([data.latitude, data.longitude])
 
   marker.properties = {}
