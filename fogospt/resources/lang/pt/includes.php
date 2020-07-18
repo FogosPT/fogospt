@@ -10,6 +10,7 @@
             'partnerships' => 'Parcerias',
             'stats' => 'Estatísticas',
             'list' => 'Lista',
+            'table' => 'Tabela',
             'warnings' => 'Avisos',
             'warnings-madeira' => 'Avisos Madeira',
             'active'      => '(actual)'

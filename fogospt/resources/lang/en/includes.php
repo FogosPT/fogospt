@@ -9,6 +9,7 @@ return [
         'partnerships' => 'Partnerships',
         'stats' => 'Stats',
         'list' => 'List',
+        'table' => 'Table',
         'warnings' => 'Warnings',
         'warnings-madeira' => 'Warnings Madeira',
         'active' => 'Now'

@@ -7,7 +7,11 @@ return [
             'nature' => 'Nature',
             'location' => 'Location',
             'fireRisk' => 'Fire Risk',
-            'updated' => 'Last update'
+            'updated' => 'Last update',
+            'district' => 'District',
+            'concelho' => 'Municipality',
+            'freguesia' => 'Parish',
+            'localidade' => 'Locality'
         ],
         'resources' => [
             'units' => 'Means',

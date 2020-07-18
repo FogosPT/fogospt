@@ -7,7 +7,11 @@
                 'nature' => 'Natureza',
                 'location' => 'Localização',
                 'fireRisk' => 'Risco de Incêndio',
-                'updated' => 'Última atualização'
+                'updated' => 'Última atualização',
+                'district' => 'Distrito',
+                'concelho' => 'Concelho',
+                'freguesia' => 'Freguesia',
+                'localidade' => 'Localidade'
             ],
             'resources' => [
                 'units' => 'Meios',

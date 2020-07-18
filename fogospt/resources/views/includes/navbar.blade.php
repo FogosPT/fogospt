@@ -13,6 +13,7 @@
                 <a class="nav-item nav-link active" href="{{route('home')}}">@lang('includes.menu.home')<span class="sr-only">@lang('includes.menu.active')
                 </span></a>
                 <a class="nav-item nav-link" href="{{route('list')}}">@lang('includes.menu.list')</a>
+                <a class="nav-item nav-link" href="{{route('table')}}">@lang('includes.menu.table')</a>
                 <a class="nav-item nav-link" href="{{route('warnings')}}">@lang('includes.menu.warnings')</a>
                 <a class="nav-item nav-link" href="{{route('warningsMadeira')}}">@lang('includes.menu.warnings-madeira')</a>
                 <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
