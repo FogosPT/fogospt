@@ -53,7 +53,8 @@
         $(document).ready( function () {
             $('#fires').DataTable({
                 paging: false,
-                stateSave: true
+                stateSave: true,
+                order: [[ 0, 'desc' ]]
             });
 
             setTimeout(function() {
