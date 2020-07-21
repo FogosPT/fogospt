@@ -40,6 +40,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="row">
+                <div class="col-12">@lang('pages.table.reload')</div>
+            </div>
         </div>
     </main>
 @endsection
@@ -49,8 +52,13 @@
     <script>
         $(document).ready( function () {
             $('#fires').DataTable({
-                paging: false
+                paging: false,
+                stateSave: true
             });
+
+            setTimeout(function() {
+                location.reload();
+            }, 180000);
         } );
     </script>
 @endpush

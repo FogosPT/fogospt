@@ -83,5 +83,8 @@ return [
         'last-night' => 'Last Night',
         'last-night-footer' => 'Wildfires between 21pm and 09am',
         'last-days' => 'Last Days',
+    ],
+    'table' => [
+        'reload' => 'This page auto refresh.'
     ]
 ];
