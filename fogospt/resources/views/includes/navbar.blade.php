@@ -30,7 +30,6 @@
                 <a class="nav-item nav-link" href="https://github.com/fogospt" target="_blank">Github <i class="fab fa-github-square"></i></a>
 
                 {{--<a class="nav-item nav-link" href="{{route('manifest')}}">@lang('includes.menu.manifest')</a>--}}
-                <a class="nav-item nav-link" href="https://aldeiasegura.pt" target="_blank">Aldeia Segura</a>
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     {{\App::getLocale()}}

@@ -1,0 +1,24 @@
+{
+  "applinks": {
+      "details": [
+           {
+             "appIDs": [ "RNKVG428JH.com.tomahock.fogos" ],
+             "components": [
+               {
+                  "#": "no_universal_links",
+                  "exclude": true,
+                  "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+               },
+               {
+                  "/": "/fire/*",
+                  "?": { "fireId": "?????????????" },
+                  "comment": "Matches any URL whose path starts with /fire/ and which has a query item with name 'articleNumber' and a value of exactly 13 characters"
+               }
+             ]
+           }
+       ]
+   },
+   "webcredentials": {
+      "apps": [ "RNKVG428JH.com.tomahock.fogos" ]
+   }
+}

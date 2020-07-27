@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tomahock.fogos",
+      "sha256_cert_fingerprints": [
+        "A4:96:9C:6F:43:72:52:C3:7A:C5:E7:38:5E:98:D0:79:DF:33:D0:F2:49:41:0A:14:35:A0:78:9B:2F:AC:FD:FC"
+      ]
+    }
+  }
+]
