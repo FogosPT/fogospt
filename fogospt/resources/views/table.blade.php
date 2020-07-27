@@ -26,7 +26,7 @@
                     @foreach($data as $fire)
                         <tr>
                             <td><a href="{{route('fire', $fire['id'])}}">{{$fire['id']}}</a></td>
-                            <td>{{ $fire['hour'] }} {{ $fire['date'] }}</td>
+                            <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
                             <td>{{ $fire['freguesia'] }}</td>
