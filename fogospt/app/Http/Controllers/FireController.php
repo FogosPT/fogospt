@@ -269,7 +269,7 @@ class FireController extends Controller
         } else {
             $url = 'https://api.twitter.com/1.1/search/tweets.json';
             $requestMethod = 'GET';
-            $getfield = "?q=#IF{$hashtag}&result_type=recent";
+            $getfield = "?q=#IR{$hashtag}&result_type=recent";
 
             $settings = array(
                 'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),

@@ -1,5 +1,5 @@
 @isset($fire['id'])
-    <a href="https://twitter.com/intent/tweet?button_hashtag=#IF{{ preg_replace('/\s+/', '', $fire['concelho']) }}&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-lang="pt" data-show-count="false">Tweet #IF{{ preg_replace('/\s+/', '', $fire['concelho']) }}</a>
+    <a href="https://twitter.com/intent/tweet?button_hashtag=#IR{{ preg_replace('/\s+/', '', $fire['concelho']) }}&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-lang="pt" data-show-count="false">Tweet #IR{{ preg_replace('/\s+/', '', $fire['concelho']) }}</a>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
     @if(is_array($feed) && count($feed) > 0)
