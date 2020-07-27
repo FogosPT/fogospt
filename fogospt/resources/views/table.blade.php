@@ -10,6 +10,7 @@
                 <table id="fires" class="table table-striped table-bordered table-responsive">
                     <thead>
                     <tr>
+                        <th></th>
                         <th>@lang('elements.cards.general.start_at')</th>
                         <th>@lang('elements.cards.general.district')</th>
                         <th>@lang('elements.cards.general.concelho')</th>
@@ -24,6 +25,7 @@
                     <tbody>
                     @foreach($data as $fire)
                         <tr>
+                            <td><a href="{{route('fire', $fire['id'])}}">{{$fire['id']}}</a></td>
                             <td>{{ $fire['hour'] }} {{ $fire['date'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
