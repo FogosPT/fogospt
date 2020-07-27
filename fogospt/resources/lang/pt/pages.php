@@ -90,6 +90,9 @@ return [
         'last-night' => 'Última noite',
         'last-days' => 'Últimos dias',
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
+    ],
+    'table' => [
+        'reload' => 'Esta página actualiza-se automaticamente.'
     ]
 
 ];
