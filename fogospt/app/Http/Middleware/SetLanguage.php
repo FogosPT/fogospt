@@ -17,13 +17,11 @@ class SetLanguage
      */
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
-
         App::setLocale(
             $request->session()
                 ->get('userLocale', config('app.locale'))
         );
 
-        return $response;
+        return $next($request);
     }
 }

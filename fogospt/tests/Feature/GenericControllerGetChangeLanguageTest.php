@@ -17,8 +17,6 @@ class GenericControllerGetChangeLanguageTest extends TestCase
         $this->get("/change-language/{$supportedLang}")
             ->assertRedirect()
             ->assertSessionHas('userLocale', $supportedLang);
-
-        $this->assertEquals($supportedLang, app()->getLocale());
     }
 
     public function supportedLanguagesProvider(): array
