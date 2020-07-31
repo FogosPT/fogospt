@@ -57,6 +57,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/viirs', 'ApiController@getVIIRS')->name('getVIIRS');
 });
 
-if(ENV('APP_ENV') !== 'production'){
+if (app()->environment() !== 'production') {
     Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
 }
