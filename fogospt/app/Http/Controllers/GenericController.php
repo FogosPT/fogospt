@@ -184,12 +184,10 @@ class GenericController extends Controller
      */
     public function getChangeLanguage(Request $request, string $lang)
     {
-        if (in_array($lang, config('custom.availableLocales'), true)) {
-            $request->session()->put('userLocale', $lang);
-        } else {
-            $request->session()->put('userLocale', config('app.locale'));
-        }
+        $languageCookie = in_array($lang, config('custom.availableLocales'), true)
+            ? $lang
+            : config('app.locale');
 
-        return back();
+        return back()->withCookie('userLocale', $languageCookie, config('session.lifetime'));
     }
 }
