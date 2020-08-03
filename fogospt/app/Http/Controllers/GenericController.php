@@ -177,17 +177,17 @@ class GenericController extends Controller
      * to a language that we dont have a record as supported language
      * it will fallback for the default app locale
      *
+     * @param Request $request
      * @param $lang string language shortname
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function getChangeLanguage($lang)
+    public function getChangeLanguage(Request $request, string $lang)
     {
-        if (in_array($lang, config('custom.availableLocales'))) {
-            session(['userLocale' => $lang]);
-        } else {
-            session(['userLocale' => config('app.locale')]);
-        }
-        return redirect()->back();
+        $languageCookie = in_array($lang, config('custom.availableLocales'), true)
+            ? $lang
+            : config('app.locale');
+
+        return back()->withCookie('userLocale', $languageCookie, config('session.lifetime'));
     }
 }
