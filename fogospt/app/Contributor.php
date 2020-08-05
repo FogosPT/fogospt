@@ -15,7 +15,7 @@ class Contributor {
             } else {
                 $url = 'https://api.github.com/repos/FogosPT/fogosmobile/contributors';
 
-                $client = self::getClient();
+                $client = new GuzzleHttp\Client();
 
                 try {
                     $response = $client->request('GET', $url);

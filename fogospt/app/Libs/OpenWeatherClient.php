@@ -14,7 +14,7 @@ class OpenWeatherClient
             if ($exists) {
                 return json_decode($exists, true);
             } else {
-                $client = self::getClient();
+                $client = new GuzzleHttp\Client();
                 $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng . '&APPID=' . env('OPENWEATHER_API') . '&units=metric&lang=pt';
 
                 try {

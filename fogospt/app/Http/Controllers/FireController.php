@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\Enums\FogosApiEndpoints;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
+use App\Libs\OpenWeatherClient;
 use Illuminate\Http\Response;
 use Jorenvh\Share\Share;
 use Illuminate\Support\Facades\Redis;
@@ -276,7 +277,6 @@ class FireController extends Controller
                 'consumer_key' => env('TWITTER_CONSUMER_KEY'),
                 'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
             );
-
 
             $twitter = new \TwitterAPIExchange($settings);
             $result = $twitter->setGetfield($getfield)

@@ -8,33 +8,30 @@
 
 namespace App\Libs;
 
-use App\Libs\Enums\FogosApiEndpoints;
+use App\Libs\Interfaces\ILegacyApi;
 use GuzzleHttp;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Redis;
 
 
-class LegacyApi
+class LegacyApi implements ILegacyApi
 {
-    private static $url = 'https://api-beta.fogos.pt';
+    private $url = 'https://api-beta.fogos.pt';
 
-    public static function getResults(FogosApiEndpoints $endpoint)
+    public function getResults(string $endpoint) : array
     {
-        return self::performCall(self::url .$endpoint);
+        return $this->performCall($this->url .$endpoint);
     }
 
-    public static function getResultById(FogosApiEndpoints $endpoint, $id)
+    public function getResultById(string $endpoint, string $id) : array
     {
-        return self::performCall(self::url .$endpoint . $id);
+        return $this->performCall($this->url .$endpoint . $id);
     }
 
-    private function performCall($endpoint)
+    private function performCall(string $endpoint)
     {
         try {
-            $client = new GuzzleHttp\Client(['verify'          => false]);
-            dd($endpoint);
+            $client = new GuzzleHttp\Client();
             $response = $client->request('GET', $endpoint);
             $body = $response->getBody();
             return json_decode($body->getContents(), true);

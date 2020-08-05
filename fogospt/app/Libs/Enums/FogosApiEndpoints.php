@@ -1,7 +1,7 @@
 <?php
 namespace App\Libs\Enums;
 
-class FogosApiEndpoints extends Enum
+class FogosApiEndpoints
 {
     const NEW_FIRES = '/new/fires';
     const WARNINGS = '/v1/warnings';
