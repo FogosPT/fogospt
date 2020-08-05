@@ -8,11 +8,6 @@
 
 namespace App\Libs;
 
-use GuzzleHttp;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Redis;
 use Location\Coordinate;
 use Location\Polygon;
 

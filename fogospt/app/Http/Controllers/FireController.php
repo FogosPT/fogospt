@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\Enums\FogosApiEndpoints;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
@@ -20,9 +21,9 @@ class FireController extends Controller
         }
 
         $this->setFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
-        $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $risk = LegacyApi::getResultById(FogosApiEndpoints::GET_RISK_BY_FIRE, $id);
+        $status = LegacyApi::getResultById(FogosApiEndpoints::GET_STATUS_BY_FIRE,$id);
+        $meteo = OpenWeatherClient::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
         if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
@@ -72,7 +73,7 @@ class FireController extends Controller
     public function getGeneralCard($id)
     {
         $this->setFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
+        $risk = LegacyApi::getResultById(FogosApiEndpoints::GET_RISK_BY_FIRE, $id);
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
 
         return view('elements.risk', array('fire' => $this->fire));
@@ -81,7 +82,7 @@ class FireController extends Controller
     public function getStatusCard($id)
     {
         $this->setFireById($id);
-        $status = LegacyApi::getStatusByFire($id);
+        $status = LegacyApi::getResultById(FogosApiEndpoints::GET_STATUS_BY_FIRE,$id);
         $this->fire['statusHistory'] = @$status['data'];
 
         return view('elements.status', array('fire' => $this->fire));
@@ -90,7 +91,7 @@ class FireController extends Controller
     public function getMeteoCard($id)
     {
         $this->setFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $meteo = OpenWeatherClient::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
         if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
@@ -123,7 +124,7 @@ class FireController extends Controller
 
     public function getAll()
     {
-        return \Response::json(LegacyApi::getFires());
+        return \Response::json(LegacyApi::getResults(FogosApiEndpoints::NEW_FIRES));
     }
 
     public function getMadeira($id)
@@ -133,9 +134,9 @@ class FireController extends Controller
         }
 
         $this->setMadeiraFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
-        $status = LegacyApi::getStatusByFireMadeira($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $risk = LegacyApi::getResultById(FogosApiEndpoints::GET_RISK_BY_FIRE, $id);
+        $status = LegacyApi::getResultById(FogosApiEndpoints::GET_STATUS_BY_MADEIRA_FIRE,$id);
+        $meteo = OpenWeatherClient::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
 
         if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
@@ -156,7 +157,7 @@ class FireController extends Controller
     public function getGeneralCardMadeira($id)
     {
         $this->setMadeiraFireById($id);
-        $risk = LegacyApi::getRiskByFire($id);
+        $risk = LegacyApi::getResultById(FogosApiEndpoints::GET_RISK_BY_FIRE, $id);
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
 
         return view('elements.risk', array('fire' => $this->fire));
@@ -165,7 +166,7 @@ class FireController extends Controller
     public function getStatusCardMadeira($id)
     {
         $this->setMadeiraFireById($id);
-        $status = LegacyApi::getStatusByFireMadeira($id);
+        $status = LegacyApi::getResultById(FogosApiEndpoints::GET_STATUS_BY_MADEIRA_FIRE, $id);
         $this->fire['statusHistory'] = @$status['data'];
 
         return view('elements.status', array('fire' => $this->fire));
@@ -174,7 +175,7 @@ class FireController extends Controller
     public function getMeteoCardMadeira($id)
     {
         $this->setMadeiraFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+        $meteo = OpenWeatherClient::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
         if (isset($meteo['wind']['deg'])) {
             $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
         }
@@ -197,13 +198,13 @@ class FireController extends Controller
 
     public function getAllMadeira()
     {
-        return \Response::json(LegacyApi::getFires());
+        return \Response::json(LegacyApi::getResults(FogosApiEndpoints::NEW_FIRES));
     }
 
 
     private function setFireById($id)
     {
-        $fire = LegacyApi::getFire($id);
+        $fire = LegacyApi::getResultById(FogosApiEndpoints::GET_FIRE, $id);
 
         if (isset($fire['data'])) {
             $this->fire = $fire['data'];
@@ -214,7 +215,7 @@ class FireController extends Controller
 
     private function setMadeiraFireById($id)
     {
-        $fire = LegacyApi::getMadeiraFire($id);
+        $fire = LegacyApi::getResultById(FogosApiEndpoints::GET_MADEIRA_FIRE, $id);
 
         if (isset($fire['data'])) {
             $this->fire = $fire['data'];
@@ -233,7 +234,6 @@ class FireController extends Controller
             if($exists){
                 return json_decode($exists);
             } else {
-                $url = 'https://api.twitter.com/1.1/search/tweets.json';
                 $requestMethod = 'GET';
                 $getfield = "?q=#IR{$hashtag}&result_type=recent";
 
@@ -247,7 +247,7 @@ class FireController extends Controller
 
                 $twitter = new \TwitterAPIExchange($settings);
                 $result = $twitter->setGetfield($getfield)
-                    ->buildOauth($url, $requestMethod)
+                    ->buildOauth(env('TWITTER_SEARCH_TWEETS_ENDPOINT'), $requestMethod)
                     ->performRequest();
 
                 $feed = array();
@@ -267,7 +267,6 @@ class FireController extends Controller
                 return $feed;
             }
         } else {
-            $url = 'https://api.twitter.com/1.1/search/tweets.json';
             $requestMethod = 'GET';
             $getfield = "?q=#IR{$hashtag}&result_type=recent";
 
@@ -281,7 +280,7 @@ class FireController extends Controller
 
             $twitter = new \TwitterAPIExchange($settings);
             $result = $twitter->setGetfield($getfield)
-                ->buildOauth($url, $requestMethod)
+                ->buildOauth(env('TWITTER_SEARCH_TWEETS_ENDPOINT'), $requestMethod)
                 ->performRequest();
 
             $feed = array();
@@ -301,7 +300,7 @@ class FireController extends Controller
 
     public function getLightnings()
     {
-        $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
+        $json = file_get_contents(env('GET_LIGHTNINGS_ENDPOINT'));
         return $json;
     }
 

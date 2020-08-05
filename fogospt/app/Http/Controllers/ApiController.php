@@ -3,17 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Libs\HotSpots;
-use App\Libs\LegacyApi;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 {
     public function getMobileContributors()
     {
-        $contributors = LegacyApi::getMobileContributors();
-
-        return \Response::json($contributors);
+        return \Response::json(Contributor::getMobileContributors());
     }
 
     public function getModis()
@@ -45,8 +41,6 @@ class ApiController extends Controller
                 $response = json_decode($exists);
             } else {
                 $response = HotSpots::getVIIRS();
-
-
                 if(!empty($response)){
                     Redis::set('VIIRS', json_encode($response),'EX', 1080);
                 }

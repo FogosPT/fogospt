@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\Enums\FogosApiEndpoints;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
 
@@ -70,7 +71,7 @@ class GenericController extends Controller
     public function getList()
     {
         $this->setPageName(__('includes.menu.list'));
-        $fires = LegacyApi::getFires();
+        $fires = LegacyApi::getResults(FogosApiEndpoints::NEW_FIRES);
 
         return view('list', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
     }
@@ -78,7 +79,7 @@ class GenericController extends Controller
     public function getTable()
     {
         $this->setPageName(__('includes.menu.table'));
-        $fires = LegacyApi::getFires();
+        $fires = LegacyApi::getResults(FogosApiEndpoints::NEW_FIRES);
 
         return view('table', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
     }
@@ -86,7 +87,7 @@ class GenericController extends Controller
     public function getWarnings()
     {
         $this->setPageName(__('includes.menu.warnings'));
-        $warnings = LegacyApi::getWarnings();
+        $warnings = LegacyApi::getResults(FogosApiEndpoints::WARNINGS);
 
         return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
@@ -94,7 +95,7 @@ class GenericController extends Controller
     public function getWarningsMadeira()
     {
         $this->setPageName(__('includes.menu.warnings'));
-        $warnings = LegacyApi::getWarningsMadeira();
+        $warnings = LegacyApi::getResults(FogosApiEndpoints::WARNINGS_MADEIRA);
 
         return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
@@ -102,7 +103,7 @@ class GenericController extends Controller
     public function getStats()
     {
         $this->setPageName(__('includes.menu.stats'));
-        $now = LegacyApi::getNow();
+        $now = LegacyApi::getResults(FogosApiEndpoints::GET_NOW);
         $data = array(
             'now' => $now['data'],
         );
