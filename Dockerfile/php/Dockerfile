@@ -31,7 +31,9 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk ln -vs /var/c
     php7-session \
     php7-tokenizer \
     php7-zip \
-    php7-dom
+    php7-dom \
+    php7-xmlwriter \
+    php7-xml
 
 FROM php73 AS php73-xdebug
 # target xdebug
