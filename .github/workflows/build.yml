@@ -54,7 +54,7 @@ jobs:
       env: 
         DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       run: |
-        echo  "${DOCKER_HUB_TOKEN}" | docker login -p -q --username tomahock --password-stdin
+        echo  "${DOCKER_HUB_TOKEN}" | docker login --username tomahock --password-stdin
 
     - name: Push Docker images
       env:
