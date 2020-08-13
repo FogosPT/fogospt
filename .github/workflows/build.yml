@@ -52,15 +52,15 @@ jobs:
 
     - name: Docker login
       env: 
-        repo-token: ${{ secrets.REPO_TOKEN }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
 
     - name: Push Docker images
       env:
-        repo-token: ${{ secrets.REPO_TOKEN }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
+        echo "${repo-token}" | docker login docker.pkg.github.com -u Moser-ss --password-stdin
         echo "DEBUG: $GITHUB_REF"
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
         do 
