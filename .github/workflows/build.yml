@@ -63,5 +63,10 @@ jobs:
         COMPOSE_DOCKER_CLI_BUILD: 1
       run: |
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
-          do echo "docker push $image"; 
+          do 
+          echo $GITHUB_REF
+          echo "docker push $image";
+          latest_image="${image/$GITHUB_SHA/latest}"
+          echo "docker tag $image $latest_image"
+          echo "docker push $latest_image"
         done;
