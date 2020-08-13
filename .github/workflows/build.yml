@@ -52,13 +52,13 @@ jobs:
 
     - name: Docker login
       env: 
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.REPO_TOKEN }}
       run: |
         echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
 
     - name: Push Docker images
       env:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.REPO_TOKEN }}
       run: |
         echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
         echo "DEBUG: $GITHUB_REF"
