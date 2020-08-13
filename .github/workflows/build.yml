@@ -62,4 +62,6 @@ jobs:
         DOCKER_BUILDKIT: 1
         COMPOSE_DOCKER_CLI_BUILD: 1
       run: |
-        docker-compose -f Dockerfile/docker-compose.yml -f Dockerfile/docker-compose.stage-2.yml -f Dockerfile/docker-compose.stage-3.yml push
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
+          do echo "docker push $image"; 
+        done;
