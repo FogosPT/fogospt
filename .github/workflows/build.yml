@@ -51,13 +51,24 @@ jobs:
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
     - name: Docker login
+      env: 
+        repo-token: ${{ secrets.REPO_TOKEN }}
       run: |
-        docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
+        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
 
     - name: Push Docker images
       env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
+        repo-token: ${{ secrets.REPO_TOKEN }}
       run: |
-        docker-compose -f Dockerfile/docker-compose.yml -f Dockerfile/docker-compose.stage-2.yml -f Dockerfile/docker-compose.stage-3.yml push
+        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
+        echo "DEBUG: $GITHUB_REF"
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
+        do 
+            docker push "$image"
+            if [[ $GITHUB_REF == "master" ]]
+            then
+              latest_image="${image/$GITHUB_SHA/latest}"
+              docker tag "$image" "$latest_image"
+              docker push "$latest_image"
+            fi
+        done;
