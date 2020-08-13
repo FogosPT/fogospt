@@ -62,11 +62,14 @@ jobs:
         DOCKER_BUILDKIT: 1
         COMPOSE_DOCKER_CLI_BUILD: 1
       run: |
+        echo "DEBUG: $GITHUB_REF"
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
-          do 
-          echo $GITHUB_REF
-          echo "docker push $image";
-          latest_image="${image/$GITHUB_SHA/latest}"
-          echo "docker tag $image $latest_image"
-          echo "docker push $latest_image"
+        do 
+            docker push "$image"
+            if [[ $GITHUB_REF == "master" ]]
+            then
+              latest_image="${image/$GITHUB_SHA/latest}"
+              docker tag "$image" "$latest_image"
+              docker push "$latest_image"
+            fi
         done;
