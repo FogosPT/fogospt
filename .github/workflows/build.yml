@@ -51,8 +51,10 @@ jobs:
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
     - name: Docker login
+      env: 
+        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       run: |
-        docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
+        docker login -p -q --username tomahock --password "${DOCKER_HUB_TOKEN}"
 
     - name: Push Docker images
       env:
