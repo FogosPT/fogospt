@@ -52,9 +52,9 @@ jobs:
 
     - name: Docker login
       env: 
-        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo  "${DOCKER_HUB_TOKEN}" | docker login --username tomahock --password-stdin
+        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
 
     - name: Push Docker images
       env:
