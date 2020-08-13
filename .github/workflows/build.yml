@@ -50,14 +50,11 @@ jobs:
         echo "Building storage image"
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: fogospt/fogospt/composer
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        tags: "fogospt-latest"
+
+    - name: Push t Docker image
+      run: |
+        docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
+        docker push docker.pkg.github.com/fogospt/fogospt/storage:fogospt-$GITHUB_SHA
     #- name: Docker login
     #  env: 
     #    repo-token: ${{ secrets.DOCKER_TEST_TOKEN }}
