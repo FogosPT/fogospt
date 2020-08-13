@@ -58,10 +58,9 @@ jobs:
 
     - name: Push Docker images
       env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
         echo "DEBUG: $GITHUB_REF"
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
         do 
