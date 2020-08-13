@@ -51,7 +51,7 @@ jobs:
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
 
-    - name: Push t Docker image
+    - name: Publish Docker images
       run: |
         docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
