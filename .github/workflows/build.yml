@@ -54,26 +54,13 @@ jobs:
     - name: Push t Docker image
       run: |
         docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
-        docker push docker.pkg.github.com/fogospt/fogospt/storage:fogospt-$GITHUB_SHA
-    #- name: Docker login
-    #  env: 
-    #    repo-token: ${{ secrets.DOCKER_TEST_TOKEN }}
-    #  run: |
-    #    echo "${repo-token}" | docker login docker.pkg.github.com -u Moser-ss --password-stdin
-
-    # - name: Push Docker images
-    #   env:
-    #     repo-token: ${{ secrets.DOCKER_TEST_TOKEN }}
-    #   run: |
-    #     echo "${repo-token}" | docker login docker.pkg.github.com -u Moser-ss --password-stdin
-    #     echo "DEBUG: $GITHUB_REF"
-    #     for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
-    #     do 
-    #         docker push "$image"
-    #         if [[ $GITHUB_REF == "master" ]]
-    #         then
-    #           latest_image="${image/$GITHUB_SHA/latest}"
-    #           docker tag "$image" "$latest_image"
-    #           docker push "$latest_image"
-    #         fi
-    #     done;
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
+         do 
+             docker push "$image"
+             if [[ $GITHUB_REF == "*master*" ]]
+             then
+               latest_image="${image/$GITHUB_SHA/latest}"
+               docker tag "$image" "$latest_image"
+               docker push "$latest_image"
+             fi
+         done;
