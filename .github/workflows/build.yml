@@ -1,6 +1,11 @@
 name: Build Docker images
 
-on: [push, pull_request]
+on:   
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:  
 
 jobs:
   build-buildx:
@@ -50,25 +55,17 @@ jobs:
         echo "Building storage image"
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
-    - name: Docker login
-      env: 
-        repo-token: ${{ secrets.REPO_TOKEN }}
-      run: |
-        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
 
-    - name: Push Docker images
-      env:
-        repo-token: ${{ secrets.REPO_TOKEN }}
+    - name: Publish Docker images
       run: |
-        echo "${repo-token}" | docker login https://docker.pkg.github.com --username tomahock --password-stdin
-        echo "DEBUG: $GITHUB_REF"
+        docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
-        do 
-            docker push "$image"
-            if [[ $GITHUB_REF == "master" ]]
-            then
-              latest_image="${image/$GITHUB_SHA/latest}"
-              docker tag "$image" "$latest_image"
-              docker push "$latest_image"
-            fi
-        done;
+         do 
+             docker push "$image"
+             if [[ $GITHUB_REF == "*master*" ]]
+             then
+               latest_image="${image/$GITHUB_SHA/latest}"
+               docker tag "$image" "$latest_image"
+               docker push "$latest_image"
+             fi
+         done;
