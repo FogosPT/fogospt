@@ -61,11 +61,13 @@ jobs:
         docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
          do 
+            echo "Publishing image : $image"
              docker push "$image"
-             if [[ $GITHUB_REF == "*master*" ]]
+             if [[ $GITHUB_REF == *"master"* ]]
              then
-               latest_image="${image/$GITHUB_SHA/latest}"
-               docker tag "$image" "$latest_image"
-               docker push "$latest_image"
+                latest_image="${image/$GITHUB_SHA/latest}"
+                docker tag "$image" "$latest_image"
+                echo "Publishing latest image : $image"
+                docker push "$latest_image"
              fi
          done;
