@@ -1,6 +1,11 @@
 name: Build Docker images
 
-on: [push, pull_request]
+on:   
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:  
 
 jobs:
   build-buildx:
@@ -50,14 +55,19 @@ jobs:
         echo "Building storage image"
         docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
 
-    - name: Docker login
-      run: |
-        docker login -p -q --username tomahock --password ${{ secrets.DOCKER_HUB_TOKEN }}
 
-    - name: Push Docker images
-      env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
+    - name: Publish Docker images
       run: |
-        docker-compose -f Dockerfile/docker-compose.yml -f Dockerfile/docker-compose.stage-2.yml -f Dockerfile/docker-compose.stage-3.yml push
+        docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
+         do 
+            echo "Publishing image : $image"
+             docker push "$image"
+             if [[ $GITHUB_REF == *"master"* ]]
+             then
+                latest_image="${image/$GITHUB_SHA/latest}"
+                docker tag "$image" "$latest_image"
+                echo "Publishing latest image : $image"
+                docker push "$latest_image"
+             fi
+         done;
