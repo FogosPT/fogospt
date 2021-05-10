@@ -11,6 +11,19 @@
 
 
             <div class="card-deck mb-3 text-center">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal">Fundacação Lapa do Lobo</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-body">
+                            <a href="https://fundacaolapadolobo.pt/">
+                                <img src="{{asset('img/partners/fll.png')}}" alt="Fundação Lapa do Lobo">
+                            </a>
+                        </div>
+                        <a type="button"  href="https://fundacaolapadolobo.pt/" class="btn btn-lg btn-block btn-primary">Visitar</a>
+                    </div>
+                </div>
 
               <div class="card mb-4 shadow-sm">
                 <div class="card-header">
