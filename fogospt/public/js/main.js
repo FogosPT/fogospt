@@ -41,6 +41,7 @@ $(document).ready(function () {
 
     var normalLayer = L.mapboxGL({
         preserveDrawingBuffer: true,
+        antialias: true,
         accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA',
         style: 'mapbox://styles/fogospt/ckb6zx0ew3z741ip99o8l9mko'
     }).addTo(mymap);
