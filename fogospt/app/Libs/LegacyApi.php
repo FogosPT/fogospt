@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Redis;
 
 class LegacyApi
 {
-    private static $url = 'https://api-beta.fogos.pt';
+    private static $url = 'https://api-dev.fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
 
     private static function getClient()
