@@ -296,7 +296,6 @@ $(document).ready(function () {
         success: function (data) {
             data = JSON.parse(data);
             if (data.success && data.data[0] && data.data[0].active) {
-                console.log('cenas')
                 $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
                 $('#warning-site').modal('show');
             }
@@ -562,8 +561,9 @@ function addMaker(item, mymap) {
 
         var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
 
+        var locationText = item.location + ' - ' + item.detailLocation;
         $('.sidebar').addClass('active').scrollTop(0)
-        $('.f-local').text(item.location)
+        $('.f-local').text(locationText)
         $('.f-man').text(item.man)
         $('.f-aerial').text(item.aerial)
         $('.f-terrain').text(item.terrain)
