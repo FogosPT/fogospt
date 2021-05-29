@@ -9,7 +9,7 @@ return [
             'fireRisk' => 'Fire Risk',
             'updated' => 'Last update',
             'district' => 'District',
-            'concelho' => 'Municipality',
+            'concelho' => 'Municipality/County',
             'freguesia' => 'Parish',
             'localidade' => 'Locality'
         ],
@@ -34,7 +34,7 @@ return [
             ]
         ],
         'extra' => [
-            'title' => 'Extra info'
+            'title' => 'More info'
         ],
         'twitter' => [
             'title' => 'Twitter'
