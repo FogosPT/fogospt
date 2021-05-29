@@ -15,6 +15,6 @@ return [
         'active' => 'Now'
     ],
     'meta' => [
-        'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv'
+        'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, ANEPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv, forest fires, forest fires portugal, forest fires app portugal, forest fires, rural fires'
     ]
 ];
