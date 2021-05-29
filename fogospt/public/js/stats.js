@@ -22,24 +22,24 @@ $(document).ready(function () {
 });
 
 var dColors = {
-    'Aveiro': '#77CBCF',
-    'Beja': '#7D9BD3',
-    'Braga': '#9782D7',
-    'Bragança': '#31987E',
-    'Castelo Branco': '#C86195',
-    'Coimbra': '#CD7066',
-    'Évora': '#CF9269',
-    'Faro': '#56C3A1',
-    'Guarda': '#CD9C68',
-    'Leiria': '#CEB76A',
-    'Lisboa': '#CED06D',
-    'Portalegre': '#653522',
-    'Porto': '#612422',
-    'Santarém': '#442A7C',
-    'Setúbal': '#2F2A78',
-    'Viana do Castelo': '#882B82',
-    'Vila Real': '#4A6223',
-    'Viseu': '#57852F',
+    'Aveiro': '#4462a0',
+    'Beja': '#ffa600',
+    'Braga': '#2f4b7c',
+    'Bragança': '#a05195',
+    'Castelo Branco': '#ee598e',
+    'Coimbra': '#d65a9e',
+    'Évora': '#ff932c',
+    'Faro': '#ef9c00',
+    'Guarda': '#b95da9',
+    'Leiria': '#ff5f7a',
+    'Lisboa': '#ff9030',
+    'Portalegre': '#ff7b4b',
+    'Porto': '#005b85',
+    'Santarém': '#ff6a64',
+    'Setúbal': '#ff9f16',
+    'Viana do Castelo': '#003f5c',
+    'Vila Real': '#665191',
+    'Viseu': '#7f62ad',
 };
 
 function plot() {
@@ -148,8 +148,8 @@ function plotWeekStats() {
                             label: 'Total',
                             data: total,
                             fill: false,
-                            backgroundColor: '#fe5130',
-                            borderColor: '#fe5130'
+                            backgroundColor: '#f67e23',
+                            borderColor: '#f67e23'
                         },
                             {
                                 label: 'Falsos Alarmes',
@@ -211,8 +211,8 @@ function plotStats8hours() {
                             label: 'Total',
                             data: total,
                             fill: false,
-                            backgroundColor: '#fe5130',
-                            borderColor: '#fe5130'
+                            backgroundColor: '#f67e23',
+                            borderColor: '#f67e23'
                         },
                         ]
                     },
@@ -308,8 +308,8 @@ function plotStats8hoursYesterday() {
                             label: 'Total',
                             data: total,
                             fill: false,
-                            backgroundColor: '#fe5130',
-                            borderColor: '#fe5130'
+                            backgroundColor: '#f67e23',
+                            borderColor: '#f67e23'
                         },
                         ]
                     },
