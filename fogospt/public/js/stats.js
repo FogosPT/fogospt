@@ -258,7 +258,7 @@ function plotStatsLastNight() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(stringToColour(d));
+                    colors.push(dcolors[d]);
                 }
 
                 var ctx = document.getElementById("myChartStatsLastNight");
@@ -528,7 +528,7 @@ function plotStatsYesterdayDistricts() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(stringToColour(d));
+                    colors.push(dcolors[d]);
                 }
 
                 var ctx = document.getElementById("myChartStatsYesterday");
@@ -569,7 +569,7 @@ function plotStatsDistricts() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(stringToColour(d));
+                    colors.push(dcolors[d]);
                 }
 
                 var ctx = document.getElementById("myChartStatsToday");
@@ -594,18 +594,7 @@ function plotStatsDistricts() {
     });
 }
 
-var stringToColour = function (str) {
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-        var value = (hash >> (i * 7)) & 0xFF;
-        colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
-}
+
 
 
 function getParameterByName(name, url) {
