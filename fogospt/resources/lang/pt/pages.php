@@ -33,12 +33,12 @@ return [
             ],
 
         ],
-        'numberDescription' => 'Os números disponibilizados são os totais de meios accionados. O número pode diferir do que se encontra
-                no terreno, uma vez que os meios accionados podem ainda estar em trânsito.',
-        'hoursDescription' => 'As horas indicadas tanto no gráfico de meios como na linha do tempo dos estados do incêndios, são as
-                horas que o nosso sistema detetou uma mudança de dados por parte da ANPC podendo não corresponder ao
+        'numberDescription' => 'Os números disponibilizados são os totais de meios accionados. O número pode diferir dos meios que se encontram
+                no teatro de operações (TO), uma vez que os meios accionados podem ainda estar em trânsito para o mesmo',
+        'hoursDescription' => 'As horas indicadas, tanto no gráfico de meios como na linha de tempo, dos estados do incêndios, indicam a
+                hora em que o nosso sistema detetou uma mudança de dados por parte da ANPEC podendo não corresponder ao
                 momento exato em que essa alteração ocorreu.',
-        'source' => 'Risco de incêndio recolhido do IPMA.',
+        'source' => 'Risco de incêndio recolhido via IPMA.',
         'riskIndexes' => [
             'title' => 'Índices de Risco de Incêndio',
             'items' => [
@@ -92,7 +92,7 @@ return [
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
     ],
     'table' => [
-        'reload' => 'Esta página actualiza-se automaticamente.'
+        'reload' => 'Esta página é atualizada automaticamente.'
     ]
 
 ];
