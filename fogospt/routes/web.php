@@ -24,6 +24,7 @@ Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
 
 
 Route::get('/fogo/{id}', 'FireController@get')->name('fire');
+Route::get('/fogo/{id}/detalhe', 'FireController@getDetails')->name('fireDetail');
 Route::get('/madeira/fogo/{id}', 'FireController@getMadeira');
 Route::get('/new/fires', 'FireController@getAll');
 

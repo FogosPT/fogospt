@@ -267,20 +267,7 @@ main {
       margin: 0;
     }
 
-    #social-links ul{
-      display: flex;
-      list-style: none;
-      justify-content: space-between;
-      padding:0;
 
-      li{
-        font-size:26px;
-
-        a{
-          color: $c-orange;
-        }
-      }
-    }
   }
 
   .card {
@@ -443,6 +430,21 @@ main {
   padding: 0;
   .row {
     height: 100vh;
+  }
+}
+
+#social-links ul{
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+  padding:0;
+
+  li{
+    font-size:26px;
+
+    a{
+      color: $c-orange;
+    }
   }
 }
 
