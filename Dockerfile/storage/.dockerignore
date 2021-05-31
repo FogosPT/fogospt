@@ -1,7 +1,0 @@
-**/.dockerignore
-**/.gitignore
-**/.git
-**/Dockerfile*
-**/.env*
-**/*.lock
-**/docker-compose*
