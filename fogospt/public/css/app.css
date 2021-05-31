@@ -304,25 +304,6 @@ main .sidebar .row {
   margin: 0;
 }
 
-main .sidebar #social-links ul {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  list-style: none;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  padding: 0;
-}
-
-main .sidebar #social-links ul li {
-  font-size: 26px;
-}
-
-main .sidebar #social-links ul li a {
-  color: #FF6E02;
-}
-
 main .card {
   margin-bottom: 1rem;
   border: 0;
@@ -518,6 +499,25 @@ main #data-social-media iframe {
 
 .not-found main .row {
   height: 100vh;
+}
+
+#social-links ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  list-style: none;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 0;
+}
+
+#social-links ul li {
+  font-size: 26px;
+}
+
+#social-links ul li a {
+  color: #FF6E02;
 }
 
 @-webkit-keyframes loading {

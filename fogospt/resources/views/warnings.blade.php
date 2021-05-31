@@ -7,18 +7,20 @@
                 <h1>@lang('includes.menu.warnings')</h1>
             </div>
             <div class="row">
-                @foreach($data as $warning)
-                    <div class="col-12">
-                      <div class="card">
-                        <div style="background-color: #F45E29; color: white;"  class="card-header">
-                        {{ $warning['label'] }}
+                @if($data && count($data))
+                    @foreach($data as $warning)
+                        <div class="col-12">
+                          <div class="card">
+                            <div style="background-color: #F45E29; color: white;"  class="card-header">
+                            {{ $warning['label'] }}
+                            </div>
+                            <div class="card-body">
+                            <h4 class="card-title">{{ $warning['text'] }}</h4>
+                            </div>
+                          </div>
                         </div>
-                        <div class="card-body">
-                        <h4 class="card-title">{{ $warning['text'] }}</h4>
-                        </div>
-                      </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                @endif
             </div>
         </div>
     </main>

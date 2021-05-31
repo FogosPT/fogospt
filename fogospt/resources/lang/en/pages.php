@@ -86,5 +86,8 @@ return [
     ],
     'table' => [
         'reload' => 'This page auto refresh.'
+    ],
+    'list' => [
+        'no-data' => 'Sem registo de incêndios'
     ]
 ];

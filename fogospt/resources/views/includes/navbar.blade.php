@@ -1,7 +1,6 @@
 <header id="header" class="fixed-top" role="banner">
     <nav class="navbar navbar-dark">
         <a class="navbar-brand" href="/"><img src="/img/logo.svg" height="70px"></a>
-        <button class="btn btn-outline-dark nav-item nav-link js-refresh"><i class="fas fa-sync"></i></button>
 
         <button class="navbar-toggler my-2 my-sm-0" type="button" data-toggle="collapse" data-target="#menuTopo"
                 aria-controls="menuTopo" aria-expanded="false" aria-label="Toggle navigation">

@@ -7,6 +7,7 @@
     <main role="main" class="mb-auto margin-top-10">
         <div class="container container-fluid">
             <div class="row">
+                @if($data && count($data))
                 <table id="fires" class="table table-striped table-bordered table-responsive">
                     <thead>
                     <tr>
@@ -25,7 +26,7 @@
                     <tbody>
                     @foreach($data as $fire)
                         <tr>
-                            <td><a href="{{route('fire', $fire['id'])}}">{{$fire['id']}}</a></td>
+                            <td><a href="{{route('fireDetail', $fire['id'])}}">{{$fire['id']}}</a></td>
                             <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
@@ -41,9 +42,14 @@
                     @endforeach
                     </tbody>
                 </table>
+
+
             </div>
             <div class="row">
                 <div class="col-12">@lang('pages.table.reload')</div>
+                @else
+                    <h4 class="card-title">@lang('pages.list.no-data')</h4>
+                @endif
             </div>
         </div>
     </main>
