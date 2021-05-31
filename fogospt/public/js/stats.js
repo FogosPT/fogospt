@@ -258,7 +258,7 @@ function plotStatsLastNight() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(dcolors[d]);
+                    colors.push(getColor(d));
                 }
 
                 var ctx = document.getElementById("myChartStatsLastNight");
@@ -528,7 +528,7 @@ function plotStatsYesterdayDistricts() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(dcolors[d]);
+                    colors.push(getColor(d));
                 }
 
                 var ctx = document.getElementById("myChartStatsYesterday");
@@ -569,7 +569,7 @@ function plotStatsDistricts() {
                 for (d in data.data.distritos) {
                     labels.push(d);
                     total.push(data.data.distritos[d]);
-                    colors.push(dcolors[d]);
+                    colors.push(getColor(d));
                 }
 
                 var ctx = document.getElementById("myChartStatsToday");
@@ -594,6 +594,32 @@ function plotStatsDistricts() {
     });
 }
 
+
+function getColor(str)
+{
+    var dColors = {
+        'Aveiro': '#4462a0',
+        'Beja': '#ffa600',
+        'Braga': '#2f4b7c',
+        'Bragança': '#a05195',
+        'Castelo Branco': '#ee598e',
+        'Coimbra': '#d65a9e',
+        'Évora': '#ff932c',
+        'Faro': '#ef9c00',
+        'Guarda': '#b95da9',
+        'Leiria': '#ff5f7a',
+        'Lisboa': '#ff9030',
+        'Portalegre': '#ff7b4b',
+        'Porto': '#005b85',
+        'Santarém': '#ff6a64',
+        'Setúbal': '#ff9f16',
+        'Viana do Castelo': '#003f5c',
+        'Vila Real': '#665191',
+        'Viseu': '#7f62ad',
+    };
+
+    return dColors[str];
+}
 
 
 
