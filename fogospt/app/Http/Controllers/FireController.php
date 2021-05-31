@@ -54,6 +54,58 @@ class FireController extends Controller
         return view('index', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata));
     }
 
+    public function getDetails($id)
+    {
+        if (!$id) {
+            return view('index');
+        }
+
+        $this->setFireById($id);
+
+        if(!$this->fire){
+            abort(404);
+        }
+
+        $risk = LegacyApi::getRiskByFire($id);
+        $status = LegacyApi::getStatusByFire($id);
+        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
+
+        if (isset($meteo['wind']['deg'])) {
+            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
+        }
+
+        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        if (isset($status['data'])) {
+            $this->fire['statusHistory'] = $status['data'];
+        } else {
+            $this->fire['statusHistory'] = false;
+        }
+
+        $this->fire['meteo'] = $meteo;
+
+        $feed = array();
+
+        if (isset($this->fire['concelho'])) {
+            $feed = $this->getTwitter($this->fire['concelho']);
+        }
+
+        $metadata = $this->generateMetadata();
+        $shares = new Share();
+        $s = $shares->page($metadata['url'])
+            ->facebook()
+            ->twitter()
+            ->whatsapp();
+
+        if(isset($this->fire['kml'])){
+            $kml = preg_replace( "/\r|\n/", "", $this->fire['kml'] );
+        } else {
+            $kml = null;
+        }
+
+
+        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml));
+    }
+
     public function getSharesCard($id)
     {
         $this->setFireById($id);

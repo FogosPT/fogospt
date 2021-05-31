@@ -11,7 +11,10 @@ return [
             'district' => 'District',
             'concelho' => 'Municipality/County',
             'freguesia' => 'Parish',
-            'localidade' => 'Locality'
+            'localidade' => 'Locality',
+            'cb' => 'Firefighters',
+            'alertFrom' => 'Alert source'
+
         ],
         'resources' => [
             'units' => 'Means',
@@ -41,6 +44,9 @@ return [
         ],
         'shares' => [
             'title' => 'Share'
+        ],
+        'burn' => [
+            'title' => 'Burned area'
         ]
     ],
     'riskLevels' => [
