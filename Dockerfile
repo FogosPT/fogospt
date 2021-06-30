@@ -135,6 +135,6 @@ WORKDIR /var/www
 
 ENTRYPOINT ["/scripts/docker-entrypoint.sh"]
 
-CMD php-fpm
+CMD [ "php-fpm" ]
 
 EXPOSE 9000
