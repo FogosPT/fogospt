@@ -113,20 +113,9 @@ RUN echo "UTC" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzd
 # Set pid file to be able to restart php-fpm
 RUN sed -i "s@^\[global\]@\[global\]\n\npid = /run/php-fpm.pid@" ${PHP_INI_DIR}-fpm.conf
 
-COPY conf.d/blackfire.ini ${PHP_INI_DIR}/conf.d/blackfire.ini
-COPY conf.d/xdebug.ini ${PHP_INI_DIR}/conf.d/xdebug.ini.disabled
-
 # Create Composer directory (cache and auth files) & Get Composer
 RUN mkdir -p $COMPOSER_HOME \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# As application is put in as volume we do all needed operation on run
-COPY scripts /scripts
-
-# Add some custom config
-COPY conf.d/php.ini ${PHP_INI_DIR}/conf.d/php.ini
-
-RUN chmod 755 /scripts/*.sh
 
 # Needed for docker-machine
 RUN usermod -u 1000 www-data
