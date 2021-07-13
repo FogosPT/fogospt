@@ -21,7 +21,7 @@
                 <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
                 <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
                 <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
-                <a class="nav-item nav-link" href="https://vost.pt}" target="_blank">Vost.pt</a>
+                <a class="nav-item nav-link" href="https://vost.pt" target="_blank">Vost.pt</a>
 
 
                 <a class="nav-item nav-link" href="https://twitter.com/fogospt" target="_blank">Twitter <i class="fab fa-twitter"></i></a>
