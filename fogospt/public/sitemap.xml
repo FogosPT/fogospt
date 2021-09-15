@@ -14,6 +14,11 @@
         <priority>0.80</priority>
     </url>
     <url>
+        <loc>https://fogos.pt/tabela</loc>
+        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
+        <priority>0.80</priority>
+    </url>
+    <url>
         <loc>https://fogos.pt/avisos</loc>
         <lastmod>2018-08-02T14:13:22+00:00</lastmod>
         <priority>0.80</priority>

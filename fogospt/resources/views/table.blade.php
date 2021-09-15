@@ -30,7 +30,7 @@
                             <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
-                            <td>{{ $fire['freguesia'] }}</td>
+                            <td>{{ @$fire['freguesia'] }}</td>
                             <td>{{ $fire['localidade'] }}@isset($fire['detailLocation']) - {{$fire['detailLocation']}} @endisset</td>
                             <td>
                                 <div><span class="dot status-{{ $fire['statusCode'] }}" style="display:inline-block;position:relative"></span> <span class="status-label">{{ $fire['status'] }}</span></div>

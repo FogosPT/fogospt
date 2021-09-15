@@ -81,7 +81,7 @@ return [
     ],
     'stats' => [
         'now' => [
-            'stats' => ':date - :total Incêndios em curso* combatidos por :man meios humanos, :cars meios terrestres e :aerial meios aereos.',
+            'stats' => ':date - :total Incêndios em curso* combatidos por :man operacionais, :cars meios terrestres e :aerial meios aereos.',
             'footer' => 'Incêndios no estado \'Despacho de 1º Alerta\' ou no estado \'Em Curso\''
         ],
         'now-text' => 'Agora',

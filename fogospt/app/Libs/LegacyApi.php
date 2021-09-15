@@ -308,7 +308,6 @@ class LegacyApi
                 $result = json_decode($body->getContents(), true);
 
                 Redis::set('weather:' . $lat . ':' . $lng, json_encode($result), 'EX', 10800);
-
                 return $result;
             }
         }

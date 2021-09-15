@@ -43,8 +43,13 @@
             'shares' => [
                 'title' => 'Partilhar'
             ],
-            'burn' => [
-                'title' => 'Área ardida'
+            'detail' => [
+                'burn' => [
+                    'title' => 'Área ardida'
+                ],
+                'cause' => [
+                    'title' => 'Causa'
+                ]
             ]
         ],
         'riskLevels' => [

@@ -45,8 +45,13 @@ return [
         'shares' => [
             'title' => 'Share'
         ],
-        'burn' => [
-            'title' => 'Burned area'
+        'detail' => [
+            'burn' => [
+                'title' => 'Burned area'
+            ],
+            'cause' => [
+                'title' => 'Causa'
+            ]
         ]
     ],
     'riskLevels' => [
