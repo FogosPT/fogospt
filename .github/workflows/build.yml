@@ -8,66 +8,67 @@ on:
   workflow_dispatch:  
 
 jobs:
-  build-buildx:
-    name: Build with Buildx bake
+  build-container:
     runs-on: ubuntu-latest
-
     steps:
-    - name: install buildx
-      env:
-        BUILDX_VER: v0.3.1
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-      run: |
-        mkdir -vp ~/.docker/cli-plugins/
-        export PATH=~/.docker/cli-plugins/:$PATH
-        ### install binaries
-          curl --silent -L https://github.com/docker/buildx/releases/download/"$BUILDX_VER"/buildx-"$BUILDX_VER".linux-amd64 > ~/.docker/cli-plugins/docker-buildx
-        chmod -v a+x ~/.docker/cli-plugins/docker-buildx
+      - uses: actions/checkout@v2
+      - name: Prepare tags
+        id: prep
+        run: |
+          DOCKER_IMAGE=ghcr.io/fogospt/fogospt
+          VERSION=edge
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF == refs/heads/* ]]; then
+            VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          elif [[ $GITHUB_REF == refs/pull/* ]]; then
+            VERSION=pr-${{ github.event.number }}
+          fi
+          if [[ $VERSION == "master" ]]; then
+            VERSION=latest
+          fi
+          TAGS="${DOCKER_IMAGE}:${VERSION}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAGS="$TAGS,${DOCKER_IMAGE}:sha-${GITHUB_SHA::8}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+    
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-    - name: checkout
-      uses: actions/checkout@master
-      with:
-        fetch-depth: 1
-
-    - name: buildx bake print
-      env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-      run: |
-        export PATH=~/.docker/cli-plugins/:$PATH
-        echo "Show images to be built"
-        docker-buildx bake -f Dockerfile/docker-compose.yml -f Dockerfile/docker-compose.stage-2.yml -f Dockerfile/docker-compose.stage-3.yml --print
-
-    - name: buildx bake
-      env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKER_BUILDKIT: 1
-      run: |
-        export PATH=~/.docker/cli-plugins/:$PATH
-
-        echo "Building images"
-        docker-buildx bake -f Dockerfile/docker-compose.yml
-
-        echo "Building images that depend on the previous stage"
-        docker-buildx bake -f Dockerfile/docker-compose.stage-2.yml
-
-        echo "Building storage image"
-        docker-buildx bake -f Dockerfile/docker-compose.stage-3.yml
-
-
-    - name: Publish Docker images
-      run: |
-        docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
-        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" |grep fogospt); 
-         do 
-            echo "Publishing image : $image"
-             docker push "$image"
-             if [[ $GITHUB_REF == *"master"* ]]
-             then
-                latest_image="${image/$GITHUB_SHA/latest}"
-                docker tag "$image" "$latest_image"
-                echo "Publishing latest image : $image"
-                docker push "$latest_image"
-             fi
-         done;
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags:  ${{ steps.prep.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }} 
