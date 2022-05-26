@@ -50,7 +50,6 @@ function plotBurnAreaLastDays(){
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
