@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'GenericController@getIndex')->name('home');
+Route::get('/', 'GenericController@getOtherFires')->name('other-fires');
 Route::get('/madeira', 'GenericController@getIndexMadeira')->name('homeMadeira');
 Route::get('/sobre', 'GenericController@getAbout')->name('about');
 Route::get('/lista', 'GenericController@getList')->name('list');

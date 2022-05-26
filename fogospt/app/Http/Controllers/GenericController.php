@@ -37,6 +37,12 @@ class GenericController extends Controller
         return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function getOtherFires()
+    {
+        $this->setPageName('Outros incêndios');
+        return view('other-fires')->with(['metadata' => $this->generateMetadata()]);
+    }
+
     public function getAbout()
     {
         $this->setPageName(__('includes.menu.about'));
