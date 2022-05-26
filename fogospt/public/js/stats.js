@@ -65,6 +65,7 @@ function plotBurnAreaLastDays(){
                     data: {
                         labels: labels,
                         datasets: [{
+                            label: 'Total',
                             data: total,
                             fill: false,
                             backgroundColor: '#f67e23',
