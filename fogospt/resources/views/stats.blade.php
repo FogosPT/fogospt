@@ -160,7 +160,22 @@
                     </section>
 
 
-
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
+                        <div class="col-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">@lang('pages.stats.burn-area-last-days')</h4>
+                                    <canvas style="padding: 0 5px" id="myChartBurnAreaLastDays"
+                                            class="col-12 px-0"></canvas>
+                                    <div class="d-flex justify-content-between">
+                                        <p>
+                                            <small>@lang('pages.stats.burn-area-last-days-footer')</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
 
 

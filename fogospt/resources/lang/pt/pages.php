@@ -26,7 +26,7 @@ return [
         'typeOfUnits' => [
             'title' => 'Meios',
             'items' => [
-                'humans' => 'HUMANOS - Bombeiros, Força Especial de Bombeiros, PSP, Forças Armadas, INEM, Equipas Sapadores
+                'humans' => 'Operacionais - Bombeiros, Força Especial de Bombeiros, PSP, Forças Armadas, INEM, Equipas Sapadores
                     Florestais, GNR, GIPS Grupo Intervenção de Proteção e Socorro',
                 'terrestrial' => 'TERRESTRES - Veículos rodoviários',
                 'air' => 'AEREOS - Helicópteros / Aviões'
@@ -81,7 +81,7 @@ return [
     ],
     'stats' => [
         'now' => [
-            'stats' => ':date - :total Incêndios em curso* combatidos por :man meios humanos, :cars meios terrestres e :aerial meios aereos.',
+            'stats' => ':date - :total Incêndios em curso* combatidos por :man operacionais, :cars meios terrestres e :aerial meios aereos.',
             'footer' => 'Incêndios no estado \'Despacho de 1º Alerta\' ou no estado \'Em Curso\''
         ],
         'now-text' => 'Agora',
@@ -90,6 +90,8 @@ return [
         'last-night' => 'Última noite',
         'last-days' => 'Últimos dias',
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
+        'burn-area-last-days' => 'Área ardida nos últimos dias',
+        'burn-area-last-days-footer' => 'Dados registados no ICNF, nem todos os incêndios têm estes dados'
     ],
     'table' => [
         'reload' => 'Esta página é atualizada automaticamente.'

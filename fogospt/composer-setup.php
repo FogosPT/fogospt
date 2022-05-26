@@ -52,6 +52,7 @@ function process($argv)
 
     $help = in_array('--help', $argv) || in_array('-h', $argv);
     if ($help) {
+
         displayHelp();
         exit(0);
     }
@@ -96,7 +97,6 @@ function process($argv)
         if ($channel === '1' && !$quiet) {
             out('Warning: You forced the install of Composer 1.x via --1, but Composer 2.x is the latest stable version. Updating to it via composer self-update --stable is recommended.', 'error');
         }
-
         $installer = new Installer($quiet, $disableTls, $cafile);
         if ($installer->run($version, $installDir, $filename, $channel)) {
             showWarnings($warnings);
@@ -1740,6 +1740,8 @@ zj0EAwMDaAAwZQIwe3lORlCEwkSHRhtFcP9Ymd70/aTSVaYgLXTWNLxBo1BfASdW
 tL4ndQavEi51mI38AjEAi/V3bNTIZargCyzuFJ0nN6T5U6VR5CmD1/iQMVtCnwr1
 /q4AaOeMSQ+2b1tbFfLn
 -----END CERTIFICATE-----
+DST Root CA X3
+
 CACERT;
     }
 }

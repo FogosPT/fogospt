@@ -10,7 +10,8 @@
                                 <div style="height: 400px" id="mymap"></div>
                         @else
                             <a  href="{{route('fireDetail', $fire['id'])}}" >
-                                <img class="card-img-top img-fluid" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/url-https%3A%2F%2Ftomahock.com%2Fcenas%2Ffogos-icon.png({{$fire['lng']}},{{$fire['lat']}})/{{$fire['lng']}},{{$fire['lat']}},15,0,00/700x393?access_token={{env('MAPBOX_TOKEN')}}">
+
+                                <img class="card-img-top img-fluid" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/url-https%3A%2F%2Ffogos.pt%2Fimg%2Fprimeiro_despacho.png({{$fire['lng']}},{{$fire['lat']}})/{{$fire['lng']}},{{$fire['lat']}},15,0,00/700x393?access_token={{env('MAPBOX_TOKEN')}}">
                             </a>
                         @endisset
                         <div class="card-body">
