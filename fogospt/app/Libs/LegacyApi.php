@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Redis;
 
 class LegacyApi
 {
+    //private static $url = 'http://192.168.176.1:8092';
     private static $url = 'https://api-dev.fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
 
@@ -307,7 +308,6 @@ class LegacyApi
                 $result = json_decode($body->getContents(), true);
 
                 Redis::set('weather:' . $lat . ':' . $lng, json_encode($result), 'EX', 10800);
-
                 return $result;
             }
         }

@@ -7,6 +7,7 @@ $(document).ready(function () {
         toastr.warning(payload.notification.body)
     })
 
+
     $('.click-notification').on('click', function (e) {
         $that = $(e.currentTarget);
 
@@ -37,7 +38,14 @@ $(document).ready(function () {
 
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
 
+    if (getParameterByName('icao')) {
+        addPlane(getParameterByName('icao'), mymap);
+    }
+
+
     var normalLayer = L.mapboxGL({
+        preserveDrawingBuffer: true,
+        antialias: true,
         accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA',
         style: 'mapbox://styles/fogospt/ckb6zx0ew3z741ip99o8l9mko'
     }).addTo(mymap);
@@ -50,7 +58,7 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a> Flight Data <a href="https://www.radarbox.com/">RadarBox <img style="height:9px;background:black;padding:1px " src="https://cdn.radarbox.com/img/assets/airnav_radarbox_logo.svg" /></a>')
 
     var xx = {
         'Normal': normalLayer,
@@ -429,7 +437,6 @@ function getPonderatedImportanceFactor(importance, statusCode) {
 }
 
 function addMaker(item, mymap) {
-
     var x = randomGeo(item.lat, item.lng)
     var coords = [x['latitude'], x['longitude']]
 
@@ -511,11 +518,16 @@ function addMaker(item, mymap) {
 
         var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
 
-
         var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
 
+        var locationText = item.location;
+        if(item.detailLocation){
+            locationText += ' - ' + item.detailLocation;
+        }
+
+        locationText += ' <a href="/fogo/' + item.id + '/detalhe"><i class="fas fa-link"></i></a>';
         $('.sidebar').addClass('active').scrollTop(0)
-        $('.f-local').text(item.location)
+        $('.f-local').html(locationText)
         $('.f-man').text(item.man)
         $('.f-aerial').text(item.aerial)
         $('.f-terrain').text(item.terrain)
@@ -575,7 +587,7 @@ function plot(id) {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Humanos',
+                            label: 'Operacionais',
                             data: man,
                             fill: false,
                             backgroundColor: '#EFC800',
@@ -964,4 +976,43 @@ function getNewFires(mymap, refresh = false)
         }
     })
 
+}
+
+function addPlane(icao, mymap){
+    var url = 'https://api-dev.fogos.pt/v2/planes/' + icao
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            if (data.success) {
+
+                for (i in data.data) {
+                    addPlanePoint(data.data[i], mymap)
+                }
+            }
+        }
+    })
+}
+
+
+function addPlanePoint(data, mymap) {
+    var marker = L.marker([data.lat, data.lon])
+
+    marker.properties = {}
+    iconHtml = '<i class="fas fa-plane" style="color: #000000;font-size: 20px;"></i>'
+
+    marker.sizeFactor = 3
+
+    marker.setIcon(L.divIcon({
+        className: 'count-icon-emergency',
+        html: iconHtml,
+        iconSize: [50, 50]
+    }))
+
+
+    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:MM');
+    var content = '<p>Date: ' + date + '</p>';
+    marker.bindPopup(content);
+
+    marker.addTo(mymap);
 }

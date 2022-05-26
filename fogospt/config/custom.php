@@ -3,7 +3,8 @@
 return [
 	'availableLocales' => [
 		'pt',
-		'en'
+		'en',
+        'es'
 	],
     'notifications' => [
         [

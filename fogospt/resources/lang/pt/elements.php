@@ -11,7 +11,9 @@
                 'district' => 'Distrito',
                 'concelho' => 'Concelho',
                 'freguesia' => 'Freguesia',
-                'localidade' => 'Localidade'
+                'localidade' => 'Localidade',
+                'cb' => 'Corpo de Bombeiros',
+                'alertFrom' => 'Fonte de alerta'
             ],
             'resources' => [
                 'units' => 'Meios',
@@ -40,6 +42,14 @@
             ],
             'shares' => [
                 'title' => 'Partilhar'
+            ],
+            'detail' => [
+                'burn' => [
+                    'title' => 'Área ardida'
+                ],
+                'cause' => [
+                    'title' => 'Causa'
+                ]
             ]
         ],
         'riskLevels' => [
@@ -47,6 +57,6 @@
             'Muito Elevado' => 'Muito Elevado',
             'Elevado' => 'Elevado',
             'Moderado' => 'Moderado',
-            'Reduzido' => 'Reduzidos'
+            'Reduzido' => 'Reduzido'
         ]
     ];

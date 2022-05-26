@@ -2,7 +2,7 @@
 
 return [
     'about' => [
-        'entries_from' => 'Data retrieved from <a href="http://www.prociv.pt/">Protecção Civil Portuguesa webpage</a> (ANPC - Portuguese Civil Protection)',
+        'entries_from' => 'Data retrieved from <a href="http://www.prociv.pt/">Portuguese Civil Protection webpage</a> (ANEPC - Portuguese Civil Protection)',
         'update_interval' => 'Updates every 2 minutes',
         'near_location' => 'Aproximate location.',
         'suggestion_bugs' => 'Suggestions / Bugs - <a href="mailto:mail@fogos.pt">mail@fogos.pt</a>',
@@ -14,7 +14,7 @@ return [
             'items' => [
                 'firstAlertdispatch' => '1ST ALERT DISPATCH – Units in transit to the site.',
                 'arrivalToOccurrence' => 'ARRIVAL TO SITE – Units have arrived on site.',
-                'ongoing' => 'ONGOING - Ongoing fire with no area limitation.',
+                'ongoing' => 'ONGOING - Ongoing fire with no area delimitation.',
                 'inResolution' => 'IN RESOLUTION – Fire with no danger of spreading beyond the current perimeter.',
                 'inConclusion' => 'IN CONCLUSION – Fire extinguished, with small combustion spots within the fire perimeter.',
                 'surveillance' => 'SURVEILLANCE – Units on site to act in case of need.',
@@ -24,14 +24,14 @@ return [
         'typeOfUnits' => [
             'title' => 'Units',
             'items' => [
-                'humans' => 'HUMAN - Firefighters, Firefighters Special Force, PSP (police), Armed Forces, Emergency Medical Services, Sapadores Florestais (forest fires & rescue services), GNR (gendarmery), GIPS Grupo Intervenção de Proteção e Socorro (emergency rescue services)',
+                'humans' => 'HUMAN - Firefighters, FEPC, PSP (police), Armed Forces, Emergency Medical Services, Sapadores Florestais (forest fires & rescue services), GNR (gendarmery), GIPS Grupo Intervenção de Proteção e Socorro (emergency rescue services)',
                 'terrestrial' => 'TERRESTRIAL - Road vehicles',
                 'air' => 'AIR - Helicopters / Aircrafts'
             ],
 
         ],
-        'numberDescription' => 'The displayed numbers match the total number of dispatched units. This number may differ from the units on site, as some of the dispatched units may still be in transit.',
-        'hoursDescription' => 'The time displayed both on the units graph and on the fire status timeline are the ones in which our system detected a change of data on ANPC information and it may not match the exact time that change occurred.',
+        'numberDescription' => 'The number displayed match the total number of dispatched units. This number may differ from the units on site, as some of the dispatched units may still be in transit to the operational theater',
+        'hoursDescription' => 'The time displayed, both on the units graph and on the fire status timeline, are the ones in which our system detected a change of data in the ANPEC website and it may not match the exact time that change occurred.',
         'source' => 'Fire risk data retrieved from IPMA (Portuguese Institute for Sea and Atmosphere).',
         'riskIndexes' => [
             'title' => 'Fire Risk Index',
@@ -85,6 +85,9 @@ return [
         'last-days' => 'Last Days',
     ],
     'table' => [
-        'reload' => 'This page auto refresh.'
+        'reload' => 'This page auto refreshes.'
+    ],
+    'list' => [
+        'no-data' => 'Sem registo de incêndios'
     ]
 ];

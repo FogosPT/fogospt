@@ -1,7 +1,6 @@
 <header id="header" class="fixed-top" role="banner">
     <nav class="navbar navbar-dark">
         <a class="navbar-brand" href="/"><img src="/img/logo.svg" height="70px"></a>
-        <button class="btn btn-outline-dark nav-item nav-link js-refresh"><i class="fas fa-sync"></i></button>
 
         <button class="navbar-toggler my-2 my-sm-0" type="button" data-toggle="collapse" data-target="#menuTopo"
                 aria-controls="menuTopo" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +21,7 @@
                 <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
                 <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
                 <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
+                <a class="nav-item nav-link" href="https://vost.pt}" target="_blank">Vost.pt</a>
 
 
                 <a class="nav-item nav-link" href="https://twitter.com/fogospt" target="_blank">Twitter <i class="fab fa-twitter"></i></a>

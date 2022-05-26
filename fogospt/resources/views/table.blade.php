@@ -7,6 +7,7 @@
     <main role="main" class="mb-auto margin-top-10">
         <div class="container container-fluid">
             <div class="row">
+                @if($data && count($data))
                 <table id="fires" class="table table-striped table-bordered table-responsive">
                     <thead>
                     <tr>
@@ -25,11 +26,11 @@
                     <tbody>
                     @foreach($data as $fire)
                         <tr>
-                            <td><a href="{{route('fire', $fire['id'])}}">{{$fire['id']}}</a></td>
+                            <td><a href="{{route('fireDetail', $fire['id'])}}">{{$fire['id']}}</a></td>
                             <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
-                            <td>{{ $fire['freguesia'] }}</td>
+                            <td>{{ @$fire['freguesia'] }}</td>
                             <td>{{ $fire['localidade'] }}@isset($fire['detailLocation']) - {{$fire['detailLocation']}} @endisset</td>
                             <td>
                                 <div><span class="dot status-{{ $fire['statusCode'] }}" style="display:inline-block;position:relative"></span> <span class="status-label">{{ $fire['status'] }}</span></div>
@@ -41,9 +42,14 @@
                     @endforeach
                     </tbody>
                 </table>
+
+
             </div>
             <div class="row">
                 <div class="col-12">@lang('pages.table.reload')</div>
+                @else
+                    <h4 class="card-title">@lang('pages.list.no-data')</h4>
+                @endif
             </div>
         </div>
     </main>

@@ -9,9 +9,12 @@ return [
             'fireRisk' => 'Fire Risk',
             'updated' => 'Last update',
             'district' => 'District',
-            'concelho' => 'Municipality',
+            'concelho' => 'Municipality/County',
             'freguesia' => 'Parish',
-            'localidade' => 'Locality'
+            'localidade' => 'Locality',
+            'cb' => 'Firefighters',
+            'alertFrom' => 'Alert source'
+
         ],
         'resources' => [
             'units' => 'Means',
@@ -34,13 +37,21 @@ return [
             ]
         ],
         'extra' => [
-            'title' => 'Extra info'
+            'title' => 'More info'
         ],
         'twitter' => [
             'title' => 'Twitter'
         ],
         'shares' => [
             'title' => 'Share'
+        ],
+        'detail' => [
+            'burn' => [
+                'title' => 'Burned area'
+            ],
+            'cause' => [
+                'title' => 'Causa'
+            ]
         ]
     ],
     'riskLevels' => [

@@ -25,6 +25,21 @@
                     </div>
                 </div>
 
+            <div class="card-deck mb-3 text-center">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal">VOST Portugal</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-body">
+                            <a href="https://vost.pt/">
+                                <img src="{{asset('img/partners/vostpt.png')}}" alt="VOST Portugal">
+                            </a>
+                        </div>
+                        <a type="button"  href="https://vost.pt/" class="btn btn-lg btn-block btn-primary">Visitar</a>
+                    </div>
+                </div>
+
               <div class="card mb-4 shadow-sm">
                 <div class="card-header">
                   <h4 class="my-0 font-weight-normal">BRPX</h4>
