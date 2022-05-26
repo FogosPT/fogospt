@@ -16,6 +16,8 @@ $(document).ready(function () {
 
     plotStatsTotal();
 
+    plotBurnAreaLastDays();
+
     if (getParameterByName('phantom')) {
         $('.phantom-hide').hide();
     }
@@ -41,6 +43,62 @@ var dColors = {
     'Vila Real': '#455a64',
     'Viseu': '#90a4ae',
 };
+
+function plotBurnAreaLastDays(){
+    var url = 'https://api-lb.fogos.pt/v1/stats/burn-area';
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            if (data.success && data.data) {
+                var labels = [];
+                var total = [];
+
+                for (d in data.data) {
+                    labels.push(d);
+                    total.push(data.data[d]);
+                }
+
+                var ctx = document.getElementById("myChartBurnAreaLastDays");
+                var myLineChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total',
+                            data: total,
+                            fill: false,
+                            backgroundColor: '#f67e23',
+                            borderColor: '#f67e23'
+                        },
+                        ]
+                    },
+                    options: {
+                        elements: {
+                            line: {
+                                tension: 0, // disables bezier curves
+                                showXLabels: 5,
+                            }
+                        },
+                        responsive: true,
+                        scales: {
+                            xAxes: [{
+                                stacked: true,
+                            }],
+                            yAxes: [{
+                                stacked: true
+                            }]
+                        }
+                    }
+                });
+            } else {
+                $('#info').find('canvas').remove();
+                $('#info').append('<p>Não há dados disponiveis</p> ');
+            }
+        }
+    });
+}
 
 function plot() {
     var url = 'https://api-lb.fogos.pt/v1/now/data';

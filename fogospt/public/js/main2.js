@@ -409,7 +409,7 @@ function plot(id) {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Humanos',
+                            label: 'Operacionais',
                             data: man,
                             fill: false,
                             backgroundColor: '#EFC800',

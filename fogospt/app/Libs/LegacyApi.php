@@ -190,6 +190,24 @@ class LegacyApi
         return $result;
     }
 
+    public static function getBurnedAreaLastDays()
+    {
+        $client = self::getClient();
+        $url = self::$url . '/v1/stats/burn-area';
+
+        try {
+            $response = $client->request('GET', $url);
+        } catch (ClientException $e) {
+            return ['error' => $e->getMessage()];
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        $body = $response->getBody();
+        $result = json_decode($body->getContents(), true);
+        return $result;
+    }
+
     public static function getStatusByFire($id)
     {
         $client = self::getClient();

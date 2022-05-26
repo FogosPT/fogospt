@@ -26,7 +26,7 @@ return [
         'typeOfUnits' => [
             'title' => 'Meios',
             'items' => [
-                'humans' => 'HUMANOS - Bombeiros, Força Especial de Bombeiros, PSP, Forças Armadas, INEM, Equipas Sapadores
+                'humans' => 'Operacionais - Bombeiros, Força Especial de Bombeiros, PSP, Forças Armadas, INEM, Equipas Sapadores
                     Florestais, GNR, GIPS Grupo Intervenção de Proteção e Socorro',
                 'terrestrial' => 'TERRESTRES - Veículos rodoviários',
                 'air' => 'AEREOS - Helicópteros / Aviões'
@@ -90,6 +90,8 @@ return [
         'last-night' => 'Última noite',
         'last-days' => 'Últimos dias',
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
+        'burn-area-last-days' => 'Área ardida nos últimos dias',
+        'burn-area-last-days-footer' => 'Dados registados no ICNF, nem todos os incêndios têm estes dados'
     ],
     'table' => [
         'reload' => 'Esta página é atualizada automaticamente.'
