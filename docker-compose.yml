@@ -25,7 +25,6 @@ services:
   redispt:
     image: redis
     command: redis-server
-    ports:
-      - "6380:6379"
+
 networks:
   default:

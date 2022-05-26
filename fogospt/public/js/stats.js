@@ -24,24 +24,24 @@ $(document).ready(function () {
 });
 
 var dColors = {
-    'Aveiro': '#e53935',
-    'Beja': '#6200ea',
-    'Braga': '#283593',
-    'Bragança': '#2979ff',
-    'Castelo Branco': '#29b6f6',
-    'Coimbra': '#00bcd4',
-    'Évora': '#00897b',
-    'Faro': '#43a047',
-    'Guarda': '#7cb342',
-    'Leiria': '#eeff41',
-    'Lisboa': '#ffd600',
-    'Portalegre': '#ffab00',
-    'Porto': '#ff9100',
-    'Santarém': '#ff5722',
-    'Setúbal': '#3e2723',
-    'Viana do Castelo': '#424242',
-    'Vila Real': '#455a64',
-    'Viseu': '#90a4ae',
+    'Aveiro': '#4462a0',
+    'Beja': '#ffa600',
+    'Braga': '#2f4b7c',
+    'Bragança': '#a05195',
+    'Castelo Branco': '#ee598e',
+    'Coimbra': '#d65a9e',
+    'Évora': '#ff932c',
+    'Faro': '#ef9c00',
+    'Guarda': '#b95da9',
+    'Leiria': '#ff5f7a',
+    'Lisboa': '#ff9030',
+    'Portalegre': '#ff7b4b',
+    'Porto': '#005b85',
+    'Santarém': '#ff6a64',
+    'Setúbal': '#ff9f16',
+    'Viana do Castelo': '#003f5c',
+    'Vila Real': '#665191',
+    'Viseu': '#7f62ad',
 };
 
 function plotBurnAreaLastDays(){
@@ -106,7 +106,7 @@ function plot() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data.length) {
                 labels = [];
                 var man = [];
@@ -186,7 +186,7 @@ function plotWeekStats() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data.length) {
                 labels = [];
                 var total = [];
@@ -250,7 +250,7 @@ function plotStats8hours() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
@@ -307,7 +307,7 @@ function plotStatsLastNight() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
@@ -347,7 +347,7 @@ function plotStats8hoursYesterday() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
@@ -408,7 +408,7 @@ function plotStatsTotal() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
+            data = (data);
             if (data.success && data.data) {
 
                 // control that shows state info on hover
@@ -577,7 +577,6 @@ function plotStatsYesterdayDistricts() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
@@ -618,7 +617,6 @@ function plotStatsDistricts() {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data);
             if (data.success && data.data) {
                 var labels = [];
                 var total = [];
