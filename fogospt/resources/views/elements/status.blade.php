@@ -1,5 +1,5 @@
 <div id="status">
-    @isset($fire['statusHistory'])
+    @if( isset($fire['statusHistory']) && is_array($fire['statusHistory']) && !empty($fire['statusHistory']))
         @foreach( $fire['statusHistory'] as $status)
             <div>
                 <span class="dot status-{{ $status['statusCode'] }} timelineDot"></span>
@@ -9,5 +9,5 @@
                 </div>
             </div>
         @endforeach
-    @endisset
+    @endif
 </div>
