@@ -110,11 +110,6 @@ class HotSpots
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
-
-            if(empty($response)){
-                return json_encode([]);
-            }
-            
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
 
@@ -126,8 +121,10 @@ class HotSpots
                 if($row_index === 0) continue;
                 $json[$row_index] = [];
                 foreach ($row_data as $column_index => $column_value) {
-                    $label = $columns[$column_index];
-                    $json[$row_index][$label] = $column_value;
+                    if(isset($columns[$column_index])){
+                        $label = $columns[$column_index];
+                        $json[$row_index][$label] = $column_value;
+                    }
                 }
             }
 
