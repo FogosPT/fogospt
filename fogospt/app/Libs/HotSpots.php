@@ -108,7 +108,7 @@ class HotSpots
         curl_close($curl);
 
         if ($err) {
-            echo "cURL Error #:" . $err;
+            return json_encode([]);
         } else {
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
@@ -219,7 +219,7 @@ class HotSpots
         curl_close($curl);
 
         if ($err) {
-            echo "cURL Error #:" . $err;
+            return json_encode([]);
         } else {
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
