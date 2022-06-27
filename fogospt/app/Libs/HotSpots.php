@@ -131,7 +131,7 @@ class HotSpots
             $aux = json_decode(json_encode($json), true);
 
             foreach ($aux as $linha){
-                if($linha["latitude"] && $linha["longitude"]) {
+                if(isset($linha["latitude"]) && isset($linha["longitude"])) {
                     $inside = new Coordinate(floatval($linha["latitude"]), floatval($linha["longitude"]));
                     if($geofence->contains($inside))
                         array_push($final, $linha);
