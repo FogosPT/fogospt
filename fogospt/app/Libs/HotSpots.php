@@ -110,6 +110,11 @@ class HotSpots
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
+
+            if(empty($response)){
+                return json_encode([]);
+            }
+            
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
 
