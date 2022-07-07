@@ -18,6 +18,8 @@ class ApiController extends Controller
 
     public function getModis()
     {
+        return \Response::json();
+
         if(env('APP_ENV') === 'production'){
             $exists = Redis::get('modis');
             if($exists){
@@ -39,6 +41,9 @@ class ApiController extends Controller
 
     public function getVIIRS()
     {
+
+        return \Response::json();
+
         if(env('APP_ENV') === 'production'){
             $exists = Redis::get('VIIRS');
             if($exists){
