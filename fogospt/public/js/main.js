@@ -155,7 +155,7 @@ $(document).ready(function () {
     }).addTo(mymap)
 
 
-    $.ajax({
+    /*$.ajax({
         url: '/lightnings',
         dataType: "json",
         method: 'GET',
@@ -241,7 +241,7 @@ $(document).ready(function () {
                 }
             })
         }
-    })
+    })*/
 
     $.ajax({
         type: "GET",
