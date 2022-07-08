@@ -296,7 +296,6 @@ class FireController extends Controller
                     'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
                 );
 
-
                 $twitter = new \TwitterAPIExchange($settings);
                 $result = $twitter->setGetfield($getfield)
                     ->buildOauth($url, $requestMethod)
