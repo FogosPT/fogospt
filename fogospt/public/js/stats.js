@@ -17,6 +17,7 @@ $(document).ready(function () {
     plotStatsTotal();
 
     plotBurnAreaLastDays();
+    plotMotives();
 
     if (getParameterByName('phantom')) {
         $('.phantom-hide').hide();
@@ -82,12 +83,62 @@ function plotBurnAreaLastDays(){
                         },
                         responsive: true,
                         scales: {
-                            xAxes: [{
-                                stacked: true,
-                            }],
-                            yAxes: [{
-                                stacked: true
-                            }]
+
+                        }
+                    }
+                });
+            } else {
+                $('#info').find('canvas').remove();
+                $('#info').append('<p>Não há dados disponiveis</p> ');
+            }
+        }
+    });
+}
+
+
+function plotMotives(){
+    var url = 'https://api.fogos.pt/v1/stats/motive';
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            if (data.success && data.data) {
+                var labels = [];
+                var total = [];
+
+                for (d in data.data) {
+                    labels.push(d);
+                    total.push(data.data[d]);
+                }
+
+                console.log(labels);
+                console.log(total);
+
+                var ctx = document.getElementById("myChartMotives");
+                var myLineChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total',
+                            data: total,
+                            fill: false,
+                            backgroundColor: '#f67e23',
+                            borderColor: '#f67e23'
+                        },
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        elements: {
+                            line: {
+                                tension: 0, // disables bezier curves
+                                showXLabels: 5,
+                            }
+                        },
+                        responsive: true,
+                        scales: {
+                           
                         }
                     }
                 });
@@ -115,7 +166,7 @@ function plot() {
                 for (d in data.data) {
                     labels.push(data.data[d].label);
                     man.push(data.data[d].man);
-                    terrain.push(data.data[d].cars);
+                    terrain.push(data.data[d].terrain);
                     aerial.push(data.data[d].aerial);
                     total.push(data.data[d].total);
                 }
@@ -156,6 +207,7 @@ function plot() {
                             }]
                     },
                     options: {
+                        maintainAspectRatio: false,
                         elements: {
                             line: {
                                 tension: 0, // disables bezier curves
@@ -226,12 +278,7 @@ function plotWeekStats() {
                         },
                         responsive: true,
                         scales: {
-                            xAxes: [{
-                                stacked: true,
-                            }],
-                            yAxes: [{
-                                stacked: true
-                            }]
+
                         }
                     }
                 });
@@ -282,12 +329,7 @@ function plotStats8hours() {
                         },
                         responsive: true,
                         scales: {
-                            xAxes: [{
-                                stacked: true,
-                            }],
-                            yAxes: [{
-                                stacked: true
-                            }]
+
                         }
                     }
                 });
@@ -379,12 +421,7 @@ function plotStats8hoursYesterday() {
                         },
                         responsive: true,
                         scales: {
-                            xAxes: [{
-                                stacked: true,
-                            }],
-                            yAxes: [{
-                                stacked: true
-                            }]
+
                         }
                     }
                 });

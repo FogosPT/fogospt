@@ -179,6 +179,23 @@
 
 
 
+                    <section class="card flex-column flex-md-row align-items-stretch stats">
+                        <div class="col-12 px-0">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">@lang('pages.stats.motives.title')</h4>
+                                    <canvas style="padding: 0 5px" id="myChartMotives"
+                                            class="col-12 px-0"></canvas>
+                                    <div class="d-flex justify-content-between">
+                                        <p>
+                                            <small>@lang('pages.stats.motives.footer')</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
 
 
                 </section>
@@ -189,8 +206,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script> window.mapboxKey = '{{ env('MAPBOX_TOKEN') }}' </script>
 
     <script src="js/stats.js"></script>

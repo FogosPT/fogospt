@@ -91,7 +91,11 @@ return [
         'last-days' => 'Últimos dias',
         'last-night-footer' => 'Incêndios entre as 21h e as 09h',
         'burn-area-last-days' => 'Área ardida nos últimos dias',
-        'burn-area-last-days-footer' => 'Dados registados no ICNF, nem todos os incêndios têm estes dados. Em hectares.'
+        'burn-area-last-days-footer' => 'Dados registados no ICNF, nem todos os incêndios têm estes dados. Em hectares.',
+        'motives' => [
+            'title' => 'Causas de incêndio no mês corrente',
+            'footer' => 'Dados registados no ICNF, nem todos os incêndios têm estes dados.'
+        ]
     ],
     'table' => [
         'reload' => 'Esta página é atualizada automaticamente.'
