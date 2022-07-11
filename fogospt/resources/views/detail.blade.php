@@ -170,9 +170,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.4.1/mapbox-gl.min.js" integrity="sha512-NTZ4yfDV+hnycF2x28e43icmAkkDWZ6b+RXZQJkyUGKA78WQb0gIuv7RKF8W+5XAKunxzzJq4i8FD2L04h9O1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
-    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
-            integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
-            crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="https://unpkg.com/mapbox-gl-leaflet/leaflet-mapbox-gl.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
@@ -192,14 +190,11 @@
 
             // Load kml file
                 var kmltext = '{!! $kml !!}';
-                console.log(kmltext);
                 // Create new kml overlay
                 const parser = new DOMParser();
                 const kml = parser.parseFromString(kmltext, 'text/xml');
-                console.log(kml);
                 const track = new L.KML(kml);
                 map.addLayer(track);
-                console.log(map);
 
                 // Adjust map to show the kml
                 const bounds = track.getBounds();

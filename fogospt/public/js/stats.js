@@ -138,7 +138,7 @@ function plotMotives(){
                         },
                         responsive: true,
                         scales: {
-                           
+
                         }
                     }
                 });
