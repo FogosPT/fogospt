@@ -22,6 +22,10 @@ $(document).ready(function () {
     if (getParameterByName('phantom')) {
         $('.phantom-hide').hide();
     }
+
+    if (getParameterByName('jn')) {
+        $('#header').hide()
+    }
 });
 
 var dColors = {

@@ -36,6 +36,11 @@ $(document).ready(function () {
         });
     });
 
+    if (getParameterByName('jn')) {
+        $('#header').hide()
+    }
+
+
     var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
 
     if (getParameterByName('icao')) {
