@@ -71,7 +71,7 @@
                                         @endisset
                                     </div>
 
-                                    @if( !empty($fire['extra']))
+                                    @if( !empty($fire['extra']) || !empty($this->fire['pco']) || !empty($this->fire['cos']) )
                                         <div class="row extra active">
                                     @else
                                         <div class="row extra">

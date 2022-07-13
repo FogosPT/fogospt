@@ -155,7 +155,7 @@ class FireController extends Controller
     {
         $this->setFireById($id);
 
-        if (!empty($this->fire['extra'])) {
+        if (!empty($this->fire['extra']) || !empty($this->fire['pco']) || !empty($this->fire['cos'])) {
             return view('elements.extra', array('fire' => $this->fire));
         } else {
             return \Response::json();
