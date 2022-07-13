@@ -1023,9 +1023,10 @@ main {
   margin-top: 10px;
 }
 
-/* Fix para widgets parcialmente escondidas em resoluções "mobile" */
-
-// Up to Medium devices (791px and below)
+/* Fix para widgets parcialmente escondidas em resoluções "mobile"
+!important é usado para fazer override do CSS da leafleft
+Se, mesmo com o !important, ele não fizer override, o CSS da aplicação
+deve ser carregado depois do CSS da leaflet */
 @media (max-width: 991px) {
   .leaflet-top .leaflet-control {
       margin-top: 90px !important;
