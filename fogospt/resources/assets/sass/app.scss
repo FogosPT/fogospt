@@ -1022,3 +1022,12 @@ main {
 .margin-top-10 {
   margin-top: 10px;
 }
+
+/* Fix para widgets parcialmente escondidas em resoluções "mobile" */
+
+// Up to Medium devices (791px and below)
+@media (max-width: 991px) {
+  .leaflet-top .leaflet-control {
+      margin-top: 90px !important;
+  }
+}
