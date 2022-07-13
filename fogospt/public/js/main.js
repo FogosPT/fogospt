@@ -37,7 +37,8 @@ $(document).ready(function () {
     });
 
     if (getParameterByName('jn')) {
-        $('#header').hide()
+        $('#header').hide();
+        $('#map').css({top:0});
     }
 
 
