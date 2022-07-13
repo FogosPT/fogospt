@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Jorenvh\Share\Share;
 use Illuminate\Support\Facades\Redis;
 
@@ -296,10 +297,16 @@ class FireController extends Controller
                     'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
                 );
 
-                $twitter = new \TwitterAPIExchange($settings);
-                $result = $twitter->setGetfield($getfield)
-                    ->buildOauth($url, $requestMethod)
-                    ->performRequest();
+                try{
+                    $twitter = new \TwitterAPIExchange($settings);
+                    $result = $twitter->setGetfield($getfield)
+                        ->buildOauth($url, $requestMethod)
+                        ->performRequest();
+                } catch (\Exception $e){
+                    Log::error('twitter error');
+                    return [];
+                }
+
 
                 $feed = array();
 
@@ -312,7 +319,7 @@ class FireController extends Controller
 
 
                 if(!empty($feed)){
-                    Redis::set('twitter:'. $hashtag, json_encode($feed),'EX', 1080);
+                    Redis::set('twitter:'. $hashtag, json_encode($feed),'EX', 1280);
                 }
 
                 return $feed;
