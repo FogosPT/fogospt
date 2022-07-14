@@ -24,33 +24,43 @@
                             <h4 class="card-title">@lang('pages.stats.now-text')</h4>
                             <div class="d-flex justify-content-between">
                                 <div class="assets d-flex align-items-center justify-content-center">
-                                    <img class="assets-icon" src="/img/logo_flame.svg">
-                                    <span class="assets-nr f-man">
-                                        @isset($data['now']['total'])
-                                            {{ $data['now']['total'] }}
-                                        @endisset
-                                    </span>
-                                    <img class="assets-icon" src="/img/fireman.svg">
-                                    <span class="assets-nr f-man">
-                                        @isset($data['now']['man'])
-                                            {{ $data['now']['man'] }}
-                                        @endisset
-                                    </span>
-                                    <img class="assets-icon" src="/img/firetruck.svg">
-                                    <span class="assets-nr f-terrain">
-                                        @isset($data['now']['cars'])
-                                            {{ $data['now']['cars'] }}
-                                        @endisset
-                                    </span>
-                                    <img class="assets-icon" src="/img/plane.svg">
-                                    <span class="assets-nr f-aerial">
-                                    @isset($data['now']['aerial'])
-                                            {{ $data['now']['aerial'] }}
-                                        @endisset
-                                    </span>
-
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex flex-row align-items-center">
+                                            <img class="assets-icon" src="/img/logo_flame.svg">
+                                            <span class="assets-nr f-man">
+                                                @isset($data['now']['total'])
+                                                {{ $data['now']['total'] }}
+                                                @endisset
+                                            </span>
+                                        </div>
+                                        <div class="d-flex flex-row align-items-center">
+                                            <img class="assets-icon" src="/img/fireman.svg">
+                                            <span class="assets-nr f-man">
+                                                @isset($data['now']['man'])
+                                                {{ $data['now']['man'] }}
+                                                @endisset
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column p-4">
+                                        <div class="d-flex flex-row align-items-center">
+                                            <img class="assets-icon" src="/img/firetruck.svg">
+                                            <span class="assets-nr f-terrain">
+                                                @isset($data['now']['cars'])
+                                                {{ $data['now']['cars'] }}
+                                                @endisset
+                                            </span>
+                                        </div>
+                                        <div class="d-flex flex-row align-items-center">
+                                            <img class="assets-icon" src="/img/plane.svg">
+                                            <span class="assets-nr f-aerial">
+                                                @isset($data['now']['aerial'])
+                                                {{ $data['now']['aerial'] }}
+                                                @endisset
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-
                             </div>
                             <div class="d-flex justify-content-between">
                                 <p>
