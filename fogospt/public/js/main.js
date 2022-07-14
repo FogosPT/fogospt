@@ -533,7 +533,7 @@ function addMaker(item, mymap) {
             locationText += ' - ' + item.detailLocation;
         }
 
-        locationText += ' <a href="/fogo/' + item.id + '/detalhe"><i class="fas fa-link"></i></a>';
+        locationText += ' <a href="/fogo/' + item.id + '/detalhe">Mais detalhes</a>';
         $('.sidebar').addClass('active').scrollTop(0)
         $('.f-local').html(locationText)
         $('.f-man').text(item.man)

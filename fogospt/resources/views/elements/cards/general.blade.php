@@ -5,7 +5,7 @@
                 <h4 class="card-title">@lang('elements.cards.general.place')</h4>
                 <p class="f-local">
                     @isset($fire['location'])
-                        {{ $fire['location'] }} - {{ $fire['localidade'] }}@isset($fire['detailLocation']) - {{$fire['detailLocation']}} @endisset <a href="/fogo/{{$fire['id']}}/detalhe"><i class="fas fa-link"></i></a>
+                        {{ $fire['location'] }} - {{ $fire['localidade'] }}@isset($fire['detailLocation']) - {{$fire['detailLocation']}} @endisset <a href="/fogo/{{$fire['id']}}/detalhe">Mais detalhes</a>
                     @endisset
                 </p>
 
