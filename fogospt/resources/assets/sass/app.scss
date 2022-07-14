@@ -816,6 +816,10 @@ main {
     background-image: url('/img/ico_fire.svg');
     background-color: $c-vividRed;
   }
+  &.status-99-r {
+    background-image: url('/img/ico_fire.svg');
+    background-color: $c-vividBlue;
+  }
   // despacho
   &.status-3 {
     background-image: url('/img/ico_alarm.svg');
