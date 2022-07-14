@@ -8,7 +8,7 @@
                     <div class="card">
                         @isset($fire['kml'])
                                 <div style="height: 400px" id="mymap"></div>
-                            <p>Área Ardida segundo dados do ICNF</p>
+                            <p>Área Ardida segundo dados do ICNF ou Área de interesse por Vost.pt</p>
                         @else
                             <a  href="{{route('fireDetail', $fire['id'])}}" >
 
