@@ -458,7 +458,9 @@ function addMaker(item, mymap) {
 
     //Base iconHtml
     iconHtml = '<i class="dot status-'
-    if (item.important) {
+    if(item.important && (item.statusCode == 8 || item.statusCode == 7 || item.statusCode == 9)){
+        iconHtml += '99-r'
+    } else if (item.important) {
         iconHtml += '99'
     } else {
         iconHtml += item.statusCode
