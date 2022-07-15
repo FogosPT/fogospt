@@ -73,21 +73,18 @@
                                     </div>
 
                                     @if( !empty($fire['extra']) || !empty($fire['pco']) || !empty($fire['cos']) )
-                                        <div class=" extra active">
-                                    @else
-                                        <div class=" extra">
-                                    @endif
-                                            <div class="col-12">
-                                                <div class="card">
-                                                    <div class="card-body">
-                                                        <h4 class="card-title">@lang('elements.cards.extra.title')</h4>
-                                                        <div class="f-extra">
-                                                            @include('elements.extra')
-                                                        </div>
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">@lang('elements.cards.extra.title')</h4>
+                                                    <div class="f-extra">
+                                                        @include('elements.extra')
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    @endif
 
                                     <h4 class="card-title">@lang('elements.cards.twitter.title')</h4>
                                     <p class="f-twitter">
