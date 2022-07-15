@@ -72,10 +72,10 @@
                                         @endisset
                                     </div>
 
-                                    @if( !empty($fire['extra']) || !empty($this->fire['pco']) || !empty($this->fire['cos']) )
-                                        <div class="row extra active">
+                                    @if( !empty($fire['extra']) || !empty($fire['pco']) || !empty($fire['cos']) )
+                                        <div class=" extra active">
                                     @else
-                                        <div class="row extra">
+                                        <div class=" extra">
                                     @endif
                                             <div class="col-12">
                                                 <div class="card">

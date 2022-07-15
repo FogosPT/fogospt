@@ -64,7 +64,7 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a> Flight Data <a href="https://www.radarbox.com/">RadarBox <img style="height:9px;background:black;padding:1px " src="https://cdn.radarbox.com/img/assets/airnav_radarbox_logo.svg" /></a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery ©')
 
     var xx = {
         'Normal': normalLayer,
