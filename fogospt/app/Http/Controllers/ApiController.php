@@ -18,9 +18,8 @@ class ApiController extends Controller
 
     public function getModis()
     {
-        return \Response::json();
 
-        /*if(env('APP_ENV') === 'production'){
+        if(env('APP_ENV') === 'production'){
             $exists = Redis::get('modis');
             if($exists){
                 $response = json_decode($exists);
@@ -34,16 +33,14 @@ class ApiController extends Controller
             }
         } else {
             $response = HotSpots::getModis();
-        }*/
+        }
 
-        //return \Response::json($response);
+        return \Response::json($response);
     }
 
     public function getVIIRS()
     {
-        return \Response::json();
-
-        /*if(env('APP_ENV') === 'production'){
+        if(env('APP_ENV') === 'production'){
             $exists = Redis::get('VIIRS');
             if($exists){
                 $response = json_decode($exists);
@@ -59,7 +56,7 @@ class ApiController extends Controller
             $response = HotSpots::getVIIRS();
         }
 
-        return \Response::json($response);*/
+        return \Response::json($response);
     }
 
 }

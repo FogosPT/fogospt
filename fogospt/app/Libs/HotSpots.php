@@ -83,7 +83,7 @@ class HotSpots
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Europe_24h.csv",
+            CURLOPT_URL => "https://fogos.icnf.pt/localizador/firms2/SUOMI_VIIRS_C2_Europe_24h.csv",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,

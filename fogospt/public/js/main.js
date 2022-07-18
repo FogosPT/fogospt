@@ -189,7 +189,7 @@ $(document).ready(function () {
             }
 
         }
-    })
+    })*/
 
     $.ajax({
         url: '/v1/modis',
@@ -247,7 +247,7 @@ $(document).ready(function () {
                 }
             })
         }
-    })*/
+    })
 
     $.ajax({
         type: "GET",
