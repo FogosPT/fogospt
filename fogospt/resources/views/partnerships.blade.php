@@ -13,15 +13,15 @@
             <div class="card-deck mb-3 text-center">
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">Fundação Lapa do Lobo</h4>
+                        <h4 class="my-0 font-weight-normal">Officelan</h4>
                     </div>
                     <div class="card-body">
                         <div class="card-body">
-                            <a href="https://fundacaolapadolobo.pt/">
-                                <img src="{{asset('img/partners/fll.png')}}" alt="Fundação Lapa do Lobo">
+                            <a href="https://officelan.pt/">
+                                <img src="{{asset('img/partners/officelan.png')}}" alt="Officelan">
                             </a>
                         </div>
-                        <a type="button"  href="https://fundacaolapadolobo.pt/" class="btn btn-lg btn-block btn-primary">Visitar</a>
+                        <a type="button"  href="https://officelan.pt/" class="btn btn-lg btn-block btn-primary">Visitar</a>
                     </div>
                 </div>
 
