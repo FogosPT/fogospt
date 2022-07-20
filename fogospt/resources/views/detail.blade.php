@@ -174,7 +174,7 @@
         $(document).ready( function () {
             // Make basemap
             const map = new L.Map('mymap', { center: new L.LatLng(58.4, 43.0), zoom: 11 });
-            const osm = new L.TileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA');
+            const osm = new L.TileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg');
 
             map.addLayer(osm);
 

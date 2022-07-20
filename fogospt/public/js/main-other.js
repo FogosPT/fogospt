@@ -46,12 +46,12 @@ $(document).ready(function () {
     var normalLayer = L.mapboxGL({
         preserveDrawingBuffer: true,
         antialias: true,
-        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA',
+        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg',
         style: 'mapbox://styles/fogospt/ckb6zx0ew3z741ip99o8l9mko'
     }).addTo(mymap);
 
 
-    var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjamZ3Y2E5OTMyMjFnMnFxbjAxbmt3bmdtIn0.xg1X-A17WRBaDghhzsmjIA', {
+    var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
         maxZoom: 18,
         id: 'mapbox.streets',
