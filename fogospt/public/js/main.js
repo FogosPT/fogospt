@@ -49,12 +49,15 @@ $(document).ready(function () {
     }
 
 
-    var normalLayer = L.mapboxGL({
-        preserveDrawingBuffer: true,
-        antialias: true,
-        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg',
-        style: 'mapbox://styles/fogospt/ckb6zx0ew3z741ip99o8l9mko'
+    var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
+        attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+        tileSize: 512,
+        maxZoom: 18,
+        zoomOffset: -1,
+        id: 'mapbox/streets-v11',
+        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg'
     }).addTo(mymap);
+
 
 
     var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
@@ -68,7 +71,7 @@ $(document).ready(function () {
 
     var xx = {
         'Normal': normalLayer,
-        'Satélite': satLayer
+        //'Satélite': satLayer
     }
 
     L.control.layers(xx, {}, {
@@ -303,7 +306,7 @@ function addLightning(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [20, 20]
+        iconSize: [80, 80]
     }))
 
     window.lightningLayer[0].addLayer(marker)
@@ -322,7 +325,7 @@ function addModisPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [80, 80]
     }))
 
     var confidence = '';
@@ -357,7 +360,7 @@ function addVIIRSPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [80, 80]
     }))
 
 
@@ -494,7 +497,7 @@ function addMaker(item, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [size, size],
+        iconSize: [size*3, size*3],
         forceZIndex: item.importance
     }))
 
