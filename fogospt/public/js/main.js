@@ -501,7 +501,7 @@ function addMaker(item, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [size*3, size*3],
+        iconSize: [size, size],
         forceZIndex: item.importance
     }))
 
