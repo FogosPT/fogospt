@@ -1,5 +1,5 @@
 @isset($fire['extra'])
-    <p>{{ $fire['extra'] }}</p>
+    <pre>{{ $fire['extra'] }}</pre>
 @endisset
 
 
