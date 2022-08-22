@@ -8,7 +8,7 @@
                     <div class="card">
                         @if(isset($fire['kml']) || isset($fire['kmlVost']))
                                 <div style="height: 400px" id="mymap"></div>
-                            <p> @if(isset($fire['kml']))Área Ardida segundo dados do ICNF@endif @if(isset($fire['kmlVost']))Área de interesse por <a href="https://vost.pt">VOST.pt</a>@endif</p>
+                            <p> @if(isset($fire['kml']))Área Ardida segundo dados do ICNF @endif @if(isset($fire['kmlVost']))Área de interesse por <a href="https://vost.pt">VOST.pt</a> @endif </p>
                         @else
                             <a  href="{{route('fireDetail', $fire['id'])}}" >
 
