@@ -186,6 +186,10 @@
                 const kml = parser.parseFromString(kmltext, 'text/xml');
                 const track = new L.KML(kml);
                 map.addLayer(track);
+
+                // Adjust map to show the kml
+                const bounds = track.getBounds();
+                map.fitBounds(bounds);
             @endif
 
 
@@ -197,11 +201,13 @@
                 const kmlVost = parserVost.parseFromString(kmltextVost, 'text/xml');
                 const trackVost = new L.KML(kmlVost);
                 map.addLayer(trackVost);
+
+            // Adjust map to show the kml
+            const boundsVost = trackVost.getBounds();
+            map.fitBounds(boundsVost);
             @endif
 
-                // Adjust map to show the kml
-                const bounds = track.getBounds();
-                map.fitBounds(bounds);
+
         } );
         @endif
     </script>
