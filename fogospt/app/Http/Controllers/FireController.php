@@ -103,8 +103,14 @@ class FireController extends Controller
             $kml = null;
         }
 
+        if(isset($this->fire['kmlVost'])){
+            $kmlVost = preg_replace( "/\r|\n/", "", $this->fire['kmlVost'] );
+        } else {
+            $kmlVost = null;
+        }
 
-        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml));
+
+        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
     }
 
     public function getSharesCard($id)

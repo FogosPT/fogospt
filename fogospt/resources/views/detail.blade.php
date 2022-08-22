@@ -50,12 +50,12 @@
                                         </p>
                                     @endisset
 
-                                    @isset($fire['icnf']['burnArea'])
+                                    @if(isset($fire['icnf']['burnArea']) || isset($fire['kmlVost']))
                                         <h4 class="card-title">@lang('elements.cards.detail.burn.title')</h4>
                                         <p class="f-nature">
-                                                {{ $fire['icnf']['burnArea']['total'] }} HA @isset($fire['kml']) <a target="_blank" href="https://{{env('API_URL')}}/v2/incidents/{{$fire['id']}}/kml">Download</a> @endisset
+                                            @isset($fire['icnf']['burnArea']){{ $fire['icnf']['burnArea']['total'] }} HA @endisset @isset($fire['kml']) <a target="_blank" href="https://{{env('API_URL')}}/v2/incidents/{{$fire['id']}}/kml">Download ICNF</a> @endisset @isset($fire['kmlVost']) <a target="_blank" href="https://{{env('API_URL')}}/v2/incidents/{{$fire['id']}}/kmlVost">Download VOST.pt</a> @endisset
                                         </p>
-                                    @endisset
+                                    @endif
 
                                     @isset($fire['icnf']['tipocausa'])
                                         <h4 class="card-title">@lang('elements.cards.detail.cause.title')</h4>
@@ -170,7 +170,7 @@
     <script src="{{ asset('js/detail.js') }}"></script>
 
     <script>
-        @isset($fire['kml'])
+        @if(isset($fire['kml'])  || isset($fire['kmlVost']))
         $(document).ready( function () {
             // Make basemap
             const map = new L.Map('mymap', { center: new L.LatLng(58.4, 43.0), zoom: 11 });
@@ -178,20 +178,32 @@
 
             map.addLayer(osm);
 
-            // Load kml file
+            @if(isset($fire['kml']))
+                // Load kml file
                 var kmltext = '{!! $kml !!}';
                 // Create new kml overlay
                 const parser = new DOMParser();
                 const kml = parser.parseFromString(kmltext, 'text/xml');
                 const track = new L.KML(kml);
                 map.addLayer(track);
+            @endif
+
+
+            @if(isset($fire['kmlVost']))
+                // Load kml file
+                var kmltextVost = '{!! $kmlVost !!}';
+                // Create new kml overlay
+                const parserVost = new DOMParser();
+                const kmlVost = parserVost.parseFromString(kmltextVost, 'text/xml');
+                const trackVost = new L.KML(kmlVost);
+                map.addLayer(trackVost);
+            @endif
 
                 // Adjust map to show the kml
                 const bounds = track.getBounds();
-                console.log(bounds);
                 map.fitBounds(bounds);
         } );
-        @endisset
+        @endif
     </script>
 
 @endpush
