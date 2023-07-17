@@ -6,15 +6,9 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12">
                     <div class="card">
-                        @if(isset($fire['kml']) || isset($fire['kmlVost']))
                                 <div style="height: 400px" id="mymap"></div>
                             <p> @if(isset($fire['kml']))Área Ardida segundo dados do ICNF @endif @if(isset($fire['kmlVost']))Área de interesse por <a href="https://vost.pt">VOST.pt</a> @endif </p>
-                        @else
-                            <a  href="{{route('fireDetail', $fire['id'])}}" >
 
-                                <img class="card-img-top img-fluid" src="https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/url-https%3A%2F%2Ffogos.pt%2Fimg%2Fprimeiro_despacho.png({{$fire['lng']}},{{$fire['lat']}})/{{$fire['lng']}},{{$fire['lat']}},15,0,00/700x393?access_token={{env('MAPBOX_TOKEN')}}">
-                            </a>
-                        @endif
                         <div class="card-body">
 
                             <div class="row">
@@ -170,11 +164,10 @@
     <script src="{{ asset('js/detail.js') }}"></script>
 
     <script>
-        @if(isset($fire['kml'])  || isset($fire['kmlVost']))
         $(document).ready( function () {
             // Make basemap
             const map = new L.Map('mymap', { center: new L.LatLng(58.4, 43.0), zoom: 11 });
-            const osm = new L.TileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg');
+            const osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
             map.addLayer(osm);
 
@@ -209,7 +202,6 @@
 
 
         } );
-        @endif
     </script>
 
 @endpush
