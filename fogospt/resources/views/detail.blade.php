@@ -166,7 +166,7 @@
     <script>
         $(document).ready( function () {
             // Make basemap
-            const map = new L.Map('mymap', { center: new L.LatLng(58.4, 43.0), zoom: 11 });
+            const map = new L.Map('mymap', { center: new L.LatLng({{$fire['lat']}}, {{$fire['lng']}}), zoom: 11 });
             const osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
             map.addLayer(osm);
