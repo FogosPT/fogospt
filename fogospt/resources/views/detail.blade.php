@@ -169,6 +169,13 @@
             const map = new L.Map('mymap', { center: new L.LatLng({{$fire['lat']}}, {{$fire['lng']}}), zoom: 11 });
             const osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
+            var circle = L.circle([{{$fire['lat']}}, {{$fire['lng']}}], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 500
+            }).addTo(map);
+
             map.addLayer(osm);
 
             @if(isset($fire['kml']))
