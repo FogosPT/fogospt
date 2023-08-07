@@ -118,7 +118,6 @@ class FireController extends Controller
 
         $this->setFireById($id);
         $metadata = $this->generateMetadata();
-        return view('elements.shares', array('shares' => [], 'fire' => $this->fire, 'metadata' => $metadata));
 
         $shares = new Share();
         $s = $shares->page($metadata['url'], $metadata['title'])
