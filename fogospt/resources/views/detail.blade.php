@@ -72,10 +72,6 @@
                                         </div>
                                     @endif
 
-                                    <h4 class="card-title">@lang('elements.cards.twitter.title')</h4>
-                                    <p class="f-twitter">
-                                        @include('elements.twitter')
-                                    </p>
 
 
                                 </div>

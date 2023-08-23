@@ -70,7 +70,7 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })*/
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a href="www.officelan.pt">Officelan</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a>')
 
     var xx = {
         'Normal': normalLayer,
