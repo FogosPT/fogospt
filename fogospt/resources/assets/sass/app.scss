@@ -1036,3 +1036,9 @@ deve ser carregado depois do CSS da leaflet */
       margin-top: 90px !important;
   }
 }
+
+/* Remove a `margin-bottom` aplicada pelo Bootstrap para garantir que os
+controls do Leaflet têm margens uniformes. */
+.leaflet-control-layers label:last-child {
+  margin-bottom: unset;
+}
