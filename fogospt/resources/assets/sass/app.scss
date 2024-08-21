@@ -1037,8 +1037,8 @@ deve ser carregado depois do CSS da leaflet */
   }
 }
 
-/* Remove a `margin-bottom` aplicada pelo Bootstrap para garantir que os
-controls do Leaflet têm margens uniformes. */
+/* Remove a `margin-bottom` aplicada pelo Bootstrap para garantir que os widgets
+têm margens uniformes. */
 .leaflet-control-layers label:last-child {
   margin-bottom: unset;
 }
