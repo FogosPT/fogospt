@@ -51,7 +51,9 @@
 3. [Python](https://www.python.org/) 2.7 (to install the necessary [node-gyp](https://github.com/nodejs/node-gyp/tree/v3.8.0) version according to the [`package-lock.json`](fogospt/package-lock.json) file)
 4. [PHP](https://www.php.net/) 7 (at least 7.2.5) and [Composer](https://getcomposer.org/) 1
 
-#### Node.js
+<details>
+
+<summary>Node.js</summary>
 
 If you use a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run the respective command to install and use the required version:
 
@@ -65,7 +67,11 @@ or
 fnm use 14
 ```
 
-#### Python
+</details>
+
+<details>
+
+<summary>Python</summary>
 
 If you use a Python version manager like [pyenv](https://github.com/pyenv/pyenv), run the respective commands to install and use the required version:
 
@@ -78,6 +84,8 @@ and
 ```bash
 pyenv shell 2.7
 ```
+
+</details>
 
 ### Commands
 
@@ -113,7 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
