@@ -60,7 +60,7 @@ $(document).ready(function () {
 
 
 
-    var normalLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     }).addTo(mymap);
 
     /*var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
@@ -70,7 +70,7 @@ $(document).ready(function () {
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })*/
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a href="https://shop.officelan.pt/">Officelan</a> e <a href="https://qbeiras.pt/">Qbeiras</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a>')
 
     var xx = {
         'Normal': normalLayer,

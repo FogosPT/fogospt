@@ -115,8 +115,10 @@ class FireController extends Controller
 
     public function getSharesCard($id)
     {
+
         $this->setFireById($id);
         $metadata = $this->generateMetadata();
+
         $shares = new Share();
         $s = $shares->page($metadata['url'], $metadata['title'])
             ->facebook()
