@@ -535,8 +535,8 @@ function addMaker(item, mymap) {
         var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
 
         var locationText = item.location;
-        if(item.detailLocation){
-            locationText += ' - ' + item.detailLocation;
+        if(item.localidade){
+            locationText += ' - ' + item.localidade;
         }
 
         locationText += ' <a href="/fogo/' + item.id + '/detalhe">Mais detalhes</a>';
