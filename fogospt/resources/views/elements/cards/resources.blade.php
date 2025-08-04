@@ -23,7 +23,7 @@
                         @endisset
                     </span>
                 </div>
-                <canvas class="px-2 py-0" id="myChart" width="400" height="150"></canvas>
+                <canvas class="px-2 py-0" id="myChart" width="400" height="350"></canvas>
             </div>
         </div>
     </div>
