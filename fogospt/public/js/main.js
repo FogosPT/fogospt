@@ -577,6 +577,8 @@ function addMaker(item, mymap) {
 
 }
 
+let detailsChart
+
 function plot(id) {
     var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
     $.ajax({
@@ -596,7 +598,11 @@ function plot(id) {
                 }
 
                 var ctx = document.getElementById('myChart')
-                var myLineChart = new Chart(ctx, {
+
+                if(detailsChart)
+                    detailsChart.destroy()
+
+                detailsChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
