@@ -573,7 +573,25 @@ function addMaker(item, mymap) {
         twitter(item.id)
         shares(item.id)
         addPageview()
-    })
+    });
+
+    if(item.kml){
+        var kmltext = item.kml;
+        // Create new kml overlay
+        const parser = new DOMParser();
+        const kml = parser.parseFromString(kmltext, 'text/xml');
+        const track = new L.KML(kml);
+        mymap.addLayer(track);
+    }
+
+    if(item.kmlVost){
+        var kmltext = item.kmlVost;
+        // Create new kml overlay
+        const parser = new DOMParser();
+        const kml = parser.parseFromString(kmltext, 'text/xml');
+        const track = new L.KML(kml);
+        mymap.addLayer(track);
+    }
 
 }
 
@@ -928,6 +946,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[11].remove()
         window.fogosLayers[12].remove()
         window.fogosLayers[80].remove()
+        window.fogosLayers[81].remove()
 
         window.fogosLayers = []
         window.fogosLayers[3] = L.layerGroup()
@@ -941,6 +960,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[11] = L.layerGroup()
         window.fogosLayers[12] = L.layerGroup()
         window.fogosLayers[80] = L.layerGroup()
+        window.fogosLayers[81] = L.layerGroup()
     }
 
     var url = 'https://api-dev.fogos.pt/new/fires'
