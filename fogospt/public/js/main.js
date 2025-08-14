@@ -114,6 +114,7 @@ $(document).ready(function () {
     window.fogosLayers[11] = L.layerGroup()
     window.fogosLayers[12] = L.layerGroup()
     window.fogosLayers[80] = L.layerGroup()
+    window.fogosLayers[81] = L.layerGroup()
 
     var obj = getNewFires(mymap);
 
@@ -581,7 +582,8 @@ function addMaker(item, mymap) {
         const parser = new DOMParser();
         const kml = parser.parseFromString(kmltext, 'text/xml');
         const track = new L.KML(kml);
-        mymap.addLayer(track);
+        window.fogosLayers[81].addLayer(track)
+
     }
 
     if(item.kmlVost){
@@ -590,7 +592,7 @@ function addMaker(item, mymap) {
         const parser = new DOMParser();
         const kml = parser.parseFromString(kmltext, 'text/xml');
         const track = new L.KML(kml);
-        mymap.addLayer(track);
+        window.fogosLayers[81].addLayer(track)
     }
 
 }
@@ -946,6 +948,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[11].remove()
         window.fogosLayers[12].remove()
         window.fogosLayers[80].remove()
+        window.fogosLayers[81].remove()
 
         window.fogosLayers = []
         window.fogosLayers[3] = L.layerGroup()
@@ -959,6 +962,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[11] = L.layerGroup()
         window.fogosLayers[12] = L.layerGroup()
         window.fogosLayers[80] = L.layerGroup()
+        window.fogosLayers[81] = L.layerGroup()
     }
 
     var url = 'https://api-dev.fogos.pt/new/fires'
