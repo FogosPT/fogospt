@@ -965,6 +965,8 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[12] = L.layerGroup()
         window.fogosLayers[80] = L.layerGroup()
         window.fogosLayers[81] = L.layerGroup()
+
+        window.fogosLayers[81].addTo(mymap)
     }
 
     var url = 'https://api-dev.fogos.pt/new/fires'
