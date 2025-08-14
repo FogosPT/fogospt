@@ -116,6 +116,8 @@ $(document).ready(function () {
     window.fogosLayers[80] = L.layerGroup()
     window.fogosLayers[81] = L.layerGroup()
 
+    window.fogosLayers[81].addTo(mymap)
+
     var obj = getNewFires(mymap);
 
 
@@ -1001,6 +1003,7 @@ function getNewFires(mymap, refresh = false)
                 obj['Encerrada'].addTo(mymap)
                 obj['Falso Alarme'].addTo(mymap)
                 obj['Falso Alerta'].addTo(mymap)
+
 
                 layerControl2 = L.control.layers(null, obj, {
                     position: 'topright'
