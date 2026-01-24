@@ -54,7 +54,7 @@
 
 <summary>Node.js</summary>
 
-If you use a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), the project includes an `.nvmrc` file. Run the respective command to install and use the required version:
+If you use a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run the respective command to install and use the required version:
 
 ```bash
 nvm install && nvm use
