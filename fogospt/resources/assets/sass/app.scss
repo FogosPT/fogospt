@@ -568,19 +568,19 @@ main {
   height: 30px;
   cursor: pointer;
 
-  &.FF0000 {
+  &[class*="FF0000"] {
     background-image: url('https://fogos.pt/assets/images/markers/FF0000.png');
   }
 
-  &.FF9900 {
+  &[class*="FF9900"] {
     background-image: url('https://fogos.pt/assets/images/markers/FF9900.png');
   }
 
-  &.CE773C {
+  &[class*="CE773C"] {
     background-image: url('https://fogos.pt/assets/images/markers/CE773C.png');
   }
 
-  &.87D37C {
+  &[class*="87D37C"] {
     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
   }
 }

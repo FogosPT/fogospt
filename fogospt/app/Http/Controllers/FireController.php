@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use TwitterAPIExchange;
+use Exception;
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Response;
@@ -38,7 +40,7 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        $feed = array();
+        $feed = [];
 
         if (isset($this->fire['concelho'])) {
           $feed = $this->getTwitter($this->fire['concelho']);
@@ -52,7 +54,7 @@ class FireController extends Controller
             ->whatsapp();
 
 
-        return view('index', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata));
+        return view('index', ['shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata]);
     }
 
     public function getDetails($id)
@@ -84,7 +86,7 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        $feed = array();
+        $feed = [];
 
         if (isset($this->fire['concelho'])) {
             $feed = $this->getTwitter($this->fire['concelho']);
@@ -110,7 +112,7 @@ class FireController extends Controller
         }
 
 
-        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
+        return view('detail', ['shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost]);
     }
 
     public function getSharesCard($id)
@@ -127,7 +129,7 @@ class FireController extends Controller
 
         $s = str_replace('views/shares', 'fogo', $s);
 
-        return view('elements.shares', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
+        return view('elements.shares', ['shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata]);
     }
 
     public function getGeneralCard($id)
@@ -136,7 +138,7 @@ class FireController extends Controller
         $risk = LegacyApi::getRiskByFire($id);
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
 
-        return view('elements.risk', array('fire' => $this->fire));
+        return view('elements.risk', ['fire' => $this->fire]);
     }
 
     public function getStatusCard($id)
@@ -145,7 +147,7 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFire($id);
         $this->fire['statusHistory'] = @$status['data'];
 
-        return view('elements.status', array('fire' => $this->fire));
+        return view('elements.status', ['fire' => $this->fire]);
     }
 
     public function getMeteoCard($id)
@@ -157,7 +159,7 @@ class FireController extends Controller
         }
         $this->fire['meteo'] = $meteo;
 
-        return view('elements.meteo', array('fire' => $this->fire));
+        return view('elements.meteo', ['fire' => $this->fire]);
     }
 
     public function getExtraCard($id)
@@ -165,7 +167,7 @@ class FireController extends Controller
         $this->setFireById($id);
 
         if (!empty($this->fire['extra']) || !empty($this->fire['pco']) || !empty($this->fire['cos'])) {
-            return view('elements.extra', array('fire' => $this->fire));
+            return view('elements.extra', ['fire' => $this->fire]);
         } else {
             return \Response::json();
         }
@@ -179,7 +181,7 @@ class FireController extends Controller
 
         $feed = $this->getTwitter($this->fire['concelho']);
 
-        return view('elements.twitter', array('fire' => $this->fire, 'feed' => $feed));
+        return view('elements.twitter', ['fire' => $this->fire, 'feed' => $feed]);
     }
 
     public function getAll()
@@ -211,7 +213,7 @@ class FireController extends Controller
 
         $this->fire['meteo'] = $meteo;
 
-        return view('index-madeira', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
+        return view('index-madeira', ['fire' => $this->fire, 'metadata' => $this->generateMetadata()]);
     }
 
     public function getGeneralCardMadeira($id)
@@ -220,7 +222,7 @@ class FireController extends Controller
         $risk = LegacyApi::getRiskByFire($id);
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
 
-        return view('elements.risk', array('fire' => $this->fire));
+        return view('elements.risk', ['fire' => $this->fire]);
     }
 
     public function getStatusCardMadeira($id)
@@ -229,7 +231,7 @@ class FireController extends Controller
         $status = LegacyApi::getStatusByFireMadeira($id);
         $this->fire['statusHistory'] = @$status['data'];
 
-        return view('elements.status', array('fire' => $this->fire));
+        return view('elements.status', ['fire' => $this->fire]);
     }
 
     public function getMeteoCardMadeira($id)
@@ -241,7 +243,7 @@ class FireController extends Controller
         }
         $this->fire['meteo'] = $meteo;
 
-        return view('elements.meteo', array('fire' => $this->fire));
+        return view('elements.meteo', ['fire' => $this->fire]);
     }
 
     public function getExtraCardMadeira($id)
@@ -249,7 +251,7 @@ class FireController extends Controller
         $this->setMadeiraFireById($id);
 
         if (!empty($this->fire['extra'])) {
-            return view('elements.extra', array('fire' => $this->fire));
+            return view('elements.extra', ['fire' => $this->fire]);
         } else {
             return \Response::json();
         }
@@ -287,7 +289,7 @@ class FireController extends Controller
 
     private function getTwitter($concelho)
     {
-        $hashtag = preg_replace('/\s+/', '', $concelho);
+        $hashtag = preg_replace('/\s+/', '', (string) $concelho);
 
         if(env('APP_ENV') === 'production'){
             $exists = Redis::get('twitter:'. $hashtag);
@@ -298,25 +300,25 @@ class FireController extends Controller
                 $requestMethod = 'GET';
                 $getfield = "?q=#IR{$hashtag}&result_type=recent";
 
-                $settings = array(
+                $settings = [
                     'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
                     'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
                     'consumer_key' => env('TWITTER_CONSUMER_KEY'),
                     'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-                );
+                ];
 
                 try{
-                    $twitter = new \TwitterAPIExchange($settings);
+                    $twitter = new TwitterAPIExchange($settings);
                     $result = $twitter->setGetfield($getfield)
                         ->buildOauth($url, $requestMethod)
                         ->performRequest();
-                } catch (\Exception $e){
+                } catch (Exception){
                     Log::error('twitter error');
                     return [];
                 }
 
 
-                $feed = array();
+                $feed = [];
 
                 if ($result) {
                     $feed = json_decode($result);
@@ -337,20 +339,20 @@ class FireController extends Controller
             $requestMethod = 'GET';
             $getfield = "?q=#IR{$hashtag}&result_type=recent";
 
-            $settings = array(
+            $settings = [
                 'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
                 'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
                 'consumer_key' => env('TWITTER_CONSUMER_KEY'),
                 'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-            );
+            ];
 
 
-            $twitter = new \TwitterAPIExchange($settings);
+            $twitter = new TwitterAPIExchange($settings);
             $result = $twitter->setGetfield($getfield)
                 ->buildOauth($url, $requestMethod)
                 ->performRequest();
 
-            $feed = array();
+            $feed = [];
 
             if ($result) {
                 $feed = json_decode($result);

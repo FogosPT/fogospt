@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\FireController;
+use App\Http\Controllers\GenericController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,54 +16,49 @@
 |
 */
 
-Route::get('/', 'GenericController@getIndex')->name('home');
-Route::get('/outros', 'GenericController@getOtherFires')->name('other-fires');
-Route::get('/madeira', 'GenericController@getIndexMadeira')->name('homeMadeira');
-Route::get('/sobre', 'GenericController@getAbout')->name('about');
-Route::get('/lista', 'GenericController@getTable')->name('list');
-Route::get('/tabela', 'GenericController@getTable')->name('table');
-Route::get('/avisos', 'GenericController@getWarnings')->name('warnings');
-Route::get('/madeira/avisos', 'GenericController@getWarningsMadeira')->name('warningsMadeira');
-Route::get('/informacoes', 'GenericController@getInformation')->name('information');
-Route::get('/parceiros', 'GenericController@getPartnerships')->name('partnerships');
-Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
+Route::get('/', [GenericController::class, 'getIndex'])->name('home');
+Route::get('/outros', [GenericController::class, 'getOtherFires'])->name('other-fires');
+Route::get('/madeira', [GenericController::class, 'getIndexMadeira'])->name('homeMadeira');
+Route::get('/sobre', [GenericController::class, 'getAbout'])->name('about');
+Route::get('/lista', [GenericController::class, 'getTable'])->name('list');
+Route::get('/tabela', [GenericController::class, 'getTable'])->name('table');
+Route::get('/avisos', [GenericController::class, 'getWarnings'])->name('warnings');
+Route::get('/madeira/avisos', [GenericController::class, 'getWarningsMadeira'])->name('warningsMadeira');
+Route::get('/informacoes', [GenericController::class, 'getInformation'])->name('information');
+Route::get('/parceiros', [GenericController::class, 'getPartnerships'])->name('partnerships');
+Route::get('/estatisticas', [GenericController::class, 'getStats'])->name('stats');
 
+Route::get('/fogo/{id}', [FireController::class, 'get'])->name('fire');
+Route::get('/fogo/{id}/detalhe', [FireController::class, 'getDetails'])->name('fireDetail');
+Route::get('/madeira/fogo/{id}', [FireController::class, 'getMadeira']);
+Route::get('/new/fires', [FireController::class, 'getAll']);
 
-Route::get('/fogo/{id}', 'FireController@get')->name('fire');
-Route::get('/fogo/{id}/detalhe', 'FireController@getDetails')->name('fireDetail');
-Route::get('/madeira/fogo/{id}', 'FireController@getMadeira');
-Route::get('/new/fires', 'FireController@getAll');
+Route::get('/change-language/{lang}', [GenericController::class, 'getChangeLanguage'])->name('changeLanguage');
 
+Route::get('/views/risk/{id}', [FireController::class, 'getGeneralCard']);
+Route::get('/views/status/{id}', [FireController::class, 'getStatusCard']);
+Route::get('/views/meteo/{id}', [FireController::class, 'getMeteoCard']);
+Route::get('/views/extra/{id}', [FireController::class, 'getExtraCard']);
+Route::get('/views/twitter/{id}', [FireController::class, 'getTwitterCard']);
+Route::get('/views/shares/{id}', [FireController::class, 'getSharesCard']);
 
-Route::get('/change-language/{lang}', 'GenericController@getChangeLanguage')->name('changeLanguage');
+Route::get('/madeira/views/risk/{id}', [FireController::class, 'getGeneralCardMadeira']);
+Route::get('/madeira/views/status/{id}', [FireController::class, 'getStatusCardMadeira']);
+Route::get('/madeira/views/meteo/{id}', [FireController::class, 'getMeteoCardMadeira']);
+Route::get('/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
 
+Route::get('/lightnings', [FireController::class, 'getLightnings']);
 
-Route::get('/views/risk/{id}', 'FireController@getGeneralCard');
-Route::get('/views/status/{id}', 'FireController@getStatusCard');
-Route::get('/views/meteo/{id}', 'FireController@getMeteoCard');
-Route::get('/views/extra/{id}', 'FireController@getExtraCard');
-Route::get('/views/twitter/{id}', 'FireController@getTwitterCard');
-Route::get('/views/shares/{id}', 'FireController@getSharesCard');
+Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications');
+Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
+Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
 
-
-Route::get('/madeira/views/risk/{id}', 'FireController@getGeneralCardMadeira');
-Route::get('/madeira/views/status/{id}', 'FireController@getStatusCardMadeira');
-Route::get('/madeira/views/meteo/{id}', 'FireController@getMeteoCardMadeira');
-Route::get('/madeira/views/extra/{id}', 'FireController@getExtraCardMadeira');
-
-Route::get('/lightnings', 'FireController@getLightnings');
-
-
-Route::get('/notificacoes', 'GenericController@getNotifications')->name('notifications');
-Route::post('/notifications/subscribe', 'GenericController@subscribe')->name('notifications-subscribe');
-Route::post('/notifications/unsubscribe', 'GenericController@unsubscribe')->name('notifications-subscribe');
-
-Route::group(['prefix' => 'v1'], function () {
-    Route::get('/mobile-contributors', 'ApiController@getMobileContributors')->name('getMobileContributors');
-    Route::get('/modis', 'ApiController@getModis')->name('getModis');
-    Route::get('/viirs', 'ApiController@getVIIRS')->name('getVIIRS');
+Route::prefix('v1')->group(function () {
+    Route::get('/mobile-contributors', [ApiController::class, 'getMobileContributors'])->name('getMobileContributors');
+    Route::get('/modis', [ApiController::class, 'getModis'])->name('getModis');
+    Route::get('/viirs', [ApiController::class, 'getVIIRS'])->name('getVIIRS');
 });
 
 if (app()->environment() !== 'production') {
-    Route::get('/manifesto', 'GenericController@getManifest')->name('manifest');
+    Route::get('/manifesto', [GenericController::class, 'getManifest'])->name('manifest');
 }

@@ -8,6 +8,7 @@
 
 namespace App\Libs;
 
+use GuzzleHttp\Client;
 use GuzzleHttp;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -23,7 +24,7 @@ class LegacyApi
 
     private static function getClient()
     {
-        $client = new GuzzleHttp\Client();
+        $client = new Client();
 
         return $client;
     }
@@ -37,14 +38,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -58,14 +57,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -79,14 +76,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -100,14 +95,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -121,14 +114,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -142,14 +133,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
 
         return $result;
     }
@@ -161,14 +150,12 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -179,14 +166,12 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -197,14 +182,12 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -216,14 +199,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -235,14 +216,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -254,14 +233,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -273,14 +250,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -292,14 +267,12 @@ class LegacyApi
         try {
             $response = $client->request('GET', $url);
 
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             return ['error' => $e->getMessage()];
         }
 
         $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = json_decode((string) $body->getContents(), true);
         return $result;
     }
 
@@ -316,14 +289,12 @@ class LegacyApi
                 try {
                     $response = $client->request('GET', $weatherUrl);
 
-                } catch (ClientException $e) {
-                    return ['error' => $e->getMessage()];
-                } catch (RequestException $e) {
+                } catch (ClientException|RequestException $e) {
                     return ['error' => $e->getMessage()];
                 }
 
                 $body = $response->getBody();
-                $result = json_decode($body->getContents(), true);
+                $result = json_decode((string) $body->getContents(), true);
 
                 Redis::set('weather:' . $lat . ':' . $lng, json_encode($result), 'EX', 10800);
                 return $result;
@@ -345,27 +316,23 @@ class LegacyApi
                 try {
                     $response = $client->request('GET', $url);
 
-                } catch (ClientException $e) {
-                    return ['error' => $e->getMessage()];
-                } catch (RequestException $e) {
+                } catch (ClientException|RequestException $e) {
                     return ['error' => $e->getMessage()];
                 }
 
                 $body = $response->getBody();
-                $result = json_decode($body->getContents(), true);
+                $result = json_decode((string) $body->getContents(), true);
 
                 foreach ($result as &$r) {
                     try {
                         $responseContributors = $client->request('GET', $r['url']);
 
-                    } catch (ClientException $e) {
-                        return ['error' => $e->getMessage()];
-                    } catch (RequestException $e) {
+                    } catch (ClientException|RequestException $e) {
                         return ['error' => $e->getMessage()];
                     }
 
                     $bodyContributors = $responseContributors->getBody();
-                    $data = json_decode($bodyContributors->getContents(), true);
+                    $data = json_decode((string) $bodyContributors->getContents(), true);
 
                     $r = array_merge($r, $data);
                 }

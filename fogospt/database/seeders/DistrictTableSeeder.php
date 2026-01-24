@@ -1,22 +1,22 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 class DistrictTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        //
-        $json = \Illuminate\Support\Facades\File::get('database/data/distritos.json');
+        $json = File::get('database/data/distritos.json');
         $data = json_decode($json);
 
         foreach ($data->rows as $district) {
-            \App\District::create([
+            \DB::table('districts')->insert([
                 'di' => $district->key,
                 'name' => $district->value->name,
             ]);

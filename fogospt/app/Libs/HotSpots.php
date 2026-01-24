@@ -82,7 +82,7 @@ class HotSpots
 
         $curl = curl_init();
 
-        curl_setopt_array($curl, array(
+        curl_setopt_array($curl, [
             CURLOPT_URL => "https://fogos.icnf.pt/localizador/firms2/SUOMI_VIIRS_C2_Europe_24h.csv",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -90,7 +90,7 @@ class HotSpots
             CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 "Accept: */*",
                 "Cache-Control: no-cache",
                 "Connection: keep-alive",
@@ -99,8 +99,8 @@ class HotSpots
                 "User-Agent: PostmanRuntime/7.15.0",
                 "accept-encoding: gzip, deflate",
                 "cache-control: no-cache"
-            ),
-        ));
+            ],
+        ]);
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -110,7 +110,7 @@ class HotSpots
         if ($err) {
             return json_encode([]);
         } else {
-            $flat_array = array_map("str_getcsv", explode("\n", $response));
+            $flat_array = array_map(str_getcsv(...), explode("\n", $response));
             $obj = NULL;
 
             $data = $flat_array;
@@ -193,7 +193,7 @@ class HotSpots
 
         $curl = curl_init();
 
-        curl_setopt_array($curl, array(
+        curl_setopt_array($curl, [
             CURLOPT_URL => "https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/csv/J1_VIIRS_C2_Europe_24h.csv",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -201,7 +201,7 @@ class HotSpots
             CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 "Accept: */*",
                 "Cache-Control: no-cache",
                 "Connection: keep-alive",
@@ -210,8 +210,8 @@ class HotSpots
                 "User-Agent: PostmanRuntime/7.15.0",
                 "accept-encoding: gzip, deflate",
                 "cache-control: no-cache"
-            ),
-        ));
+            ],
+        ]);
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -221,7 +221,7 @@ class HotSpots
         if ($err) {
             return json_encode([]);
         } else {
-            $flat_array = array_map("str_getcsv", explode("\n", $response));
+            $flat_array = array_map(str_getcsv(...), explode("\n", $response));
             $obj = NULL;
 
             $data = $flat_array;
