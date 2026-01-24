@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Response;
+use Illuminate\Http\RedirectResponse;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
 
@@ -109,20 +111,20 @@ class GenericController extends Controller
     {
         $this->setPageName(__('includes.menu.stats'));
         $now = LegacyApi::getNow();
-        $data = array(
+        $data = [
             'now' => $now['data'],
-        );
+        ];
 
         return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function subscribe(Request $request)
     {
-        $headers = array
-        (
+        $headers = 
+        [
             'Authorization: key=' . env('FIREBASE_TOKEN'),
             'Content-Type: application/json'
-        );
+        ];
 
         $ch = curl_init();
 
@@ -132,35 +134,35 @@ class GenericController extends Controller
         curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/web-{$topic}");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, []);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if( $httpcode === 200){
-            return \Response::json(['success' => true]);
+            return Response::json(['success' => true]);
         } else {
-            return \Response::json(['success' => false]);
+            return Response::json(['success' => false]);
         }
     }
 
     public function unsubscribe(Request $request)
     {
-        $headers = array
-        (
+        $headers = 
+        [
             'Authorization: key=' . env('FIREBASE_TOKEN'),
             'Content-Type: application/json'
-        );
+        ];
 
         $ch = curl_init();
 
         $token = $request->get('token');
         $topic = $request->get('topic');
 
-        $params = array(
+        $params = [
             "to" => "/topics/web-" . $topic,
             "registration_tokens" => [$token]
-        );
+        ];
 
         curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1:batchRemove");
         curl_setopt($ch, CURLOPT_POST, true);
@@ -171,9 +173,9 @@ class GenericController extends Controller
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if( $httpcode === 200){
-            return \Response::json(['success' => true]);
+            return Response::json(['success' => true]);
         } else {
-            return \Response::json(['success' => false]);
+            return Response::json(['success' => false]);
         }
     }
 
@@ -186,7 +188,7 @@ class GenericController extends Controller
      * @param Request $request
      * @param $lang string language shortname
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function getChangeLanguage(Request $request, string $lang)
     {

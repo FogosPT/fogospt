@@ -13,8 +13,8 @@ class Controller extends BaseController
 
     protected function generateMetadata()
     {
-        switch (get_class($this)){
-            case "App\Http\Controllers\FireController":
+        switch (static::class){
+            case FireController::class:
                 $pageTitle = sprintf( "- Incêndio em %s - ", @$this->fire['location']);
                 $title = sprintf( "[%s] Incêndio em %s", date("d-m-Y H:i"), @$this->fire['location']);
                 $description = sprintf( "Estado: %s - Operacionais: %d, Meios Terrestres: %d, Meios Aéreos: %d ", @$this->fire['status'], @$this->fire['man'], @$this->fire['terrain'], @$this->fire['aerial']);
@@ -25,12 +25,12 @@ class Controller extends BaseController
                 $description = "Vê num mapa o estado dos incêndios florestais em Portugal";
         }
 
-        $metadata = array(
+        $metadata = [
             'pageTitle' => $pageTitle,
             'title' => $title,
             'description' => $description,
             'url' => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
-        );
+        ];
 
         return $metadata;
     }

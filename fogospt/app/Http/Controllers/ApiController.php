@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Response;
 use App\Libs\HotSpots;
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ApiController extends Controller
     {
         $contributors = LegacyApi::getMobileContributors();
 
-        return \Response::json($contributors);
+        return Response::json($contributors);
     }
 
     public function getModis()
@@ -35,7 +36,7 @@ class ApiController extends Controller
             $response = HotSpots::getModis();
         }
 
-        return \Response::json($response);
+        return Response::json($response);
     }
 
     public function getVIIRS()
@@ -56,7 +57,7 @@ class ApiController extends Controller
             $response = HotSpots::getVIIRS();
         }
 
-        return \Response::json($response);
+        return Response::json($response);
     }
 
 }

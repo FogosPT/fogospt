@@ -47,9 +47,8 @@
 ### Requirements
 
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-2. [Node.js](https://nodejs.org/) 14 (and npm 6)
-3. [Python](https://www.python.org/) 2.7 (to install the necessary [node-gyp](https://github.com/nodejs/node-gyp/tree/v3.8.0) version according to the [`package-lock.json`](fogospt/package-lock.json) file)
-4. [PHP](https://www.php.net/) 7 (at least 7.2.5) and [Composer](https://getcomposer.org/) 1
+2. [Node.js](https://nodejs.org/) 20+ (and npm 10+)
+3. [PHP](https://www.php.net/) 8.2+ and [Composer](https://getcomposer.org/) 2
 
 <details>
 
@@ -58,31 +57,13 @@
 If you use a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run the respective command to install and use the required version:
 
 ```bash
-nvm use 14
+nvm install && nvm use
 ```
 
 or
 
 ```bash
-fnm use 14
-```
-
-</details>
-
-<details>
-
-<summary>Python</summary>
-
-If you use a Python version manager like [pyenv](https://github.com/pyenv/pyenv), run the respective commands to install and use the required version:
-
-```bash
-pyenv install 2.7
-```
-
-and
-
-```bash
-pyenv shell 2.7
+fnm install && fnm use
 ```
 
 </details>
@@ -96,17 +77,18 @@ $ docker-compose up
 $ cd fogospt
 $ composer install
 $ npm install
-$ npm run dev
+$ cp .env.example .env
+$ php artisan key:generate
+$ php artisan serve    # Terminal 1 - Laravel server
+$ npm run dev          # Terminal 2 - Vite dev server
 ```
 
 #### PHP and Composer
 
-You can use a containerized version of PHP and Composer to run the `composer install` command above. The latest [official Docker image](https://hub.docker.com/_/composer) tag providing PHP 7 and Composer 1 is `1.10.19`.
-
-To install the PHP dependencies from a Docker container, run the following command instead:
+You can use a containerized version of PHP and Composer to run the `composer install` command above:
 
 ```bash
-docker run --rm -it -v "$(pwd):/app" composer:1.10.19 install
+docker run --rm -it -v "$(pwd):/app" composer:latest install
 ```
 
 ## Slack
