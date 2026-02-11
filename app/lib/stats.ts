@@ -45,19 +45,23 @@ function toNumber(value: unknown): number {
 function parseSeries(data: unknown): SeriesPoint[] {
   if (!Array.isArray(data)) return [];
 
-  return data
-    .map((item) => {
-      if (!item || typeof item !== 'object') return null;
-      const source = item as Record<string, unknown>;
-      return {
-        label: String(source.label ?? ''),
-        total: toNumber(source.total),
-        man: toNumber(source.man),
-        terrain: toNumber(source.terrain),
-        aerial: toNumber(source.aerial)
-      };
-    })
-    .filter((item): item is SeriesPoint => !!item && item.label.length > 0);
+  return data.reduce<SeriesPoint[]>((acc, item) => {
+    if (!item || typeof item !== 'object') return acc;
+
+    const source = item as Record<string, unknown>;
+    const label = String(source.label ?? '');
+    if (!label) return acc;
+
+    acc.push({
+      label,
+      total: toNumber(source.total),
+      man: toNumber(source.man),
+      terrain: toNumber(source.terrain),
+      aerial: toNumber(source.aerial)
+    });
+
+    return acc;
+  }, []);
 }
 
 function parseObjectNumberMap(data: unknown): Record<string, number> {
