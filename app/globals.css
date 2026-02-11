@@ -444,3 +444,24 @@ h1 {
     right: 0.6rem;
   }
 }
+
+.fire-detail-wrap {
+  margin-top: 0.8rem;
+}
+
+.fire-detail-wrap h2 {
+  margin-top: 0;
+}
+
+.fire-detail-map {
+  height: 420px;
+  width: 100%;
+  border: 1px solid #d6dde7;
+  border-radius: 10px;
+}
+
+.detail-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.35rem;
+}
