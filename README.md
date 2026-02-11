@@ -43,11 +43,10 @@ O código Laravel/PHP original permanece na pasta `fogospt/` para referência e 
 
 ## Deploy em Cloudflare Workers
 
-Este projeto está preparado para deploy em Workers com **Wrangler** usando OpenNext.
+Este projeto está preparado para deploy em Workers com **Wrangler** usando OpenNext. O `wrangler deploy` executa o build automaticamente via `wrangler.toml`.
 
 ```bash
 npm install
-npm run build:worker
 npx wrangler deploy
 ```
 
