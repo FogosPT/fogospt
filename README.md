@@ -4,7 +4,7 @@ Este repositório foi migrado para **Next.js (App Router)**, com foco em perform
 
 ## Incluído nesta fase
 
-- Estrutura base Next.js 14 + React 18
+- Estrutura base Next.js 16 + React 19
 - Página inicial com mapa Leaflet e ocorrências ativas (equivalente funcional ao `main.js` legado)
 - Rotas públicas principais migradas para `app/`
 - Páginas `/lista` (cards) e `/tabela` (tabular) ligadas ao feed de ocorrências
@@ -43,7 +43,7 @@ O código Laravel/PHP original permanece na pasta `fogospt/` para referência e 
 
 ## Deploy em Cloudflare Workers
 
-Este projeto está preparado para deploy em Workers com **Wrangler** usando OpenNext. O `wrangler deploy` executa o build automaticamente via `wrangler.toml`.
+Este projeto está preparado para deploy em Workers com **Wrangler 4** usando OpenNext. O `wrangler deploy` executa o build automaticamente via `wrangler.toml`.
 
 ```bash
 npm install
