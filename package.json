@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:worker": "opennextjs-cloudflare build",
+    "deploy:worker": "opennextjs-cloudflare build && wrangler deploy"
   },
   "dependencies": {
     "next": "14.2.5",
@@ -14,11 +16,13 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.4.2",
     "@types/node": "20.14.11",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "wrangler": "^3.78.4"
   }
 }

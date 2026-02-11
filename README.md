@@ -39,3 +39,23 @@ Abrir: `http://localhost:3000`
 ## Código legado
 
 O código Laravel/PHP original permanece na pasta `fogospt/` para referência e migração gradual de regras de negócio.
+
+
+## Deploy em Cloudflare Workers
+
+Este projeto está preparado para deploy em Workers com **Wrangler** usando OpenNext.
+
+```bash
+npm install
+npm run build:worker
+npx wrangler deploy
+```
+
+### Variáveis/segredos
+
+Defina os segredos necessários no Worker (ex.: `FIREBASE_TOKEN`):
+
+```bash
+npx wrangler secret put FIREBASE_TOKEN
+```
+
