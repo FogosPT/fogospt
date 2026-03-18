@@ -1,3 +1,4 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 var layerControl2 = null;
 
 $(document).ready(function () {
@@ -923,7 +924,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[80] = L.layerGroup()
     }
 
-    var url = 'https://api.fogos.pt/v2/incidents/active?otherfire=1&all=1'
+    var url = 'https://source.fogos.pt/v2/incidents/active?otherfire=1&all=1'
     $.ajax({
         url: url,
         method: 'GET',

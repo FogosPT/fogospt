@@ -1,3 +1,4 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 $(document).ready(function() {
   const messaging = firebase.messaging();
 
@@ -49,7 +50,7 @@ var dColors = {
 };
 
 function plotBurnAreaLastDays() {
-  var url = "https://api-lb.fogos.pt/v1/stats/burn-area";
+  var url = "https://source.fogos.pt/v1/stats/burn-area";
   $.ajax({
     url: url,
     method: "GET",
@@ -100,7 +101,7 @@ function plotBurnAreaLastDays() {
 }
 
 function plotMotives() {
-  var url = "https://api.fogos.pt/v1/stats/motive";
+  var url = "https://source.fogos.pt/v1/stats/motive";
   $.ajax({
     url: url,
     method: "GET",
@@ -155,7 +156,7 @@ function plotMotives() {
 }
 
 function plot() {
-  var url = "https://api-lb.fogos.pt/v1/now/data";
+  var url = "https://source.fogos.pt/v1/now/data";
   $.ajax({
     url: url,
     method: "GET",
@@ -241,7 +242,7 @@ function plot() {
 }
 
 function plotWeekStats() {
-  var url = "https://api-lb.fogos.pt/v1/stats/week";
+  var url = "https://source.fogos.pt/v1/stats/week";
   $.ajax({
     url: url,
     method: "GET",
@@ -301,7 +302,7 @@ function plotWeekStats() {
 }
 
 function plotStats8hours() {
-  var url = "https://api-lb.fogos.pt/v1/stats/8hours";
+  var url = "https://source.fogos.pt/v1/stats/8hours";
   $.ajax({
     url: url,
     method: "GET",
@@ -353,7 +354,7 @@ function plotStats8hours() {
 }
 
 function plotStatsLastNight() {
-  var url = "https://api-lb.fogos.pt/v1/stats/last-night";
+  var url = "https://source.fogos.pt/v1/stats/last-night";
 
   $.ajax({
     url: url,
@@ -396,7 +397,7 @@ function plotStatsLastNight() {
 }
 
 function plotStats8hoursYesterday() {
-  var url = "https://api-lb.fogos.pt/v1/stats/8hours/yesterday";
+  var url = "https://source.fogos.pt/v1/stats/8hours/yesterday";
   $.ajax({
     url: url,
     method: "GET",
@@ -450,7 +451,7 @@ function plotStats8hoursYesterday() {
 function plotStatsTotal() {
   var values;
 
-  var url = "https://api-lb.fogos.pt/v1/stats/today";
+  var url = "https://source.fogos.pt/v1/stats/today";
   $.ajax({
     url: url,
     method: "GET",
@@ -609,7 +610,7 @@ function plotStatsTotal() {
 }
 
 function plotStatsYesterdayDistricts() {
-  var url = "https://api-lb.fogos.pt/v1/stats/yesterday";
+  var url = "https://source.fogos.pt/v1/stats/yesterday";
 
   $.ajax({
     url: url,
@@ -651,7 +652,7 @@ function plotStatsYesterdayDistricts() {
 }
 
 function plotStatsDistricts() {
-  var url = "https://api-lb.fogos.pt/v1/stats/today";
+  var url = "https://source.fogos.pt/v1/stats/today";
 
   $.ajax({
     url: url,
