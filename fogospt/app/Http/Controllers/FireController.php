@@ -23,11 +23,6 @@ class FireController extends Controller
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
@@ -35,8 +30,6 @@ class FireController extends Controller
         } else {
             $this->fire['statusHistory'] = false;
         }
-
-        $this->fire['meteo'] = $meteo;
 
         $feed = array();
 
@@ -69,11 +62,6 @@ class FireController extends Controller
 
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
@@ -81,8 +69,6 @@ class FireController extends Controller
         } else {
             $this->fire['statusHistory'] = false;
         }
-
-        $this->fire['meteo'] = $meteo;
 
         $feed = array();
 
@@ -151,11 +137,6 @@ class FireController extends Controller
     public function getMeteoCard($id)
     {
         $this->setFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-        $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
     }
@@ -196,20 +177,12 @@ class FireController extends Controller
         $this->setMadeiraFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFireMadeira($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
             $this->fire['statusHistory'] = $status['data'];
         } else {
             $this->fire['statusHistory'] = false;
         }
-
-        $this->fire['meteo'] = $meteo;
 
         return view('index-madeira', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
@@ -235,11 +208,6 @@ class FireController extends Controller
     public function getMeteoCardMadeira($id)
     {
         $this->setMadeiraFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-        $this->fire['meteo'] = $meteo;
 
         return view('elements.meteo', array('fire' => $this->fire));
     }
