@@ -120,7 +120,7 @@ class GenericController extends Controller
     {
         $this->setPageName('Acesso à API do Fogos.pt');
 
-        return view('api');
+        return view('api')>with(['metadata' => $this->generateMetadata()]);
     }
 
     public function subscribe(Request $request)
