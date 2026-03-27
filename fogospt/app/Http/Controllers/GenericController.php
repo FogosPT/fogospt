@@ -116,6 +116,13 @@ class GenericController extends Controller
         return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function api()
+    {
+        $this->setPageName('Acesso à API do Fogos.pt');
+
+        return view('api');
+    }
+
     public function subscribe(Request $request)
     {
         $headers = array

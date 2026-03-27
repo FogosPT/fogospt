@@ -22,6 +22,7 @@ Route::get('/madeira/avisos', 'GenericController@getWarningsMadeira')->name('war
 Route::get('/informacoes', 'GenericController@getInformation')->name('information');
 Route::get('/parceiros', 'GenericController@getPartnerships')->name('partnerships');
 Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
+Route::get('/api', 'GenericController@api')->name('api');
 
 
 Route::get('/fogo/{id}', 'FireController@get')->name('fire');
