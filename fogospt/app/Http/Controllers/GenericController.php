@@ -208,6 +208,6 @@ class GenericController extends Controller
             ? $lang
             : config('app.locale');
 
-        return back()->withCookie('userLocale', $languageCookie, config('session.lifetime'));
+        return back()->withCookie(cookie('userLocale', $languageCookie, config('session.lifetime')));
     }
 }
