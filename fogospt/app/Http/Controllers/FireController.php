@@ -312,22 +312,26 @@ class FireController extends Controller
                 'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
             );
 
+            try{
+                $twitter = new \TwitterAPIExchange($settings);
+                $result = $twitter->setGetfield($getfield)
+                    ->buildOauth($url, $requestMethod)
+                    ->performRequest();
 
-            $twitter = new \TwitterAPIExchange($settings);
-            $result = $twitter->setGetfield($getfield)
-                ->buildOauth($url, $requestMethod)
-                ->performRequest();
+                $feed = array();
 
-            $feed = array();
-
-            if ($result) {
-                $feed = json_decode($result);
-                if (isset($feed->statuses)) {
-                    $feed = $feed->statuses;
+                if ($result) {
+                    $feed = json_decode($result);
+                    if (isset($feed->statuses)) {
+                        $feed = $feed->statuses;
+                    }
                 }
-            }
 
-            return $feed;
+                return $feed;
+            } catch (\Exception $e){
+                Log::error('twitter error: ' . $e->getMessage());
+                return [];
+            }
 
         }
     }

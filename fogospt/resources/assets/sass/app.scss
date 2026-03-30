@@ -100,6 +100,8 @@ header {
       transition: transform .3s !important;
       display: block;
       transform: translate3d(100%, 0, 0);
+      overflow-y: scroll !important;
+      max-height: calc(100vh - 80px);
       &.collapsing {
         height: auto !important;
       }

@@ -202,12 +202,23 @@ class GenericController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function getChangeLanguage(Request $request, string $lang)
+    public function getChangeLanguage(Request $request, string $locale, string $lang)
     {
-        $languageCookie = in_array($lang, config('custom.availableLocales'), true)
+        $newLocale = in_array($lang, config('custom.availableLocales'), true)
             ? $lang
             : config('app.locale');
 
-        return back()->withCookie(cookie('userLocale', $languageCookie, config('session.lifetime')));
+        $currentPath = $request->getPathInfo();
+        
+        $pathWithoutLocale = preg_replace('~^/' . preg_quote($locale) . '~', '', $currentPath);
+        $pathWithoutChangeLanguage = preg_replace('~^/change-language/[a-z]{2}$~', '', $pathWithoutLocale);
+        
+        if ($pathWithoutChangeLanguage === $pathWithoutLocale) {
+            $newPath = '/' . $newLocale;
+        } else {
+            $newPath = '/' . $newLocale . $pathWithoutChangeLanguage;
+        }
+
+        return redirect($newPath);
     }
 }
