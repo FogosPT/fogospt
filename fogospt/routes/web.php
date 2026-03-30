@@ -23,6 +23,7 @@ Route::get('/informacoes', 'GenericController@getInformation')->name('informatio
 Route::get('/parceiros', 'GenericController@getPartnerships')->name('partnerships');
 Route::get('/estatisticas', 'GenericController@getStats')->name('stats');
 Route::get('/api', 'GenericController@api')->name('api');
+Route::get('/api-termos', 'GenericController@apiTerms')->name('api');
 
 
 Route::get('/fogo/{id}', 'FireController@get')->name('fire');
