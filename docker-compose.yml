@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   fogospt:
-    image: php:7.3-fpm-stretch
+    image: php:8.3-fpm
     container_name: fogospt
     hostname: fogospt
     restart: unless-stopped
