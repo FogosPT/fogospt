@@ -1,8 +1,8 @@
 @extends('app')
 
 @push('scripts')
-    <script src="js/vendor/store2.min.js"></script>
-    <script src="js/notifications.js"></script>
+    <script src="/js/vendor/store2.min.js"></script>
+    <script src="/js/notifications.js"></script>
 @endpush
 
 @section('content')

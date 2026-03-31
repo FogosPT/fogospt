@@ -26,7 +26,7 @@
                     <tbody>
                     @foreach($data as $fire)
                         <tr>
-                            <td><a href="{{route('fireDetail', $fire['id'])}}">{{$fire['id']}}</a></td>
+                            <td><a href="{{route('fireDetail', ['locale' => \App::getLocale(), 'id' => $fire['id']])}}">{{$fire['id']}}</a></td>
                             <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>

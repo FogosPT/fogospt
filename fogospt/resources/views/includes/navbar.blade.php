@@ -10,17 +10,17 @@
 
         <div class="collapse navbar-collapse" id="menuTopo">
             <div class="navbar-nav float-right text-right pr-4">
-                <a class="nav-item nav-link active" href="{{route('home')}}">@lang('includes.menu.home')<span class="sr-only">@lang('includes.menu.active')
+                <a class="nav-item nav-link active" href="{{route('home', ['locale' => \App::getLocale()])}}">@lang('includes.menu.home')<span class="sr-only">@lang('includes.menu.active')
                 </span></a>
-                <a class="nav-item nav-link" href="{{route('list')}}">@lang('includes.menu.list')</a>
-                <a class="nav-item nav-link" href="{{route('table')}}">@lang('includes.menu.table')</a>
-                <a class="nav-item nav-link" href="{{route('warnings')}}">@lang('includes.menu.warnings')</a>
-                <a class="nav-item nav-link" href="{{route('warningsMadeira')}}">@lang('includes.menu.warnings-madeira')</a>
-                <a class="nav-item nav-link" href="{{route('information')}}">@lang('includes.menu.information')</a>
-                <a class="nav-item nav-link" href="{{route('stats')}}">@lang('includes.menu.stats')</a>
-                <a class="nav-item nav-link" href="{{route('notifications')}}">@lang('includes.menu.notifications')</a>
-                <a class="nav-item nav-link" href="{{route('partnerships')}}">@lang('includes.menu.partnerships')</a>
-                <a class="nav-item nav-link" href="{{route('about')}}">@lang('includes.menu.about')</a>
+                <a class="nav-item nav-link" href="{{route('list', ['locale' => \App::getLocale()])}}">@lang('includes.menu.list')</a>
+                <a class="nav-item nav-link" href="{{route('table', ['locale' => \App::getLocale()])}}">@lang('includes.menu.table')</a>
+                <a class="nav-item nav-link" href="{{route('warnings', ['locale' => \App::getLocale()])}}">@lang('includes.menu.warnings')</a>
+                <a class="nav-item nav-link" href="{{route('warningsMadeira', ['locale' => \App::getLocale()])}}">@lang('includes.menu.warnings-madeira')</a>
+                <a class="nav-item nav-link" href="{{route('information', ['locale' => \App::getLocale()])}}">@lang('includes.menu.information')</a>
+                <a class="nav-item nav-link" href="{{route('stats', ['locale' => \App::getLocale()])}}">@lang('includes.menu.stats')</a>
+                <a class="nav-item nav-link" href="{{route('notifications', ['locale' => \App::getLocale()])}}">@lang('includes.menu.notifications')</a>
+                <a class="nav-item nav-link" href="{{route('partnerships', ['locale' => \App::getLocale()])}}">@lang('includes.menu.partnerships')</a>
+                <a class="nav-item nav-link" href="{{route('about', ['locale' => \App::getLocale()])}}">@lang('includes.menu.about')</a>
                 <a class="nav-item nav-link" href="https://vost.pt" target="_blank">Vost.pt</a>
 
 
@@ -37,7 +37,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     @foreach(config('custom.availableLocales') as $item)
-                        <a class="dropdown-item" href="{{route('changeLanguage', [$item])}}">{{$item}}</a>
+                        <a class="dropdown-item" href="{{route('changeLanguage', ['locale' => \App::getLocale(), 'lang' => $item])}}">{{$item}}</a>
                     @endforeach
                 </div>
             </div>
