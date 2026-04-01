@@ -46,7 +46,7 @@ class FireController extends Controller
 
         $this->setFireById($id);
 
-        if(!$this->fire){
+        if ($this->fire === null) {
             abort(404);
         }
 
