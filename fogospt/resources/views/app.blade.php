@@ -14,6 +14,10 @@
 @include('includes.scripts')
 
 <script>
+window.trans = @json(__('js'));
+</script>
+
+<script>
   $('#menuTopo').find('a.active').removeClass('active')
   $('#menuTopo').find('a[href="/"]').addClass('active')
 </script>

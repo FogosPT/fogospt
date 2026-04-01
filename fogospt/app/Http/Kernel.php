@@ -14,13 +14,12 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $middleware = [
-		\Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+		\App\Http\Middleware\TrustProxies::class,
+		\Illuminate\Http\Middleware\HandleCors::class,
+		\App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 		\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-		\App\Http\Middleware\TrustProxies::class,
-		//\Illuminate\Session\Middleware\StartSession::class,
-
 	];
 
 	/**
@@ -40,19 +39,17 @@ class Kernel extends HttpKernel
 		],
 
 		'api' => [
-			'throttle:60,1',
-			'bindings',
+			\Illuminate\Routing\Middleware\ThrottleRequests::class.':60,1',
+			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		],
 	];
 
 	/**
-	 * The application's route middleware.
-	 *
-	 * These middleware may be assigned to groups or used individually.
+	 * The application's route middleware aliases.
 	 *
 	 * @var array
 	 */
-	protected $routeMiddleware = [
+	protected $middlewareAliases = [
 		'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
 		'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
 		'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
