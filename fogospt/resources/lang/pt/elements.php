@@ -32,13 +32,15 @@
                 'wind' => [
                     'speed' => 'Velocidade do Vento',
                     'deg' => 'Direcção do Vento'
-                ]
+                ],
+                'precipitation' => 'Precipitação acumulada',
+                'radiation'     => 'Radiação',
+                'station'       => 'Estação',
+                'data_from'     => 'Dados de',
+                'source'        => 'Fonte',
             ],
             'extra' => [
                 'title' => 'Informação extra'
-            ],
-            'twitter' => [
-                'title' => 'Twitter'
             ],
             'shares' => [
                 'title' => 'Partilhar'

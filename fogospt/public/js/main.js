@@ -1,5 +1,6 @@
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 var layerControl2 = null;
+var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
     const messaging = firebase.messaging()
@@ -12,7 +13,7 @@ $(document).ready(function () {
     $('.click-notification').on('click', function (e) {
         $that = $(e.currentTarget);
 
-        const url = '/notifications/subscribe';
+        const url = '/' + locale + '/notifications/subscribe';
 
         const topic = $that.data('value');
         const data = {
@@ -26,12 +27,12 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 if (data.success) {
-                    toastr.success('Registado com sucesso');
+                    toastr.success(window.trans.notifications.success);
                     $('.notification-container').find('i').removeClass('far').addClass('fas')
-                    store.set('fire-' + window.location.pathname.split('/')[2], true);
+                    store.set('fire-' + window.location.pathname.split('/')[3], true);
                 } else {
-                    toastr.error('Ocorreu um erro');
-                    store.set('fire-' + window.location.pathname.split('/')[2], false);
+                    toastr.error(window.trans.notifications.error);
+                    store.set('fire-' + window.location.pathname.split('/')[3], false);
                 }
             },
         });
@@ -73,10 +74,9 @@ $(document).ready(function () {
 
     mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a>')
 
-    var xx = {
-        'Normal': normalLayer,
-        //'Satélite': satLayer
-    }
+    var xx = {}
+    xx[window.trans.map.normal] = normalLayer
+    //'Satélite': satLayer
 
     L.control.layers(xx, {}, {
         collapsed: false,
@@ -98,9 +98,16 @@ $(document).ready(function () {
         $('.sidebar').removeClass('active')
     })
 
-    var res = window.location.pathname.match(/^\/fogo\/(\d+)/)
+    var res = window.location.pathname.match(/\/fogo\/(\d+)/)
     if (res && res.length === 2) {
-        plot(res[1])
+        var fireId = res[1]
+        $('.sidebar').addClass('active').scrollTop(0)
+        plot(fireId)
+        status(fireId)
+        danger(fireId)
+        meteo(fireId)
+        extra(fireId)
+        shares(fireId)
     }
 
     window.fogosLayers = []
@@ -157,13 +164,12 @@ $(document).ready(function () {
     }
 
 
-    var overlayLayers = {
-        'Temperatura': tempLayer,
-        'Pressão': pressureLayer,
-        'Vento': windLayer,
-        'Precipitação': precLayer,
-        'Nuvens': cloudLayer
-    }
+    var overlayLayers = {}
+    overlayLayers[window.trans.map.temperature]   = tempLayer
+    overlayLayers[window.trans.map.pressure]      = pressureLayer
+    overlayLayers[window.trans.map.wind]          = windLayer
+    overlayLayers[window.trans.map.precipitation] = precLayer
+    overlayLayers[window.trans.map.clouds]        = cloudLayer
 
     L.control.layers(baseLayers, overlayLayers, {
         collapsed: false,
@@ -276,7 +282,7 @@ $(document).ready(function () {
     });
 
     setInterval(function (){
-        toastr.success('A actualizar dados...', {timeOut: 1000});
+        toastr.success(window.trans.map.updating, {timeOut: 1000});
         getNewFires(mymap, true);
     },60000)
 
@@ -452,6 +458,39 @@ function getPonderatedImportanceFactor(importance, statusCode) {
     return importanceSize
 }
 
+function fillSidebar(item) {
+    var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY')
+    var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng
+    var locationText = item.location
+    if (item.localidade) {
+        locationText += ' - ' + item.localidade
+    }
+    locationText += ' <a href="/' + locale + '/fogo/' + item.id + '/detalhe">' + window.trans.fire.moreDetails + '</a>'
+
+    $('.sidebar').addClass('active').scrollTop(0)
+    $('.f-local').html(locationText)
+    $('.f-man').text(item.man)
+    $('.f-aerial').text(item.aerial)
+    $('.f-terrain').text(item.terrain)
+    $('.f-location').html(location)
+    $('.f-nature').text(item.natureza)
+    $('.f-update').text(momentDate)
+    $('.f-start').text(item.date + ' ' + item.hour)
+    $('.click-notification').data('id', item.id)
+
+    var notificationsAuth = store.get('notificationsAuth')
+    if (notificationsAuth) {
+        $('.notification-container').css({ 'display': 'inline-block' })
+        $('.click-notification').css({ 'display': 'inline-block' })
+        var notifyFire = store.get('fire-' + item.id)
+        if (notifyFire) {
+            $('.notification-container').find('i').removeClass('far').addClass('fas')
+        } else {
+            $('.notification-container').find('i').removeClass('fas').addClass('far')
+        }
+    }
+}
+
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng)
     var coords = [x['latitude'], x['longitude']]
@@ -464,7 +503,7 @@ function addMaker(item, mymap) {
     marker.properties = {}
     marker.properties.item = item
 
-    isActive = window.location.pathname.split('/')[2]
+    isActive = window.location.pathname.split('/')[3]
 
     //Base iconHtml
     iconHtml = '<i class="dot status-'
@@ -515,6 +554,7 @@ function addMaker(item, mymap) {
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor)
+        fillSidebar(item)
     } else {
         changeElementSizeById(item.id, size)
     }
@@ -534,47 +574,13 @@ function addMaker(item, mymap) {
 
         var item = e.sourceTarget.properties.item
 
-        var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
-
-        var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
-
-        var locationText = item.location;
-        if(item.localidade){
-            locationText += ' - ' + item.localidade;
-        }
-
-        locationText += ' <a href="/fogo/' + item.id + '/detalhe">Mais detalhes</a>';
-        $('.sidebar').addClass('active').scrollTop(0)
-        $('.f-local').html(locationText)
-        $('.f-man').text(item.man)
-        $('.f-aerial').text(item.aerial)
-        $('.f-terrain').text(item.terrain)
-        $('.f-location').html(location)
-        $('.f-nature').text(item.natureza)
-        $('.f-update').text(momentDate)
-        $('.f-start').text(item.date + ' ' + item.hour)
-        $('.click-notification').data('id', item.id)
-
-        if (notificationsAuth) {
-            $('.notification-container').css({
-                'display': 'inline-block'
-            });
-            let notifyFire = store.get('fire-' + item.id);
-            if (notifyFire) {
-                $('.notification-container').find('i').removeClass('far').addClass('fas')
-            } else {
-                $('.notification-container').find('i').removeClass('fas').addClass('far')
-            }
-        }
-
-
-        window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
+        fillSidebar(item)
+        window.history.pushState('obj', 'newtitle', '/' + locale + '/fogo/' + item.id)
         status(item.id)
         plot(item.id)
         danger(item.id)
         meteo(item.id)
         extra(item.id)
-        twitter(item.id)
         shares(item.id)
         addPageview()
     });
@@ -630,20 +636,20 @@ function plot(id) {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Operacionais',
+                            label: window.trans.chart.humans,
                             data: man,
                             fill: false,
                             backgroundColor: '#EFC800',
                             borderColor: '#EFC800'
                         },
                             {
-                                label: 'Terrestres',
+                                label: window.trans.chart.terrestrial,
                                 data: terrain,
                                 fill: false,
                                 backgroundColor: '#6D720B',
                                 borderColor: '#6D720B'
                             }, {
-                                label: 'Aéreos',
+                                label: window.trans.chart.aerial,
                                 data: aerial,
                                 fill: false,
                                 backgroundColor: '#4E88B2',
@@ -674,7 +680,6 @@ function plot(id) {
 }
 
 function status(id) {
-    $('#status').empty()
     var url = '/views/status/' + id
     $.ajax({
         url: url,
@@ -727,17 +732,6 @@ function extra(id) {
 
 }
 
-
-function twitter(id) {
-    var url = '/views/twitter/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-twitter').html(data)
-        }
-    })
-}
 
 function shares(id) {
     var url = '/views/shares/' + id
@@ -843,11 +837,10 @@ function addRisk(mymap) {
                                             }
                                         })
 
-                                        var baseMaps = {
-                                            'Risco Hoje': riskToday,
-                                            'Risco Amanhã': riskTomorrow,
-                                            'Risco Depois': riskAfter
-                                        }
+                                        var baseMaps = {}
+                                        baseMaps[window.trans.risk.today]    = riskToday
+                                        baseMaps[window.trans.risk.tomorrow] = riskTomorrow
+                                        baseMaps[window.trans.risk.after]    = riskAfter
 
                                         //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
                                         //map.addControl(riskLayerControl);
@@ -985,27 +978,28 @@ function getNewFires(mymap, refresh = false)
                 }
 
                 var obj = {}
-                obj['Despacho'] = window.fogosLayers[3]
-                obj['Despacho de 1º Alerta'] = window.fogosLayers[4]
-                obj['Chegada ao TO'] = window.fogosLayers[6]
-                obj['Em Curso'] = window.fogosLayers[5]
-                obj['Em Resolução'] = window.fogosLayers[7]
-                obj['Conclusão'] = window.fogosLayers[8]
-                obj['Vigilância'] = window.fogosLayers[9]
-                obj['Encerrada'] = window.fogosLayers[10]
-                obj['Falso Alarme'] = window.fogosLayers[11]
-                obj['Falso Alerta'] = window.fogosLayers[12]
+                var t = window.trans.status
+                obj[t.dispatch]           = window.fogosLayers[3]
+                obj[t.firstAlertDispatch] = window.fogosLayers[4]
+                obj[t.arrival]            = window.fogosLayers[6]
+                obj[t.ongoing]            = window.fogosLayers[5]
+                obj[t.inResolution]       = window.fogosLayers[7]
+                obj[t.conclusion]         = window.fogosLayers[8]
+                obj[t.surveillance]       = window.fogosLayers[9]
+                obj[t.closed]             = window.fogosLayers[10]
+                obj[t.falseAlarm]         = window.fogosLayers[11]
+                obj[t.falseAlert]         = window.fogosLayers[12]
 
-                obj['Despacho'].addTo(mymap)
-                obj['Despacho de 1º Alerta'].addTo(mymap)
-                obj['Chegada ao TO'].addTo(mymap)
-                obj['Em Curso'].addTo(mymap)
-                obj['Em Resolução'].addTo(mymap)
-                obj['Conclusão'].addTo(mymap)
-                obj['Vigilância'].addTo(mymap)
-                obj['Encerrada'].addTo(mymap)
-                obj['Falso Alarme'].addTo(mymap)
-                obj['Falso Alerta'].addTo(mymap)
+                obj[t.dispatch].addTo(mymap)
+                obj[t.firstAlertDispatch].addTo(mymap)
+                obj[t.arrival].addTo(mymap)
+                obj[t.ongoing].addTo(mymap)
+                obj[t.inResolution].addTo(mymap)
+                obj[t.conclusion].addTo(mymap)
+                obj[t.surveillance].addTo(mymap)
+                obj[t.closed].addTo(mymap)
+                obj[t.falseAlarm].addTo(mymap)
+                obj[t.falseAlert].addTo(mymap)
 
 
                 layerControl2 = L.control.layers(null, obj, {

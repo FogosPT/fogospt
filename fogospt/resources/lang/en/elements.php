@@ -34,13 +34,15 @@ return [
             'wind' => [
                 'speed' => 'Wind Speed',
                 'deg' => 'Wind direction'
-            ]
+            ],
+            'precipitation' => 'Accumulated precipitation',
+            'radiation'     => 'Radiation',
+            'station'       => 'Station',
+            'data_from'     => 'Data from',
+            'source'        => 'Source',
         ],
         'extra' => [
             'title' => 'More info'
-        ],
-        'twitter' => [
-            'title' => 'Twitter'
         ],
         'shares' => [
             'title' => 'Share'
