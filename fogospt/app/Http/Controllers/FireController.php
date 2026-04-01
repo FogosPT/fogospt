@@ -12,7 +12,7 @@ class FireController extends Controller
 {
     public $fire;
 
-    public function get($id)
+    public function get($locale, $id)
     {
         if (!$id) {
             return view('index');
@@ -38,7 +38,7 @@ class FireController extends Controller
         return view('index', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
 
-    public function getDetails($id)
+    public function getDetails($locale, $id)
     {
         if (!$id) {
             return view('index');
@@ -155,7 +155,7 @@ class FireController extends Controller
         return \Response::json(LegacyApi::getFires());
     }
 
-    public function getMadeira($id)
+    public function getMadeira($locale, $id)
     {
         if (!$id) {
             return view('index-madeira');
