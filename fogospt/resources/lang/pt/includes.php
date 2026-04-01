@@ -8,6 +8,8 @@
             'notifications' => 'Notificações',
             'manifest'    => 'Manifesto',
             'partnerships' => 'Parcerias',
+            'api'          => 'API',
+            'api-termos'   => 'Termos API',
             'stats' => 'Estatísticas',
             'list' => 'Lista',
             'table' => 'Tabela',

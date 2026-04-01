@@ -20,6 +20,8 @@
                 <a class="nav-item nav-link" href="{{route('stats', ['locale' => \App::getLocale()])}}">@lang('includes.menu.stats')</a>
                 <a class="nav-item nav-link" href="{{route('notifications', ['locale' => \App::getLocale()])}}">@lang('includes.menu.notifications')</a>
                 <a class="nav-item nav-link" href="{{route('partnerships', ['locale' => \App::getLocale()])}}">@lang('includes.menu.partnerships')</a>
+                <a class="nav-item nav-link" href="{{route('api', ['locale' => \App::getLocale()])}}">@lang('includes.menu.api')</a>
+                <a class="nav-item nav-link" href="{{route('api-termos', ['locale' => \App::getLocale()])}}">@lang('includes.menu.api-termos')</a>
                 <a class="nav-item nav-link" href="{{route('about', ['locale' => \App::getLocale()])}}">@lang('includes.menu.about')</a>
                 <a class="nav-item nav-link" href="https://vost.pt" target="_blank">Vost.pt</a>
 

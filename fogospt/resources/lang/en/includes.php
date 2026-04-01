@@ -7,6 +7,8 @@ return [
         'notifications' => 'Notifications',
         'manifest' => 'Manifest',
         'partnerships' => 'Partnerships',
+        'api'          => 'API',
+        'api-termos'   => 'API Terms',
         'stats' => 'Stats',
         'list' => 'List',
         'table' => 'Table',
