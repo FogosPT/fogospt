@@ -61,9 +61,7 @@
 
                                     <h4 class="card-title">@lang('elements.cards.general.fireRisk')</h4>
                                     <div class="f-danger">
-                                        @isset($fire['risk'])
-                                            @include('elements.risk')
-                                        @endisset
+                                        @include('elements.risk')
                                     </div>
 
                                     @if( !empty($fire['extra']) || !empty($fire['pco']) || !empty($fire['cos']) )
@@ -119,9 +117,7 @@
 
                                     <h4 class="card-title">@lang('elements.cards.meteo.title')</h4>
                                     <div class="f-meteo">
-                                        @isset($fire['meteo'])
-                                            @include('elements.meteo')
-                                        @endisset
+                                        @include('elements.meteo')
                                     </div>
 
                                     <h4 class="card-title">@lang('elements.cards.shares.title')</h4>
