@@ -48,6 +48,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
-    <script src="/js/main.js?cache5=1"></script>
+    <script src="/js/main.js?cache6=1"></script>
 
 @endpush

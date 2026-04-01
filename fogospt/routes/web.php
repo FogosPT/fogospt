@@ -67,18 +67,18 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () {
     if (app()->environment() !== 'production') {
         Route::get('/manifesto', [GenericController::class, 'getManifest'])->name('manifest');
     }
-
-    Route::get('/views/risk/{id}', [FireController::class, 'getGeneralCard']);
-    Route::get('/views/status/{id}', [FireController::class, 'getStatusCard']);
-    Route::get('/views/meteo/{id}', [FireController::class, 'getMeteoCard']);
-    Route::get('/views/extra/{id}', [FireController::class, 'getExtraCard']);
-    Route::get('/views/shares/{id}', [FireController::class, 'getSharesCard']);
-
-    Route::get('/madeira/views/risk/{id}', [FireController::class, 'getGeneralCardMadeira']);
-    Route::get('/madeira/views/status/{id}', [FireController::class, 'getStatusCardMadeira']);
-    Route::get('/madeira/views/meteo/{id}', [FireController::class, 'getMeteoCardMadeira']);
-    Route::get('/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
 });
+
+Route::get('/views/risk/{id}', [FireController::class, 'getGeneralCard']);
+Route::get('/views/status/{id}', [FireController::class, 'getStatusCard']);
+Route::get('/views/meteo/{id}', [FireController::class, 'getMeteoCard']);
+Route::get('/views/extra/{id}', [FireController::class, 'getExtraCard']);
+Route::get('/views/shares/{id}', [FireController::class, 'getSharesCard']);
+
+Route::get('/madeira/views/risk/{id}', [FireController::class, 'getGeneralCardMadeira']);
+Route::get('/madeira/views/status/{id}', [FireController::class, 'getStatusCardMadeira']);
+Route::get('/madeira/views/meteo/{id}', [FireController::class, 'getMeteoCardMadeira']);
+Route::get('/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/mobile-contributors', [ApiController::class, 'getMobileContributors'])->name('getMobileContributors');

@@ -454,7 +454,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/' + window.location.pathname.split('/')[1] + '/madeira/views/status/' + id
+    var url = '/madeira/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -465,7 +465,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/' + window.location.pathname.split('/')[1] + '/madeira/views/risk/' + id
+    var url = '/madeira/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -477,7 +477,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/' + window.location.pathname.split('/')[1] + '/madeira/views/meteo/' + id
+    var url = '/madeira/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -489,7 +489,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/' + window.location.pathname.split('/')[1] + '/madeira/views/extra/' + id
+    var url = '/madeira/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
