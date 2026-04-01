@@ -1,4 +1,5 @@
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
+var locale = window.location.pathname.split('/')[1] || 'pt';
 $(document).ready(function () {
     const messaging = firebase.messaging()
 
@@ -454,7 +455,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/madeira/views/status/' + id
+    var url = '/' + locale + '/madeira/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -465,7 +466,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/madeira/views/risk/' + id
+    var url = '/' + locale + '/madeira/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -477,7 +478,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/madeira/views/meteo/' + id
+    var url = '/' + locale + '/madeira/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -489,7 +490,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/madeira/views/extra/' + id
+    var url = '/' + locale + '/madeira/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',

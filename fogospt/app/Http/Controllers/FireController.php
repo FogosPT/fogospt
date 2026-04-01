@@ -81,7 +81,7 @@ class FireController extends Controller
         return view('detail', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
     }
 
-    public function getSharesCard($id)
+    public function getSharesCard($locale, $id)
     {
         $this->setFireById($id);
 
@@ -102,7 +102,7 @@ class FireController extends Controller
         return view('elements.shares', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
 
-    public function getGeneralCard($id)
+    public function getGeneralCard($locale, $id)
     {
         $this->setFireById($id);
 
@@ -116,7 +116,7 @@ class FireController extends Controller
         return view('elements.risk', array('fire' => $this->fire));
     }
 
-    public function getStatusCard($id)
+    public function getStatusCard($locale, $id)
     {
         $this->setFireById($id);
 
@@ -130,14 +130,14 @@ class FireController extends Controller
         return view('elements.status', array('fire' => $this->fire));
     }
 
-    public function getMeteoCard($id)
+    public function getMeteoCard($locale, $id)
     {
         $this->setFireById($id);
 
         return view('elements.meteo', array('fire' => $this->fire ?? []));
     }
 
-    public function getExtraCard($id)
+    public function getExtraCard($locale, $id)
     {
         $this->setFireById($id);
 
@@ -175,7 +175,7 @@ class FireController extends Controller
         return view('index-madeira', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
 
-    public function getGeneralCardMadeira($id)
+    public function getGeneralCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
 
@@ -189,7 +189,7 @@ class FireController extends Controller
         return view('elements.risk', array('fire' => $this->fire));
     }
 
-    public function getStatusCardMadeira($id)
+    public function getStatusCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
 
@@ -203,14 +203,14 @@ class FireController extends Controller
         return view('elements.status', array('fire' => $this->fire));
     }
 
-    public function getMeteoCardMadeira($id)
+    public function getMeteoCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
 
         return view('elements.meteo', array('fire' => $this->fire ?? []));
     }
 
-    public function getExtraCardMadeira($id)
+    public function getExtraCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
 

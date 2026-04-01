@@ -680,7 +680,7 @@ function plot(id) {
 }
 
 function status(id) {
-    var url = '/views/status/' + id
+    var url = '/' + locale + '/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -691,7 +691,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/views/risk/' + id
+    var url = '/' + locale + '/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -703,7 +703,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/views/meteo/' + id
+    var url = '/' + locale + '/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -715,7 +715,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/views/extra/' + id
+    var url = '/' + locale + '/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -734,7 +734,7 @@ function extra(id) {
 
 
 function shares(id) {
-    var url = '/views/shares/' + id
+    var url = '/' + locale + '/views/shares/' + id
     $.ajax({
         url: url,
         method: 'GET',

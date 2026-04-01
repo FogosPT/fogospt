@@ -69,16 +69,18 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () {
     }
 });
 
-Route::get('/views/risk/{id}', [FireController::class, 'getGeneralCard']);
-Route::get('/views/status/{id}', [FireController::class, 'getStatusCard']);
-Route::get('/views/meteo/{id}', [FireController::class, 'getMeteoCard']);
-Route::get('/views/extra/{id}', [FireController::class, 'getExtraCard']);
-Route::get('/views/shares/{id}', [FireController::class, 'getSharesCard']);
+Route::middleware('locale.match')->group(function () {
+    Route::get('/{locale}/views/risk/{id}', [FireController::class, 'getGeneralCard']);
+    Route::get('/{locale}/views/status/{id}', [FireController::class, 'getStatusCard']);
+    Route::get('/{locale}/views/meteo/{id}', [FireController::class, 'getMeteoCard']);
+    Route::get('/{locale}/views/extra/{id}', [FireController::class, 'getExtraCard']);
+    Route::get('/{locale}/views/shares/{id}', [FireController::class, 'getSharesCard']);
 
-Route::get('/madeira/views/risk/{id}', [FireController::class, 'getGeneralCardMadeira']);
-Route::get('/madeira/views/status/{id}', [FireController::class, 'getStatusCardMadeira']);
-Route::get('/madeira/views/meteo/{id}', [FireController::class, 'getMeteoCardMadeira']);
-Route::get('/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
+    Route::get('/{locale}/madeira/views/risk/{id}', [FireController::class, 'getGeneralCardMadeira']);
+    Route::get('/{locale}/madeira/views/status/{id}', [FireController::class, 'getStatusCardMadeira']);
+    Route::get('/{locale}/madeira/views/meteo/{id}', [FireController::class, 'getMeteoCardMadeira']);
+    Route::get('/{locale}/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
+});
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/mobile-contributors', [ApiController::class, 'getMobileContributors'])->name('getMobileContributors');
