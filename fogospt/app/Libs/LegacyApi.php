@@ -12,7 +12,6 @@ use GuzzleHttp;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 
@@ -21,11 +20,6 @@ class LegacyApi
     //private static $url = 'http://192.168.176.1:8092';
     private static $url = 'https://source.fogos.pt';
     private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
-
-    private static function logRequest(string $url, int $statusCode): void
-    {
-        Log::info('[LegacyApi] ' . $statusCode . ' ' . $url);
-    }
 
     private static function getClient()
     {
@@ -46,12 +40,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -69,12 +61,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -92,12 +82,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -115,12 +103,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -138,12 +124,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -161,12 +145,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -183,12 +165,9 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -204,12 +183,9 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -225,12 +201,9 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -246,12 +219,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -267,12 +238,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -288,12 +257,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -309,12 +276,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -330,12 +295,10 @@ class LegacyApi
 
         try {
             $response = $client->request('GET', $url);
-            self::logRequest($url, $response->getStatusCode());
+
         } catch (ClientException $e) {
-            self::logRequest($url, $e->getResponse()->getStatusCode());
             return ['error' => $e->getMessage()];
         } catch (RequestException $e) {
-            self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
             return ['error' => $e->getMessage()];
         }
 
@@ -356,12 +319,10 @@ class LegacyApi
 
                 try {
                     $response = $client->request('GET', $weatherUrl);
-                    self::logRequest($weatherUrl, $response->getStatusCode());
+
                 } catch (ClientException $e) {
-                    self::logRequest($weatherUrl, $e->getResponse()->getStatusCode());
                     return ['error' => $e->getMessage()];
                 } catch (RequestException $e) {
-                    self::logRequest($weatherUrl, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
                     return ['error' => $e->getMessage()];
                 }
 
@@ -387,12 +348,10 @@ class LegacyApi
 
                 try {
                     $response = $client->request('GET', $url);
-                    self::logRequest($url, $response->getStatusCode());
+
                 } catch (ClientException $e) {
-                    self::logRequest($url, $e->getResponse()->getStatusCode());
                     return ['error' => $e->getMessage()];
                 } catch (RequestException $e) {
-                    self::logRequest($url, $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
                     return ['error' => $e->getMessage()];
                 }
 
@@ -402,12 +361,10 @@ class LegacyApi
                 foreach ($result as &$r) {
                     try {
                         $responseContributors = $client->request('GET', $r['url']);
-                        self::logRequest($r['url'], $responseContributors->getStatusCode());
+
                     } catch (ClientException $e) {
-                        self::logRequest($r['url'], $e->getResponse()->getStatusCode());
                         return ['error' => $e->getMessage()];
                     } catch (RequestException $e) {
-                        self::logRequest($r['url'], $e->getResponse() ? $e->getResponse()->getStatusCode() : 0);
                         return ['error' => $e->getMessage()];
                     }
 
