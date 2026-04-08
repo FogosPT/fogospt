@@ -31,7 +31,7 @@
                 'pressure' => 'Pressão atmosférica',
                 'wind' => [
                     'speed' => 'Velocidade do Vento',
-                    'deg' => 'Direcção do Vento'
+                    'deg' => 'Direção do Vento'
                 ],
                 'precipitation' => 'Precipitação acumulada',
                 'radiation'     => 'Radiação',
