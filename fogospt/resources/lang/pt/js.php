@@ -13,7 +13,7 @@ return [
         'precipitation' => 'Precipitação',
         'clouds'        => 'Nuvens',
         'lightnings'    => 'Descargas Elétricas',
-        'updating'      => 'A actualizar dados...',
+        'updating'      => 'A atualizar dados...',
     ],
     'chart' => [
         'humans'      => 'Operacionais',

@@ -15,10 +15,10 @@
             'table' => 'Tabela',
             'warnings' => 'Avisos',
             'warnings-madeira' => 'Avisos Madeira',
-            'active'      => '(actual)'
+            'active'      => '(atual)'
         ],
         'meta' => [
-            'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANEPC, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv'
+            'content' => 'fogos, incêndios, ativos, portugal, florestais, hoje, tomahock, ocorrências, bombeiros, ANEPC, ANPC, proteção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv'
         ]
 
     ];
