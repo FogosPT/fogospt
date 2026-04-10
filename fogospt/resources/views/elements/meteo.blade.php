@@ -29,7 +29,7 @@
         @endif
         <div class="mt-2" style="font-size: 0.85em; color: #888;">
             @if(!empty($fire['weather']['stationLocation']))
-                <div>📍 @lang('elements.cards.meteo.station'): {{ $fire['weather']['stationLocation'] }}</div>
+                <div>📍 @lang('elements.cards.meteo.station'): {{ $fire['weather']['stationLocation'] }}@if(isset($fire['weather']['stationDistance'])) ({{ number_format($fire['weather']['stationDistance'], 1) }} km)@endif</div>
             @endif
             @if(!empty($fire['weather']['date']))
                 <div>🕐 @lang('elements.cards.meteo.data_from'): {{ \Carbon\Carbon::parse($fire['weather']['date'])->format('d/m/Y H:i') }}</div>
