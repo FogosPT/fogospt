@@ -535,6 +535,9 @@ function addMaker(item, mymap) {
     }
 
     iconHtml += '"'
+    if (['3111', '3109', '4335'].indexOf(String(item.naturezaCode)) !== -1) {
+        iconHtml += ' style="opacity:0.6"'
+    }
     iconHtml += 'id=' + item.id + '></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
     marker.sizeFactor = sizeFactor

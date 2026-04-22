@@ -824,12 +824,12 @@ main {
   }
   // despacho
   &.status-3 {
-    background-image: url('/img/ico_alarm.svg');
+    background-image: url('/img/ico_clock-countdown.svg');
     background-color: $c-red;
   }
   // despacho de 1_o_ alerta
   &.status-4 {
-    background-image: url('/img/ico_alarm.svg');
+    background-image: url('/img/ico_clock-countdown.svg');
     background-color: $c-orange;
   }
   // em curso
