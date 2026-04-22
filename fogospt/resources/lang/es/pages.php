@@ -2,11 +2,32 @@
 
 return [
     'about' => [
-        'entries_from' => 'Datos de la <a href="http://www.prociv.pt/">ANEPC - Proteccion Civil Portuguesa/a>',
-        'update_interval' => 'Actualizaciones de 2 em 2 minutos',
-        'near_location' => 'Ubicacion aproximada.',
-        'suggestion_bugs' => 'Sugerencias / Bugs - <a href="mailto:mail@fogos.pt">mail@fogos.pt</a>',
-        'made_by' => 'Made with ♥ by <a href="https://twitter.com/tomahock">Tomahock</a>'
+        'entries_from' => 'Datos basados en registros de la ANEPC – Autoridad Nacional de Emergencia y Protección Civil.',
+        'update_interval' => 'Actualizaciones frecuentes.',
+        'near_location' => 'Ubicación aproximada.',
+        'suggestion_bugs' => 'Sugerencias: <a href="mailto:mail@fogos.pt">mail@fogos.pt</a>',
+        'made_by' => 'Made with ♥ by <a href="https://twitter.com/tomahock">Tomahock</a>',
+
+        'about_title' => 'Sobre Fogos.pt',
+        'about_text' => 'Fogos.pt es una de las principales fuentes de información sobre incendios rurales en Portugal, con datos casi en tiempo real. Más que un agregador, funciona como una capa de integración que transforma datos complejos en información clara, útil y accesible.',
+
+        'data_title' => 'Origen y tratamiento de los datos',
+        'data_intro' => 'La información resulta de la articulación de múltiples fuentes oficiales y tecnológicas, incluyendo:',
+        'data_authorities' => 'Autoridades: ANEPC – Autoridad Nacional de Emergencia y Protección Civil, ICNF – Instituto para la Conservación de la Naturaleza y los Bosques, y AGIF – Agencia para la Gestión Integrada de Incendios Rurales',
+        'data_satellites' => 'Satélites y tecnología: Copernicus, NASA, Meteosat y Mapbox.',
+        'data_collaboration' => 'Colaboración: Waze y contribuciones OSINT validadas por VOST Portugal.',
+        'data_footer' => 'Antes de ser presentados, los datos pasan por procesos de validación, normalización y agregación, garantizando información consistente y fiable para diferentes tipos de uso.',
+
+        'partners_title' => 'Socios y apoyos',
+        'partners_intro' => 'La continuidad de este servicio público es posible gracias al apoyo de:',
+        'partners_pt_servidor' => 'PTServidor — infraestructura técnica (pro bono)',
+        'partners_cloudflare' => 'Cloudflare — seguridad y resiliencia (Project Galileo)',
+        'partners_mapbox' => 'Mapbox — visualización cartográfica',
+        'partners_agif' => 'Agência para a Gestão Integrada de Fogos Rurais — marco institucional',
+        'partners_vost' => 'VOST Portugal — validación y contextualización de información',
+
+        'commitment_title' => 'Compromiso',
+        'commitment_text' => 'Mantener la transparencia y la utilidad pública, asegurando el acceso continuo a información fiable, especialmente en momentos críticos.',
     ],
     'information' => [
         'statesOfOccurrences' => [
