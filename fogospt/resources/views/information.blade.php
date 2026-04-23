@@ -71,6 +71,22 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">
+                                <h3>@lang('pages.information.opacityOccurrences.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.opacityOccurrences.description')</p>
+                            <ul class="list-none">
+                                <li>@lang('pages.information.opacityOccurrences.items.fuelManagement')</li>
+                                <li>@lang('pages.information.opacityOccurrences.items.burning')</li>
+                                <li>@lang('pages.information.opacityOccurrences.items.burnPrevention')</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
                                 <h3>@lang('pages.information.riskIndexes.title')</h3>
 
                             </div>

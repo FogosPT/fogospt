@@ -61,6 +61,15 @@ return [
         'numberDescription' => 'The number displayed match the total number of dispatched units. This number may differ from the units on site, as some of the dispatched units may still be in transit to the operational theater',
         'hoursDescription' => 'The time displayed, both on the units graph and on the fire status timeline, are the ones in which our system detected a change of data in the ANPEC website and it may not match the exact time that change occurred.',
         'source' => 'Fire risk data retrieved from IPMA (Portuguese Institute for Sea and Atmosphere).',
+        'opacityOccurrences' => [
+            'title' => 'Icons with reduced opacity',
+            'description' => 'Icons displayed with reduced opacity correspond to occurrences whose nature is:',
+            'items' => [
+                'fuelManagement' => 'Fuel Management',
+                'burning' => 'Burning',
+                'burnPrevention' => 'Burn Prevention',
+            ]
+        ],
         'riskIndexes' => [
             'title' => 'Fire Risk Index',
             'items' => [

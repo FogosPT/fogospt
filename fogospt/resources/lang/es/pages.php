@@ -67,6 +67,15 @@ return [
                  momento en el que nuestro sistema detectó un cambio en los datos por parte de ANPEC y puede no corresponder al
                  el momento exacto en que se produjo este cambio.',
         'source' => 'Riesgo de incendio recopilado a través de IPMA.',
+        'opacityOccurrences' => [
+            'title' => 'Iconos con opacidad reducida',
+            'description' => 'Los iconos mostrados con opacidad reducida corresponden a ocurrencias cuya naturaleza es:',
+            'items' => [
+                'fuelManagement' => 'Gestión de Combustible',
+                'burning' => 'Quema',
+                'burnPrevention' => 'Prevención de Quemas',
+            ]
+        ],
         'riskIndexes' => [
             'title' => 'Índices de riesgo de incendio',
             'items' => [
