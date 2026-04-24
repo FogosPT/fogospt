@@ -130,6 +130,13 @@ class GenericController extends Controller
         return view('api-terms')->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function getPrivacyPolicy()
+    {
+        $this->setPageName('Política de Privacidade');
+
+        return view('privacy-policy')->with(['metadata' => $this->generateMetadata()]);
+    }
+
     public function subscribe(Request $request)
     {
         $headers = array

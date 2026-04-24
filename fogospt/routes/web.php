@@ -31,6 +31,7 @@ Route::redirect('/estatisticas',    '/pt/estatisticas',    301);
 Route::redirect('/api',             '/pt/api',             301);
 Route::redirect('/api-termos',      '/pt/api-termos',      301);
 Route::redirect('/notificacoes',    '/pt/notificacoes',    301);
+Route::redirect('/privacy-policy',  '/pt/privacy-policy',  301);
 
 Route::get('/fogo/{id}',         fn($id) => redirect("/pt/fogo/$id",         301));
 Route::get('/fogo/{id}/detalhe', fn($id) => redirect("/pt/fogo/$id/detalhe", 301));
@@ -61,6 +62,7 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () {
     Route::get('/lightnings', [FireController::class, 'getLightnings']);
 
     Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications');
+    Route::get('/privacy-policy', [GenericController::class, 'getPrivacyPolicy'])->name('privacy-policy');
     Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
     Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
 
