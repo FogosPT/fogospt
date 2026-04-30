@@ -12,3 +12,5 @@
 **/.env
 .idea
 logs
+.open-next
+.wrangler
