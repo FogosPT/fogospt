@@ -1,0 +1,10 @@
+# Ensure text assets are treated as text diffs in PR/update-branch workflows
+*.svg text eol=lf
+
+# Explicitly classify binary formats
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary

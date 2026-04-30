@@ -1,0 +1,28 @@
+{
+  "name": "fogospt-next",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:worker": "opennextjs-cloudflare build",
+    "deploy:worker": "wrangler deploy"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "1.16.4",
+    "@types/node": "25.2.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.38.0",
+    "eslint-config-next": "16.1.6",
+    "typescript": "5.9.3",
+    "wrangler": "4.64.0"
+  }
+}
