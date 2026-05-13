@@ -36,3 +36,5 @@
 .fogos-legend__label{font-size:10px;font-weight:600;text-transform:uppercase;color:#555;letter-spacing:.3px;margin-bottom:2px;max-width:100px;line-height:1.1}
 .fogos-legend img{max-height:220px;max-width:100px;height:auto;display:block}
 @media (max-width:575px){.fogos-legend{max-height:40vh}.fogos-legend img{max-height:150px}}
+
+.ipma-windbarbs-tile img{filter:brightness(.25) contrast(2) drop-shadow(.5px 0 0 #000) drop-shadow(-.5px 0 0 #000) drop-shadow(0 .5px 0 #000) drop-shadow(0 -.5px 0 #000)}

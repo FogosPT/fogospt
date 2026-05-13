@@ -199,18 +199,22 @@ $(document).ready(function () {
     //
     // Each tile carries _legendUrl/_legendLabel so the bottom-left legend
     // control can render the IPMA-provided color scale while the layer is on.
-    function makeIpmaLayer(layerNames, attribution, label) {
+    function makeIpmaLayer(layerNames, attribution, label, extraOpts) {
         var legendUrl = 'https://mf2.ipma.pt/services?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
             encodeURIComponent(layerNames[0]) + '&format=image/png&STYLE=default';
         return L.layerGroup(layerNames.map(function (name) {
-            var tile = L.tileLayer.wms('https://mf2.ipma.pt/services/', {
+            var opts = {
                 layers: name,
                 format: 'image/png',
                 transparent: true,
                 version: '1.3.0',
                 opacity: 0.6,
                 attribution: attribution
-            });
+            };
+            if (extraOpts) {
+                for (var k in extraOpts) opts[k] = extraOpts[k];
+            }
+            var tile = L.tileLayer.wms('https://mf2.ipma.pt/services/', opts);
             tile._legendUrl = legendUrl;
             tile._legendLabel = label;
             return tile;
@@ -223,7 +227,8 @@ $(document).ready(function () {
     panel.addItem('ipma', 'wind',          window.trans.map.wind,
         makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR, window.trans.map.wind), false)
     panel.addItem('ipma', 'windDirection', window.trans.map.windDirection,
-        makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection), false)
+        makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection,
+            { opacity: 1.0, className: 'ipma-windbarbs-tile' }), false)
     panel.addItem('ipma', 'precipitation', window.trans.map.precipitation,
         makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation), false)
     panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
