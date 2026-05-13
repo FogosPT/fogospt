@@ -56,6 +56,6 @@
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
-    <script src="/js/main.js?cache12=1"></script>
+    <script src="/js/main.js?cache13=1"></script>
 
 @endpush

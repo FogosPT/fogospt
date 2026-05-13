@@ -13,6 +13,7 @@ return [
         'wind'          => 'Vento',
         'precipitation' => 'Precipitação',
         'clouds'        => 'Nuvens',
+        'humidity'      => 'Humidade',
         'lightnings'    => 'Descargas Elétricas',
         'updating'      => 'A atualizar dados...',
     ],
@@ -51,5 +52,6 @@ return [
         'risk'      => 'Perigo de Incêndio Rural',
         'satellite' => 'Hotspots satélite',
         'weather'   => 'Meteorologia',
+        'ipma'      => 'Previsão IPMA',
     ],
 ];

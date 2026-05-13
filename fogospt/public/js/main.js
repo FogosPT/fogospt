@@ -103,6 +103,7 @@ $(document).ready(function () {
     panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
     panel.registerSection('weather', tp.weather || 'Meteorologia', 'checkbox');
+    panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'checkbox');
 
     addRisk(mymap)
     mymap.on('click', function (e) {
@@ -191,6 +192,33 @@ $(document).ready(function () {
     panel.addItem('weather', 'clouds',        window.trans.map.clouds,        cloudLayer,    false)
     panel.addItem('weather', 'pressure',      window.trans.map.pressure,      pressureLayer, false)
 
+    // IPMA AROME forecast overlays. Each product has three regional variants
+    // (continent / madeira / azores) — wrapped in a LayerGroup so the panel
+    // toggles them as one item. Default time = current model run; WMS GetMap
+    // returns the current forecast without needing TIME= explicitly.
+    function makeIpmaLayer(layerNames, attribution) {
+        return L.layerGroup(layerNames.map(function (name) {
+            return L.tileLayer.wms('https://mf2.ipma.pt/services/', {
+                layers: name,
+                format: 'image/png',
+                transparent: true,
+                version: '1.3.0',
+                opacity: 0.6,
+                attribution: attribution
+            });
+        }));
+    }
+    var IPMA_ATTR = 'Previsão &copy; <a href="https://www.ipma.pt" target="_blank">IPMA</a> (modelo AROME)';
+
+    panel.addItem('ipma', 'temperature',   window.trans.map.temperature,
+        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR), false)
+    panel.addItem('ipma', 'wind',          window.trans.map.wind,
+        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR), false)
+    panel.addItem('ipma', 'precipitation', window.trans.map.precipitation,
+        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR), false)
+    panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
+        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR), false)
+
 
     /*$.ajax({
         url: '/lightnings',
@@ -259,6 +287,17 @@ $(document).ready(function () {
                     }
                 }
             })
+
+            // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
+            window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',
+                L.tileLayer.wms('https://mf2.ipma.pt/services/', {
+                    layers: 'lsasaf.frp.continent',
+                    format: 'image/png',
+                    transparent: true,
+                    version: '1.3.0',
+                    opacity: 0.7,
+                    attribution: 'Fire Radiative Power &copy; LSA-SAF / <a href="https://www.ipma.pt" target="_blank">IPMA</a>'
+                }), false)
         }
     })
 
