@@ -23,7 +23,8 @@ L.Control.FogosPanel = L.Control.extend({
         this._state = this._load();
 
         var c = this._container = L.DomUtil.create('div', 'fogos-panel');
-        if (this._state.__panel_collapsed) {
+        // Collapsed by default. Only stay open once the user has explicitly opened it.
+        if (this._state.__panel_collapsed !== false) {
             L.DomUtil.addClass(c, 'is-collapsed');
         }
         L.DomEvent.disableClickPropagation(c);

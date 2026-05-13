@@ -7,6 +7,7 @@ return [
     ],
     'map' => [
         'normal'        => 'Normal',
+        'satellite'     => 'Satellite',
         'temperature'   => 'Temperature',
         'pressure'      => 'Pressure',
         'wind'          => 'Wind',

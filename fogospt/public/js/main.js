@@ -64,6 +64,11 @@ $(document).ready(function () {
     var normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     }).addTo(mymap);
 
+    var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Imagery &copy; <a href="https://www.esri.com" target="_blank">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community'
+    });
+
     /*var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
         maxZoom: 18,
@@ -80,7 +85,8 @@ $(document).ready(function () {
 
     var tp = (window.trans && window.trans.panel) || {};
     panel.registerSection('base', tp.base || 'Base', 'radio');
-    panel.addItem('base', 'normal', window.trans.map.normal, normalLayer, true);
+    panel.addItem('base', 'normal',    window.trans.map.normal,    normalLayer,    true);
+    panel.addItem('base', 'satellite', window.trans.map.satellite, satelliteLayer, false);
 
     panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
     panel.registerSection('risk', tp.risk || 'Risco de incêndio', 'radio');

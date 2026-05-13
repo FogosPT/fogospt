@@ -48,7 +48,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
-    <script src="/js/map-panel.js?v=1"></script>
-    <script src="/js/main.js?cache8=1"></script>
+    <script src="/js/map-panel.js?v=2"></script>
+    <script src="/js/main.js?cache9=1"></script>
 
 @endpush
