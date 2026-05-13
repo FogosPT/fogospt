@@ -45,7 +45,7 @@ return [
         'title'     => 'Map',
         'base'      => 'Base map',
         'fires'     => 'Fire status',
-        'risk'      => 'Fire risk',
+        'risk'      => 'Rural Fire Danger',
         'satellite' => 'Satellite hotspots',
         'weather'   => 'Weather',
     ],

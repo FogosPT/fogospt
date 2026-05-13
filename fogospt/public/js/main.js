@@ -100,7 +100,7 @@ $(document).ready(function () {
     panel.addItem('base', 'satellite', window.trans.map.satellite, satelliteLayer, false);
 
     panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
-    panel.registerSection('risk', tp.risk || 'Risco de incêndio', 'radio');
+    panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
     panel.registerSection('weather', tp.weather || 'Meteorologia', 'checkbox');
 

@@ -45,7 +45,7 @@ return [
         'title'     => 'Mapa',
         'base'      => 'Mapa base',
         'fires'     => 'Estado dos fogos',
-        'risk'      => 'Risco de incêndio',
+        'risk'      => 'Perigo de Incêndio Rural',
         'satellite' => 'Hotspots satélite',
         'weather'   => 'Meteorologia',
     ],
