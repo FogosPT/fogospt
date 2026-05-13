@@ -22,9 +22,9 @@ return [
         'aerial'      => 'Aerial',
     ],
     'risk' => [
-        'today'    => 'Risk Today',
-        'tomorrow' => 'Risk Tomorrow',
-        'after'    => 'Risk Day After',
+        'today'    => 'Today',
+        'tomorrow' => 'Tomorrow',
+        'after'    => 'Day after',
     ],
     'status' => [
         'dispatch'           => 'Dispatch',

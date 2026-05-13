@@ -22,9 +22,9 @@ return [
         'aerial'      => 'Aéreos',
     ],
     'risk' => [
-        'today'    => 'Risco Hoje',
-        'tomorrow' => 'Risco Amanhã',
-        'after'    => 'Risco Depois',
+        'today'    => 'Hoje',
+        'tomorrow' => 'Amanhã',
+        'after'    => 'Depois',
     ],
     'status' => [
         'dispatch'          => 'Despacho',
