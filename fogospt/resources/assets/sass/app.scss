@@ -1050,3 +1050,158 @@ têm margens uniformes. */
 .f-extra pre {
   text-wrap: wrap;
 }
+
+/* Unified map control panel */
+.fogos-panel {
+  width: 260px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+  user-select: none;
+
+  &.is-collapsed {
+    width: 44px;
+
+    .fogos-panel__title,
+    .fogos-panel__body {
+      display: none;
+    }
+
+    .fogos-panel__header {
+      cursor: pointer;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .fogos-panel__collapse i {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #f09819, #ff512f);
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__title {
+    flex: 1;
+  }
+
+  &__collapse {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 1;
+
+    &:focus {
+      outline: none;
+    }
+
+    i {
+      transition: transform 0.2s;
+    }
+  }
+
+  &__body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  &__section {
+    border-top: 1px solid #f0f0f0;
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    &.is-collapsed .fogos-panel__items {
+      display: none;
+    }
+  }
+
+  &__section-title {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafafa;
+
+    &:hover {
+      background: #f3f3f3;
+      color: #ff512f;
+    }
+
+    i {
+      font-size: 10px;
+      color: #999;
+    }
+  }
+
+  &__items {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+  }
+
+  &__item {
+    label {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      margin: 0;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      transition: background 0.15s;
+
+      &:hover {
+        background: #fff5f0;
+      }
+
+      input {
+        margin-right: 8px;
+        accent-color: #ff512f;
+        cursor: pointer;
+      }
+    }
+
+    &.is-on label {
+      color: #ff512f;
+      font-weight: 500;
+    }
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-panel {
+    width: 220px;
+
+    &.is-collapsed {
+      width: 40px;
+    }
+
+    &__body {
+      max-height: 50vh;
+    }
+  }
+}

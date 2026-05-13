@@ -1,5 +1,4 @@
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
-var layerControl2 = null;
 var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
@@ -74,15 +73,19 @@ $(document).ready(function () {
 
     mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a>')
 
-    var xx = {}
-    xx[window.trans.map.normal] = normalLayer
-    //'Satélite': satLayer
+    // Unified map control panel — single home for all layer/filter toggles.
+    var panel = new L.Control.FogosPanel();
+    panel.addTo(mymap);
+    window.fogosPanel = panel;
 
-    L.control.layers(xx, {}, {
-        collapsed: false,
-        position: 'topleft'
-    }).addTo(mymap)
+    var tp = (window.trans && window.trans.panel) || {};
+    panel.registerSection('base', tp.base || 'Base', 'radio');
+    panel.addItem('base', 'normal', window.trans.map.normal, normalLayer, true);
 
+    panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
+    panel.registerSection('risk', tp.risk || 'Risco de incêndio', 'radio');
+    panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
+    panel.registerSection('weather', tp.weather || 'Meteorologia', 'checkbox');
 
     addRisk(mymap)
     mymap.on('click', function (e) {
@@ -164,17 +167,11 @@ $(document).ready(function () {
     }
 
 
-    var overlayLayers = {}
-    overlayLayers[window.trans.map.temperature]   = tempLayer
-    overlayLayers[window.trans.map.pressure]      = pressureLayer
-    overlayLayers[window.trans.map.wind]          = windLayer
-    overlayLayers[window.trans.map.precipitation] = precLayer
-    overlayLayers[window.trans.map.clouds]        = cloudLayer
-
-    L.control.layers(baseLayers, overlayLayers, {
-        collapsed: false,
-        position: 'topright'
-    }).addTo(mymap)
+    panel.addItem('weather', 'temperature',   window.trans.map.temperature,   tempLayer,     false)
+    panel.addItem('weather', 'wind',          window.trans.map.wind,          windLayer,     false)
+    panel.addItem('weather', 'precipitation', window.trans.map.precipitation, precLayer,     false)
+    panel.addItem('weather', 'clouds',        window.trans.map.clouds,        cloudLayer,    false)
+    panel.addItem('weather', 'pressure',      window.trans.map.pressure,      pressureLayer, false)
 
 
     /*$.ajax({
@@ -215,16 +212,7 @@ $(document).ready(function () {
             window.modisLayer = []
             window.modisLayer[0] = L.layerGroup()
 
-            var objModis = {}
-            objModis['MODIS'] = window.modisLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objModis, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
+            window.fogosPanel.addItem('satellite', 'modis', 'MODIS', window.modisLayer[0], false)
 
             for (i in data) {
                 if (data[i].latitude && data[i].longitude) {
@@ -242,16 +230,7 @@ $(document).ready(function () {
                 success: function (data) {
                     window.modisLayer[1] = L.layerGroup()
 
-                    var objviirs = {}
-                    objviirs['VIIRS'] = window.modisLayer[1]
-
-
-                    layerControl4 = L.control.layers(null, objviirs, {
-                        position: 'topleft',
-                        collapsed: false,
-                    })
-
-                    layerControl4.addTo(mymap)
+                    window.fogosPanel.addItem('satellite', 'viirs', 'VIIRS', window.modisLayer[1], false)
 
                     for (i in data) {
                         if (data[i].latitude && data[i].longitude) {
@@ -840,17 +819,11 @@ function addRisk(mymap) {
                                             }
                                         })
 
-                                        var baseMaps = {}
-                                        baseMaps[window.trans.risk.today]    = riskToday
-                                        baseMaps[window.trans.risk.tomorrow] = riskTomorrow
-                                        baseMaps[window.trans.risk.after]    = riskAfter
-
-                                        //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
-                                        //map.addControl(riskLayerControl);
-                                        L.control.layers([],baseMaps, {
-                                            collapsed: false,
-                                            position: 'topright'
-                                        }).addTo(mymap)
+                                        if (window.fogosPanel) {
+                                            window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    riskToday,    !!getParameterByName('risk'))
+                                            window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, riskTomorrow, !!getParameterByName('risk-tomorrow'))
+                                            window.fogosPanel.addItem('risk', 'after',    window.trans.risk.after,    riskAfter,    false)
+                                        }
                                     }
                                 }
                             })
@@ -932,10 +905,23 @@ function changeElementSizeById(id, size) {
     markerHtml.style.width = size + 'px'
 }
 
+// Maps status code -> { id, labelKey }. Order defines panel display order.
+var FIRE_STATUS_DEFS = [
+    { code: 3,  id: 'dispatch',           labelKey: 'dispatch' },
+    { code: 4,  id: 'firstAlertDispatch', labelKey: 'firstAlertDispatch' },
+    { code: 6,  id: 'arrival',            labelKey: 'arrival' },
+    { code: 5,  id: 'ongoing',            labelKey: 'ongoing' },
+    { code: 7,  id: 'inResolution',       labelKey: 'inResolution' },
+    { code: 8,  id: 'conclusion',         labelKey: 'conclusion' },
+    { code: 9,  id: 'surveillance',       labelKey: 'surveillance' },
+    { code: 10, id: 'closed',             labelKey: 'closed' },
+    { code: 11, id: 'falseAlarm',         labelKey: 'falseAlarm' },
+    { code: 12, id: 'falseAlert',         labelKey: 'falseAlert' },
+]
+
 function getNewFires(mymap, refresh = false)
 {
     if(refresh){
-        layerControl2.remove();
         window.fogosLayers[3].remove()
         window.fogosLayers[4].remove()
         window.fogosLayers[5].remove()
@@ -980,43 +966,17 @@ function getNewFires(mymap, refresh = false)
                     addMaker(data.data[i], mymap)
                 }
 
-                var obj = {}
                 var t = window.trans.status
-                obj[t.dispatch]           = window.fogosLayers[3]
-                obj[t.firstAlertDispatch] = window.fogosLayers[4]
-                obj[t.arrival]            = window.fogosLayers[6]
-                obj[t.ongoing]            = window.fogosLayers[5]
-                obj[t.inResolution]       = window.fogosLayers[7]
-                obj[t.conclusion]         = window.fogosLayers[8]
-                obj[t.surveillance]       = window.fogosLayers[9]
-                obj[t.closed]             = window.fogosLayers[10]
-                obj[t.falseAlarm]         = window.fogosLayers[11]
-                obj[t.falseAlert]         = window.fogosLayers[12]
-
-                obj[t.dispatch].addTo(mymap)
-                obj[t.firstAlertDispatch].addTo(mymap)
-                obj[t.arrival].addTo(mymap)
-                obj[t.ongoing].addTo(mymap)
-                obj[t.inResolution].addTo(mymap)
-                obj[t.conclusion].addTo(mymap)
-                obj[t.surveillance].addTo(mymap)
-                obj[t.closed].addTo(mymap)
-                obj[t.falseAlarm].addTo(mymap)
-                obj[t.falseAlert].addTo(mymap)
-
-
-                layerControl2 = L.control.layers(null, obj, {
-                    position: 'topright'
+                FIRE_STATUS_DEFS.forEach(function (def) {
+                    var layer = window.fogosLayers[def.code]
+                    var label = t[def.labelKey]
+                    if (refresh && window.fogosPanel._findItem('status', def.id)) {
+                        // Swap the new layer reference in place; on/off state preserved.
+                        window.fogosPanel.updateLayer('status', def.id, layer)
+                    } else {
+                        window.fogosPanel.addItem('status', def.id, label, layer, true)
+                    }
                 })
-
-                layerControl2.addTo(mymap)
-                $controls = $(layerControl2.getContainer())
-                $controls.find('a').css({
-                    'background-image': 'none',
-                    'font-size': '33px',
-                    'text-align': 'center',
-                    'color': '#333333'
-                }).append('<i class="fas fa-map-marker"></i>')
             }
         }
     })

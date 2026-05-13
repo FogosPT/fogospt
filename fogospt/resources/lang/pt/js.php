@@ -40,4 +40,12 @@ return [
     'fire' => [
         'moreDetails' => 'Mais detalhes',
     ],
+    'panel' => [
+        'title'     => 'Mapa',
+        'base'      => 'Mapa base',
+        'fires'     => 'Estado dos fogos',
+        'risk'      => 'Risco de incêndio',
+        'satellite' => 'Hotspots satélite',
+        'weather'   => 'Meteorologia',
+    ],
 ];

@@ -40,4 +40,12 @@ return [
     'fire' => [
         'moreDetails' => 'More details',
     ],
+    'panel' => [
+        'title'     => 'Map',
+        'base'      => 'Base map',
+        'fires'     => 'Fire status',
+        'risk'      => 'Fire risk',
+        'satellite' => 'Satellite hotspots',
+        'weather'   => 'Weather',
+    ],
 ];
