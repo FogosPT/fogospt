@@ -49,6 +49,6 @@
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <script src="/js/map-panel.js?v=2"></script>
-    <script src="/js/main.js?cache10=1"></script>
+    <script src="/js/main.js?cache11=1"></script>
 
 @endpush
