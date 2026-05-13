@@ -42,6 +42,10 @@
             ],
             'shares' => [
                 'title' => 'Compartir'
+            ],
+            'photos' => [
+                'title' => 'Fotos',
+                'loadMore' => 'Cargar más',
             ]
         ],
         'riskLevels' => [

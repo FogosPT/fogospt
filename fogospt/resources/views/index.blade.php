@@ -2,6 +2,7 @@
 
 @push('head')
     <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css">
+    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
 @endpush
 
 @section('content')
@@ -49,6 +50,12 @@
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <script src="/js/map-panel.js?v=2"></script>
-    <script src="/js/main.js?cache11=1"></script>
+    <script src="/js/photos.js?v=1"></script>
+    <script type="module">
+        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+        window.PhotoSwipeLightbox = PhotoSwipeLightbox;
+        window.dispatchEvent(new Event('photoswipe-ready'));
+    </script>
+    <script src="/js/main.js?cache12=1"></script>
 
 @endpush

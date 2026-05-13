@@ -45,6 +45,10 @@
             'shares' => [
                 'title' => 'Partilhar'
             ],
+            'photos' => [
+                'title' => 'Fotos',
+                'loadMore' => 'Carregar mais',
+            ],
             'detail' => [
                 'burn' => [
                     'title' => 'Área ardida'

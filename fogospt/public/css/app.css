@@ -22,3 +22,11 @@
 .fogos-panel__item label input{margin-right:8px;accent-color:#ff512f;cursor:pointer}
 .fogos-panel__item.is-on label{color:#ff512f!important;font-weight:500}
 @media (max-width:575px){.fogos-panel{width:220px}.fogos-panel.is-collapsed{width:40px}.fogos-panel__body{max-height:50vh}}
+
+.photos-section .card-body{padding-bottom:1rem}
+.photos-section .photos-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-bottom:.75rem}
+.photos-section .photos-item{display:block;aspect-ratio:1/1;overflow:hidden;border-radius:4px;background:#eee}
+.photos-section .photos-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.photos-section .photos-item:hover img{transform:scale(1.05)}
+.photos-section .photos-load-more{margin-top:.5rem}
+.pswp__custom-caption{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:6px 12px;border-radius:4px;pointer-events:none}

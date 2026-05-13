@@ -132,6 +132,8 @@
 
                                 </div>
                             </div>
+
+                            @include('elements.cards.photos')
                         </div>
                     </div>
                 </div>
@@ -153,6 +155,13 @@
     <script src="/js/vendor/store2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
+    <script src="/js/photos.js?v=1"></script>
+    <script type="module">
+        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+        window.PhotoSwipeLightbox = PhotoSwipeLightbox;
+        window.dispatchEvent(new Event('photoswipe-ready'));
+    </script>
     <script src="{{ asset('js/detail.js') }}"></script>
 
     <script>

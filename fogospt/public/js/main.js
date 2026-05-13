@@ -128,6 +128,7 @@ $(document).ready(function () {
         meteo(fireId)
         extra(fireId)
         shares(fireId)
+        if (typeof photos === 'function') photos(fireId)
     }
 
     window.fogosLayers = []
@@ -581,6 +582,7 @@ function addMaker(item, mymap) {
         meteo(item.id)
         extra(item.id)
         shares(item.id)
+        if (typeof photos === 'function') photos(item.id)
         addPageview()
     });
 

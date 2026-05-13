@@ -41,6 +41,9 @@ return [
     'fire' => [
         'moreDetails' => 'Más detalles',
     ],
+    'photos' => [
+        'takenAt' => 'Tomada el',
+    ],
     'panel' => [
         'title'     => 'Mapa',
         'base'      => 'Mapa base',

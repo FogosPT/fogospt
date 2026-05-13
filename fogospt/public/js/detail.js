@@ -3,6 +3,7 @@ $(document).ready(function () {
     var id = $('#myChart').data('id');
 
     plot(id);
+    if (typeof photos === 'function') photos(id);
 
     function plot(id) {
         var url = 'https://api-dev.fogos.pt/fires/data?id=' + id

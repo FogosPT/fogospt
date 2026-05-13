@@ -47,6 +47,10 @@ return [
         'shares' => [
             'title' => 'Share'
         ],
+        'photos' => [
+            'title' => 'Photos',
+            'loadMore' => 'Load more',
+        ],
         'detail' => [
             'burn' => [
                 'title' => 'Burned area'
