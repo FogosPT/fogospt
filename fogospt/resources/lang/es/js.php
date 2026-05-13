@@ -11,6 +11,7 @@ return [
         'temperature'   => 'Temperatura',
         'pressure'      => 'Presión',
         'wind'          => 'Viento',
+        'windDirection' => 'Dirección del viento',
         'precipitation' => 'Precipitación',
         'clouds'        => 'Nubes',
         'humidity'      => 'Humedad',

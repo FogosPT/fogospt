@@ -1256,3 +1256,53 @@ têm margens uniformes. */
   border-radius: 4px;
   pointer-events: none;
 }
+
+/* IPMA legend control */
+.fogos-legend {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  padding: 6px 8px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-family: 'Roboto', sans-serif;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+    max-width: 100px;
+    line-height: 1.1;
+  }
+
+  img {
+    max-height: 220px;
+    max-width: 100px;
+    height: auto;
+    display: block;
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-legend {
+    max-height: 40vh;
+
+    img {
+      max-height: 150px;
+    }
+  }
+}

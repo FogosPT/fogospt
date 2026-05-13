@@ -196,9 +196,14 @@ $(document).ready(function () {
     // (continent / madeira / azores) — wrapped in a LayerGroup so the panel
     // toggles them as one item. Default time = current model run; WMS GetMap
     // returns the current forecast without needing TIME= explicitly.
-    function makeIpmaLayer(layerNames, attribution) {
+    //
+    // Each tile carries _legendUrl/_legendLabel so the bottom-left legend
+    // control can render the IPMA-provided color scale while the layer is on.
+    function makeIpmaLayer(layerNames, attribution, label) {
+        var legendUrl = 'https://mf2.ipma.pt/services?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
+            encodeURIComponent(layerNames[0]) + '&format=image/png&STYLE=default';
         return L.layerGroup(layerNames.map(function (name) {
-            return L.tileLayer.wms('https://mf2.ipma.pt/services/', {
+            var tile = L.tileLayer.wms('https://mf2.ipma.pt/services/', {
                 layers: name,
                 format: 'image/png',
                 transparent: true,
@@ -206,18 +211,64 @@ $(document).ready(function () {
                 opacity: 0.6,
                 attribution: attribution
             });
+            tile._legendUrl = legendUrl;
+            tile._legendLabel = label;
+            return tile;
         }));
     }
     var IPMA_ATTR = 'Previsão &copy; <a href="https://www.ipma.pt" target="_blank">IPMA</a> (modelo AROME)';
 
     panel.addItem('ipma', 'temperature',   window.trans.map.temperature,
-        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR), false)
+        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR, window.trans.map.temperature), false)
     panel.addItem('ipma', 'wind',          window.trans.map.wind,
-        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR), false)
+        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR, window.trans.map.wind), false)
+    panel.addItem('ipma', 'windDirection', window.trans.map.windDirection,
+        makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection), false)
     panel.addItem('ipma', 'precipitation', window.trans.map.precipitation,
-        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR), false)
+        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation), false)
     panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
-        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR), false)
+        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity), false)
+
+    // Floating legend for active IPMA layers. Listens to layeradd/layerremove
+    // on the map and renders the GetLegendGraphic image for each unique active
+    // overlay. Hidden when nothing's on.
+    var FogosLegend = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function (map) {
+            var c = this._container = L.DomUtil.create('div', 'fogos-legend');
+            L.DomEvent.disableClickPropagation(c);
+            L.DomEvent.disableScrollPropagation(c);
+            this._map = map;
+            map.on('layeradd layerremove', this._refresh, this);
+            this._refresh();
+            return c;
+        },
+        _refresh: function () {
+            var seen = {};
+            var items = [];
+            this._map.eachLayer(function (layer) {
+                if (layer._legendUrl && !seen[layer._legendUrl]) {
+                    seen[layer._legendUrl] = true;
+                    items.push({ url: layer._legendUrl, label: layer._legendLabel || '' });
+                }
+            });
+            if (!items.length) {
+                this._container.style.display = 'none';
+                this._container.innerHTML = '';
+                return;
+            }
+            this._container.style.display = '';
+            this._container.innerHTML = items.map(function (it) {
+                var label = it.label
+                    ? '<div class="fogos-legend__label">' + it.label + '</div>'
+                    : '';
+                return '<div class="fogos-legend__item">' + label +
+                    '<img src="' + it.url + '" alt="" loading="lazy">' +
+                    '</div>';
+            }).join('');
+        }
+    });
+    new FogosLegend().addTo(mymap);
 
 
     /*$.ajax({
