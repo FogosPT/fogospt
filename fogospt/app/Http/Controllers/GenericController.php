@@ -118,14 +118,14 @@ class GenericController extends Controller
 
     public function api()
     {
-        $this->setPageName('Acesso à API do Fogos.pt');
+        $this->setPageName(__('api-docs.meta_title'));
 
         return view('api')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function apiTerms()
     {
-        $this->setPageName('Acesso à API do Fogos.pt');
+        $this->setPageName(__('api-terms.meta_title'));
 
         return view('api-terms')->with(['metadata' => $this->generateMetadata()]);
     }
