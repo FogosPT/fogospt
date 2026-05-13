@@ -69,6 +69,8 @@ header {
   .navbar {
     padding: 0rem 1rem;
     text-transform: uppercase;
+    min-height: 80px;
+    align-items: center;
     .navbar-nav {
       padding-top: 1rem;
     }
