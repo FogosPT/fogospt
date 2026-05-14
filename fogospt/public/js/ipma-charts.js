@@ -153,7 +153,6 @@
         };
         if (opts.windArrows) {
             config.plugins = [windArrowsPlugin(hourly)];
-            config.options.layout = { padding: { top: 22 } };
         }
 
         try {
@@ -176,10 +175,13 @@
                     if (!ctx || !chart.chartArea) return;
                     var meta = chart.getDatasetMeta && chart.getDatasetMeta(0);
                     if (!meta || !meta.data || !meta.data.length) return;
-                    var top = chart.chartArea.top - 12;
-                    if (top < 4) top = 4;
+                    // Draw arrows just inside the top of the chart area
+                    // (below the title, above the data). Title lives above
+                    // chartArea so we can't use negative offsets.
+                    var top = chart.chartArea.top + 10;
                     var step = hourly.length > 24 ? 3 : 2;
                     ctx.save();
+                    ctx.globalAlpha = 0.75;
                     ctx.strokeStyle = '#333';
                     ctx.fillStyle = '#333';
                     ctx.lineWidth = 1;
