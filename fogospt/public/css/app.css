@@ -38,3 +38,7 @@
 @media (max-width:575px){.fogos-legend{max-height:40vh}.fogos-legend img{max-height:150px}}
 
 .ipma-windbarbs-tile img{filter:brightness(.25) contrast(2) drop-shadow(.5px 0 0 #000) drop-shadow(-.5px 0 0 #000) drop-shadow(0 .5px 0 #000) drop-shadow(0 -.5px 0 #000)}
+
+.ipma-charts__attribution{margin-bottom:.75rem}
+.ipma-charts__grid > [class^="col-"]{margin-bottom:1.25rem}
+.ipma-charts__grid canvas{max-width:100%;height:auto}

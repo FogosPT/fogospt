@@ -1319,3 +1319,21 @@ têm margens uniformes. */
     drop-shadow(0 0.5px 0 #000)
     drop-shadow(0 -0.5px 0 #000);
 }
+
+/* IPMA forecast charts on fire detail page */
+.ipma-charts {
+  &__attribution {
+    margin-bottom: 0.75rem;
+  }
+
+  &__grid {
+    > [class^="col-"] {
+      margin-bottom: 1.25rem;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}

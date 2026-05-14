@@ -133,6 +133,32 @@
                                 </div>
                             </div>
 
+                            <div class="ipma-charts mt-4"
+                                 data-lat="{{ $fire['lat'] ?? '' }}"
+                                 data-lng="{{ $fire['lng'] ?? '' }}">
+                                <h4 class="card-title">@lang('elements.cards.ipmaCharts.title')</h4>
+                                <p class="ipma-charts__attribution small text-muted">
+                                    @lang('elements.cards.ipmaCharts.source')
+                                    <a href="https://www.ipma.pt" target="_blank" rel="noopener">IPMA</a>.
+                                </p>
+                                <div class="ipma-charts__loader text-center my-3 d-none">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <div class="ipma-charts__grid row d-none">
+                                    <div class="col-md-6"><canvas id="ipmaTempHum"   width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaWind"      width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaPressure"  width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaPrecip"    width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaFwiIsiBui" width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaDcDmcFfmc" width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaFrm"       width="400" height="220"></canvas></div>
+                                    <div class="col-md-6"><canvas id="ipmaRcm"       width="400" height="220"></canvas></div>
+                                </div>
+                                <div class="ipma-charts__error alert alert-warning small d-none">
+                                    @lang('elements.cards.ipmaCharts.error')
+                                </div>
+                            </div>
+
                             @include('elements.cards.photos')
                         </div>
                     </div>
@@ -163,6 +189,7 @@
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
     <script src="{{ asset('js/detail.js') }}"></script>
+    <script src="/js/ipma-charts.js?v=1"></script>
 
     <script>
         $(document).ready( function () {

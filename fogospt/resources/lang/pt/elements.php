@@ -49,6 +49,11 @@
                 'title' => 'Fotos',
                 'loadMore' => 'Carregar mais',
             ],
+            'ipmaCharts' => [
+                'title'  => 'Previsão IPMA neste ponto',
+                'source' => 'Dados:',
+                'error'  => 'Não foi possível obter dados da IPMA para esta localização.',
+            ],
             'detail' => [
                 'burn' => [
                     'title' => 'Área ardida'

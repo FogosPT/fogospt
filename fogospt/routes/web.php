@@ -90,4 +90,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/viirs', [ApiController::class, 'getVIIRS'])->name('getVIIRS');
     Route::get('/ipma-wind', [ApiController::class, 'getIpmaWind'])->name('getIpmaWind');
     Route::get('/ipma-reference-time', [ApiController::class, 'getIpmaReferenceTime'])->name('getIpmaReferenceTime');
+    Route::get('/ipma-point/{lat}/{lng}', [ApiController::class, 'getIpmaPoint'])
+        ->where(['lat' => '-?\d+(\.\d+)?', 'lng' => '-?\d+(\.\d+)?'])
+        ->name('getIpmaPoint');
 });

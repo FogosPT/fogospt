@@ -71,14 +71,30 @@ class ApiController extends Controller
      */
     public function getIpmaReferenceTime()
     {
+        $refTime = $this->resolveAromeReferenceTime();
+        if ($refTime === null) {
+            return response()->json(['error' => 'unavailable'], 503);
+        }
+        return response(json_encode(['reference_time' => $refTime]), 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=1800');
+    }
+
+    /**
+     * Returns the most recent AROME model run that IPMA's WMS will actually
+     * render, or null if none of the recent candidates respond. Caches the
+     * answer in Redis for 30 min so callers don't reprobe every request.
+     */
+    private function resolveAromeReferenceTime()
+    {
         $cacheKey = 'ipma:ref-time';
         if (env('APP_ENV') === 'production') {
             $cached = Redis::get($cacheKey);
             if ($cached) {
-                return response($cached, 200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('Cache-Control', 'public, max-age=1800')
-                    ->header('X-Cache', 'HIT');
+                $decoded = json_decode($cached, true);
+                if (isset($decoded['reference_time'])) {
+                    return $decoded['reference_time'];
+                }
             }
         }
 
@@ -103,26 +119,17 @@ class ApiController extends Controller
                     break;
                 }
             } catch (\Exception $e) {
-                // try next
+                // try next candidate
             }
 
             $candidate->subHours(12);
         }
 
-        if ($found === null) {
-            return response()->json(['error' => 'unavailable'], 503);
+        if ($found !== null && env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, json_encode(['reference_time' => $found]), 'EX', 1800);
         }
 
-        $payload = json_encode(['reference_time' => $found]);
-
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $payload, 'EX', 1800);
-        }
-
-        return response($payload, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Cache-Control', 'public, max-age=1800')
-            ->header('X-Cache', 'MISS');
+        return $found;
     }
 
     /**
@@ -215,6 +222,219 @@ class ApiController extends Controller
             ->header('Content-Type', 'application/json')
             ->header('Cache-Control', 'public, max-age=1800')
             ->header('X-Cache', 'MISS');
+    }
+
+    /**
+     * Time-series at a single (lat, lng) point for the IPMA charts shown on
+     * fire detail pages. Mirrors MF2's GetFeatureInfo trick (one WMS call
+     * with a comma-separated list of timestamps in the time= parameter
+     * returns a time series). Two calls in series: AROME hourly + LSA-SAF/RCM
+     * daily. Result normalised and cached in Redis for 1h.
+     */
+    public function getIpmaPoint($lat, $lng)
+    {
+        $lat = (float) $lat;
+        $lng = (float) $lng;
+
+        $region = $this->regionForPoint($lat, $lng);
+        if ($region === null) {
+            return response()->json(['error' => 'out_of_range'], 422);
+        }
+
+        $cacheKey = sprintf('ipma:point:%.3f:%.3f', $lat, $lng);
+        if (env('APP_ENV') === 'production') {
+            $cached = Redis::get($cacheKey);
+            if ($cached) {
+                return response($cached, 200)
+                    ->header('Content-Type', 'application/json')
+                    ->header('Cache-Control', 'public, max-age=1800')
+                    ->header('X-Cache', 'HIT');
+            }
+        }
+
+        $refTime = $this->resolveAromeReferenceTime();
+        if ($refTime === null) {
+            return response()->json(['error' => 'reference_time_unavailable'], 503);
+        }
+        $refTimeIso = $refTime . ':00';
+
+        // Build a 1° × 1° bbox centered on the point in EPSG:3857 for a 256×256
+        // request — the centred pixel ends up at i=128, j=128.
+        list($mx, $my) = $this->lngLatToWebMercator($lng, $lat);
+        $halfSpanMx = 55600;  // ~0.5° in meters at PT latitudes (good enough)
+        $bbox = sprintf('%.0f,%.0f,%.0f,%.0f',
+            $mx - $halfSpanMx, $my - $halfSpanMx,
+            $mx + $halfSpanMx, $my + $halfSpanMx);
+
+        $aromeLayers = [
+            'arome.2m.temperature.' . $region,
+            'arome.2m.relative_humidity.' . $region,
+            'arome.10m.windintensity.' . $region,
+            'arome.10m.gustintensity.' . $region,
+            'arome.2m.pressure.' . $region,
+            'arome.0m.precipitation.' . $region,
+        ];
+        $satLayers = [
+            'lsasaf.fwi.' . $region,
+            'lsasaf.isi.' . $region,
+            'lsasaf.bui.' . $region,
+            'lsasaf.dc.' . $region,
+            'lsasaf.dmc.' . $region,
+            'lsasaf.ffmc.' . $region,
+            'lsasaf.p2000.' . $region,
+            'lsasaf.p2000a.' . $region,
+            'ipma.rcm.' . $region,
+        ];
+
+        // 48 hourly timestamps (AROME) and 7 daily (LSA-SAF/RCM) starting at ref.
+        $hourlyTimes = [];
+        for ($h = 0; $h < 48; $h++) {
+            $hourlyTimes[] = Carbon::parse($refTimeIso)->addHours($h)->format('Y-m-d\TH:i:s');
+        }
+        $dailyTimes = [];
+        for ($d = 0; $d < 7; $d++) {
+            $dailyTimes[] = Carbon::parse($refTimeIso)->addDays($d)->format('Y-m-d\TH:i:s');
+        }
+
+        $client = new GuzzleHttp\Client(['timeout' => 20]);
+
+        $aromeRaw = $this->fetchGfi($client, $aromeLayers, $hourlyTimes, $refTimeIso, $bbox);
+        $satRaw   = $this->fetchGfi($client, $satLayers,   $dailyTimes,  $refTimeIso, $bbox);
+
+        if ($aromeRaw === null && $satRaw === null) {
+            return response()->json(['error' => 'upstream_unavailable'], 503);
+        }
+
+        $hourly = $this->normaliseAromeSeries($aromeRaw, $region);
+        $daily  = $this->normaliseSatSeries($satRaw, $region);
+
+        $payload = [
+            'lat'            => $lat,
+            'lng'            => $lng,
+            'region'         => $region,
+            'reference_time' => $refTime,
+            'hourly'         => $hourly,
+            'daily'          => $daily,
+        ];
+
+        $encoded = json_encode($payload);
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, $encoded, 'EX', 3600);
+        }
+
+        return response($encoded, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=1800')
+            ->header('X-Cache', 'MISS');
+    }
+
+    private function regionForPoint($lat, $lng)
+    {
+        if ($lng >= -12.8 && $lng <= -1.2 && $lat >= 34.0 && $lat <= 44.8) {
+            return 'continent';
+        }
+        if ($lng >= -19.0 && $lng <= -14.8 && $lat >= 30.9 && $lat <= 34.8) {
+            return 'madeira';
+        }
+        if ($lng >= -33.1 && $lng <= -24.1 && $lat >= 35.7 && $lat <= 40.9) {
+            return 'azores';
+        }
+        return null;
+    }
+
+    private function lngLatToWebMercator($lng, $lat)
+    {
+        $earth = 6378137.0;
+        $x = $lng * M_PI / 180.0 * $earth;
+        $y = log(tan((90.0 + $lat) * M_PI / 360.0)) * $earth;
+        return [$x, $y];
+    }
+
+    private function fetchGfi(GuzzleHttp\Client $client, array $layers, array $times, $refTimeIso, $bbox)
+    {
+        $url = 'https://mf2.ipma.pt/services/'
+            . '?service=WMS&version=1.3.0&request=GetFeatureInfo'
+            . '&srs=EPSG:3857&info_format=application/json'
+            . '&reference_time=' . urlencode($refTimeIso)
+            . '&time=' . urlencode(implode(',', $times))
+            . '&width=256&height=256'
+            . '&bbox=' . urlencode($bbox)
+            . '&i=128&j=128'
+            . '&query_layers=' . urlencode(implode(',', $layers));
+
+        try {
+            $resp = $client->request('GET', $url, ['http_errors' => false]);
+            if ($resp->getStatusCode() !== 200) {
+                return null;
+            }
+            $body = (string) $resp->getBody();
+            return json_decode($body, true);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function normaliseAromeSeries($raw, $region)
+    {
+        if (!is_array($raw) || empty($raw['data']) || !is_array($raw['data'])) {
+            return [];
+        }
+
+        $map = [
+            'arome.2m.temperature.' . $region       => 'temperature',
+            'arome.2m.relative_humidity.' . $region => 'humidity',
+            'arome.10m.windintensity.' . $region    => 'wind',
+            'arome.10m.gustintensity.' . $region    => 'gust',
+            'arome.2m.pressure.' . $region          => 'pressure',
+            'arome.0m.precipitation.' . $region     => 'precipitation',
+        ];
+
+        $rows = [];
+        foreach ($raw['data'] as $row) {
+            if (empty($row['datetime'])) continue;
+            $out = ['datetime' => $row['datetime']];
+            foreach ($map as $src => $dst) {
+                $out[$dst] = isset($row[$src]) ? $row[$src] : null;
+            }
+            $rows[] = $out;
+        }
+
+        usort($rows, function ($a, $b) {
+            return strcmp($a['datetime'], $b['datetime']);
+        });
+        return $rows;
+    }
+
+    private function normaliseSatSeries($raw, $region)
+    {
+        if (!is_array($raw)) return [];
+
+        $vars = ['fwi','isi','bui','dc','dmc','ffmc','p2000','p2000a','rcm'];
+        $out = [];
+        foreach ($vars as $v) {
+            if (empty($raw[$v]) || !is_array($raw[$v])) {
+                $out[$v] = [];
+                continue;
+            }
+            // The IPMA value lives under a layer-name key; pick whichever key
+            // is not "datetime" for resilience to renames.
+            $rows = [];
+            foreach ($raw[$v] as $row) {
+                if (empty($row['datetime'])) continue;
+                $value = null;
+                foreach ($row as $k => $val) {
+                    if ($k !== 'datetime') { $value = $val; break; }
+                }
+                $rows[] = ['datetime' => $row['datetime'], 'value' => $value];
+            }
+            usort($rows, function ($a, $b) {
+                return strcmp($a['datetime'], $b['datetime']);
+            });
+            $out[$v] = $rows;
+        }
+
+        return $out;
     }
 
 }

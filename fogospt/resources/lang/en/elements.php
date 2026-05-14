@@ -51,6 +51,11 @@ return [
             'title' => 'Photos',
             'loadMore' => 'Load more',
         ],
+        'ipmaCharts' => [
+            'title'  => 'IPMA forecast at this point',
+            'source' => 'Data:',
+            'error'  => 'Could not load IPMA data for this location.',
+        ],
         'detail' => [
             'burn' => [
                 'title' => 'Burned area'
