@@ -11,7 +11,35 @@
     var lng = parseFloat(wrap.dataset.lng);
     if (!isFinite(lat) || !isFinite(lng)) return;
 
-    var t = (window.trans && window.trans.chartIpma) || {};
+    // Fallback labels (PT) when window.trans.chartIpma isn't available — e.g.
+    // when the rendered HTML still has a window.trans payload from before the
+    // chartIpma keys were added to lang/{locale}/js.php.
+    var DEFAULTS = {
+        temperature: 'Temperatura (°C)',
+        humidity:    'Humidade (%)',
+        wind:        'Vento médio (km/h)',
+        gust:        'Rajada (km/h)',
+        pressure:    'Pressão (hPa)',
+        precipitation: 'Precipitação (mm)',
+        fwi: 'FWI', isi: 'ISI', bui: 'BUI',
+        dc: 'DC',   dmc: 'DMC', ffmc: 'FFMC',
+        p2000:  'Probabilidade de extremos',
+        p2000a: 'Anomalia',
+        rcm:    'RCM (estação)',
+        titleTempHum:  'Temperatura e humidade',
+        titleWind:     'Vento e rajada',
+        titlePressure: 'Pressão atmosférica',
+        titlePrecip:   'Precipitação acumulada',
+        titleFwi:      'FWI / ISI / BUI',
+        titleDc:       'DC / DMC / FFMC',
+        titleFrm:      'FRM — probabilidade e anomalia',
+        titleRcm:      'RCM (estação)',
+    };
+    var fromTrans = (window.trans && window.trans.chartIpma) || {};
+    var t = {};
+    Object.keys(DEFAULTS).forEach(function (k) {
+        t[k] = fromTrans[k] || DEFAULTS[k];
+    });
     var loader = wrap.querySelector('.ipma-charts__loader');
     var grid   = wrap.querySelector('.ipma-charts__grid');
     var err    = wrap.querySelector('.ipma-charts__error');
