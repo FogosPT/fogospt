@@ -42,7 +42,7 @@
 
     <script src="https://unpkg.com/mapbox-gl-leaflet/leaflet-mapbox-gl.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script src="/js/concelhos.js"></script>
     <script src="/js/portugal.js"></script>
     <script src="/js/vendor/leaflet-openweathermap.js"></script>

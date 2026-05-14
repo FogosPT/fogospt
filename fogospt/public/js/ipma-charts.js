@@ -69,6 +69,10 @@
         return iso.slice(8, 10) + '/' + iso.slice(5, 7);
     }
 
+    function numOrNaN(v) {
+        return (v == null || isNaN(v)) ? NaN : Number(v);
+    }
+
     function renderHourly(canvasId, hourly, title, series, opts) {
         opts = opts || {};
         var canvas = document.getElementById(canvasId);
@@ -80,32 +84,37 @@
         var datasets = series.map(function (s) {
             return {
                 label: s.label,
-                data: hourly.map(function (r) { return r[s.key]; }),
+                data: hourly.map(function (r) { return numOrNaN(r[s.key]); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
                 fill: false,
                 yAxisID: s.axis === 'R' ? 'right' : 'left',
                 pointRadius: 0,
-                borderWidth: 1.5
+                borderWidth: 1.5,
+                spanGaps: true
             };
         });
         var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
-        new Chart(canvas, {
-            type: opts.type || 'line',
-            data: { labels: labels, datasets: datasets },
-            options: {
-                title: { display: !!title, text: title, fontSize: 13 },
-                legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
-                elements: { line: { tension: 0.1 } },
-                scales: {
-                    xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
-                    yAxes: hasDualAxis
-                        ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
-                           { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
-                        : [{ ticks: { fontSize: 10 } }]
+        try {
+            new Chart(canvas, {
+                type: opts.type || 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    title: { display: !!title, text: title, fontSize: 13 },
+                    legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
+                    elements: { line: { tension: 0.1 } },
+                    scales: {
+                        xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
+                        yAxes: hasDualAxis
+                            ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
+                               { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
+                            : [{ ticks: { fontSize: 10 } }]
+                    }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            canvas.parentElement.style.display = 'none';
+        }
     }
 
     function renderDaily(canvasId, daily, title, series) {
@@ -126,30 +135,39 @@
         var datasets = series.map(function (s) {
             var byDate = {};
             (daily[s.key] || []).forEach(function (r) { byDate[r.datetime] = r.value; });
+            var values = dates.map(function (d) { return numOrNaN(byDate[d]); });
             return {
                 label: s.label,
-                data: dates.map(function (d) { return byDate[d] == null ? null : byDate[d]; }),
+                data: values,
+                _hasData: values.some(function (v) { return !isNaN(v); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
                 fill: false,
                 pointRadius: 3,
-                borderWidth: 1.5
-            };
-        });
-
-        new Chart(canvas, {
-            type: 'line',
-            data: { labels: dates.map(shortDay), datasets: datasets },
-            options: {
-                title: { display: !!title, text: title, fontSize: 13 },
-                legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
-                elements: { line: { tension: 0 } },
-                scales: {
-                    xAxes: [{ ticks: { fontSize: 10 } }],
-                    yAxes: [{ ticks: { fontSize: 10 } }]
-                },
+                borderWidth: 1.5,
                 spanGaps: true
-            }
-        });
+            };
+        }).filter(function (ds) { return ds._hasData; });
+
+        if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
+
+        try {
+            new Chart(canvas, {
+                type: 'line',
+                data: { labels: dates.map(shortDay), datasets: datasets },
+                options: {
+                    title: { display: !!title, text: title, fontSize: 13 },
+                    legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
+                    elements: { line: { tension: 0 } },
+                    scales: {
+                        xAxes: [{ ticks: { fontSize: 10 } }],
+                        yAxes: [{ ticks: { fontSize: 10 } }]
+                    },
+                    spanGaps: true
+                }
+            });
+        } catch (e) {
+            canvas.parentElement.style.display = 'none';
+        }
     }
 })();
