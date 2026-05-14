@@ -12,6 +12,7 @@ return [
         'pressure'      => 'Presión',
         'wind'          => 'Viento',
         'windDirection' => 'Dirección del viento',
+        'windAnimated'  => 'Viento animado',
         'precipitation' => 'Precipitación',
         'clouds'        => 'Nubes',
         'humidity'      => 'Humedad',

@@ -88,4 +88,5 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/mobile-contributors', [ApiController::class, 'getMobileContributors'])->name('getMobileContributors');
     Route::get('/modis', [ApiController::class, 'getModis'])->name('getModis');
     Route::get('/viirs', [ApiController::class, 'getVIIRS'])->name('getVIIRS');
+    Route::get('/ipma-wind', [ApiController::class, 'getIpmaWind'])->name('getIpmaWind');
 });

@@ -3,6 +3,7 @@
 @push('head')
     <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css">
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.css">
 @endpush
 
 @section('content')
@@ -49,6 +50,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
+    <script src="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.min.js"></script>
     <script src="/js/map-panel.js?v=2"></script>
     <script src="/js/photos.js?v=1"></script>
     <script type="module">
@@ -56,6 +58,6 @@
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
-    <script src="/js/main.js?cache15=1"></script>
+    <script src="/js/main.js?cache16=1"></script>
 
 @endpush

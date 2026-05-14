@@ -222,6 +222,58 @@ $(document).ready(function () {
     }
     var IPMA_ATTR = 'Previsão &copy; <a href="https://www.ipma.pt" target="_blank">IPMA</a> (modelo AROME)';
 
+    // Lazy wrapper for the animated wind layer. Fetches the u/v JSON from
+    // our cached backend route only on first activation, then builds the
+    // L.velocityLayer and hands its lifecycle to Leaflet via add/remove.
+    var IpmaWindAnimated = L.Layer.extend({
+        onAdd: function (map) {
+            this._map = map;
+            var self = this;
+            if (this._data) {
+                this._attachVelocity();
+                return this;
+            }
+            fetch('/v1/ipma-wind', { credentials: 'omit' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (data) {
+                    if (!data || !Array.isArray(data) || data.length !== 2) return;
+                    self._data = data;
+                    if (self._map) self._attachVelocity();
+                })
+                .catch(function () { /* silent */ });
+            return this;
+        },
+        onRemove: function (map) {
+            if (this._velocity && map.hasLayer(this._velocity)) {
+                map.removeLayer(this._velocity);
+            }
+            this._velocity = null;
+            this._map = null;
+            return this;
+        },
+        _attachVelocity: function () {
+            if (!L.velocityLayer || !this._map) return;
+            this._velocity = L.velocityLayer({
+                displayValues: true,
+                displayOptions: {
+                    velocityType: window.trans.map.wind,
+                    position: 'bottomright',
+                    emptyString: '-',
+                    angleConvention: 'bearingCW',
+                    speedUnit: 'm/s'
+                },
+                data: this._data,
+                maxVelocity: 25,
+                velocityScale: 0.005,
+                particleAge: 60,
+                lineWidth: 1.5,
+                particleMultiplier: 1 / 300,
+                attribution: IPMA_ATTR
+            });
+            this._velocity.addTo(this._map);
+        }
+    });
+
     panel.addItem('ipma', 'temperature',   window.trans.map.temperature,
         makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR, window.trans.map.temperature), false)
     panel.addItem('ipma', 'wind',          window.trans.map.wind,
@@ -229,6 +281,8 @@ $(document).ready(function () {
     panel.addItem('ipma', 'windDirection', window.trans.map.windDirection,
         makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection,
             { opacity: 1.0, className: 'ipma-windbarbs-tile' }), false)
+    panel.addItem('ipma', 'windAnimated', window.trans.map.windAnimated,
+        new IpmaWindAnimated(), false)
     panel.addItem('ipma', 'precipitation', window.trans.map.precipitation,
         makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation), false)
     panel.addItem('ipma', 'humidity',      window.trans.map.humidity,

@@ -12,6 +12,7 @@ return [
         'pressure'      => 'Pressure',
         'wind'          => 'Wind',
         'windDirection' => 'Wind direction',
+        'windAnimated'  => 'Animated wind',
         'precipitation' => 'Precipitation',
         'clouds'        => 'Clouds',
         'humidity'      => 'Humidity',
