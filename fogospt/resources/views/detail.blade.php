@@ -189,7 +189,7 @@
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
     <script src="{{ asset('js/detail.js') }}"></script>
-    <script src="/js/ipma-charts.js?v=4"></script>
+    <script src="/js/ipma-charts.js?v=5"></script>
 
     <script>
         $(document).ready( function () {

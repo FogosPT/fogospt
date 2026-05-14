@@ -111,9 +111,11 @@
         }
         var labels = hourly.map(function (r) { return shortHour(r.datetime); });
         var datasets = series.map(function (s) {
+            var values = hourly.map(function (r) { return numOrNaN(r[s.key]); });
             return {
                 label: s.label,
-                data: hourly.map(function (r) { return numOrNaN(r[s.key]); }),
+                data: values,
+                _hasData: values.some(function (v) { return !isNaN(v); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
                 fill: false,
@@ -122,34 +124,37 @@
                 borderWidth: 1.5,
                 spanGaps: true
             };
-        });
+        }).filter(function (ds) { return ds._hasData; });
+
+        if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
+
         var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
 
-        var plugins = [];
+        var config = {
+            type: opts.type || 'line',
+            data: { labels: labels, datasets: datasets },
+            options: {
+                title: { display: !!title, text: title, fontSize: 13 },
+                legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
+                elements: { line: { tension: 0.1 } },
+                scales: {
+                    xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
+                    yAxes: hasDualAxis
+                        ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
+                           { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
+                        : [{ ticks: { fontSize: 10 } }]
+                }
+            }
+        };
         if (opts.windArrows) {
-            plugins.push(windArrowsPlugin(hourly));
+            config.plugins = [windArrowsPlugin(hourly)];
+            config.options.layout = { padding: { top: 22 } };
         }
 
         try {
-            new Chart(canvas, {
-                type: opts.type || 'line',
-                data: { labels: labels, datasets: datasets },
-                plugins: plugins,
-                options: {
-                    title: { display: !!title, text: title, fontSize: 13 },
-                    legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
-                    elements: { line: { tension: 0.1 } },
-                    scales: {
-                        xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
-                        yAxes: hasDualAxis
-                            ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
-                               { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
-                            : [{ ticks: { fontSize: 10 } }]
-                    },
-                    layout: opts.windArrows ? { padding: { top: 22 } } : {}
-                }
-            });
+            new Chart(canvas, config);
         } catch (e) {
+            if (window.console && console.warn) console.warn('ipma chart ' + canvasId + ':', e);
             canvas.parentElement.style.display = 'none';
         }
     }
@@ -157,38 +162,45 @@
     // Plugin: draws a small arrow above each data point pointing in the
     // direction the wind is going (u,v are east/north components in m/s).
     // We draw one arrow every other point to avoid clutter at 48 hours.
+    // Wrapped in try/catch so a plugin error never takes the chart with it.
     function windArrowsPlugin(hourly) {
         return {
             afterDatasetsDraw: function (chart) {
-                var ctx = chart.chart ? chart.chart.ctx : chart.ctx;
-                if (!ctx || !chart.chartArea) return;
-                var meta = chart.getDatasetMeta(0);
-                if (!meta || !meta.data || !meta.data.length) return;
-                var top = chart.chartArea.top - 14;
-                var step = hourly.length > 24 ? 3 : 2;
-                ctx.save();
-                ctx.strokeStyle = '#333';
-                ctx.fillStyle = '#333';
-                ctx.lineWidth = 1;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                for (var i = 0; i < hourly.length; i++) {
-                    if (i % step !== 0) continue;
-                    var row = hourly[i];
-                    var u = row && row.windU;
-                    var v = row && row.windV;
-                    if (u == null || v == null || isNaN(u) || isNaN(v)) continue;
-                    var mag = Math.sqrt(u * u + v * v);
-                    if (mag < 0.1) continue;
-                    var pt = meta.data[i];
-                    if (!pt || !pt._model) continue;
-                    var x = pt._model.x;
-                    // Canvas Y is flipped: wind going north (v>0) should
-                    // visually point UP, so negate v.
-                    var angle = Math.atan2(-v, u);
-                    drawArrow(ctx, x, top, angle, 11);
+                try {
+                    var ctx = (chart && chart.ctx) || (chart && chart.chart && chart.chart.ctx);
+                    if (!ctx || !chart.chartArea) return;
+                    var meta = chart.getDatasetMeta && chart.getDatasetMeta(0);
+                    if (!meta || !meta.data || !meta.data.length) return;
+                    var top = chart.chartArea.top - 12;
+                    if (top < 4) top = 4;
+                    var step = hourly.length > 24 ? 3 : 2;
+                    ctx.save();
+                    ctx.strokeStyle = '#333';
+                    ctx.fillStyle = '#333';
+                    ctx.lineWidth = 1;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    for (var i = 0; i < hourly.length; i++) {
+                        if (i % step !== 0) continue;
+                        var row = hourly[i];
+                        if (!row) continue;
+                        var u = row.windU;
+                        var v = row.windV;
+                        if (u == null || v == null || isNaN(u) || isNaN(v)) continue;
+                        var mag = Math.sqrt(u * u + v * v);
+                        if (mag < 0.1) continue;
+                        var pt = meta.data[i];
+                        if (!pt || !pt._model || typeof pt._model.x !== 'number') continue;
+                        // Canvas Y is flipped: wind going north (v>0) should
+                        // visually point UP, so negate v.
+                        var angle = Math.atan2(-v, u);
+                        drawArrow(ctx, pt._model.x, top, angle, 11);
+                    }
+                    ctx.restore();
+                } catch (err) {
+                    // Don't let the plugin break the chart.
+                    if (window.console && console.warn) console.warn('wind arrows plugin:', err);
                 }
-                ctx.restore();
             }
         };
     }
