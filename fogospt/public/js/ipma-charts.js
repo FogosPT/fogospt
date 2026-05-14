@@ -110,25 +110,30 @@
             return;
         }
         var labels = hourly.map(function (r) { return shortHour(r.datetime); });
+        var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
         var datasets = series.map(function (s) {
             var values = hourly.map(function (r) { return numOrNaN(r[s.key]); });
-            return {
+            var ds = {
                 label: s.label,
                 data: values,
                 _hasData: values.some(function (v) { return !isNaN(v); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
                 fill: false,
-                yAxisID: s.axis === 'R' ? 'right' : 'left',
                 pointRadius: 0,
                 borderWidth: 1.5,
                 spanGaps: true
             };
+            // Only attach yAxisID when the chart has multiple y-axes; otherwise
+            // Chart.js looks up a scale that doesn't exist and dies inside
+            // updateElement with 'Cannot read getBasePixel of undefined'.
+            if (hasDualAxis) {
+                ds.yAxisID = s.axis === 'R' ? 'right' : 'left';
+            }
+            return ds;
         }).filter(function (ds) { return ds._hasData; });
 
         if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
-
-        var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
 
         var config = {
             type: opts.type || 'line',
