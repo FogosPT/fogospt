@@ -271,6 +271,7 @@ class ApiController extends Controller
             'arome.2m.relative_humidity.' . $region,
             'arome.10m.windintensity.' . $region,
             'arome.10m.gustintensity.' . $region,
+            'arome.10m.windbarbs.' . $region,
             'arome.2m.pressure.' . $region,
             'arome.0m.precipitation.' . $region,
         ];
@@ -389,6 +390,7 @@ class ApiController extends Controller
             'arome.2m.pressure.' . $region          => 'pressure',
             'arome.0m.precipitation.' . $region     => 'precipitation',
         ];
+        $barbsKey = 'arome.10m.windbarbs.' . $region;
 
         $rows = [];
         foreach ($raw['data'] as $row) {
@@ -396,6 +398,17 @@ class ApiController extends Controller
             $out = ['datetime' => $row['datetime']];
             foreach ($map as $src => $dst) {
                 $out[$dst] = isset($row[$src]) ? $row[$src] : null;
+            }
+            // The windbarbs layer returns [u, v] in m/s — east and north
+            // wind components. We expose them so the frontend can derive
+            // direction (and draw arrows on the wind chart).
+            $barbs = isset($row[$barbsKey]) ? $row[$barbsKey] : null;
+            if (is_array($barbs) && count($barbs) === 2 && is_numeric($barbs[0]) && is_numeric($barbs[1])) {
+                $out['windU'] = (float) $barbs[0];
+                $out['windV'] = (float) $barbs[1];
+            } else {
+                $out['windU'] = null;
+                $out['windV'] = null;
             }
             $rows[] = $out;
         }

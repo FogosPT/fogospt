@@ -60,7 +60,8 @@
                  { key: 'humidity',    label: t.humidity,    color: '#33a1fd', axis: 'R' }]);
             renderHourly('ipmaWind',      data.hourly, t.titleWind,
                 [{ key: 'wind', label: t.wind, color: '#6D720B' },
-                 { key: 'gust', label: t.gust, color: '#EFC800' }]);
+                 { key: 'gust', label: t.gust, color: '#EFC800' }],
+                { windArrows: true });
             renderHourly('ipmaPressure',  data.hourly, t.titlePressure,
                 [{ key: 'pressure', label: t.pressure, color: '#4E88B2' }]);
             renderHourly('ipmaPrecip',    data.hourly, t.titlePrecip,
@@ -123,10 +124,17 @@
             };
         });
         var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
+
+        var plugins = [];
+        if (opts.windArrows) {
+            plugins.push(windArrowsPlugin(hourly));
+        }
+
         try {
             new Chart(canvas, {
                 type: opts.type || 'line',
                 data: { labels: labels, datasets: datasets },
+                plugins: plugins,
                 options: {
                     title: { display: !!title, text: title, fontSize: 13 },
                     legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
@@ -137,12 +145,75 @@
                             ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
                                { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
                             : [{ ticks: { fontSize: 10 } }]
-                    }
+                    },
+                    layout: opts.windArrows ? { padding: { top: 22 } } : {}
                 }
             });
         } catch (e) {
             canvas.parentElement.style.display = 'none';
         }
+    }
+
+    // Plugin: draws a small arrow above each data point pointing in the
+    // direction the wind is going (u,v are east/north components in m/s).
+    // We draw one arrow every other point to avoid clutter at 48 hours.
+    function windArrowsPlugin(hourly) {
+        return {
+            afterDatasetsDraw: function (chart) {
+                var ctx = chart.chart ? chart.chart.ctx : chart.ctx;
+                if (!ctx || !chart.chartArea) return;
+                var meta = chart.getDatasetMeta(0);
+                if (!meta || !meta.data || !meta.data.length) return;
+                var top = chart.chartArea.top - 14;
+                var step = hourly.length > 24 ? 3 : 2;
+                ctx.save();
+                ctx.strokeStyle = '#333';
+                ctx.fillStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                for (var i = 0; i < hourly.length; i++) {
+                    if (i % step !== 0) continue;
+                    var row = hourly[i];
+                    var u = row && row.windU;
+                    var v = row && row.windV;
+                    if (u == null || v == null || isNaN(u) || isNaN(v)) continue;
+                    var mag = Math.sqrt(u * u + v * v);
+                    if (mag < 0.1) continue;
+                    var pt = meta.data[i];
+                    if (!pt || !pt._model) continue;
+                    var x = pt._model.x;
+                    // Canvas Y is flipped: wind going north (v>0) should
+                    // visually point UP, so negate v.
+                    var angle = Math.atan2(-v, u);
+                    drawArrow(ctx, x, top, angle, 11);
+                }
+                ctx.restore();
+            }
+        };
+    }
+
+    function drawArrow(ctx, cx, cy, angle, length) {
+        // Stem
+        var hx = length / 2;
+        var x1 = cx - Math.cos(angle) * hx;
+        var y1 = cy - Math.sin(angle) * hx;
+        var x2 = cx + Math.cos(angle) * hx;
+        var y2 = cy + Math.sin(angle) * hx;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        // Head
+        var head = 4;
+        var leftAngle = angle + Math.PI - 0.5;
+        var rightAngle = angle + Math.PI + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 + Math.cos(leftAngle) * head, y2 + Math.sin(leftAngle) * head);
+        ctx.lineTo(x2 + Math.cos(rightAngle) * head, y2 + Math.sin(rightAngle) * head);
+        ctx.closePath();
+        ctx.fill();
     }
 
     function renderDaily(canvasId, daily, title, series) {
