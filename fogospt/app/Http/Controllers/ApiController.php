@@ -62,6 +62,70 @@ class ApiController extends Controller
     }
 
     /**
+     * Find the most recent AROME model run that the IPMA WMS will actually
+     * render. The capabilities document advertises a default reference_time
+     * but the server returns 404 unless we send the parameter explicitly,
+     * and the newest run isn't always published yet — so we probe a tiny
+     * GetMap and walk back through (00, 12 UTC) candidates until one
+     * answers 200. Result cached in Redis for 30 min.
+     */
+    public function getIpmaReferenceTime()
+    {
+        $cacheKey = 'ipma:ref-time';
+        if (env('APP_ENV') === 'production') {
+            $cached = Redis::get($cacheKey);
+            if ($cached) {
+                return response($cached, 200)
+                    ->header('Content-Type', 'application/json')
+                    ->header('Cache-Control', 'public, max-age=1800')
+                    ->header('X-Cache', 'HIT');
+            }
+        }
+
+        $now = Carbon::now('UTC');
+        $runHour = $now->hour < 12 ? 0 : 12;
+        $candidate = $now->copy()->setTime($runHour, 0, 0);
+
+        $client = new GuzzleHttp\Client(['timeout' => 10]);
+        $found = null;
+
+        for ($i = 0; $i < 4; $i++) {
+            $refTime = $candidate->format('Y-m-d\TH:i');
+            $url = 'https://mf2.ipma.pt/services/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap'
+                . '&LAYERS=arome.2m.temperature.continent&STYLES=&CRS=EPSG:3857'
+                . '&BBOX=-1100000,4500000,-700000,5200000&WIDTH=32&HEIGHT=32'
+                . '&FORMAT=image/png&TRANSPARENT=true&reference_time=' . urlencode($refTime);
+
+            try {
+                $resp = $client->request('HEAD', $url, ['http_errors' => false]);
+                if ($resp->getStatusCode() === 200) {
+                    $found = $refTime;
+                    break;
+                }
+            } catch (\Exception $e) {
+                // try next
+            }
+
+            $candidate->subHours(12);
+        }
+
+        if ($found === null) {
+            return response()->json(['error' => 'unavailable'], 503);
+        }
+
+        $payload = json_encode(['reference_time' => $found]);
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, $payload, 'EX', 1800);
+        }
+
+        return response($payload, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=1800')
+            ->header('X-Cache', 'MISS');
+    }
+
+    /**
      * Proxy for IPMA AROME u/v wind grid, served in the leaflet-velocity
      * format (array of two header/data objects with parameterNumber 2/3).
      *

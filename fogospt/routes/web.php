@@ -89,4 +89,5 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/modis', [ApiController::class, 'getModis'])->name('getModis');
     Route::get('/viirs', [ApiController::class, 'getVIIRS'])->name('getVIIRS');
     Route::get('/ipma-wind', [ApiController::class, 'getIpmaWind'])->name('getIpmaWind');
+    Route::get('/ipma-reference-time', [ApiController::class, 'getIpmaReferenceTime'])->name('getIpmaReferenceTime');
 });
