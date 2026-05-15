@@ -51,6 +51,7 @@
                 'title'  => 'Previsión IPMA en este punto',
                 'source' => 'Datos:',
                 'error'  => 'No se pudieron obtener datos de IPMA para esta ubicación.',
+                'learnMore' => '¿Qué significan estos gráficos?',
             ]
         ],
         'riskLevels' => [

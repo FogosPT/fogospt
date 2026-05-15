@@ -55,6 +55,7 @@ return [
             'title'  => 'IPMA forecast at this point',
             'source' => 'Data:',
             'error'  => 'Could not load IPMA data for this location.',
+            'learnMore' => 'What do these charts mean?',
         ],
         'detail' => [
             'burn' => [

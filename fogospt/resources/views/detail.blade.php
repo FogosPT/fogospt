@@ -157,6 +157,11 @@
                                 <div class="ipma-charts__error alert alert-warning small d-none">
                                     @lang('elements.cards.ipmaCharts.error')
                                 </div>
+                                <p class="ipma-charts__learn-more small text-muted mt-2">
+                                    <a href="{{ route('information', ['locale' => app()->getLocale()]) }}#ipma-charts">
+                                        @lang('elements.cards.ipmaCharts.learnMore')
+                                    </a>
+                                </p>
                             </div>
 
                             @include('elements.cards.photos')
