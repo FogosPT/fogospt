@@ -89,6 +89,21 @@ return [
 
             ],
             'source' => 'Información extraída de IPMA.'
+        ],
+        'ipmaCharts' => [
+            'title' => 'Gráficos de previsión IPMA (página de detalle)',
+            'intro' => 'Cada incidente tiene un panel con gráficos de previsión del IPMA para la ubicación exacta del fuego, alimentado por el modelo AROME (horario, próximas 48 h) y productos satelitales LSA-SAF (diario, 7 días). La línea vertical roja a trazos marca la hora actual.',
+            'items' => [
+                'tempHum' => 'Temperatura y humedad — temperatura del aire a 2 m (°C, eje izquierdo) y humedad relativa del aire (%, eje derecho). Indicador clave de sequedad: humedad por debajo del 30% combinada con temperatura elevada acelera la propagación.',
+                'wind' => 'Viento y ráfaga — intensidad media del viento a 10 m y ráfaga máxima (km/h). Las flechas en la parte superior indican la dirección hacia donde sopla el viento.',
+                'pressure' => 'Presión atmosférica — presión al nivel del mar (hPa). Caídas rápidas suelen acompañar el paso de frentes.',
+                'precip' => 'Precipitación acumulada — lluvia prevista por hora (mm). Útil para anticipar alivio o agravamiento sobre el terreno.',
+                'fwiIsiBui' => 'FWI / ISI / BUI — índices canadienses de riesgo meteorológico. FWI es el índice final; ISI representa la propagación inicial; BUI el combustible disponible. Valores más altos = condiciones más peligrosas.',
+                'dcDmcFfmc' => 'DC / DMC / FFMC — códigos de humedad de los combustibles. DC mide combustibles profundos (sequía prolongada), DMC los intermedios, FFMC los finos en superficie (respuesta rápida al tiempo reciente).',
+                'frm' => 'FRM — probabilidad de extremos (%) y anomalía (%) frente a la climatología. Señala condiciones atípicas para la época del año.',
+                'rcm' => 'RCM (estación) — riesgo de incendio rural por municipio, escala 1 (bajo) a 5 (máximo). Es el índice oficial usado en alertas públicas.',
+            ],
+            'source' => 'Fuente: IPMA (modelo AROME + productos LSA-SAF). Datos actualizados en cada corrida del modelo (00 y 12 UTC).',
         ]
 
     ],

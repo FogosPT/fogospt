@@ -105,6 +105,28 @@
                     </div>
                 </div>
 
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.ipmaCharts.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.ipmaCharts.intro')</p>
+                            <ul>
+                                <li>@lang('pages.information.ipmaCharts.items.tempHum')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.wind')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.pressure')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.precip')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.fwiIsiBui')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.dcDmcFfmc')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.frm')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.rcm')</li>
+                            </ul>
+                            <p>@lang('pages.information.ipmaCharts.source')</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>

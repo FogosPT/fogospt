@@ -83,6 +83,21 @@ return [
 
             ],
             'source' => 'Information retrieved from IPMA. (Portuguese Institute for Sea and Atmosphere).'
+        ],
+        'ipmaCharts' => [
+            'title' => 'IPMA forecast charts (detail page)',
+            'intro' => 'Every incident has an IPMA forecast panel for the exact fire location, fed by the AROME model (hourly, next 48 h) and LSA-SAF satellite products (daily, 7 days). The dashed red vertical line marks the current hour.',
+            'items' => [
+                'tempHum' => 'Temperature and humidity — air temperature at 2 m (°C, left axis) and relative humidity (%, right axis). Key dryness indicator: humidity below 30% combined with high temperatures accelerates fire spread sharply.',
+                'wind' => 'Wind and gust — mean wind intensity at 10 m and peak gust (km/h). Arrows on top show the direction the wind is going.',
+                'pressure' => 'Atmospheric pressure — sea-level pressure (hPa). Rapid drops usually accompany frontal passages.',
+                'precip' => 'Accumulated precipitation — hourly forecast rainfall (mm). Helps gauge relief or worsening on the ground.',
+                'fwiIsiBui' => 'FWI / ISI / BUI — Canadian fire weather indices. FWI is the final composite; ISI captures initial spread; BUI captures available fuel. Higher = more dangerous.',
+                'dcDmcFfmc' => 'DC / DMC / FFMC — fuel moisture codes. DC tracks deep fuels (long-term drought), DMC mid-layer, FFMC fine surface fuels (fast response to recent weather).',
+                'frm' => 'FRM — extremes probability (%) and anomaly (%) against climatology. Flags atypical conditions for the time of year.',
+                'rcm' => 'RCM (station) — rural fire risk per municipality, scale 1 (low) to 5 (maximum). The official index used in public alerts.',
+            ],
+            'source' => 'Source: IPMA (AROME model + LSA-SAF products). Refreshed every model run (00 and 12 UTC).',
         ]
     ],
     'notifications' => [

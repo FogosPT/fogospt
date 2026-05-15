@@ -57,16 +57,18 @@
             grid.classList.remove('d-none');
             renderHourly('ipmaTempHum',   data.hourly, t.titleTempHum,
                 [{ key: 'temperature', label: t.temperature, color: '#ff512f', axis: 'L' },
-                 { key: 'humidity',    label: t.humidity,    color: '#33a1fd', axis: 'R' }]);
+                 { key: 'humidity',    label: t.humidity,    color: '#33a1fd', axis: 'R' }],
+                { yLabel: '°C', yLabelR: '%' });
             renderHourly('ipmaWind',      data.hourly, t.titleWind,
                 [{ key: 'wind', label: t.wind, color: '#6D720B' },
                  { key: 'gust', label: t.gust, color: '#EFC800' }],
-                { windArrows: true });
+                { windArrows: true, yLabel: 'km/h' });
             renderHourly('ipmaPressure',  data.hourly, t.titlePressure,
-                [{ key: 'pressure', label: t.pressure, color: '#4E88B2' }]);
+                [{ key: 'pressure', label: t.pressure, color: '#4E88B2' }],
+                { yLabel: 'hPa' });
             renderHourly('ipmaPrecip',    data.hourly, t.titlePrecip,
                 [{ key: 'precipitation', label: t.precipitation, color: '#33a1fd' }],
-                { type: 'bar' });
+                { type: 'bar', yLabel: 'mm' });
             renderDaily('ipmaFwiIsiBui',  data.daily, t.titleFwi,
                 [{ key: 'fwi', label: t.fwi, color: '#ff512f' },
                  { key: 'isi', label: t.isi, color: '#f09819' },
@@ -77,7 +79,8 @@
                  { key: 'ffmc', label: t.ffmc, color: '#509e2f' }]);
             renderDaily('ipmaFrm',        data.daily, t.titleFrm,
                 [{ key: 'p2000',  label: t.p2000,  color: '#cb333b' },
-                 { key: 'p2000a', label: t.p2000a, color: '#33a1fd' }]);
+                 { key: 'p2000a', label: t.p2000a, color: '#33a1fd' }],
+                { yLabel: '%' });
             renderDaily('ipmaRcm',        data.daily, t.titleRcm,
                 [{ key: 'rcm', label: t.rcm, color: '#6f263d' }]);
         })
@@ -135,6 +138,21 @@
 
         if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
 
+        var yAxes;
+        if (hasDualAxis) {
+            yAxes = [
+                { id: 'left',  position: 'left',  ticks: { fontSize: 10 },
+                  scaleLabel: opts.yLabel  ? { display: true, labelString: opts.yLabel,  fontSize: 10 } : { display: false } },
+                { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false },
+                  scaleLabel: opts.yLabelR ? { display: true, labelString: opts.yLabelR, fontSize: 10 } : { display: false } }
+            ];
+        } else {
+            yAxes = [{
+                ticks: { fontSize: 10 },
+                scaleLabel: opts.yLabel ? { display: true, labelString: opts.yLabel, fontSize: 10 } : { display: false }
+            }];
+        }
+
         var config = {
             type: opts.type || 'line',
             data: { labels: labels, datasets: datasets },
@@ -144,15 +162,14 @@
                 elements: { line: { tension: 0.1 } },
                 scales: {
                     xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
-                    yAxes: hasDualAxis
-                        ? [{ id: 'left',  position: 'left',  ticks: { fontSize: 10 } },
-                           { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false } }]
-                        : [{ ticks: { fontSize: 10 } }]
+                    yAxes: yAxes
                 }
             }
         };
+        config.plugins = [];
+        config.plugins.push(nowLinePlugin(hourly.map(function (r) { return r.datetime; })));
         if (opts.windArrows) {
-            config.plugins = [windArrowsPlugin(hourly)];
+            config.plugins.push(windArrowsPlugin(hourly));
         }
 
         try {
@@ -212,6 +229,51 @@
         };
     }
 
+    // Plugin: draws a dashed red vertical line at the chart x-position
+    // closest to the current time (UTC). Skipped if "now" is well outside
+    // the timestamps range (>12 h beyond either edge) so a stale forecast
+    // doesn't pin the marker to the chart border.
+    function nowLinePlugin(timestamps) {
+        return {
+            afterDatasetsDraw: function (chart) {
+                try {
+                    var ctx = (chart && chart.ctx) || (chart && chart.chart && chart.chart.ctx);
+                    if (!ctx || !chart.chartArea || !timestamps || !timestamps.length) return;
+
+                    var nowMs = Date.now();
+                    // IPMA timestamps come without timezone — treat as UTC.
+                    var firstMs = new Date(timestamps[0] + 'Z').getTime();
+                    var lastMs  = new Date(timestamps[timestamps.length - 1] + 'Z').getTime();
+                    var slack = 12 * 3600 * 1000;
+                    if (nowMs < firstMs - slack || nowMs > lastMs + slack) return;
+
+                    var bestIdx = -1, bestDelta = Infinity;
+                    for (var i = 0; i < timestamps.length; i++) {
+                        var d = Math.abs(new Date(timestamps[i] + 'Z').getTime() - nowMs);
+                        if (d < bestDelta) { bestDelta = d; bestIdx = i; }
+                    }
+                    if (bestIdx < 0) return;
+                    var meta = chart.getDatasetMeta && chart.getDatasetMeta(0);
+                    if (!meta || !meta.data || !meta.data[bestIdx]) return;
+                    var pt = meta.data[bestIdx];
+                    if (!pt || !pt._model || typeof pt._model.x !== 'number') return;
+
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(220, 53, 69, 0.85)';
+                    ctx.lineWidth = 1.5;
+                    if (ctx.setLineDash) ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(pt._model.x, chart.chartArea.top);
+                    ctx.lineTo(pt._model.x, chart.chartArea.bottom);
+                    ctx.stroke();
+                    ctx.restore();
+                } catch (err) {
+                    if (window.console && console.warn) console.warn('now line plugin:', err);
+                }
+            }
+        };
+    }
+
     function drawArrow(ctx, cx, cy, angle, length) {
         // Stem
         var hx = length / 2;
@@ -235,7 +297,8 @@
         ctx.fill();
     }
 
-    function renderDaily(canvasId, daily, title, series) {
+    function renderDaily(canvasId, daily, title, series, opts) {
+        opts = opts || {};
         var canvas = document.getElementById(canvasId);
         if (!canvas || !daily) {
             if (canvas) canvas.parentElement.style.display = 'none';
@@ -273,18 +336,23 @@
             new Chart(canvas, {
                 type: 'line',
                 data: { labels: dates.map(shortDay), datasets: datasets },
+                plugins: [nowLinePlugin(dates)],
                 options: {
                     title: { display: !!title, text: title, fontSize: 13 },
                     legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
                     elements: { line: { tension: 0 } },
                     scales: {
                         xAxes: [{ ticks: { fontSize: 10 } }],
-                        yAxes: [{ ticks: { fontSize: 10 } }]
+                        yAxes: [{
+                            ticks: { fontSize: 10 },
+                            scaleLabel: opts.yLabel ? { display: true, labelString: opts.yLabel, fontSize: 10 } : { display: false }
+                        }]
                     },
                     spanGaps: true
                 }
             });
         } catch (e) {
+            if (window.console && console.warn) console.warn('ipma chart ' + canvasId + ':', e);
             canvas.parentElement.style.display = 'none';
         }
     }
