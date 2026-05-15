@@ -101,6 +101,34 @@
         return isNaN(d.getTime()) ? null : d;
     }
 
+    // Chart.js 2.9 keeps the tooltip pinned after a touchend on mobile
+    // because there's no mouseleave to clear it. Wire a short auto-dismiss
+    // timer on every chart so tapped tooltips fade after ~8 s if the user
+    // walks away. Resets if the user touches again. No-op on desktop
+    // because the listeners are touch-only.
+    function setupTouchAutoDismiss(chart) {
+        try {
+            var canvas = chart && (chart.canvas || (chart.chart && chart.chart.canvas));
+            if (!canvas) return;
+            var timer = null;
+            var clearActive = function () {
+                try {
+                    if (chart.tooltip) chart.tooltip._active = [];
+                    chart.active = [];
+                    chart.update();
+                } catch (e) {}
+                timer = null;
+            };
+            canvas.addEventListener('touchstart', function () {
+                if (timer) { clearTimeout(timer); timer = null; }
+            }, { passive: true });
+            canvas.addEventListener('touchend', function () {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(clearActive, 8000);
+            }, { passive: true });
+        } catch (e) { /* no-op */ }
+    }
+
     function shortHour(iso) {
         var d = parseUtc(iso);
         if (!d) return iso || '';
@@ -239,7 +267,8 @@
         }
 
         try {
-            new Chart(canvas, config);
+            var chart = new Chart(canvas, config);
+            setupTouchAutoDismiss(chart);
         } catch (e) {
             if (window.console && console.warn) console.warn('ipma chart ' + canvasId + ':', e);
             canvas.parentElement.style.display = 'none';
@@ -399,7 +428,7 @@
         if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
 
         try {
-            new Chart(canvas, {
+            var chart = new Chart(canvas, {
                 type: 'line',
                 data: { labels: dates.map(shortDay), datasets: datasets },
                 plugins: [nowLinePlugin(dates)],
@@ -419,6 +448,7 @@
                     spanGaps: true
                 }
             });
+            setupTouchAutoDismiss(chart);
         } catch (e) {
             if (window.console && console.warn) console.warn('ipma chart ' + canvasId + ':', e);
             canvas.parentElement.style.display = 'none';

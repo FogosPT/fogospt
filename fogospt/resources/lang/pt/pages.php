@@ -92,7 +92,7 @@ return [
         ],
         'ipmaCharts' => [
             'title' => 'Gráficos de Previsão IPMA (página de detalhe)',
-            'intro' => 'Cada incidente tem uma secção com gráficos de previsão da IPMA para a localização exacta do fogo, alimentados pelo modelo AROME (horário, próximas 48 h) e produtos satélite LSA-SAF (diário, 7 dias). A linha vertical a tracejado vermelho marca a hora actual.',
+            'intro' => 'Cada incidente tem uma secção com gráficos de previsão do IPMA para a localização exacta do fogo, alimentados pelo modelo AROME (horário, próximas 48 h) e produtos satélite LSA-SAF (diário, 7 dias). A linha vertical a tracejado vermelho marca a hora actual.',
             'items' => [
                 'tempHum' => 'Temperatura e humidade — temperatura do ar a 2 m (°C, eixo esquerdo) e humidade relativa do ar (%, eixo direito). Indicador-chave da secura: humidade abaixo de 30% combinada com temperatura elevada acelera muito a propagação.',
                 'wind' => 'Vento e rajada — intensidade média do vento a 10 m e rajada máxima (km/h). As setas no topo indicam a direcção: a ponta aponta para onde o vento sopra.',
