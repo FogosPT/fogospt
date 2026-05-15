@@ -89,16 +89,57 @@
             err.classList.remove('d-none');
         });
 
+    // IPMA timestamps are wall-clock UTC ("2026-05-13T19:00", no Z). Parse
+    // as UTC and let the Date object convert to the user's local time zone
+    // for display so Portugal mainland (UTC+1 in summer) doesn't see hours
+    // shifted by an hour.
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function parseUtc(iso) {
+        if (!iso) return null;
+        var d = new Date(iso + 'Z');
+        return isNaN(d.getTime()) ? null : d;
+    }
+
     function shortHour(iso) {
-        // "2026-05-13T19:00" -> "13/05 19h"
-        if (!iso) return '';
-        var d = iso.slice(8, 10), m = iso.slice(5, 7), h = iso.slice(11, 13);
-        return d + '/' + m + ' ' + h + 'h';
+        var d = parseUtc(iso);
+        if (!d) return iso || '';
+        return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + ' ' + pad2(d.getHours()) + 'h';
     }
 
     function shortDay(iso) {
-        if (!iso) return '';
-        return iso.slice(8, 10) + '/' + iso.slice(5, 7);
+        var d = parseUtc(iso);
+        if (!d) return iso || '';
+        return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1);
+    }
+
+    // Splits "Temperatura (°C)" into name "Temperatura" + unit "°C". When
+    // the label has no parenthesised unit the unit comes back as ''.
+    function splitLabelUnit(label) {
+        var s = String(label || '');
+        var m = s.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+        return m ? { name: m[1], unit: m[2] } : { name: s, unit: '' };
+    }
+
+    function formatTooltipLabel(item, data) {
+        var ds = data.datasets[item.datasetIndex] || {};
+        var lu = splitLabelUnit(ds.label);
+        var v = item.yLabel;
+        if (v == null || isNaN(v)) return lu.name + ': —';
+        var fixed = Math.abs(v) >= 100 ? 0 : 1;
+        return lu.name + ': ' + Number(v).toFixed(fixed) + (lu.unit ? ' ' + lu.unit : '');
+    }
+
+    // Returns a 16-point cardinal direction ("N", "NNE", ..., "NW") from
+    // wind u/v components in m/s, expressed in the "where wind is going"
+    // convention (consistent with the arrows overlay).
+    var CARDINAL = ['E','ENE','NE','NNE','N','NNW','NW','WNW','W','WSW','SW','SSW','S','SSE','SE','ESE'];
+    function cardinalFromUV(u, v) {
+        if (u == null || v == null || isNaN(u) || isNaN(v)) return null;
+        var angleDeg = Math.atan2(v, u) * 180 / Math.PI; // 0=E, 90=N
+        if (angleDeg < 0) angleDeg += 360;
+        var idx = Math.round(angleDeg / 22.5) % 16;
+        return CARDINAL[idx];
     }
 
     function numOrNaN(v) {
@@ -153,6 +194,17 @@
             }];
         }
 
+        var tooltipCallbacks = { label: formatTooltipLabel };
+        if (opts.windArrows) {
+            tooltipCallbacks.afterBody = function (items) {
+                if (!items || !items.length) return '';
+                var row = hourly[items[0].index];
+                if (!row) return '';
+                var dir = cardinalFromUV(row.windU, row.windV);
+                return dir ? 'Direção: ' + dir : '';
+            };
+        }
+
         var config = {
             type: opts.type || 'line',
             data: { labels: labels, datasets: datasets },
@@ -160,6 +212,8 @@
                 title: { display: !!title, text: title, fontSize: 13 },
                 legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
                 elements: { line: { tension: 0.1 } },
+                hover: { mode: 'index', intersect: false },
+                tooltips: { mode: 'index', intersect: false, callbacks: tooltipCallbacks },
                 scales: {
                     xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
                     yAxes: yAxes
@@ -341,6 +395,8 @@
                     title: { display: !!title, text: title, fontSize: 13 },
                     legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
                     elements: { line: { tension: 0 } },
+                    hover: { mode: 'index', intersect: false },
+                    tooltips: { mode: 'index', intersect: false, callbacks: { label: formatTooltipLabel } },
                     scales: {
                         xAxes: [{ ticks: { fontSize: 10 } }],
                         yAxes: [{
