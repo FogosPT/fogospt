@@ -68,7 +68,7 @@
                 { yLabel: 'hPa' });
             renderHourly('ipmaPrecip',    data.hourly, t.titlePrecip,
                 [{ key: 'precipitation', label: t.precipitation, color: '#33a1fd' }],
-                { type: 'bar', yLabel: 'mm' });
+                { type: 'bar', yLabel: 'mm', yMin: 0 });
             renderDaily('ipmaFwiIsiBui',  data.daily, t.titleFwi,
                 [{ key: 'fwi', label: t.fwi, color: '#ff512f' },
                  { key: 'isi', label: t.isi, color: '#f09819' },
@@ -156,7 +156,11 @@
         var labels = hourly.map(function (r) { return shortHour(r.datetime); });
         var hasDualAxis = series.some(function (s) { return s.axis === 'R'; });
         var datasets = series.map(function (s) {
-            var values = hourly.map(function (r) { return numOrNaN(r[s.key]); });
+            var values = hourly.map(function (r) {
+                var v = numOrNaN(r[s.key]);
+                if (typeof opts.yMin === 'number' && !isNaN(v) && v < opts.yMin) v = opts.yMin;
+                return v;
+            });
             var ds = {
                 label: s.label,
                 data: values,
@@ -179,17 +183,25 @@
 
         if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
 
+        var ticksFor = function (min) {
+            var t = { fontSize: 10 };
+            if (typeof min === 'number') {
+                t.min = min;
+                t.beginAtZero = (min === 0);
+            }
+            return t;
+        };
         var yAxes;
         if (hasDualAxis) {
             yAxes = [
-                { id: 'left',  position: 'left',  ticks: { fontSize: 10 },
+                { id: 'left',  position: 'left',  ticks: ticksFor(opts.yMin),
                   scaleLabel: opts.yLabel  ? { display: true, labelString: opts.yLabel,  fontSize: 10 } : { display: false } },
-                { id: 'right', position: 'right', ticks: { fontSize: 10 }, gridLines: { display: false },
+                { id: 'right', position: 'right', ticks: ticksFor(opts.yMinR), gridLines: { display: false },
                   scaleLabel: opts.yLabelR ? { display: true, labelString: opts.yLabelR, fontSize: 10 } : { display: false } }
             ];
         } else {
             yAxes = [{
-                ticks: { fontSize: 10 },
+                ticks: ticksFor(opts.yMin),
                 scaleLabel: opts.yLabel ? { display: true, labelString: opts.yLabel, fontSize: 10 } : { display: false }
             }];
         }
