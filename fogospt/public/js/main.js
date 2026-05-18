@@ -295,10 +295,17 @@ $(document).ready(function () {
         pane: 'ipmaLabels'
     });
 
+    // Read directly off the map — panel state lags by a microtask during
+    // _toggleItem (state assigned after _addLayer/_removeLayer), so reading
+    // it caused us to react with stale info and tear down what was just
+    // being added (manifests as Leaflet "listener not found" warnings when
+    // a LayerGroup like satelliteLayer is removed mid-onAdd).
     function isIpmaActive() {
-        var st = (window.fogosPanel && window.fogosPanel._state) || {};
-        return !!(st['ipma:temperature'] || st['ipma:wind'] || st['ipma:windDirection'] ||
-                  st['ipma:windAnimated'] || st['ipma:precipitation'] || st['ipma:humidity']);
+        var active = false;
+        mymap.eachLayer(function (l) {
+            if (l._isIpma || l._legendUrl) active = true;
+        });
+        return active;
     }
 
     function applyIpmaBaseMode() {
