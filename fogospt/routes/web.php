@@ -93,4 +93,5 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/ipma-point/{lat}/{lng}', [ApiController::class, 'getIpmaPoint'])
         ->where(['lat' => '-?\d+(\.\d+)?', 'lng' => '-?\d+(\.\d+)?'])
         ->name('getIpmaPoint');
+    Route::get('/ipma-wms', [ApiController::class, 'getIpmaWms'])->name('getIpmaWms');
 });

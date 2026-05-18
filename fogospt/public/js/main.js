@@ -167,7 +167,7 @@ $(document).ready(function () {
     window.fogosIpmaAromeTiles = [];
 
     function makeIpmaLayer(layerNames, attribution, label, extraOpts) {
-        var legendUrl = 'https://mf2.ipma.pt/services?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
+        var legendUrl = '/v1/ipma-wms?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
             encodeURIComponent(layerNames[0]) + '&format=image/png&STYLE=default';
         var group = L.layerGroup(layerNames.map(function (name) {
             var opts = {
@@ -182,7 +182,7 @@ $(document).ready(function () {
             if (extraOpts) {
                 for (var k in extraOpts) opts[k] = extraOpts[k];
             }
-            var tile = L.tileLayer.wms('https://mf2.ipma.pt/services/', opts);
+            var tile = L.tileLayer.wms('/v1/ipma-wms', opts);
             tile._legendUrl = legendUrl;
             tile._legendLabel = label;
             window.fogosIpmaAromeTiles.push(tile);
@@ -489,7 +489,7 @@ $(document).ready(function () {
 
             // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
             window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',
-                L.tileLayer.wms('https://mf2.ipma.pt/services/', {
+                L.tileLayer.wms('/v1/ipma-wms', {
                     layers: 'lsasaf.frp.continent',
                     format: 'image/png',
                     transparent: true,

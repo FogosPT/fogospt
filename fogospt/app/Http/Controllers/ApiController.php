@@ -330,6 +330,98 @@ class ApiController extends Controller
             ->header('X-Cache', 'MISS');
     }
 
+    /**
+     * Aggressively-cached proxy for IPMA WMS GetMap / GetLegendGraphic so the
+     * browser never talks to mf2.ipma.pt directly. The cache key is derived
+     * from the normalised whitelisted query string, which makes hits stable
+     * across leaflet's param-ordering quirks. Tiles for a given reference_time
+     * are immutable, so we send long max-age + immutable HTTP cache headers
+     * and store the raw PNG in Redis (base64 — phpredis returns binary-safe
+     * but base64 keeps it portable) for 24 h.
+     */
+    public function getIpmaWms(Request $request)
+    {
+        $allowed = [
+            'SERVICE','VERSION','REQUEST','LAYERS','STYLES','CRS','SRS','BBOX',
+            'WIDTH','HEIGHT','FORMAT','TRANSPARENT','REFERENCE_TIME','TIME',
+            'LAYER','SLD_VERSION','STYLE','EXCEPTIONS',
+        ];
+        $allowedFlip = array_flip($allowed);
+
+        $params = [];
+        foreach ($request->query() as $k => $v) {
+            $K = strtoupper($k);
+            if (isset($allowedFlip[$K]) && is_scalar($v)) {
+                $params[$K] = (string) $v;
+            }
+        }
+
+        $req = isset($params['REQUEST']) ? $params['REQUEST'] : '';
+        if (!in_array($req, ['GetMap', 'GetLegendGraphic'], true)) {
+            return response()->json(['error' => 'unsupported_request'], 400);
+        }
+        if (isset($params['FORMAT']) && $params['FORMAT'] !== 'image/png') {
+            return response()->json(['error' => 'unsupported_format'], 400);
+        }
+        if ($req === 'GetMap' && empty($params['LAYERS'])) {
+            return response()->json(['error' => 'missing_layers'], 400);
+        }
+        if ($req === 'GetLegendGraphic' && empty($params['LAYER'])) {
+            return response()->json(['error' => 'missing_layer'], 400);
+        }
+
+        // Stable, sorted query string for cache-key derivation. mf2 receives
+        // the same shape (leaflet sends mixed case; this normalises).
+        ksort($params);
+        $canonical = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        $cacheKey = 'ipma:wms:' . sha1($canonical);
+
+        if (env('APP_ENV') === 'production') {
+            $cached = Redis::get($cacheKey);
+            if ($cached !== null && $cached !== false) {
+                $bytes = base64_decode($cached, true);
+                if ($bytes !== false) {
+                    return response($bytes, 200)
+                        ->header('Content-Type', 'image/png')
+                        ->header('Cache-Control', 'public, max-age=86400, immutable')
+                        ->header('X-Cache', 'HIT');
+                }
+            }
+        }
+
+        // mf2 lowercases its param names but accepts uppercase. Forward what
+        // we whitelisted — drops anything unexpected.
+        $upstreamUrl = 'https://mf2.ipma.pt/services/?' . $canonical;
+
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 10]);
+            $resp = $client->request('GET', $upstreamUrl, ['http_errors' => false]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'upstream_unavailable'], 502);
+        }
+
+        if ($resp->getStatusCode() !== 200) {
+            return response()->json(['error' => 'upstream_status', 'status' => $resp->getStatusCode()], 502);
+        }
+
+        $contentType = $resp->getHeaderLine('Content-Type');
+        if (stripos($contentType, 'image/png') === false) {
+            // mf2 returns XML ServiceExceptionReport on errors — do not cache.
+            return response()->json(['error' => 'upstream_non_image'], 502);
+        }
+
+        $bytes = (string) $resp->getBody();
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, base64_encode($bytes), 'EX', 86400);
+        }
+
+        return response($bytes, 200)
+            ->header('Content-Type', 'image/png')
+            ->header('Cache-Control', 'public, max-age=86400, immutable')
+            ->header('X-Cache', 'MISS');
+    }
+
     private function regionForPoint($lat, $lng)
     {
         if ($lng >= -12.8 && $lng <= -1.2 && $lat >= 34.0 && $lat <= 44.8) {
