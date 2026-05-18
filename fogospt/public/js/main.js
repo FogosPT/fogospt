@@ -274,13 +274,25 @@ $(document).ready(function () {
     panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
         makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity), false)
 
-    // When an IPMA forecast layer is active, swap the basemap for a labels-only
-    // tile layer so the WMS colours read cleanly. Restore the user's chosen base
-    // (normal/satellite) when IPMA is turned off.
-    var labelsOnlyLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    // When an IPMA forecast layer is active, mirror the mf2.ipma.pt viewer:
+    // hide normal/satellite and stack a CARTO Positron light_nolabels base
+    // under the WMS overlay, plus a Voyager labels-only tile on top in a
+    // dedicated pane so place names stay readable above the colours. Restore
+    // the user's chosen base (normal/satellite) when IPMA is turned off.
+    if (!mymap.getPane('ipmaLabels')) {
+        mymap.createPane('ipmaLabels');
+        mymap.getPane('ipmaLabels').style.zIndex = 450; // above overlayPane (400)
+        mymap.getPane('ipmaLabels').style.pointerEvents = 'none';
+    }
+    var ipmaBaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd',
-        attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>'
+        attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+    });
+    var ipmaLabelsLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        pane: 'ipmaLabels'
     });
 
     function isIpmaActive() {
@@ -293,10 +305,12 @@ $(document).ready(function () {
         if (isIpmaActive()) {
             if (mymap.hasLayer(normalLayer)) mymap.removeLayer(normalLayer);
             if (mymap.hasLayer(satelliteLayer)) mymap.removeLayer(satelliteLayer);
-            if (!mymap.hasLayer(labelsOnlyLayer)) labelsOnlyLayer.addTo(mymap);
-            labelsOnlyLayer.bringToFront();
+            if (!mymap.hasLayer(ipmaBaseLayer)) ipmaBaseLayer.addTo(mymap);
+            ipmaBaseLayer.bringToBack();
+            if (!mymap.hasLayer(ipmaLabelsLayer)) ipmaLabelsLayer.addTo(mymap);
         } else {
-            if (mymap.hasLayer(labelsOnlyLayer)) mymap.removeLayer(labelsOnlyLayer);
+            if (mymap.hasLayer(ipmaBaseLayer)) mymap.removeLayer(ipmaBaseLayer);
+            if (mymap.hasLayer(ipmaLabelsLayer)) mymap.removeLayer(ipmaLabelsLayer);
             var st = (window.fogosPanel && window.fogosPanel._state) || {};
             var wantSat = !!st['base:satellite'];
             var target = wantSat ? satelliteLayer : normalLayer;
