@@ -1263,7 +1263,8 @@ têm margens uniformes. */
   border-radius: 6px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
   padding: 6px 8px;
-  max-height: calc(100vh - 200px);
+  margin-bottom: 24px !important;
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
   display: flex;
   gap: 8px;
@@ -1303,6 +1304,54 @@ têm margens uniformes. */
 
     img {
       max-height: 150px;
+    }
+  }
+}
+
+/* RCM choropleth discrete legend (rural fire danger layers) */
+.fogos-risk-legend {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+  margin-bottom: 24px !important;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: #333;
+
+  &__title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  &__swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #666;
+    border-radius: 2px;
+    flex: none;
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-risk-legend {
+    font-size: 11px;
+
+    &__swatch {
+      width: 12px;
+      height: 12px;
     }
   }
 }

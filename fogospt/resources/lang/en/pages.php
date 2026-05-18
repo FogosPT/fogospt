@@ -75,7 +75,7 @@ return [
             'items' => [
                 'fwi' => '(FWI) Fire Weather Index - This is the final Canadian index system, calculated based on the sub-indexes ISI and BUI.',
                 'fmc' => '(FFMC) Fine Fuel Moisture Code - This index classifies the fine fuel moisture regarding moisture percentage. It is related to the degree of flammability of the fuel located at surface level. The moisture percentage at 12 UTC for a given day, depends on the moisture percentage at the same time the precious day, 24 hours (12-12 UTC) precipitation (mm), temperature (ºC) and relative humidity (%) at 12 UTC that day. Wind speed affects only the drying speed of the material.',
-                'isi' => '(ISI) Initial Spread Index -  This index classifies the inicial propagation of the fire. It depends on the sub-index FFMC and wind speed (Km/h) at 12 UTC.',
+                'isi' => '(ISI) Initial Spread Index -  This index classifies the inicial propagation of the fire. It depends on the sub-index FFMC and wind speed (km/h) at 12 UTC.',
                 'bui' => '(BUI) Build Up Index - The build up index, is a index of evaluation of the vegatation that is able to feed a fire ("heavy" fuel on the ground). It is calculated from two sub-indexes: DMC e DC.',
                 'dc' => '(DC) Drought Code - This index translates de moisture percentage of the húmus and medium sized firewood materials located below surface up to 8 cm. It is calculated from the precipitation for 24 hours (12-12 UTC), temperature e relative humidity at 12 UTC and DC the previous day.',
                 'dmc' => '(DMC) Duff Moisture Code - This index is a good index of the effects of seasonal drought on forest fuel (húmus and large sized firewood materials), located below surface, from 8 to 20 cm deep. The index is calculated from precipitation from the previous 24 hours, temperature at 12 UTC and drought code the previous day.'
@@ -84,20 +84,34 @@ return [
             ],
             'source' => 'Information retrieved from IPMA. (Portuguese Institute for Sea and Atmosphere).'
         ],
+        'ruralFireRisk' => [
+            'title' => 'Rural Fire Danger (RCM)',
+            'intro' => 'The RCM (Risco Conjuntural e Meteorológico) combines the FWI with the territorial hazard map. <strong>It is not the FWI</strong> — it is an integrated index, computed per municipality, and the official indicator used in public alerts.',
+            'classesTitle' => 'RCM is split into five classes:',
+            'classes' => [
+                'reduced' => 'Low',
+                'moderate' => 'Moderate',
+                'high' => 'High',
+                'veryHigh' => 'Very High',
+                'maximum' => 'Maximum',
+            ],
+            'legendNote' => 'Whenever this layer is active on the map, its colour legend shows in the bottom-left corner.',
+            'source' => 'More info at <a href="https://www.ipma.pt/pt/riscoincendio/rcm.pt/" target="_blank" rel="noopener">IPMA — Rural Fire Danger</a>.',
+        ],
         'ipmaCharts' => [
             'title' => 'IPMA forecast charts (detail page)',
-            'intro' => 'Every incident has an IPMA forecast panel for the exact fire location, fed by the AROME model (hourly, next 48 h) and LSA-SAF satellite products (daily, 7 days). The dashed red vertical line marks the current hour.',
+            'intro' => 'Every incident has an IPMA forecast panel for the exact fire location. Hourly weather variables (next 48 h) are fed by the AROME model. The FWI and the Canadian sub-indices are computed at 12 UTC from the ECMWF model — not from AROME. The LSA-SAF products (daily, 7 days) combine satellite observation with ECMWF forecasts. The dashed red vertical line marks the current hour.',
             'items' => [
                 'tempHum' => 'Temperature and humidity — air temperature at 2 m (°C, left axis) and relative humidity (%, right axis). Key dryness indicator: humidity below 30% combined with high temperatures accelerates fire spread sharply.',
-                'wind' => 'Wind and gust — mean wind intensity at 10 m and peak gust (km/h). Arrows on top show the direction the wind is going.',
-                'pressure' => 'Atmospheric pressure — sea-level pressure (hPa). Rapid drops usually accompany frontal passages.',
-                'precip' => 'Accumulated precipitation — hourly forecast rainfall (mm). Helps gauge relief or worsening on the ground.',
-                'fwiIsiBui' => 'FWI / ISI / BUI — Canadian fire weather indices. FWI is the final composite; ISI captures initial spread; BUI captures available fuel. Higher = more dangerous.',
-                'dcDmcFfmc' => 'DC / DMC / FFMC — fuel moisture codes. DC tracks deep fuels (long-term drought), DMC mid-layer, FFMC fine surface fuels (fast response to recent weather).',
+                'wind' => 'Wind and gust — mean wind intensity at 10 m and peak gust (km/h). Arrows on top show direction: the arrow head points to where the wind is blowing.',
+                'pressure' => 'Atmospheric pressure — sea-level pressure (hPa). Sharp variations may signal an approaching or passing weather front.',
+                'precip' => 'Accumulated precipitation — forecast precipitation accumulated over one hour (mm). Useful to gauge relief or worsening on the ground.',
+                'fwiIsiBui' => 'FWI / ISI / BUI — Canadian fire weather indices, computed at 12 UTC from the ECMWF model. FWI is the final composite; ISI captures initial spread; BUI captures available fuel. Higher = more dangerous.',
+                'dcDmcFfmc' => 'DC / DMC / FFMC — fuel moisture indices. DC tracks deep fuels (long-term drought), DMC mid-layer, FFMC fine surface fuels (fast response to recent weather).',
                 'frm' => 'FRM — extremes probability (%) and anomaly (%) against climatology. Flags atypical conditions for the time of year.',
-                'rcm' => 'RCM (station) — rural fire risk per municipality, scale 1 (low) to 5 (maximum). The official index used in public alerts.',
             ],
-            'source' => 'Source: IPMA (AROME model + LSA-SAF products). Refreshed every model run (00 and 12 UTC).',
+            'rcmNote' => 'The RCM (Risco Conjuntural e Meteorológico) — equivalent to the <strong>Rural Fire Danger</strong> — has no dedicated chart on this page; it is shown as a layer on the main map, with its own legend.',
+            'source' => 'Source: IPMA (AROME model for the hourly variables, ECMWF model for the Canadian indices, and LSA-SAF products for the daily indicators). Refreshed every model run (00 and 12 UTC).',
         ]
     ],
     'notifications' => [

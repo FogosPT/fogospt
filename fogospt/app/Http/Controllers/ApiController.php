@@ -287,13 +287,13 @@ class ApiController extends Controller
             'ipma.rcm.' . $region,
         ];
 
-        // 48 hourly timestamps (AROME) and 7 daily (LSA-SAF/RCM) starting at ref.
+        // 48 hourly timestamps (AROME) and 10 daily (LSA-SAF/RCM) starting at ref.
         $hourlyTimes = [];
         for ($h = 0; $h < 48; $h++) {
             $hourlyTimes[] = Carbon::parse($refTimeIso)->addHours($h)->format('Y-m-d\TH:i:s');
         }
         $dailyTimes = [];
-        for ($d = 0; $d < 7; $d++) {
+        for ($d = 0; $d < 10; $d++) {
             $dailyTimes[] = Carbon::parse($refTimeIso)->addDays($d)->format('Y-m-d\TH:i:s');
         }
 

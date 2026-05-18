@@ -317,7 +317,8 @@ function addModisPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
     var confidence = '';
@@ -352,7 +353,8 @@ function addVIIRSPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
 

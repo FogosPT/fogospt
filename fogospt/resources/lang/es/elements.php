@@ -52,6 +52,7 @@
                 'source' => 'Datos:',
                 'error'  => 'No se pudieron obtener datos de IPMA para esta ubicación.',
                 'learnMore' => '¿Qué significan estos gráficos?',
+                'run' => 'Corrida del modelo: :time (hora local)',
             ]
         ],
         'riskLevels' => [

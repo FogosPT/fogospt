@@ -56,6 +56,7 @@ return [
             'source' => 'Data:',
             'error'  => 'Could not load IPMA data for this location.',
             'learnMore' => 'What do these charts mean?',
+            'run' => 'Model run: :time (local time)',
         ],
         'detail' => [
             'burn' => [

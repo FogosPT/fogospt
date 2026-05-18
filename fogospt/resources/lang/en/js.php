@@ -10,7 +10,7 @@ return [
         'satellite'     => 'Satellite',
         'temperature'   => 'Temperature',
         'pressure'      => 'Pressure',
-        'wind'          => 'Wind',
+        'wind'          => 'Wind intensity',
         'windDirection' => 'Wind direction',
         'windAnimated'  => 'Animated wind',
         'precipitation' => 'Precipitation',
@@ -28,6 +28,13 @@ return [
         'today'    => 'Today',
         'tomorrow' => 'Tomorrow',
         'after'    => 'Day after',
+        'classes' => [
+            'reduced'   => 'Low',
+            'moderate'  => 'Moderate',
+            'high'      => 'High',
+            'veryHigh'  => 'Very High',
+            'maximum'   => 'Maximum',
+        ],
     ],
     'status' => [
         'dispatch'           => 'Dispatch',
@@ -71,6 +78,7 @@ return [
         'titleDc'       => 'DC / DMC / FFMC',
         'titleFrm'      => 'FRM — probability and anomaly',
         'titleRcm'      => 'RCM (station)',
+        'run'           => 'Model run: {time} (local time)',
     ],
     'panel' => [
         'title'     => 'Map',

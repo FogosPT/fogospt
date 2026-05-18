@@ -6,7 +6,7 @@
                 'start_at' => 'Início',
                 'nature' => 'Natureza',
                 'location' => 'Localização',
-                'fireRisk' => 'Risco de Incêndio',
+                'fireRisk' => 'Perigo de Incêndio',
                 'updated' => 'Última atualização',
                 'district' => 'Distrito',
                 'concelho' => 'Concelho',
@@ -54,6 +54,7 @@
                 'source' => 'Dados:',
                 'error'  => 'Não foi possível obter dados do IPMA para esta localização.',
                 'learnMore' => 'O que significam estes gráficos?',
+                'run' => 'Corrida do modelo: :time (hora local)',
             ],
             'detail' => [
                 'burn' => [

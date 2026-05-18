@@ -105,6 +105,27 @@
                     </div>
                 </div>
 
+                <div class="col-12" id="rural-fire-risk">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.ruralFireRisk.title')</h3>
+                            </div>
+                            <p>{!! __('pages.information.ruralFireRisk.intro') !!}</p>
+                            <p>@lang('pages.information.ruralFireRisk.classesTitle')</p>
+                            <ul>
+                                <li>@lang('pages.information.ruralFireRisk.classes.reduced')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.moderate')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.high')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.veryHigh')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.maximum')</li>
+                            </ul>
+                            <p>@lang('pages.information.ruralFireRisk.legendNote')</p>
+                            <p>{!! __('pages.information.ruralFireRisk.source') !!}</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12" id="ipma-charts">
                     <div class="card">
                         <div class="card-body">
@@ -120,8 +141,8 @@
                                 <li>@lang('pages.information.ipmaCharts.items.fwiIsiBui')</li>
                                 <li>@lang('pages.information.ipmaCharts.items.dcDmcFfmc')</li>
                                 <li>@lang('pages.information.ipmaCharts.items.frm')</li>
-                                <li>@lang('pages.information.ipmaCharts.items.rcm')</li>
                             </ul>
+                            <p>{!! __('pages.information.ipmaCharts.rcmNote') !!}</p>
                             <p>@lang('pages.information.ipmaCharts.source')</p>
                         </div>
                     </div>

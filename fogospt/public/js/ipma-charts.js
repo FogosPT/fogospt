@@ -34,6 +34,7 @@
         titleDc:       'DC / DMC / FFMC',
         titleFrm:      'FRM — probabilidade e anomalia',
         titleRcm:      'RCM (estação)',
+        run:           'Corrida do modelo: {time} (hora local)',
     };
     var fromTrans = (window.trans && window.trans.chartIpma) || {};
     var t = {};
@@ -55,6 +56,20 @@
                 return;
             }
             grid.classList.remove('d-none');
+            showRunTime(data.reference_time);
+            // LSA-SAF layers occasionally return historical observations even
+            // when we ask for refTime+0..N. Clip daily series to dates on/after
+            // the run so the chart stays forecast-leaning.
+            if (data.daily && data.reference_time) {
+                var minDate = data.reference_time.substr(0, 10);
+                Object.keys(data.daily).forEach(function (k) {
+                    if (Array.isArray(data.daily[k])) {
+                        data.daily[k] = data.daily[k].filter(function (row) {
+                            return row && row.datetime && row.datetime.substr(0, 10) >= minDate;
+                        });
+                    }
+                });
+            }
             renderHourly('ipmaTempHum',   data.hourly, t.titleTempHum,
                 [{ key: 'temperature', label: t.temperature, color: '#ff512f', axis: 'L' },
                  { key: 'humidity',    label: t.humidity,    color: '#33a1fd', axis: 'R' }],
@@ -99,6 +114,29 @@
         if (!iso) return null;
         var d = new Date(iso + 'Z');
         return isNaN(d.getTime()) ? null : d;
+    }
+
+    // Insert a small "model run" line under the attribution paragraph, showing
+    // the IPMA reference_time converted from UTC to the user's local time zone.
+    function showRunTime(refTimeIso) {
+        if (!refTimeIso) return;
+        var d = parseUtc(refTimeIso);
+        if (!d) return;
+        var formatted = pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear() +
+            ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+        var text = (t.run || DEFAULTS.run).replace('{time}', formatted);
+        var existing = wrap.querySelector('.ipma-charts__run');
+        if (!existing) {
+            existing = document.createElement('p');
+            existing.className = 'ipma-charts__run small text-muted mb-2';
+            var anchor = wrap.querySelector('.ipma-charts__attribution');
+            if (anchor && anchor.parentNode) {
+                anchor.parentNode.insertBefore(existing, anchor.nextSibling);
+            } else {
+                wrap.insertBefore(existing, wrap.firstChild);
+            }
+        }
+        existing.textContent = text;
     }
 
     // Chart.js 2.9 keeps the tooltip pinned after a touchend on mobile

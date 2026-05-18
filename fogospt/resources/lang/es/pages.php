@@ -81,7 +81,7 @@ return [
             'items' => [
                 'fwi' => '(FWI) Índice de riesgo de incendio meteorológico: este es el índice final del sistema canadiense, que se calcula de acuerdo con sus subíndices ISI y BUI.',
                 'fmc' => '(FFMC) Índice de humedad de combustibles finos: este índice clasifica los combustibles finos y de secado rápido según su contenido de humedad. Esto corresponde al grado de inflamabilidad de estos combustibles, que se encuentran en la superficie del suelo. El contenido de humedad de estos combustibles a las 12 UTC de un día determinado, depende del contenido de humedad a la misma hora, el día anterior, precipitación (mm) en 24 horas (12-12 UTC) y temperatura (ºC) y temperatura relativa. humedad del aire (%) a las 12 UTC del mismo día. La intensidad del viento solo influye en la velocidad de secado de estos materiales.',
-                'isi' => '(ISI) Índice de propagación inicial: este índice de propagación inicial del fuego depende del subíndice FFMC y de la intensidad del viento (Km / h) a las 12 UTC.',
+                'isi' => '(ISI) Índice de propagación inicial: este índice de propagación inicial del fuego depende del subíndice FFMC y de la intensidad del viento (km/h) a las 12 UTC.',
                 'bui' => '(BUI) Índice de combustible disponible: el índice de combustible disponible es un factor de evaluación para las verduras que pueden alimentar un incendio (combustibles "pesados" que se encuentran en el suelo) y se calcula a partir de dos de los subíndices: DMC y DC.',
                 'dc' => '(DC) Índice de humus: este índice refleja el contenido de humedad del humus y los materiales leñosos de tamaño mediano que se encuentran por debajo de la superficie del suelo hasta unos 8 cm. El índice de humus se calcula a partir de la precipitación ocurrida en 24 horas (12-12 UTC), la temperatura y humedad relativa del aire a las 12 UTC y el índice de humus del día anterior.',
                 'dmc' => '(DMC) Índice de sequía: este índice es un buen indicador de los efectos de la sequía estacional sobre los combustibles forestales (humus y materiales leñosos más grandes), que se encuentran por debajo de la superficie del suelo, entre 8 y 20 cm de profundidad. El índice de sequía se obtiene de la precipitación ocurrida en 24 horas, la temperatura a las 12 UTC y el índice de sequía verificado el día anterior.'
@@ -90,20 +90,34 @@ return [
             ],
             'source' => 'Información extraída de IPMA.'
         ],
+        'ruralFireRisk' => [
+            'title' => 'Peligro de Incendio Rural (RCM)',
+            'intro' => 'El RCM (Riesgo Coyuntural y Meteorológico) combina el FWI con la carta de peligrosidad del territorio. <strong>No es el FWI</strong> — es un índice integrado, calculado por municipio, y es el indicador oficial usado en las alertas públicas.',
+            'classesTitle' => 'El RCM se clasifica en cinco clases:',
+            'classes' => [
+                'reduced' => 'Reducido',
+                'moderate' => 'Moderado',
+                'high' => 'Elevado',
+                'veryHigh' => 'Muy Elevado',
+                'maximum' => 'Máximo',
+            ],
+            'legendNote' => 'Cuando esta capa está activa en el mapa, su leyenda de colores aparece en la esquina inferior izquierda.',
+            'source' => 'Más información en <a href="https://www.ipma.pt/pt/riscoincendio/rcm.pt/" target="_blank" rel="noopener">IPMA — Peligro de Incendio Rural</a>.',
+        ],
         'ipmaCharts' => [
             'title' => 'Gráficos de previsión IPMA (página de detalle)',
-            'intro' => 'Cada incidente tiene un panel con gráficos de previsión del IPMA para la ubicación exacta del fuego, alimentado por el modelo AROME (horario, próximas 48 h) y productos satelitales LSA-SAF (diario, 7 días). La línea vertical roja a trazos marca la hora actual.',
+            'intro' => 'Cada incidente tiene un panel con gráficos de previsión del IPMA para la ubicación exacta del fuego. Las variables meteorológicas horarias (próximas 48 h) se alimentan del modelo AROME. El FWI y los subíndices canadienses se calculan a las 12 UTC a partir del modelo ECMWF — no del AROME. Los productos LSA-SAF (diarios, 7 días) combinan observación por satélite con previsiones del ECMWF. La línea vertical roja a trazos marca la hora actual.',
             'items' => [
                 'tempHum' => 'Temperatura y humedad — temperatura del aire a 2 m (°C, eje izquierdo) y humedad relativa del aire (%, eje derecho). Indicador clave de sequedad: humedad por debajo del 30% combinada con temperatura elevada acelera la propagación.',
-                'wind' => 'Viento y ráfaga — intensidad media del viento a 10 m y ráfaga máxima (km/h). Las flechas en la parte superior indican la dirección hacia donde sopla el viento.',
-                'pressure' => 'Presión atmosférica — presión al nivel del mar (hPa). Caídas rápidas suelen acompañar el paso de frentes.',
-                'precip' => 'Precipitación acumulada — lluvia prevista por hora (mm). Útil para anticipar alivio o agravamiento sobre el terreno.',
-                'fwiIsiBui' => 'FWI / ISI / BUI — índices canadienses de riesgo meteorológico. FWI es el índice final; ISI representa la propagación inicial; BUI el combustible disponible. Valores más altos = condiciones más peligrosas.',
-                'dcDmcFfmc' => 'DC / DMC / FFMC — códigos de humedad de los combustibles. DC mide combustibles profundos (sequía prolongada), DMC los intermedios, FFMC los finos en superficie (respuesta rápida al tiempo reciente).',
+                'wind' => 'Viento y ráfaga — intensidad media del viento a 10 m y ráfaga máxima (km/h). Las flechas en la parte superior indican la dirección: la punta de la flecha indica hacia dónde sopla el viento.',
+                'pressure' => 'Presión atmosférica — presión al nivel del mar (hPa). Variaciones bruscas pueden indicar la aproximación y el paso de superficies frontales.',
+                'precip' => 'Precipitación acumulada — precipitación prevista acumulada en una hora (mm). Útil para anticipar alivio o agravamiento sobre el terreno.',
+                'fwiIsiBui' => 'FWI / ISI / BUI — índices canadienses de riesgo meteorológico, calculados a las 12 UTC a partir del modelo ECMWF. FWI es el índice final; ISI representa la propagación inicial; BUI el combustible disponible. Valores más altos = condiciones más peligrosas.',
+                'dcDmcFfmc' => 'DC / DMC / FFMC — índices de humedad de los combustibles. DC mide combustibles profundos (sequía prolongada), DMC los intermedios, FFMC los finos en superficie (respuesta rápida al tiempo reciente).',
                 'frm' => 'FRM — probabilidad de extremos (%) y anomalía (%) frente a la climatología. Señala condiciones atípicas para la época del año.',
-                'rcm' => 'RCM (estación) — riesgo de incendio rural por municipio, escala 1 (bajo) a 5 (máximo). Es el índice oficial usado en alertas públicas.',
             ],
-            'source' => 'Fuente: IPMA (modelo AROME + productos LSA-SAF). Datos actualizados en cada corrida del modelo (00 y 12 UTC).',
+            'rcmNote' => 'El RCM (Riesgo Coyuntural y Meteorológico) — equivalente al <strong>Peligro de Incendio Rural</strong> — no tiene gráfico propio en esta página; se muestra como capa del mapa principal, con su leyenda dedicada.',
+            'source' => 'Fuente: IPMA (modelo AROME para las variables horarias, modelo ECMWF para los índices canadienses y productos LSA-SAF para los indicadores diarios). Datos actualizados en cada corrida del modelo (00 y 12 UTC).',
         ]
 
     ],

@@ -221,7 +221,11 @@ L.Control.FogosPanel = L.Control.extend({
         });
 
         html += '</div>';
+        var prevBody = this._container.querySelector('.fogos-panel__body');
+        var prevScroll = prevBody ? prevBody.scrollTop : 0;
         this._container.innerHTML = html;
+        var newBody = this._container.querySelector('.fogos-panel__body');
+        if (newBody && prevScroll) newBody.scrollTop = prevScroll;
         this._bind();
     },
 

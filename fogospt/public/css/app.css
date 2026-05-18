@@ -31,7 +31,12 @@
 .photos-section .photos-load-more{margin-top:.5rem}
 .pswp__custom-caption{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:6px 12px;border-radius:4px;pointer-events:none}
 
-.fogos-legend{background:rgba(255,255,255,.92);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);padding:6px 8px;max-height:calc(100vh - 200px);overflow-y:auto;display:flex;gap:8px;align-items:flex-start;font-family:'Roboto',sans-serif}
+.fogos-legend{background:rgba(255,255,255,.92);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);padding:6px 8px;margin-bottom:24px !important;max-height:calc(100vh - 220px);overflow-y:auto;display:flex;gap:8px;align-items:flex-start;font-family:'Roboto',sans-serif}
+.fogos-risk-legend{background:rgba(255,255,255,.92);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);padding:8px 10px;margin-bottom:24px !important;font-family:'Roboto',sans-serif;font-size:12px;color:#333}
+.fogos-risk-legend__title{font-size:10px;font-weight:600;text-transform:uppercase;color:#555;letter-spacing:.3px;margin-bottom:4px}
+.fogos-risk-legend__row{display:flex;align-items:center;gap:6px;line-height:1.4}
+.fogos-risk-legend__swatch{display:inline-block;width:14px;height:14px;border:1px solid #666;border-radius:2px;flex:none}
+@media (max-width:575px){.fogos-risk-legend{font-size:11px}.fogos-risk-legend__swatch{width:12px;height:12px}}
 .fogos-legend__item{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
 .fogos-legend__label{font-size:10px;font-weight:600;text-transform:uppercase;color:#555;letter-spacing:.3px;margin-bottom:2px;max-width:100px;line-height:1.1}
 .fogos-legend img{max-height:220px;max-width:100px;height:auto;display:block}

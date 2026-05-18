@@ -102,8 +102,7 @@ $(document).ready(function () {
     panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
     panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
-    panel.registerSection('weather', tp.weather || 'Meteorologia', 'checkbox');
-    panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'checkbox');
+    panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'radio');
 
     addRisk(mymap)
     mymap.on('click', function (e) {
@@ -151,46 +150,8 @@ $(document).ready(function () {
     var obj = getNewFires(mymap);
 
 
-    var cloudLayer = L.OWM.cloudsClassic({
-        legendPosition: 'bottomright',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var precLayer = L.OWM.precipitationClassic({
-        legendPosition: 'bottomright',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var pressureLayer = L.OWM.pressure({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var tempLayer = L.OWM.temperature({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var windLayer = L.OWM.wind({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-
     var baseLayers = {
     }
-
-
-    panel.addItem('weather', 'temperature',   window.trans.map.temperature,   tempLayer,     false)
-    panel.addItem('weather', 'wind',          window.trans.map.wind,          windLayer,     false)
-    panel.addItem('weather', 'precipitation', window.trans.map.precipitation, precLayer,     false)
-    panel.addItem('weather', 'clouds',        window.trans.map.clouds,        cloudLayer,    false)
-    panel.addItem('weather', 'pressure',      window.trans.map.pressure,      pressureLayer, false)
 
     // IPMA AROME forecast overlays. Each product has three regional variants
     // (continent / madeira / azores) — wrapped in a LayerGroup so the panel
@@ -208,7 +169,7 @@ $(document).ready(function () {
     function makeIpmaLayer(layerNames, attribution, label, extraOpts) {
         var legendUrl = 'https://mf2.ipma.pt/services?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
             encodeURIComponent(layerNames[0]) + '&format=image/png&STYLE=default';
-        return L.layerGroup(layerNames.map(function (name) {
+        var group = L.layerGroup(layerNames.map(function (name) {
             var opts = {
                 layers: name,
                 format: 'image/png',
@@ -227,6 +188,8 @@ $(document).ready(function () {
             window.fogosIpmaAromeTiles.push(tile);
             return tile;
         }));
+        group._isIpma = true;
+        return group;
     }
 
     // Resolve the latest AROME run that the WMS will actually render, then
@@ -248,6 +211,7 @@ $(document).ready(function () {
     // our cached backend route only on first activation, then builds the
     // L.velocityLayer and hands its lifecycle to Leaflet via add/remove.
     var IpmaWindAnimated = L.Layer.extend({
+        _isIpma: true,
         onAdd: function (map) {
             this._map = map;
             var self = this;
@@ -310,6 +274,49 @@ $(document).ready(function () {
     panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
         makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity), false)
 
+    // When an IPMA forecast layer is active, swap the basemap for a labels-only
+    // tile layer so the WMS colours read cleanly. Restore the user's chosen base
+    // (normal/satellite) when IPMA is turned off.
+    var labelsOnlyLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>'
+    });
+
+    function isIpmaActive() {
+        var st = (window.fogosPanel && window.fogosPanel._state) || {};
+        return !!(st['ipma.temperature'] || st['ipma.wind'] || st['ipma.windDirection'] ||
+                  st['ipma.windAnimated'] || st['ipma.precipitation'] || st['ipma.humidity']);
+    }
+
+    function applyIpmaBaseMode() {
+        if (isIpmaActive()) {
+            if (mymap.hasLayer(normalLayer)) mymap.removeLayer(normalLayer);
+            if (mymap.hasLayer(satelliteLayer)) mymap.removeLayer(satelliteLayer);
+            if (!mymap.hasLayer(labelsOnlyLayer)) labelsOnlyLayer.addTo(mymap);
+            labelsOnlyLayer.bringToFront();
+        } else {
+            if (mymap.hasLayer(labelsOnlyLayer)) mymap.removeLayer(labelsOnlyLayer);
+            var st = (window.fogosPanel && window.fogosPanel._state) || {};
+            var wantSat = !!st['base.satellite'];
+            var target = wantSat ? satelliteLayer : normalLayer;
+            var other  = wantSat ? normalLayer    : satelliteLayer;
+            if (mymap.hasLayer(other)) mymap.removeLayer(other);
+            if (!mymap.hasLayer(target)) target.addTo(mymap);
+        }
+    }
+
+    mymap.on('layeradd layerremove', function (e) {
+        if (!e.layer) return;
+        // React when an IPMA layer toggles or when the user reselects a base
+        // while IPMA is on (the panel would re-add the base behind our backs).
+        if (e.layer._legendUrl || e.layer._isIpma || e.layer === normalLayer || e.layer === satelliteLayer) {
+            applyIpmaBaseMode();
+        }
+    });
+
+    applyIpmaBaseMode();
+
     // Floating legend for active IPMA layers. Listens to layeradd/layerremove
     // on the map and renders the GetLegendGraphic image for each unique active
     // overlay. Hidden when nothing's on.
@@ -350,6 +357,52 @@ $(document).ready(function () {
         }
     });
     new FogosLegend().addTo(mymap);
+
+    // Discrete legend for the rural fire danger (RCM) choropleth layers.
+    // Visible only while one of the risk layers (today/tomorrow/after) is on.
+    var FogosRiskLegend = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function (map) {
+            var c = this._container = L.DomUtil.create('div', 'fogos-risk-legend');
+            L.DomEvent.disableClickPropagation(c);
+            L.DomEvent.disableScrollPropagation(c);
+            this._map = map;
+            map.on('layeradd layerremove', this._refresh, this);
+            this._refresh();
+            return c;
+        },
+        _refresh: function () {
+            var active = false;
+            this._map.eachLayer(function (layer) {
+                if (layer._isRisk) active = true;
+            });
+            if (!active) {
+                this._container.style.display = 'none';
+                this._container.innerHTML = '';
+                return;
+            }
+            var cls = (window.trans && window.trans.risk && window.trans.risk.classes) || {};
+            var rows = [
+                { d: 1, label: cls.reduced  || 'Reduzido' },
+                { d: 2, label: cls.moderate || 'Moderado' },
+                { d: 3, label: cls.high     || 'Elevado' },
+                { d: 4, label: cls.veryHigh || 'Muito Elevado' },
+                { d: 5, label: cls.maximum  || 'Máximo' }
+            ];
+            this._container.style.display = '';
+            this._container.innerHTML =
+                '<div class="fogos-risk-legend__title">' +
+                ((window.trans && window.trans.panel && window.trans.panel.risk) || 'Perigo de Incêndio Rural') +
+                '</div>' +
+                rows.map(function (r) {
+                    return '<div class="fogos-risk-legend__row">' +
+                        '<span class="fogos-risk-legend__swatch" style="background:' + getColor(r.d) + '"></span>' +
+                        '<span class="fogos-risk-legend__label">' + r.label + '</span>' +
+                        '</div>';
+                }).join('');
+        }
+    });
+    new FogosRiskLegend().addTo(mymap);
 
 
     /*$.ajax({
@@ -506,7 +559,8 @@ function addModisPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [80, 80]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
     var confidence = '';
@@ -541,7 +595,8 @@ function addVIIRSPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [80, 80]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
 
@@ -960,6 +1015,7 @@ function addRisk(mymap) {
                         }
                     }
                 })
+                riskToday._isRisk = true;
 
                 // for phantom
                 if (getParameterByName('risk')) {
@@ -984,6 +1040,7 @@ function addRisk(mymap) {
                                     }
                                 }
                             })
+                            riskTomorrow._isRisk = true;
 
                             // for phantom
                             if (getParameterByName('risk-tomorrow')) {
@@ -1008,6 +1065,7 @@ function addRisk(mymap) {
                                                 }
                                             }
                                         })
+                                        riskAfter._isRisk = true;
 
                                         if (window.fogosPanel) {
                                             window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    riskToday,    !!getParameterByName('risk'))
