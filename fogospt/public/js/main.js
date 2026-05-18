@@ -285,8 +285,8 @@ $(document).ready(function () {
 
     function isIpmaActive() {
         var st = (window.fogosPanel && window.fogosPanel._state) || {};
-        return !!(st['ipma.temperature'] || st['ipma.wind'] || st['ipma.windDirection'] ||
-                  st['ipma.windAnimated'] || st['ipma.precipitation'] || st['ipma.humidity']);
+        return !!(st['ipma:temperature'] || st['ipma:wind'] || st['ipma:windDirection'] ||
+                  st['ipma:windAnimated'] || st['ipma:precipitation'] || st['ipma:humidity']);
     }
 
     function applyIpmaBaseMode() {
@@ -298,7 +298,7 @@ $(document).ready(function () {
         } else {
             if (mymap.hasLayer(labelsOnlyLayer)) mymap.removeLayer(labelsOnlyLayer);
             var st = (window.fogosPanel && window.fogosPanel._state) || {};
-            var wantSat = !!st['base.satellite'];
+            var wantSat = !!st['base:satellite'];
             var target = wantSat ? satelliteLayer : normalLayer;
             var other  = wantSat ? normalLayer    : satelliteLayer;
             if (mymap.hasLayer(other)) mymap.removeLayer(other);
