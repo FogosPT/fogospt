@@ -95,15 +95,50 @@
         return rows.join('<br>');
     }
 
-    function eventMarker(ev) {
-        var lat, lng;
-        if (ev.centroid && Array.isArray(ev.centroid.coordinates)) {
-            lng = ev.centroid.coordinates[0];
-            lat = ev.centroid.coordinates[1];
-        } else {
-            return null;
+    function extractLatLng(ev) {
+        // GeoJSON Feature
+        if (ev && ev.geometry && Array.isArray(ev.geometry.coordinates)) {
+            var g = ev.geometry;
+            if (g.type === 'Point') return [g.coordinates[1], g.coordinates[0]];
+            // Polygon / MultiPolygon: take first coord of first ring
+            if (g.type === 'Polygon' && Array.isArray(g.coordinates[0]) && Array.isArray(g.coordinates[0][0])) {
+                return [g.coordinates[0][0][1], g.coordinates[0][0][0]];
+            }
+            if (g.type === 'MultiPolygon' && Array.isArray(g.coordinates[0]) && Array.isArray(g.coordinates[0][0]) && Array.isArray(g.coordinates[0][0][0])) {
+                return [g.coordinates[0][0][0][1], g.coordinates[0][0][0][0]];
+            }
         }
-        var active = ev.is_active === true;
+        // Common direct shapes
+        var c = ev && (ev.centroid || (ev.properties && ev.properties.centroid));
+        if (c) {
+            if (Array.isArray(c.coordinates)) return [c.coordinates[1], c.coordinates[0]];
+            if (Array.isArray(c) && c.length >= 2) return [c[1], c[0]]; // [lng, lat]
+            if (typeof c === 'object') {
+                var la = c.lat != null ? c.lat : (c.latitude  != null ? c.latitude  : null);
+                var ln = c.lng != null ? c.lng : (c.lon != null ? c.lon : (c.longitude != null ? c.longitude : null));
+                if (la != null && ln != null) return [la, ln];
+            }
+            if (typeof c === 'string') {
+                // "POINT(lng lat)" or "lat,lng"
+                var m = c.match(/POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)/i);
+                if (m) return [parseFloat(m[2]), parseFloat(m[1])];
+                var p = c.split(/[,\s]+/).map(parseFloat);
+                if (p.length === 2 && !isNaN(p[0]) && !isNaN(p[1])) return [p[0], p[1]];
+            }
+        }
+        var props = (ev && ev.properties) || ev || {};
+        var la2 = props.latitude != null ? props.latitude : (props.lat != null ? props.lat : null);
+        var ln2 = props.longitude != null ? props.longitude : (props.lng != null ? props.lng : (props.lon != null ? props.lon : null));
+        if (la2 != null && ln2 != null) return [la2, ln2];
+        return null;
+    }
+
+    function eventMarker(ev) {
+        var coords = extractLatLng(ev);
+        if (!coords) return null;
+        var lat = coords[0], lng = coords[1];
+        var src = (ev && ev.properties) ? ev.properties : ev;
+        var active = src.is_active === true;
         var marker = L.circleMarker([lat, lng], {
             radius: 7,
             color: active ? '#d33' : '#666',
@@ -111,7 +146,7 @@
             fillColor: active ? '#f55' : '#bbb',
             fillOpacity: 0.7
         });
-        marker.bindPopup(eventPopupHTML(ev), { maxWidth: 320 });
+        marker.bindPopup(eventPopupHTML(src), { maxWidth: 320 });
         return marker;
     }
 
@@ -197,17 +232,28 @@
                     delineationsLayer.clearLayers();
 
                     var events = Array.isArray(data) ? data
-                        : (data && Array.isArray(data.events) ? data.events
-                        : (data && Array.isArray(data.items)  ? data.items : []));
+                        : (data && Array.isArray(data.features) ? data.features
+                        : (data && Array.isArray(data.events)   ? data.events
+                        : (data && Array.isArray(data.items)    ? data.items
+                        : (data && Array.isArray(data.data)     ? data.data : []))));
 
-                    var count = 0;
+                    if (events[0]) console.log('[gaia] sample event:', events[0]);
+
+                    var count = 0, skipped = 0;
                     events.forEach(function (ev) {
                         var m = eventMarker(ev);
-                        if (m) { m.addTo(detectionsLayer); count++; }
-                        if (ev.has_delineation) loadDelineation(ev.id);
+                        if (m) {
+                            m.addTo(detectionsLayer);
+                            count++;
+                        } else {
+                            skipped++;
+                        }
+                        var props = (ev && ev.properties) ? ev.properties : ev;
+                        var eid = props && (props.id != null ? props.id : props.event_id);
+                        if (props && props.has_delineation && eid != null) loadDelineation(eid);
                     });
 
-                    setStatus(count + ' eventos');
+                    setStatus(count + ' eventos' + (skipped ? ' (' + skipped + ' sem coords)' : ''));
                 })
                 .catch(function (err) {
                     console.warn('[gaia] events fetch failed', err);
