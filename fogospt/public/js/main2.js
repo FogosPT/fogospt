@@ -554,6 +554,7 @@ function addRisk(mymap) {
                 if (getParameterByName('risk')) {
                     riskToday.addTo(mymap)
                     $('main #map .map-marker').hide()
+                    document.getElementById('map').classList.add('risk-layer-ready')
                 }
 
                 var url = 'https://source.fogos.pt/v1/risk-tomorrow'
@@ -574,6 +575,7 @@ function addRisk(mymap) {
                             if (getParameterByName('risk-tomorrow')) {
                                 riskTomorrow.addTo(mymap)
                                 $('main #map .map-marker').hide()
+                                document.getElementById('map').classList.add('risk-layer-ready')
                             }
 
                             var url = 'https://source.fogos.pt/v1/risk-after'

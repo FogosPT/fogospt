@@ -46,7 +46,7 @@ L.Control.FogosPanel = L.Control.extend({
         return this;
     },
 
-    addItem: function (sectionKey, id, label, layer, defaultOn) {
+    addItem: function (sectionKey, id, label, layer, defaultOn, force) {
         var section = this._sections[sectionKey];
         if (!section) return this;
 
@@ -60,7 +60,7 @@ L.Control.FogosPanel = L.Control.extend({
         }
 
         var stateKey = this._stateKey(sectionKey, id);
-        var on = (stateKey in this._state) ? !!this._state[stateKey] : !!defaultOn;
+        var on = (force) ? !!defaultOn : ((stateKey in this._state) ? !!this._state[stateKey] : !!defaultOn);
 
         // For radio sections, enforce single-selection on first registration.
         if (section.type === 'radio' && on) {

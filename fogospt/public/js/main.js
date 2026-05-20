@@ -2,11 +2,14 @@ $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
-    const messaging = firebase.messaging()
-
-    messaging.onMessage(function (payload) {
-        toastr.warning(payload.notification.body)
-    })
+    try {
+        const messaging = firebase.messaging()
+        messaging.onMessage(function (payload) {
+            toastr.warning(payload.notification.body)
+        })
+    } catch (e) {
+        // Firebase Messaging not supported in this environment (e.g. headless renderer)
+    }
 
 
     $('.click-notification').on('click', function (e) {
@@ -1042,6 +1045,7 @@ function addRisk(mymap) {
                 if (getParameterByName('risk')) {
                     riskToday.addTo(mymap)
                     $('main #map .map-marker').hide()
+                    document.getElementById('map').classList.add('risk-layer-ready')
                 }
 
                 var url = 'https://source.fogos.pt/v1/risk-tomorrow'
@@ -1067,6 +1071,7 @@ function addRisk(mymap) {
                             if (getParameterByName('risk-tomorrow')) {
                                 riskTomorrow.addTo(mymap)
                                 $('main #map .map-marker').hide()
+                                document.getElementById('map').classList.add('risk-layer-ready')
                             }
 
                             var url = 'https://source.fogos.pt/v1/risk-after'
@@ -1089,8 +1094,10 @@ function addRisk(mymap) {
                                         riskAfter._isRisk = true;
 
                                         if (window.fogosPanel) {
-                                            window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    riskToday,    !!getParameterByName('risk'))
-                                            window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, riskTomorrow, !!getParameterByName('risk-tomorrow'))
+                                            var riskForced   = !!getParameterByName('risk')
+                                            var tomorrowForced = !!getParameterByName('risk-tomorrow')
+                                            window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    riskToday,    riskForced,    riskForced)
+                                            window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, riskTomorrow, tomorrowForced, tomorrowForced)
                                             window.fogosPanel.addItem('risk', 'after',    window.trans.risk.after,    riskAfter,    false)
                                         }
                                     }
