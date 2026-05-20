@@ -18,6 +18,13 @@ use App\Http\Controllers\GenericController;
 
 Route::redirect('/', '/pt');
 
+// Locale-agnostic endpoints — must live at the site root (the FCM service
+// worker requires a root-scope URL, and the subscribe/unsubscribe AJAX is
+// posted from any page regardless of locale).
+Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
+Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
+Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMessagingSw'])->name('firebase-messaging-sw');
+
 // Backward compatibility — redirect legacy links (without locale) to /pt/
 Route::redirect('/outros',          '/pt/outros',          301);
 Route::redirect('/madeira',         '/pt/madeira',         301);
@@ -66,9 +73,6 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () {
 
     Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications');
     Route::get('/privacy-policy', [GenericController::class, 'getPrivacyPolicy'])->name('privacy-policy');
-    Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
-    Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
-    Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMessagingSw'])->name('firebase-messaging-sw');
 
     if (app()->environment() !== 'production') {
         Route::get('/manifesto', [GenericController::class, 'getManifest'])->name('manifest');
