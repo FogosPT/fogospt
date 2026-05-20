@@ -4,12 +4,19 @@ window.Fogos = window.Fogos || {};
 window.Fogos.notifications = window.Fogos.notifications || {};
 
 (function (api) {
-    function subscribe(topic, cb) {
-        var token = store.get('token');
-        if (!token) {
-            if (cb) cb(new Error('no-token'));
-            return;
-        }
+    function refreshFcmToken(cb) {
+        try {
+            var messaging = firebase.messaging();
+            var opts = window.__FIREBASE_VAPID_KEY__ ? { vapidKey: window.__FIREBASE_VAPID_KEY__ } : undefined;
+            messaging.getToken(opts).then(function (newToken) {
+                if (!newToken) return cb(new Error('no-token'));
+                store.set('token', newToken);
+                cb(null, newToken);
+            }).catch(cb);
+        } catch (e) { cb(e); }
+    }
+
+    function doSubscribe(token, topic, retried, cb) {
         $.ajax({
             type: 'POST',
             url: '/notifications/subscribe',
@@ -18,12 +25,26 @@ window.Fogos.notifications = window.Fogos.notifications || {};
                 if (data && data.success) {
                     store.set(topic, true);
                     if (cb) cb(null, data);
+                } else if (!retried && data && data.error === 'invalid-registration') {
+                    refreshFcmToken(function (err, newToken) {
+                        if (err) { if (cb) cb(new Error('server')); return; }
+                        doSubscribe(newToken, topic, true, cb);
+                    });
                 } else {
                     if (cb) cb(new Error('server'));
                 }
             },
             error: function () { if (cb) cb(new Error('http')); }
         });
+    }
+
+    function subscribe(topic, cb) {
+        var token = store.get('token');
+        if (!token) {
+            if (cb) cb(new Error('no-token'));
+            return;
+        }
+        doSubscribe(token, topic, false, cb);
     }
 
     function unsubscribe(topic, cb) {

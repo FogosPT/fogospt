@@ -161,7 +161,10 @@ class GenericController extends Controller
             ]);
         }
 
-        return \Response::json(['success' => $httpcode === 200]);
+        $fcmError = json_decode($body, true)['error'] ?? null;
+        $clientError = ($fcmError === 'The registration is invalid.') ? 'invalid-registration' : null;
+
+        return \Response::json(['success' => $httpcode === 200, 'error' => $clientError]);
     }
 
     public function unsubscribe(Request $request)
