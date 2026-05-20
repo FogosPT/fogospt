@@ -8,6 +8,13 @@ services:
     restart: unless-stopped
     volumes:
       - ./fogospt/:/var/www/html
+      # Firebase service account JSON (used for FCM topic subscribe/unsubscribe
+      # via OAuth2). Place the file at ./secrets/firebase-sa.json on the host;
+      # ./secrets is gitignored. Path inside the container must match
+      # FIREBASE_SERVICE_ACCOUNT_PATH in fogospt/.env.
+      - ./secrets/firebase-sa.json:/run/secrets/firebase-sa.json:ro
+    environment:
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
     ports:
       - "9001:9000"
 

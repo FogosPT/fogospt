@@ -12,3 +12,4 @@
 **/.env
 .idea
 logs
+secrets/
