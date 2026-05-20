@@ -229,7 +229,12 @@ class GenericController extends Controller
         return Cache::remember('fcm_oauth_access_token', 3300, function () {
             $path = env('FIREBASE_SERVICE_ACCOUNT_PATH') ?: env('GOOGLE_APPLICATION_CREDENTIALS');
             if (!$path || !is_readable($path)) {
-                Log::error('FCM OAuth: service account JSON not found', ['path' => $path]);
+                Log::error('FCM OAuth: service account JSON not readable', [
+                    'path'     => $path,
+                    'exists'   => $path ? file_exists($path) : null,
+                    'perms'    => $path && file_exists($path) ? substr(sprintf('%o', fileperms($path)), -4) : null,
+                    'php_uid'  => function_exists('posix_geteuid') ? posix_geteuid() : null,
+                ]);
                 return null;
             }
 
