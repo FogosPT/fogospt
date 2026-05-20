@@ -28,7 +28,8 @@
         databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
         projectId: "admob-app-id-6663345165",
         storageBucket: "admob-app-id-6663345165.appspot.com",
-        messagingSenderId: "726949968874"
+        messagingSenderId: "726949968874",
+        appId: @json(env('FIREBASE_APP_ID', ''))
     };
     firebase.initializeApp(config);
     // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.

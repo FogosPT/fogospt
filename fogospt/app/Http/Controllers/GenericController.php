@@ -193,6 +193,71 @@ class GenericController extends Controller
     }
 
     /**
+     * Serve the Firebase Cloud Messaging service worker with the app config
+     * injected from env. Kept behind a route (instead of a static file in
+     * public/) so the same env-driven appId / VAPID values used by the page
+     * stay in sync with the SW. The Service-Worker-Allowed header makes sure
+     * the SW can control the whole origin.
+     */
+    public function firebaseMessagingSw()
+    {
+        $appId = env('FIREBASE_APP_ID', '');
+
+        $config = json_encode([
+            'apiKey'            => 'AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M',
+            'authDomain'        => 'admob-app-id-6663345165.firebaseapp.com',
+            'databaseURL'       => 'https://admob-app-id-6663345165.firebaseio.com',
+            'projectId'         => 'admob-app-id-6663345165',
+            'storageBucket'     => 'admob-app-id-6663345165.appspot.com',
+            'messagingSenderId' => '726949968874',
+            'appId'             => $appId,
+        ], JSON_UNESCAPED_SLASHES);
+
+        $js = <<<JS
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+
+firebase.initializeApp({$config});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function (payload) {
+    const n = (payload && payload.notification) || {};
+    const data = (payload && payload.data) || {};
+
+    if (!n.title && !n.body) {
+        return Promise.resolve();
+    }
+
+    const title = n.title || 'Fogos.pt';
+    const options = {
+        body: n.body || '',
+        icon: n.icon || '/img/logo.svg',
+        data: data,
+    };
+
+    if (data.fireId) {
+        options.data.click_url = '/fogo/' + data.fireId;
+    }
+
+    return self.registration.showNotification(title, options);
+});
+
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    const url = (event.notification.data && event.notification.data.click_url) || '/';
+    event.waitUntil(clients.openWindow(url));
+});
+JS;
+
+        return response($js, 200, [
+            'Content-Type'           => 'application/javascript',
+            'Service-Worker-Allowed' => '/',
+            'Cache-Control'          => 'no-cache, max-age=0, must-revalidate',
+        ]);
+    }
+
+    /**
      * Resolve a client-provided topic value to the canonical FCM topic name.
      *
      * Whitelists topics from the unified catalogue and prefixes with `dev-`
