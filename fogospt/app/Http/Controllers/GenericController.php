@@ -193,16 +193,22 @@ class GenericController extends Controller
 
     private function fcmIidRequest($url, $jsonBody)
     {
+        $serverKey = env('FIREBASE_TOKEN');
+        if (!$serverKey) {
+            Log::error('FCM iid request skipped: FIREBASE_TOKEN env is empty');
+            return [0, 'FIREBASE_TOKEN not configured'];
+        }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
+            'Authorization: key=' . $serverKey,
             'Content-Type: application/json',
-            'access_token_auth: true',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonBody === null ? '' : $jsonBody);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
         $body = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
