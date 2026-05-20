@@ -21,14 +21,6 @@ return [
             'name'  => 'pages.notifications.warnings',
             'value' => 'warnings',
         ],
-        [
-            'name'  => 'pages.notifications.planes',
-            'value' => 'planes',
-        ],
-        [
-            'name'  => 'pages.notifications.madeira',
-            'value' => 'madeira',
-        ],
     ],
 
     /*
