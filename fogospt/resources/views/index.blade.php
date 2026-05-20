@@ -60,4 +60,9 @@
     </script>
     <script src="/js/main.js?cache17=1"></script>
 
+    @if(!empty($gaia))
+        <script>window.fogosGaiaEnabled = true;</script>
+        <script src="/js/gaia.js?v=1"></script>
+    @endif
+
 @endpush

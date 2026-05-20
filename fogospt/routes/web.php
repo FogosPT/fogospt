@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\FireController;
+use App\Http\Controllers\GaiaController;
 use App\Http\Controllers\GenericController;
 
 /*
@@ -32,6 +33,7 @@ Route::redirect('/api',             '/pt/api',             301);
 Route::redirect('/api-termos',      '/pt/api-termos',      301);
 Route::redirect('/notificacoes',    '/pt/notificacoes',    301);
 Route::redirect('/privacy-policy',  '/pt/privacy-policy',  301);
+Route::redirect('/gaia',            '/pt/gaia',            301);
 
 Route::get('/fogo/{id}',         fn($id) => redirect("/pt/fogo/$id",         301));
 Route::get('/fogo/{id}/detalhe', fn($id) => redirect("/pt/fogo/$id/detalhe", 301));
@@ -39,6 +41,7 @@ Route::get('/madeira/fogo/{id}', fn($id) => redirect("/pt/madeira/fogo/$id", 301
 
 Route::prefix('{locale}')->middleware('locale.match')->group(function () {
     Route::get('/', [GenericController::class, 'getIndex'])->name('home');
+    Route::get('/gaia', [GaiaController::class, 'getIndex'])->name('gaia');
     Route::get('/outros', [GenericController::class, 'getOtherFires'])->name('other-fires');
     Route::get('/madeira', [GenericController::class, 'getIndexMadeira'])->name('homeMadeira');
     Route::get('/sobre', [GenericController::class, 'getAbout'])->name('about');
@@ -94,4 +97,13 @@ Route::group(['prefix' => 'v1'], function () {
         ->where(['lat' => '-?\d+(\.\d+)?', 'lng' => '-?\d+(\.\d+)?'])
         ->name('getIpmaPoint');
     Route::get('/ipma-wms', [ApiController::class, 'getIpmaWms'])->name('getIpmaWms');
+});
+
+Route::prefix('gaia/v1')->group(function () {
+    Route::get('/events',                   [GaiaController::class, 'events']);
+    Route::get('/events/{id}',              [GaiaController::class, 'eventDetail'])->where('id', '\d+');
+    Route::get('/events/{id}/timeline',     [GaiaController::class, 'timeline'])->where('id', '\d+');
+    Route::get('/events/{id}/acquisitions', [GaiaController::class, 'acquisitions'])->where('id', '\d+');
+    Route::get('/detections',               [GaiaController::class, 'detections']);
+    Route::get('/delineations',             [GaiaController::class, 'delineations']);
 });
