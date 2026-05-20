@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class GenericController extends Controller
@@ -193,18 +194,18 @@ class GenericController extends Controller
 
     private function fcmIidRequest($url, $jsonBody)
     {
-        $serverKey = env('FIREBASE_TOKEN');
-        if (!$serverKey) {
-            Log::error('FCM iid request skipped: FIREBASE_TOKEN env is empty');
-            return [0, 'FIREBASE_TOKEN not configured'];
+        $accessToken = $this->fcmAccessToken();
+        if (!$accessToken) {
+            return [0, 'FCM OAuth token unavailable'];
         }
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: key=' . $serverKey,
+            'Authorization: Bearer ' . $accessToken,
             'Content-Type: application/json',
+            'access_token_auth: true',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonBody === null ? '' : $jsonBody);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -213,6 +214,71 @@ class GenericController extends Controller
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         return [$httpcode, $body];
+    }
+
+    /**
+     * Obtain (and cache) a Google OAuth2 access token for the FCM scope,
+     * signed with the project's service account JSON. Required because the
+     * legacy `Authorization: key=<server-key>` flow was deprecated by Google.
+     *
+     * Service account JSON path is read from FIREBASE_SERVICE_ACCOUNT_PATH
+     * (absolute path) or GOOGLE_APPLICATION_CREDENTIALS as fallback.
+     */
+    private function fcmAccessToken()
+    {
+        return Cache::remember('fcm_oauth_access_token', 3300, function () {
+            $path = env('FIREBASE_SERVICE_ACCOUNT_PATH') ?: env('GOOGLE_APPLICATION_CREDENTIALS');
+            if (!$path || !is_readable($path)) {
+                Log::error('FCM OAuth: service account JSON not found', ['path' => $path]);
+                return null;
+            }
+
+            $sa = json_decode(file_get_contents($path), true);
+            if (!isset($sa['client_email'], $sa['private_key'], $sa['token_uri'])) {
+                Log::error('FCM OAuth: malformed service account JSON');
+                return null;
+            }
+
+            $now = time();
+            $header  = ['alg' => 'RS256', 'typ' => 'JWT'];
+            $payload = [
+                'iss'   => $sa['client_email'],
+                'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+                'aud'   => $sa['token_uri'],
+                'iat'   => $now,
+                'exp'   => $now + 3600,
+            ];
+
+            $b64 = function ($data) {
+                return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+            };
+            $signingInput = $b64(json_encode($header)) . '.' . $b64(json_encode($payload));
+            $signature = '';
+            if (!openssl_sign($signingInput, $signature, $sa['private_key'], 'sha256WithRSAEncryption')) {
+                Log::error('FCM OAuth: JWT signing failed', ['err' => openssl_error_string()]);
+                return null;
+            }
+            $jwt = $signingInput . '.' . $b64($signature);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $sa['token_uri']);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion'  => $jwt,
+            ]));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $resp = curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            $data = json_decode($resp, true);
+            if ($code !== 200 || !isset($data['access_token'])) {
+                Log::error('FCM OAuth: token exchange failed', ['code' => $code, 'body' => $resp]);
+                return null;
+            }
+            return $data['access_token'];
+        });
     }
 
     /**
