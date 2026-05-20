@@ -18,7 +18,8 @@
     gtag('config', '{{env('GOOGLE_ANALYTICS')}}');
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 <script>
     // Initialize Firebase
     var config = {
@@ -30,6 +31,8 @@
         messagingSenderId: "726949968874"
     };
     firebase.initializeApp(config);
+    // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
+    window.__FIREBASE_VAPID_KEY__ = @json(env('FIREBASE_VAPID_KEY', ''));
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>

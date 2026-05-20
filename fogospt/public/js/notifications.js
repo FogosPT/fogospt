@@ -59,14 +59,31 @@ window.Fogos.notifications = window.Fogos.notifications || {};
     function requestAuthAsync() {
         return new Promise(function (resolve, reject) {
             var messaging = firebase.messaging();
-            messaging.requestPermission().then(function () {
-                messaging.getToken().then(function (token) {
+            var vapidKey = window.__FIREBASE_VAPID_KEY__ || undefined;
+
+            var getToken = function () {
+                var opts = vapidKey ? { vapidKey: vapidKey } : undefined;
+                messaging.getToken(opts).then(function (token) {
                     if (!token) return reject(new Error('no-token'));
                     store.set('notificationsAuth', true);
                     store.set('token', token);
                     resolve(token);
                 }).catch(reject);
-            }).catch(reject);
+            };
+
+            // Modern API: Notification.requestPermission returns a Promise of
+            // 'granted' | 'denied' | 'default'. messaging.requestPermission was
+            // removed in Firebase 7+.
+            var permResult = Notification.requestPermission(function (p) {
+                if (p === 'granted') getToken();
+                else reject(new Error('permission-denied'));
+            });
+            if (permResult && typeof permResult.then === 'function') {
+                permResult.then(function (p) {
+                    if (p === 'granted') getToken();
+                    else reject(new Error('permission-denied'));
+                }).catch(reject);
+            }
         });
     }
 
