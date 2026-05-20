@@ -132,6 +132,7 @@
                 '<div style="font-weight:bold;margin-bottom:4px">Gaia (preview)</div>' +
                 '<label style="display:block"><input type="checkbox" id="gaia-toggle-detections" checked> Eventos satélite</label>' +
                 '<label style="display:block"><input type="checkbox" id="gaia-toggle-delineations" checked> Perímetros</label>' +
+                '<label style="display:block"><input type="checkbox" id="gaia-toggle-inactive"> Incluir inactivos</label>' +
                 '<div id="gaia-status" style="margin-top:4px;color:#888;font-size:11px">A carregar…</div>';
             L.DomEvent.disableClickPropagation(div);
             return div;
@@ -152,7 +153,15 @@
                 if (e.target.checked) delineationsLayer.addTo(map);
                 else map.removeLayer(delineationsLayer);
             }
+            if (e.target && e.target.id === 'gaia-toggle-inactive') {
+                refresh();
+            }
         });
+
+        function includeInactive() {
+            var el = document.getElementById('gaia-toggle-inactive');
+            return !!(el && el.checked);
+        }
 
         var inflight = 0;
 
@@ -178,6 +187,9 @@
 
             var params = bboxFromMap(map);
             params.limit = 200;
+            if (!includeInactive()) {
+                params.is_active = 'true';
+            }
 
             fetchJSON('/gaia/v1/events?' + qs(params))
                 .then(function (data) {
