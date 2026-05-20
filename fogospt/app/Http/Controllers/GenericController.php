@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GenericController extends Controller
 {
@@ -143,24 +144,23 @@ class GenericController extends Controller
         $topic = $this->resolveTopic($request->get('topic'));
 
         if (!$token || !$topic) {
-            return \Response::json(['success' => false, 'error' => 'invalid_params'], 400);
+            return \Response::json(['success' => false], 400);
         }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
-            'Content-Type: application/json',
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, []);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
+        [$httpcode, $body] = $this->fcmIidRequest(
+            "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}",
+            null
+        );
 
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        if ($httpcode !== 200) {
+            Log::warning('FCM topic subscribe failed', [
+                'topic'    => $topic,
+                'httpcode' => $httpcode,
+                'response' => $body,
+            ]);
+        }
 
-        return \Response::json(['success' => $httpcode === 200, 'topic' => $topic]);
+        return \Response::json(['success' => $httpcode === 200]);
     }
 
     public function unsubscribe(Request $request)
@@ -169,27 +169,44 @@ class GenericController extends Controller
         $topic = $this->resolveTopic($request->get('topic'));
 
         if (!$token || !$topic) {
-            return \Response::json(['success' => false, 'error' => 'invalid_params'], 400);
+            return \Response::json(['success' => false], 400);
         }
 
+        [$httpcode, $body] = $this->fcmIidRequest(
+            'https://iid.googleapis.com/iid/v1:batchRemove',
+            json_encode([
+                'to' => "/topics/{$topic}",
+                'registration_tokens' => [$token],
+            ])
+        );
+
+        if ($httpcode !== 200) {
+            Log::warning('FCM topic unsubscribe failed', [
+                'topic'    => $topic,
+                'httpcode' => $httpcode,
+                'response' => $body,
+            ]);
+        }
+
+        return \Response::json(['success' => $httpcode === 200]);
+    }
+
+    private function fcmIidRequest($url, $jsonBody)
+    {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1:batchRemove");
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: key=' . env('FIREBASE_TOKEN'),
             'Content-Type: application/json',
+            'access_token_auth: true',
         ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-            'to' => "/topics/{$topic}",
-            'registration_tokens' => [$token],
-        ]));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonBody === null ? '' : $jsonBody);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-
+        $body = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        return \Response::json(['success' => $httpcode === 200, 'topic' => $topic]);
+        return [$httpcode, $body];
     }
 
     /**
