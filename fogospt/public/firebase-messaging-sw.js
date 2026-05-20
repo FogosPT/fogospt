@@ -6,14 +6,33 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-messaging.setBackgroundMessageHandler(function(payload) {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    const notificationTitle = 'Background Message from html';
-    const notificationOptions = {
-        body: 'Background Message body.',
-        icon: '/img/logo.svg'
+
+messaging.setBackgroundMessageHandler(function (payload) {
+    const n = (payload && payload.notification) || {};
+    const data = (payload && payload.data) || {};
+
+    // Mensagens incident-nearby chegam data-only — o cliente web não calcula
+    // proximidade nem mostra notificação para esses casos.
+    if (!n.title && !n.body) {
+        return Promise.resolve();
+    }
+
+    const title = n.title || 'Fogos.pt';
+    const options = {
+        body: n.body || '',
+        icon: n.icon || '/img/logo.svg',
+        data: data,
     };
 
-    return self.registration.showNotification(notificationTitle,
-        notificationOptions);
+    if (data.fireId) {
+        options.data.click_url = '/fogo/' + data.fireId;
+    }
+
+    return self.registration.showNotification(title, options);
+});
+
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    const url = (event.notification.data && event.notification.data.click_url) || '/';
+    event.waitUntil(clients.openWindow(url));
 });

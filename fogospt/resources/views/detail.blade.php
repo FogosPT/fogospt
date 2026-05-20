@@ -37,6 +37,18 @@
                                         @endisset
                                     </p>
 
+                                    @isset($fire['id'])
+                                        <div class="js-fire-subscribe mb-3" data-fire-id="{{ $fire['id'] }}">
+                                            <button type="button" class="btn btn-outline-primary btn-sm js-fire-subscribe-btn">
+                                                <i class="fa fa-bell"></i>
+                                                <span class="js-fire-subscribe-label">Notificar-me sobre esta ocorrência</span>
+                                            </button>
+                                            <small class="d-block text-muted mt-1 js-fire-subscribe-hint d-none">
+                                                Ative primeiro as notificações em <a href="/notificacoes">/notificacoes</a>.
+                                            </small>
+                                        </div>
+                                    @endisset
+
                                     @isset($fire['icnf']['fontealerta'])
                                         <h4 class="card-title">@lang('elements.cards.general.alertFrom')</h4>
                                         <p class="f-nature">
@@ -184,6 +196,59 @@
     <script src="https://unpkg.com/mapbox-gl-leaflet/leaflet-mapbox-gl.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script src="/js/vendor/store2.min.js"></script>
+    <script src="/js/notifications.js"></script>
+    <script>
+        $(document).ready(function () {
+            var $wrap = $('.js-fire-subscribe');
+            if ($wrap.length === 0 || !window.Fogos || !window.Fogos.notifications) return;
+
+            var fireId = String($wrap.data('fire-id'));
+            var topic = window.Fogos.notifications.topicForIncident(fireId);
+            var api = window.Fogos.notifications;
+
+            function render() {
+                var subbed = api.isSubscribed(topic);
+                $wrap.find('.js-fire-subscribe-btn')
+                    .toggleClass('btn-outline-primary', !subbed)
+                    .toggleClass('btn-primary', subbed);
+                $wrap.find('.js-fire-subscribe-label').text(
+                    subbed ? 'A receber notificações desta ocorrência' : 'Notificar-me sobre esta ocorrência'
+                );
+            }
+
+            render();
+
+            $wrap.on('click', '.js-fire-subscribe-btn', function () {
+                var $btn = $(this).prop('disabled', true);
+                var done = function () { $btn.prop('disabled', false); render(); };
+
+                var go = function () {
+                    if (api.isSubscribed(topic)) {
+                        api.unsubscribe(topic, function (err) {
+                            if (err) toastr.error('Ocorreu um erro');
+                            else toastr.success('Subscrição removida');
+                            done();
+                        });
+                    } else {
+                        api.subscribe(topic, function (err) {
+                            if (err) toastr.error('Ocorreu um erro');
+                            else toastr.success('Subscrito com sucesso');
+                            done();
+                        });
+                    }
+                };
+
+                if (api.hasAuth()) {
+                    go();
+                } else {
+                    api.requestAuth().then(go).catch(function () {
+                        $wrap.find('.js-fire-subscribe-hint').removeClass('d-none');
+                        $btn.prop('disabled', false);
+                    });
+                }
+            });
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">

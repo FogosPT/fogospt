@@ -139,63 +139,89 @@ class GenericController extends Controller
 
     public function subscribe(Request $request)
     {
-        $headers = array
-        (
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
-            'Content-Type: application/json'
-        );
+        $token = $request->get('token');
+        $topic = $this->resolveTopic($request->get('topic'));
+
+        if (!$token || !$topic) {
+            return \Response::json(['success' => false, 'error' => 'invalid_params'], 400);
+        }
 
         $ch = curl_init();
-
-        $token = $request->get('token');
-        $topic = $request->get('topic');
-
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/web-{$topic}");
+        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}");
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array());
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: key=' . env('FIREBASE_TOKEN'),
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, []);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
+        curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
-            return \Response::json(['success' => true]);
-        } else {
-            return \Response::json(['success' => false]);
-        }
+        curl_close($ch);
+
+        return \Response::json(['success' => $httpcode === 200, 'topic' => $topic]);
     }
 
     public function unsubscribe(Request $request)
     {
-        $headers = array
-        (
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
-            'Content-Type: application/json'
-        );
+        $token = $request->get('token');
+        $topic = $this->resolveTopic($request->get('topic'));
+
+        if (!$token || !$topic) {
+            return \Response::json(['success' => false, 'error' => 'invalid_params'], 400);
+        }
 
         $ch = curl_init();
-
-        $token = $request->get('token');
-        $topic = $request->get('topic');
-
-        $params = array(
-            "to" => "/topics/web-" . $topic,
-            "registration_tokens" => [$token]
-        );
-
         curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1:batchRemove");
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: key=' . env('FIREBASE_TOKEN'),
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            'to' => "/topics/{$topic}",
+            'registration_tokens' => [$token],
+        ]));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
+        curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
-            return \Response::json(['success' => true]);
-        } else {
-            return \Response::json(['success' => false]);
+        curl_close($ch);
+
+        return \Response::json(['success' => $httpcode === 200, 'topic' => $topic]);
+    }
+
+    /**
+     * Resolve a client-provided topic value to the canonical FCM topic name.
+     *
+     * Whitelists topics from the unified catalogue and prefixes with `dev-`
+     * outside of production, matching the backend's environment scheme.
+     */
+    private function resolveTopic($topic)
+    {
+        if (!is_string($topic) || $topic === '') {
+            return null;
         }
+
+        // DICO topics accept both 4-digit distrito codes (`<dd>00`, e.g. 1100)
+        // and 6-digit concelho codes (`<dd><cc>00`, e.g. 110600), always ending
+        // in "00" — matching the convention used by the fogos backend / mobile.
+        $allowed =
+            $topic === 'incident-important'
+            || $topic === 'warnings'
+            || $topic === 'planes'
+            || $topic === 'madeira'
+            || preg_match('/^incident-[A-Za-z0-9_-]{1,64}$/', $topic)
+            || preg_match('/^district-(\d{2}|\d{4})00$/', $topic)
+            || preg_match('/^district-all-(\d{2}|\d{4})00$/', $topic);
+
+        if (!$allowed) {
+            return null;
+        }
+
+        $prefix = env('APP_ENV') === 'production' ? '' : 'dev-';
+        return $prefix . $topic;
     }
 
     /**

@@ -47,35 +47,30 @@
                 </div>
             </div>
 
-            {{----}}
-            {{--<section class="auth bg-white">--}}
-                {{--<div class="card">--}}
-                    {{--<div class="card-body">--}}
-                        {{--<h2 class="card-title">Gerais</h2>--}}
-                        {{--@foreach(config('custom.notifications') as $item)--}}
-                            {{--<div class="row justify-content-start">--}}
-                                {{--<div class="col-sm"><strong>@lang($item["name"])</strong></div>--}}
-                                {{--<div class="col-sm">--}}
-                                    {{--<label class="custom-control custom-checkbox">--}}
-                                        {{--<input type="checkbox" class="custom-control-input"--}}
-                                               {{--data-value="{{$item["value"]}}"--}}
-                                               {{--data-type="site">--}}
-                                        {{--<span class="custom-control-indicator"></span>--}}
-                                    {{--</label>--}}
-                                {{--</div>--}}
-                                {{--<div class="col-sm d-none">--}}
-                                    {{--<label class="custom-control custom-checkbox">--}}
-                                        {{--<input type="checkbox" class="custom-control-input"--}}
-                                               {{--data-value="{{$item["value"]}}"--}}
-                                               {{--data-type="sms">--}}
-                                        {{--<span class="custom-control-indicator"></span>--}}
-                                    {{--</label>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-                        {{--@endforeach--}}
-                    {{--</div>--}}
-                {{--</div>--}}
-            {{--</section>--}}
+            <section class="auth bg-white">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Gerais</h2>
+                        <div class="row mb-auto margin-top-10">
+                            <div class="col-sm"></div>
+                            <div class="col-sm"><strong>Site</strong></div>
+                        </div>
+                        @foreach(config('custom.notifications') as $item)
+                            <div class="row justify-content-start">
+                                <div class="col-sm"><strong>@lang($item["name"])</strong></div>
+                                <div class="col-sm">
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               data-value="{{$item["value"]}}"
+                                               data-type="site">
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
 
             <section class="auth bg-white">
                 <div class="card">
@@ -107,6 +102,32 @@
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+            </section>
+
+            <section class="auth bg-white">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Concelhos</h2>
+                        <p class="text-muted mb-2">Subscreva notificações para um ou mais concelhos. Use o filtro para pesquisar.</p>
+
+                        <div class="row align-items-center mb-2">
+                            <div class="col-12 col-md-6">
+                                <input type="text" class="form-control js-concelho-filter" placeholder="Filtrar concelhos…">
+                            </div>
+                            <div class="col-12 col-md-6 mt-2 mt-md-0">
+                                <label class="custom-control custom-checkbox d-inline-flex align-items-center">
+                                    <input type="checkbox" class="custom-control-input js-concelho-all-incidents">
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="ml-1">Receber todas as ocorrências (não só incêndios)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="js-concelho-list" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-muted py-3 js-concelho-loading">A carregar concelhos…</div>
+                        </div>
                     </div>
                 </div>
             </section>

@@ -144,6 +144,8 @@ return [
 
         'important' => 'Eventos importantes',
         'alerts' => 'Alertas',
+        'warnings' => 'Avisos (ANEPC / IPMA)',
+        'planes' => 'Movimientos de medios aéreos',
     ],
     'stats' => [
         'now' => [

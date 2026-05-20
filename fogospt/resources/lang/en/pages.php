@@ -137,6 +137,8 @@ return [
 
         'important' => 'Important events',
         'alerts' => 'Alerts',
+        'warnings' => 'Weather warnings (ANEPC / IPMA)',
+        'planes' => 'Aerial assets movements',
     ],
     'stats' => [
         'now' => [
