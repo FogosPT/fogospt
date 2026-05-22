@@ -271,7 +271,7 @@ $(document).ready(function () {
                     position: 'bottomright',
                     emptyString: '-',
                     angleConvention: 'bearingCW',
-                    speedUnit: 'm/s'
+                    speedUnit: 'k/h'
                 },
                 data: this._data,
                 maxVelocity: 25,
@@ -285,19 +285,106 @@ $(document).ready(function () {
         }
     });
 
-    panel.addItem('ipma', 'temperature',   window.trans.map.temperature,
-        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR, window.trans.map.temperature), false)
-    panel.addItem('ipma', 'wind',          window.trans.map.wind,
-        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR, window.trans.map.wind), false)
-    panel.addItem('ipma', 'windDirection', window.trans.map.windDirection,
+    function ipmaItem(id, kind, label, layer) {
+        layer._ipmaKind = kind;
+        // Sub-layers (WMS tiles inside a LayerGroup) end up as direct
+        // children of the map, so tag them too — map.eachLayer won't
+        // see the wrapping group.
+        if (typeof layer.eachLayer === 'function') {
+            layer.eachLayer(function (sub) { sub._ipmaKind = kind; });
+        }
+        panel.addItem('ipma', id, label, layer, false);
+    }
+    ipmaItem('temperature', 'temperature', window.trans.map.temperature,
+        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR, window.trans.map.temperature));
+    ipmaItem('wind', 'wind', window.trans.map.wind,
+        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR, window.trans.map.wind));
+    ipmaItem('windDirection', 'windDirection', window.trans.map.windDirection,
         makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection,
-            { opacity: 1.0, className: 'ipma-windbarbs-tile' }), false)
-    panel.addItem('ipma', 'windAnimated', window.trans.map.windAnimated,
-        new IpmaWindAnimated(), false)
-    panel.addItem('ipma', 'precipitation', window.trans.map.precipitation,
-        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation), false)
-    panel.addItem('ipma', 'humidity',      window.trans.map.humidity,
-        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity), false)
+            { opacity: 1.0, className: 'ipma-windbarbs-tile' }));
+    ipmaItem('windAnimated', 'windAnimated', window.trans.map.windAnimated,
+        new IpmaWindAnimated());
+    ipmaItem('precipitation', 'precipitation', window.trans.map.precipitation,
+        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation));
+    ipmaItem('humidity', 'humidity', window.trans.map.humidity,
+        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity));
+
+    // Bottom-right indicator showing the value of the active IPMA forecast
+    // layer at the cursor. WindAnimated has its own readout (from
+    // leaflet-velocity), so we hide ours while it is active.
+    var ipmaValueDisplay = L.control({ position: 'bottomright' });
+    ipmaValueDisplay.onAdd = function () {
+        var div = L.DomUtil.create('div', 'ipma-value-display leaflet-control');
+        div.style.cssText = 'background:rgba(255,255,255,0.9);padding:4px 8px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.18);font:12px/1.3 sans-serif;color:#333;display:none;pointer-events:none';
+        this._div = div;
+        return div;
+    };
+    ipmaValueDisplay.update = function (text) {
+        if (!this._div) return;
+        this._div.style.display = text ? '' : 'none';
+        this._div.innerHTML = text || '';
+    };
+    ipmaValueDisplay.addTo(mymap);
+
+    function currentIpmaKindOnMap() {
+        var kind = null;
+        mymap.eachLayer(function (l) {
+            if (l && l._ipmaKind) kind = l._ipmaKind;
+        });
+        return kind;
+    }
+
+    var ipmaValueDebounce = null;
+    var ipmaValueReqId = 0;
+    var ipmaKindLabels = {
+        temperature:   window.trans.map.temperature,
+        wind:          window.trans.map.wind,
+        windDirection: window.trans.map.windDirection,
+        precipitation: window.trans.map.precipitation,
+        humidity:      window.trans.map.humidity
+    };
+
+    mymap.on('mousemove', function (e) {
+        var kind = currentIpmaKindOnMap();
+        if (!kind || kind === 'windAnimated') {
+            ipmaValueDisplay.update('');
+            return;
+        }
+        if (ipmaValueDebounce) clearTimeout(ipmaValueDebounce);
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        ipmaValueDebounce = setTimeout(function () {
+            var rid = ++ipmaValueReqId;
+            fetch('/v1/ipma-value?kind=' + encodeURIComponent(kind)
+                + '&lat=' + lat.toFixed(4) + '&lng=' + lng.toFixed(4),
+                { credentials: 'omit' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (data) {
+                    if (rid !== ipmaValueReqId) return;
+                    if (!data || data.value === null || data.value === undefined) {
+                        ipmaValueDisplay.update('');
+                        return;
+                    }
+                    var label = ipmaKindLabels[kind] || kind;
+                    var text;
+                    if (kind === 'windDirection' && data.value && typeof data.value === 'object') {
+                        text = label + ': ' + data.value.speed + ' ' + data.unit + ' (' + data.value.direction + '°)';
+                    } else {
+                        text = label + ': ' + data.value + ' ' + data.unit;
+                    }
+                    ipmaValueDisplay.update(text);
+                })
+                .catch(function () { /* silent */ });
+        }, 250);
+    });
+    mymap.on('mouseout', function () { ipmaValueDisplay.update(''); });
+    mymap.on('layerremove', function (e) {
+        if (e.layer && e.layer._isIpma) {
+            // Clear when an IPMA layer is turned off; the next mousemove
+            // will refresh if another IPMA layer is still on.
+            ipmaValueDisplay.update('');
+        }
+    });
 
     // When an IPMA forecast layer is active, mirror the mf2.ipma.pt viewer:
     // hide normal/satellite and stack a CARTO Positron light_nolabels base

@@ -422,6 +422,143 @@ class ApiController extends Controller
             ->header('X-Cache', 'MISS');
     }
 
+    /**
+     * Single-point, single-layer AROME forecast value for the cursor hover
+     * indicator on the map. Hits the same mf2 GetFeatureInfo backend as the
+     * fire detail panel but only for one layer and one timestamp — short
+     * enough to be called on debounced mousemove.
+     */
+    public function getIpmaValue(Request $request)
+    {
+        $lat  = (float) $request->query('lat');
+        $lng  = (float) $request->query('lng');
+        $kind = (string) $request->query('kind', '');
+
+        $kinds = [
+            'temperature'   => ['base' => 'arome.2m.temperature',       'unit' => '°C'],
+            'wind'          => ['base' => 'arome.10m.windintensity',    'unit' => 'km/h'],
+            'windDirection' => ['base' => 'arome.10m.windbarbs',        'unit' => 'km/h'],
+            'precipitation' => ['base' => 'arome.0m.precipitation',     'unit' => 'mm'],
+            'humidity'      => ['base' => 'arome.2m.relative_humidity', 'unit' => '%'],
+        ];
+        if (!isset($kinds[$kind])) {
+            return response()->json(['error' => 'invalid_kind'], 400);
+        }
+
+        $region = $this->regionForPoint($lat, $lng);
+        if ($region === null) {
+            return response()->json([
+                'value'  => null,
+                'unit'   => $kinds[$kind]['unit'],
+                'kind'   => $kind,
+                'region' => null,
+            ])->header('Cache-Control', 'public, max-age=300');
+        }
+
+        // Round to ~5 km grid so adjacent hover positions hit the same cache.
+        $cacheLat = round($lat / 0.05) * 0.05;
+        $cacheLng = round($lng / 0.05) * 0.05;
+        $cacheKey = sprintf('ipma:value:%s:%s:%.2f:%.2f', $kind, $region, $cacheLat, $cacheLng);
+        if (env('APP_ENV') === 'production') {
+            $cached = Redis::get($cacheKey);
+            if ($cached) {
+                return response($cached, 200)
+                    ->header('Content-Type', 'application/json')
+                    ->header('Cache-Control', 'public, max-age=300')
+                    ->header('X-Cache', 'HIT');
+            }
+        }
+
+        $refTime = $this->resolveAromeReferenceTime();
+        if ($refTime === null) {
+            return response()->json(['error' => 'reference_time_unavailable'], 503);
+        }
+        $refTimeIso = $refTime . ':00';
+
+        $layer = $kinds[$kind]['base'] . '.' . $region;
+
+        list($mx, $my) = $this->lngLatToWebMercator($lng, $lat);
+        $halfSpanMx = 5000;
+        $bbox = sprintf('%.0f,%.0f,%.0f,%.0f',
+            $mx - $halfSpanMx, $my - $halfSpanMx,
+            $mx + $halfSpanMx, $my + $halfSpanMx);
+
+        // Current hour, clamped to the AROME forecast window.
+        $nowIso = Carbon::now()->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i:s');
+
+        $url = 'https://mf2.ipma.pt/services/'
+            . '?service=WMS&version=1.3.0&request=GetFeatureInfo'
+            . '&srs=EPSG:3857&info_format=application/json'
+            . '&reference_time=' . urlencode($refTimeIso)
+            . '&time=' . urlencode($nowIso)
+            . '&width=256&height=256'
+            . '&bbox=' . urlencode($bbox)
+            . '&i=128&j=128'
+            . '&layers=' . urlencode($layer)
+            . '&query_layers=' . urlencode($layer);
+
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 6]);
+            $resp = $client->request('GET', $url, ['http_errors' => false]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'upstream_unavailable'], 502);
+        }
+        if ($resp->getStatusCode() !== 200) {
+            return response()->json(['error' => 'upstream_status', 'status' => $resp->getStatusCode()], 502);
+        }
+
+        $data = json_decode((string) $resp->getBody(), true);
+        $rawValue = null;
+        if (is_array($data) && !empty($data['data']) && is_array($data['data'])) {
+            $row = reset($data['data']);
+            if (is_array($row) && array_key_exists($layer, $row)) {
+                $rawValue = $row[$layer];
+            }
+        }
+
+        $value = null;
+        if ($kind === 'windDirection' && is_array($rawValue) && count($rawValue) === 2
+            && is_numeric($rawValue[0]) && is_numeric($rawValue[1])) {
+            // mf2 returns [u, v] in m/s. Speed in km/h, meteorological
+            // direction (FROM where the wind blows, 0°=N, 90°=E).
+            $u = (float) $rawValue[0];
+            $v = (float) $rawValue[1];
+            $speedKmh = sqrt($u * $u + $v * $v) * 3.6;
+            $dirDeg = atan2(-$u, -$v) * 180.0 / M_PI;
+            if ($dirDeg < 0) $dirDeg += 360.0;
+            $value = [
+                'speed'     => round($speedKmh, 1),
+                'direction' => (int) round($dirDeg),
+            ];
+        } elseif (is_numeric($rawValue)) {
+            $v = (float) $rawValue;
+            if ($kind === 'wind') {
+                $value = round($v * 3.6, 1);
+            } elseif ($kind === 'humidity') {
+                $value = (int) round($v);
+            } else {
+                $value = round($v, 1);
+            }
+        }
+
+        $payload = [
+            'value'  => $value,
+            'unit'   => $kinds[$kind]['unit'],
+            'kind'   => $kind,
+            'region' => $region,
+        ];
+        $encoded = json_encode($payload);
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, $encoded, 'EX', 600);
+        }
+
+        return response($encoded, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=300')
+            ->header('X-Cache', 'MISS');
+    }
+
     private function regionForPoint($lat, $lng)
     {
         if ($lng >= -12.8 && $lng <= -1.2 && $lat >= 34.0 && $lat <= 44.8) {

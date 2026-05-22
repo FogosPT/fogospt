@@ -102,6 +102,7 @@ Route::group(['prefix' => 'v1'], function () {
         ->where(['lat' => '-?\d+(\.\d+)?', 'lng' => '-?\d+(\.\d+)?'])
         ->name('getIpmaPoint');
     Route::get('/ipma-wms', [ApiController::class, 'getIpmaWms'])->name('getIpmaWms');
+    Route::get('/ipma-value', [ApiController::class, 'getIpmaValue'])->name('getIpmaValue');
 });
 
 Route::prefix('gaia/v1')->group(function () {
