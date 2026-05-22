@@ -597,9 +597,12 @@ $(document).ready(function () {
                 for (var i = 0; i < items.length; i++) {
                     var d = items[i];
                     if (!d || !d.payload || !d.timestamp) continue;
-                    var hours = Math.floor((now - new Date(d.timestamp).getTime()) / 3600000);
-                    if (hours < 0 || hours > 24) continue;
-                    if (!insidePT([d.payload.longitude, d.payload.latitude])) continue;
+                    var hours = (now - new Date(d.timestamp).getTime()) / 3600000;
+                    if (hours < -0.1 || hours > 24) continue;
+                    // No PT polygon clip: the IPMA detection network covers
+                    // PT, Galicia, the nearby Atlantic and the Mediterranean
+                    // approach — strikes there matter for fire-weather and
+                    // match what the IPMA viewer shows.
                     addLightning(d, mymap);
                 }
             }
@@ -715,24 +718,40 @@ function insidePT(point) {
 
 
 function addLightning(data, mymap) {
-    var marker = L.marker([data.payload.latitude, data.payload.longitude]);
-    marker.properties = { item: data };
-
     // Fade older strikes so the freshest ones stand out.
     var ageH = (Date.now() - new Date(data.timestamp).getTime()) / 3600000;
     var opacity = ageH <= 1 ? 1 : (ageH <= 6 ? 0.75 : (ageH <= 12 ? 0.55 : 0.35));
-    var iconHtml = '<i class="fas fa-bolt" style="color:#F96E5B;opacity:' + opacity + '"></i>';
 
-    marker.setIcon(L.divIcon({
-        className: 'count-icon-emergency',
-        html: iconHtml,
-        iconSize: [24, 24]
-    }));
+    // Negative = cloud-to-ground, more dangerous → red; positive → orange.
+    // Intracloud strikes (icloud=true) get a smaller, dimmer dot.
+    var amp = data.payload && data.payload.intensity;
+    var negative = (typeof amp === 'number' && amp < 0);
+    var color = negative ? '#d62828' : '#f77f00';
+    var intra = !!(data.payload && data.payload.icloud);
+    var size  = intra ? 16 : 22;
+
+    var iconHtml =
+        '<div style="display:flex;align-items:center;justify-content:center;width:' + size + 'px;height:' + size + 'px;' +
+        'background:' + color + ';color:#fff;border:1px solid #fff;border-radius:50%;' +
+        'box-shadow:0 0 3px rgba(0,0,0,0.5);opacity:' + opacity + ';font-size:' + (size - 6) + 'px;line-height:1">' +
+        '<i class="fas fa-bolt"></i></div>';
+
+    var marker = L.marker([data.payload.latitude, data.payload.longitude], {
+        icon: L.divIcon({
+            className: 'lightning-marker',
+            html: iconHtml,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
+        })
+    });
+    marker.properties = { item: data };
 
     var when = new Date(data.timestamp);
-    var popup = '<strong>' + (window.trans && window.trans.panel && window.trans.panel.lightningLabel || 'Descarga elétrica') + '</strong>'
+    var label = (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descarga elétrica';
+    var popup = '<strong>' + label + '</strong>'
         + '<br>' + when.toLocaleString('pt-PT')
-        + (data.payload && data.payload.intensity != null ? '<br>' + data.payload.intensity + ' kA' : '');
+        + (typeof amp === 'number' ? '<br>' + amp.toFixed(2) + ' kA' : '')
+        + '<br>' + (intra ? 'Entre nuvens' : 'Nuvem – Solo');
     marker.bindPopup(popup);
 
     window.lightningLayer[0].addLayer(marker);
