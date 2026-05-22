@@ -483,8 +483,10 @@ class ApiController extends Controller
             $mx - $halfSpanMx, $my - $halfSpanMx,
             $mx + $halfSpanMx, $my + $halfSpanMx);
 
-        // Current hour, clamped to the AROME forecast window.
-        $nowIso = Carbon::now()->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i:s');
+        // AROME timestamps are UTC. The app timezone is Europe/Lisbon, so
+        // Carbon::now() without an explicit zone would give us local time and
+        // we'd query the wrong forecast hour (especially in DST).
+        $nowIso = Carbon::now('UTC')->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i:s');
 
         $url = 'https://mf2.ipma.pt/services/'
             . '?service=WMS&version=1.3.0&request=GetFeatureInfo'
