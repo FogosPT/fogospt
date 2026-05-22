@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
+use GuzzleHttp;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Redis;
 use Jorenvh\Share\Share;
 
 
@@ -253,9 +255,47 @@ class FireController extends Controller
 
     public function getLightnings()
     {
-        return [];
-        $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
-        return $json;
+        $cacheKey = 'lightnings:dea';
+        if (env('APP_ENV') === 'production') {
+            $cached = Redis::get($cacheKey);
+            if ($cached) {
+                return response($cached, 200)
+                    ->header('Content-Type', 'application/json')
+                    ->header('Cache-Control', 'public, max-age=300')
+                    ->header('X-Cache', 'HIT');
+            }
+        }
+
+        $empty = json_encode(['data' => []]);
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 8]);
+            $resp = $client->request('GET', 'https://www.ipma.pt/resources.www/transf/dea/dea.json', [
+                'http_errors' => false,
+            ]);
+        } catch (\Exception $e) {
+            return response($empty, 200)->header('Content-Type', 'application/json');
+        }
+
+        if ($resp->getStatusCode() !== 200) {
+            return response($empty, 200)->header('Content-Type', 'application/json');
+        }
+
+        $body = (string) $resp->getBody();
+        // Sanity-check upstream payload before caching to avoid pinning an
+        // error page or HTML for 5 minutes.
+        $decoded = json_decode($body, true);
+        if (!is_array($decoded)) {
+            return response($empty, 200)->header('Content-Type', 'application/json');
+        }
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, $body, 'EX', 300);
+        }
+
+        return response($body, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=300')
+            ->header('X-Cache', 'MISS');
     }
 
 

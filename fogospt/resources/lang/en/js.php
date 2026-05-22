@@ -90,6 +90,8 @@ return [
         'ipma'      => 'IPMA forecast',
         'filters'       => 'Filters',
         'allIncidents'  => 'Show all incidents',
+        'lightning'     => 'Lightning',
+        'lightningLabel'=> 'Lightning strikes (24h)',
     ],
     'filtersPanel' => [
         'title'    => 'Advanced filters',

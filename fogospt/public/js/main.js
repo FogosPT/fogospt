@@ -106,6 +106,7 @@ $(document).ready(function () {
     panel.registerSection('filters', tp.filters || 'Filtros', 'checkbox');
     panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
+    panel.registerSection('lightning', tp.lightning || 'Trovoadas', 'checkbox');
     panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'radio');
 
     addRisk(mymap)
@@ -578,35 +579,36 @@ $(document).ready(function () {
     new FogosRiskLegend().addTo(mymap);
 
 
-    /*$.ajax({
-        url: '/lightnings',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.lightningLayer = []
-            window.lightningLayer[0] = L.layerGroup()
+    // Lightning strikes (IPMA DEA feed, ~5-min refresh upstream). We cap at
+    // the last 24h and clip to PT to stay consistent with the other layers.
+    window.lightningLayer = [L.layerGroup()];
+    window.fogosPanel.addItem('lightning', 'dea',
+        (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descargas elétricas',
+        window.lightningLayer[0], false);
 
-            var objLightning = {}
-            objLightning['Descargas Elétricas'] = window.lightningLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objLightning, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data.data) {
-                var date = new Date(data.data[i].timestamp)
-                var hours = Math.floor((new Date() - date) / 3600000);
-                if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
-                    addLightning(data.data[i], mymap);
+    function refreshLightnings() {
+        $.ajax({
+            url: '/lightnings',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                if (!window.lightningLayer || !window.lightningLayer[0]) return;
+                window.lightningLayer[0].clearLayers();
+                var items = (data && data.data) || [];
+                var now = Date.now();
+                for (var i = 0; i < items.length; i++) {
+                    var d = items[i];
+                    if (!d || !d.payload || !d.timestamp) continue;
+                    var hours = Math.floor((now - new Date(d.timestamp).getTime()) / 3600000);
+                    if (hours < 0 || hours > 24) continue;
+                    if (!insidePT([d.payload.longitude, d.payload.latitude])) continue;
+                    addLightning(d, mymap);
                 }
             }
-
-        }
-    })*/
+        });
+    }
+    refreshLightnings();
+    setInterval(refreshLightnings, 300000);
 
     $.ajax({
         url: '/v1/modis',
@@ -702,21 +704,27 @@ function insidePT(point) {
 
 
 function addLightning(data, mymap) {
-    var marker = L.marker([data.payload.latitude, data.payload.longitude])
+    var marker = L.marker([data.payload.latitude, data.payload.longitude]);
+    marker.properties = { item: data };
 
-    marker.properties = {}
-
-    iconHtml = '<i class="fas fa-bolt" style="color: #F96E5B"></i>'
-
-    marker.sizeFactor = 1
+    // Fade older strikes so the freshest ones stand out.
+    var ageH = (Date.now() - new Date(data.timestamp).getTime()) / 3600000;
+    var opacity = ageH <= 1 ? 1 : (ageH <= 6 ? 0.75 : (ageH <= 12 ? 0.55 : 0.35));
+    var iconHtml = '<i class="fas fa-bolt" style="color:#F96E5B;opacity:' + opacity + '"></i>';
 
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [80, 80]
-    }))
+        iconSize: [24, 24]
+    }));
 
-    window.lightningLayer[0].addLayer(marker)
+    var when = new Date(data.timestamp);
+    var popup = '<strong>' + (window.trans && window.trans.panel && window.trans.panel.lightningLabel || 'Descarga elétrica') + '</strong>'
+        + '<br>' + when.toLocaleString('pt-PT')
+        + (data.payload && data.payload.intensity != null ? '<br>' + data.payload.intensity + ' kA' : '');
+    marker.bindPopup(popup);
+
+    window.lightningLayer[0].addLayer(marker);
 }
 
 
