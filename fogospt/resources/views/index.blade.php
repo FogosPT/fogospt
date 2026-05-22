@@ -63,7 +63,7 @@
 
     @if(!empty($gaia))
         <script>window.fogosGaiaEnabled = true;</script>
-        <script src="/js/gaia.js?v=3"></script>
+        <script src="/js/gaia.js?v=4"></script>
     @endif
 
 @endpush

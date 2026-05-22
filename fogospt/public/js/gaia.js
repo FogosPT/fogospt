@@ -133,7 +133,13 @@
         return null;
     }
 
-    function eventMarker(ev) {
+    function getEventId(ev) {
+        var props = (ev && ev.properties) ? ev.properties : ev;
+        if (!props) return null;
+        return props.id != null ? props.id : props.event_id;
+    }
+
+    function eventMarker(ev, onClickId) {
         var coords = extractLatLng(ev);
         if (!coords) return null;
         var lat = coords[0], lng = coords[1];
@@ -147,15 +153,55 @@
             fillOpacity: 0.7
         });
         marker.bindPopup(eventPopupHTML(src), { maxWidth: 320 });
+        var eid = getEventId(ev);
+        if (eid != null && typeof onClickId === 'function') {
+            marker.on('click', function () { onClickId(eid); });
+        }
         return marker;
     }
 
     function setup(map) {
         var detectionsLayer  = L.layerGroup();
         var delineationsLayer = L.featureGroup();
+        // Footprint of the event the user clicked. One polygon at a time —
+        // cleared and replaced on each click, and on every refresh.
+        var selectedLayer    = L.featureGroup();
 
         detectionsLayer.addTo(map);
         delineationsLayer.addTo(map);
+        selectedLayer.addTo(map);
+
+        function loadEventPolygon(eventId) {
+            setStatus('A carregar evento #' + eventId + '…');
+            return fetchJSON('/gaia/v1/events/' + encodeURIComponent(eventId))
+                .then(function (data) {
+                    selectedLayer.clearLayers();
+                    if (!data) return;
+                    var feature;
+                    if (data.type === 'Feature' && data.geometry) {
+                        feature = data;
+                    } else if (data.geometry) {
+                        feature = { type: 'Feature', geometry: data.geometry, properties: data };
+                    } else if (data.type === 'FeatureCollection') {
+                        feature = data;
+                    } else {
+                        return;
+                    }
+                    var gj = L.geoJSON(feature, {
+                        style: { color: '#d33', weight: 2, fillColor: '#f55', fillOpacity: 0.25 }
+                    });
+                    gj.addTo(selectedLayer);
+                    try {
+                        var b = gj.getBounds();
+                        if (b.isValid()) map.fitBounds(b, { padding: [40, 40], maxZoom: 13 });
+                    } catch (e) {}
+                    setStatus('Evento #' + eventId + ' carregado');
+                })
+                .catch(function (err) {
+                    console.warn('[gaia] event detail fetch failed', err);
+                    setStatus('Erro ao carregar evento');
+                });
+        }
 
         var control = L.control({ position: 'topright' });
         control.onAdd = function () {
@@ -230,6 +276,8 @@
                 .then(function (data) {
                     detectionsLayer.clearLayers();
                     delineationsLayer.clearLayers();
+                    // selectedLayer is user-driven (replaced on next click),
+                    // so we don't clear it on bbox refresh.
 
                     var events = Array.isArray(data) ? data
                         : (data && Array.isArray(data.features) ? data.features
@@ -241,7 +289,7 @@
 
                     var count = 0, skipped = 0;
                     events.forEach(function (ev) {
-                        var m = eventMarker(ev);
+                        var m = eventMarker(ev, loadEventPolygon);
                         if (m) {
                             m.addTo(detectionsLayer);
                             count++;
