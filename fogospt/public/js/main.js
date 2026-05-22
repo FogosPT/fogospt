@@ -579,43 +579,155 @@ $(document).ready(function () {
     new FogosRiskLegend().addTo(mymap);
 
 
-    // Lightning strikes (IPMA DEA feed, ~5-min refresh upstream). We cap at
-    // the last 24h and clip to PT to stay consistent with the other layers.
-    // Fetch is deferred to when the user actually turns the layer on — the
-    // layer group's onAdd/onRemove drive the refresh interval.
-    var lightningInterval = null;
+    // Lightning strikes (IPMA DEA feed, ~5-min refresh upstream). The full
+    // 24h is cached client-side; the map only renders the strikes in the
+    // selected 1-hour window. A floating control (slider + play/pause)
+    // lets the user step through the last 24 hours.
+    //
+    // IPMA timestamps are normalised to UTC server-side (a "Z" is appended
+    // when missing) so new Date() and Date.now() compare in absolute time
+    // regardless of the viewer's local zone.
+    var lightningRefreshInterval = null;
+    var lightningPlayInterval = null;
+    var lightningStrikes = [];
+    var lightningHourOffset = 0;     // 0 = last hour, 1 = previous, … up to 23
+    var LIGHTNING_HOURS = 24;
+    var LIGHTNING_FRAME_MS = 900;
+    var lightningControl = null;
+
+    function renderLightningsForOffset() {
+        if (!window.lightningLayer || !window.lightningLayer[0]) return;
+        window.lightningLayer[0].clearLayers();
+        var now = Date.now();
+        var windowEnd   = now - lightningHourOffset * 3600000;
+        var windowStart = windowEnd - 3600000;
+        var shown = 0;
+        for (var i = 0; i < lightningStrikes.length; i++) {
+            var d = lightningStrikes[i];
+            if (!d || !d.payload || !d.timestamp) continue;
+            var t = new Date(d.timestamp).getTime();
+            if (isNaN(t)) continue;
+            if (t < windowStart || t >= windowEnd) continue;
+            addLightning(d, mymap);
+            shown++;
+        }
+        if (lightningControl) lightningControl.refresh(shown);
+    }
+
     function refreshLightnings() {
         $.ajax({
             url: '/' + locale + '/lightnings',
             dataType: 'json',
             method: 'GET',
             success: function (data) {
-                if (!window.lightningLayer || !window.lightningLayer[0]) return;
-                window.lightningLayer[0].clearLayers();
                 var items = (data && data.data) || [];
                 var now = Date.now();
-                for (var i = 0; i < items.length; i++) {
-                    var d = items[i];
-                    if (!d || !d.payload || !d.timestamp) continue;
-                    var hours = (now - new Date(d.timestamp).getTime()) / 3600000;
-                    if (hours < -0.1 || hours > 24) continue;
-                    // No PT polygon clip: the IPMA detection network covers
-                    // PT, Galicia, the nearby Atlantic and the Mediterranean
-                    // approach — strikes there matter for fire-weather and
-                    // match what the IPMA viewer shows.
-                    addLightning(d, mymap);
-                }
+                lightningStrikes = items.filter(function (d) {
+                    if (!d || !d.payload || !d.timestamp) return false;
+                    var t = new Date(d.timestamp).getTime();
+                    if (isNaN(t)) return false;
+                    var ageH = (now - t) / 3600000;
+                    return ageH >= -0.1 && ageH <= LIGHTNING_HOURS;
+                });
+                renderLightningsForOffset();
             }
         });
     }
+
+    function lightningHourLabel(offset) {
+        var t = (window.trans && window.trans.panel) || {};
+        if (offset === 0) return t.lightningLastHour || 'Última hora';
+        var tpl = t.lightningHoursAgo || 'Há {n}h';
+        return tpl.replace('{n}', offset);
+    }
+
+    function buildLightningControl() {
+        var t = (window.trans && window.trans.panel) || {};
+        var ctrl = L.control({ position: 'bottomleft' });
+        ctrl.onAdd = function () {
+            var div = L.DomUtil.create('div', 'lightning-control');
+            div.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.18);font:12px/1.3 sans-serif;width:300px;user-select:none;display:none';
+            div.innerHTML =
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+                '  <strong>' + (t.lightningTitle || 'Descargas — janela de 1h') + '</strong>' +
+                '  <span data-role="count" style="color:#666;font-size:11px"></span>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+                '  <button type="button" data-role="play" style="border:1px solid #ccc;background:#fafafa;border-radius:4px;width:30px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-play"></i></button>' +
+                '  <input type="range" data-role="slider" min="0" max="' + (LIGHTNING_HOURS - 1) + '" value="0" step="1" style="flex:1">' +
+                '</div>' +
+                '<div data-role="label" style="color:#333;font-size:12px;text-align:center"></div>';
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.disableScrollPropagation(div);
+            ctrl._div = div;
+
+            L.DomEvent.on(div.querySelector('[data-role="play"]'), 'click', function (e) {
+                L.DomEvent.stop(e);
+                if (lightningPlayInterval) lightningStopPlay();
+                else lightningStartPlay();
+            });
+            L.DomEvent.on(div.querySelector('[data-role="slider"]'), 'input', function (e) {
+                lightningStopPlay();
+                lightningHourOffset = parseInt(e.target.value, 10) || 0;
+                renderLightningsForOffset();
+            });
+            return div;
+        };
+        ctrl.show = function () { if (this._div) this._div.style.display = ''; this.refresh(); };
+        ctrl.hide = function () { if (this._div) this._div.style.display = 'none'; };
+        ctrl.refresh = function (shown) {
+            if (!this._div) return;
+            this._div.querySelector('[data-role="slider"]').value = String(lightningHourOffset);
+            this._div.querySelector('[data-role="label"]').textContent = lightningHourLabel(lightningHourOffset);
+            var c = this._div.querySelector('[data-role="count"]');
+            if (c) c.textContent = (typeof shown === 'number') ? (shown + ' / ' + lightningStrikes.length) : '';
+            var pb = this._div.querySelector('[data-role="play"]');
+            if (pb) pb.innerHTML = lightningPlayInterval ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        };
+        ctrl.addTo(mymap);
+        return ctrl;
+    }
+
+    function lightningStartPlay() {
+        if (lightningPlayInterval) return;
+        // Start at the oldest hour and walk forward to the most recent so the
+        // animation feels like time moving forward.
+        lightningHourOffset = LIGHTNING_HOURS - 1;
+        renderLightningsForOffset();
+        lightningPlayInterval = setInterval(function () {
+            lightningHourOffset--;
+            if (lightningHourOffset < 0) {
+                // Loop: stop at "last hour" and reset to oldest after a pause.
+                lightningStopPlay();
+                lightningHourOffset = 0;
+                renderLightningsForOffset();
+                return;
+            }
+            renderLightningsForOffset();
+        }, LIGHTNING_FRAME_MS);
+        if (lightningControl) lightningControl.refresh();
+    }
+    function lightningStopPlay() {
+        if (lightningPlayInterval) {
+            clearInterval(lightningPlayInterval);
+            lightningPlayInterval = null;
+        }
+        if (lightningControl) lightningControl.refresh();
+    }
+
     var lightningLayer = L.layerGroup();
     lightningLayer.onAdd = function (map) {
         L.LayerGroup.prototype.onAdd.call(this, map);
+        if (!lightningControl) lightningControl = buildLightningControl();
+        lightningHourOffset = 0;
+        lightningControl.show();
         refreshLightnings();
-        if (!lightningInterval) lightningInterval = setInterval(refreshLightnings, 300000);
+        if (!lightningRefreshInterval) lightningRefreshInterval = setInterval(refreshLightnings, 300000);
     };
     lightningLayer.onRemove = function (map) {
-        if (lightningInterval) { clearInterval(lightningInterval); lightningInterval = null; }
+        lightningStopPlay();
+        if (lightningRefreshInterval) { clearInterval(lightningRefreshInterval); lightningRefreshInterval = null; }
+        if (lightningControl) lightningControl.hide();
         this.clearLayers();
         L.LayerGroup.prototype.onRemove.call(this, map);
     };

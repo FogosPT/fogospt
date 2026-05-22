@@ -90,8 +90,11 @@ return [
         'ipma'      => 'Previsão IPMA',
         'filters'       => 'Filtros',
         'allIncidents'  => 'Mostrar todos os incidentes',
-        'lightning'     => 'Trovoadas',
-        'lightningLabel'=> 'Descargas elétricas (24h)',
+        'lightning'        => 'Trovoadas',
+        'lightningLabel'   => 'Descargas elétricas',
+        'lightningTitle'   => 'Descargas — janela de 1h',
+        'lightningLastHour'=> 'Última hora',
+        'lightningHoursAgo'=> 'Há {n}h',
     ],
     'filtersPanel' => [
         'title'    => 'Filtros avançados',

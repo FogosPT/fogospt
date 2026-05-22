@@ -90,8 +90,11 @@ return [
         'ipma'      => 'IPMA forecast',
         'filters'       => 'Filters',
         'allIncidents'  => 'Show all incidents',
-        'lightning'     => 'Lightning',
-        'lightningLabel'=> 'Lightning strikes (24h)',
+        'lightning'        => 'Lightning',
+        'lightningLabel'   => 'Lightning strikes',
+        'lightningTitle'   => 'Strikes — 1h window',
+        'lightningLastHour'=> 'Last hour',
+        'lightningHoursAgo'=> '{n}h ago',
     ],
     'filtersPanel' => [
         'title'    => 'Advanced filters',
