@@ -15,8 +15,10 @@ services:
       - ./secrets/firebase-sa.json:/run/secrets/firebase-sa.json:ro
     environment:
       - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
-    ports:
-      - "9001:9000"
+    # No ports here on purpose: PHP-FPM has no auth, so it must only be
+    # reachable from the nginx container over the internal Docker network
+    # (nginx uses fastcgi_pass fogospt:9000). Publishing it to the host —
+    # especially on 0.0.0.0 — is remote code execution by design.
 
   nginx:
     image: nginx
