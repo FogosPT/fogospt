@@ -463,20 +463,30 @@ $(document).ready(function () {
         } else {
             if (mymap.hasLayer(ipmaBaseLayer)) mymap.removeLayer(ipmaBaseLayer);
             if (mymap.hasLayer(ipmaLabelsLayer)) mymap.removeLayer(ipmaLabelsLayer);
-            var st = (window.fogosPanel && window.fogosPanel._state) || {};
-            var wantSat = !!st['base:satellite'];
-            var target = wantSat ? satelliteLayer : normalLayer;
-            var other  = wantSat ? normalLayer    : satelliteLayer;
-            if (mymap.hasLayer(other)) mymap.removeLayer(other);
-            if (!mymap.hasLayer(target)) target.addTo(mymap);
+            // Only restore a base when neither is on — i.e. coming out of
+            // IPMA mode. During a normal/satellite radio toggle the panel
+            // is mid-swap; touching either layer here races with it.
+            if (!mymap.hasLayer(normalLayer) && !mymap.hasLayer(satelliteLayer)) {
+                var st = (window.fogosPanel && window.fogosPanel._state) || {};
+                var target = st['base:satellite'] ? satelliteLayer : normalLayer;
+                target.addTo(mymap);
+            }
         }
     }
 
     mymap.on('layeradd layerremove', function (e) {
         if (!e.layer) return;
-        // React when an IPMA layer toggles or when the user reselects a base
-        // while IPMA is on (the panel would re-add the base behind our backs).
-        if (e.layer._legendUrl || e.layer._isIpma || e.layer === normalLayer || e.layer === satelliteLayer) {
+        var isIpmaLayer = e.layer._legendUrl || e.layer._isIpma;
+        if (isIpmaLayer) {
+            applyIpmaBaseMode();
+            return;
+        }
+        // Base layer add/remove: only re-apply while IPMA is active, so the
+        // CARTO base stays hidden behind the WMS overlay. Otherwise we'd
+        // race with the panel's radio swap (remove-then-add) and end up
+        // either restoring the layer that was just removed or removing
+        // the one that was just added.
+        if ((e.layer === normalLayer || e.layer === satelliteLayer) && isIpmaActive()) {
             applyIpmaBaseMode();
         }
     });
