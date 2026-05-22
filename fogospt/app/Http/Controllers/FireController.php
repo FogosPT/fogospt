@@ -267,10 +267,17 @@ class FireController extends Controller
         }
 
         $empty = json_encode(['data' => []]);
+
+        // IPMA's old dea.json endpoint stopped being updated (always returns
+        // {"data":[]}). The live feed is embedded in the obs.dea HTML page
+        // as a `var data = {...FeatureCollection...};` assignment, so we
+        // scrape the JSON object out and normalise it to the shape the
+        // map JS already expects: {data: [{timestamp, payload:{...}}, ...]}.
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 8]);
-            $resp = $client->request('GET', 'https://www.ipma.pt/resources.www/transf/dea/dea.json', [
+            $client = new GuzzleHttp\Client(['timeout' => 10]);
+            $resp = $client->request('GET', 'https://www.ipma.pt/pt/otempo/obs.dea/', [
                 'http_errors' => false,
+                'headers'     => ['User-Agent' => 'Mozilla/5.0 (fogos.pt lightnings proxy)'],
             ]);
         } catch (\Exception $e) {
             return response($empty, 200)->header('Content-Type', 'application/json');
@@ -280,22 +287,97 @@ class FireController extends Controller
             return response($empty, 200)->header('Content-Type', 'application/json');
         }
 
-        $body = (string) $resp->getBody();
-        // Sanity-check upstream payload before caching to avoid pinning an
-        // error page or HTML for 5 minutes.
-        $decoded = json_decode($body, true);
-        if (!is_array($decoded)) {
+        $html = (string) $resp->getBody();
+        $json = $this->extractBalancedJson($html, 'var data = ');
+        if ($json === null) {
+            return response($empty, 200)->header('Content-Type', 'application/json');
+        }
+        $geo = json_decode($json, true);
+        if (!is_array($geo) || !isset($geo['features']) || !is_array($geo['features'])) {
             return response($empty, 200)->header('Content-Type', 'application/json');
         }
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $body, 'EX', 300);
+        $items = [];
+        foreach ($geo['features'] as $f) {
+            $coords = $f['geometry']['coordinates'] ?? null;
+            $props  = $f['properties']             ?? null;
+            if (!is_array($coords) || count($coords) < 2 || !is_array($props)) {
+                continue;
+            }
+            $items[] = [
+                'timestamp' => $props['time'] ?? null,
+                'payload'   => [
+                    'latitude'  => (float) $coords[1],
+                    'longitude' => (float) $coords[0],
+                    'intensity' => isset($props['amplitude']) ? (float) $props['amplitude'] : null,
+                    'icloud'    => !empty($props['icloud']),
+                ],
+            ];
         }
 
-        return response($body, 200)
+        $payload = json_encode([
+            'data'    => $items,
+            'updated' => $geo['update_date'] ?? null,
+        ]);
+
+        if (env('APP_ENV') === 'production') {
+            Redis::set($cacheKey, $payload, 'EX', 300);
+        }
+
+        return response($payload, 200)
             ->header('Content-Type', 'application/json')
             ->header('Cache-Control', 'public, max-age=300')
             ->header('X-Cache', 'MISS');
+    }
+
+    /**
+     * Find a JSON object literal that follows $marker in $haystack, matching
+     * braces while respecting string quoting. Returns the JSON text or null.
+     * Needed because IPMA's inlined GeoJSON has nested objects, so a naive
+     * regex would either stop at the first `}` or grab too much.
+     */
+    private function extractBalancedJson($haystack, $marker)
+    {
+        $start = strpos($haystack, $marker);
+        if ($start === false) {
+            return null;
+        }
+        $i = $start + strlen($marker);
+        $len = strlen($haystack);
+        while ($i < $len && ctype_space($haystack[$i])) {
+            $i++;
+        }
+        if ($i >= $len || $haystack[$i] !== '{') {
+            return null;
+        }
+        $objStart = $i;
+        $depth = 0;
+        $inStr = false;
+        $esc = false;
+        for (; $i < $len; $i++) {
+            $c = $haystack[$i];
+            if ($inStr) {
+                if ($esc) {
+                    $esc = false;
+                } elseif ($c === '\\') {
+                    $esc = true;
+                } elseif ($c === '"') {
+                    $inStr = false;
+                }
+                continue;
+            }
+            if ($c === '"') {
+                $inStr = true;
+            } elseif ($c === '{') {
+                $depth++;
+            } elseif ($c === '}') {
+                $depth--;
+                if ($depth === 0) {
+                    return substr($haystack, $objStart, $i - $objStart + 1);
+                }
+            }
+        }
+        return null;
     }
 
 
