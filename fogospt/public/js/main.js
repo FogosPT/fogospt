@@ -581,11 +581,9 @@ $(document).ready(function () {
 
     // Lightning strikes (IPMA DEA feed, ~5-min refresh upstream). We cap at
     // the last 24h and clip to PT to stay consistent with the other layers.
-    window.lightningLayer = [L.layerGroup()];
-    window.fogosPanel.addItem('lightning', 'dea',
-        (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descargas elétricas',
-        window.lightningLayer[0], false);
-
+    // Fetch is deferred to when the user actually turns the layer on — the
+    // layer group's onAdd/onRemove drive the refresh interval.
+    var lightningInterval = null;
     function refreshLightnings() {
         $.ajax({
             url: '/' + locale + '/lightnings',
@@ -607,8 +605,21 @@ $(document).ready(function () {
             }
         });
     }
-    refreshLightnings();
-    setInterval(refreshLightnings, 300000);
+    var lightningLayer = L.layerGroup();
+    lightningLayer.onAdd = function (map) {
+        L.LayerGroup.prototype.onAdd.call(this, map);
+        refreshLightnings();
+        if (!lightningInterval) lightningInterval = setInterval(refreshLightnings, 300000);
+    };
+    lightningLayer.onRemove = function (map) {
+        if (lightningInterval) { clearInterval(lightningInterval); lightningInterval = null; }
+        this.clearLayers();
+        L.LayerGroup.prototype.onRemove.call(this, map);
+    };
+    window.lightningLayer = [lightningLayer];
+    window.fogosPanel.addItem('lightning', 'dea',
+        (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descargas elétricas',
+        lightningLayer, false);
 
     $.ajax({
         url: '/v1/modis',

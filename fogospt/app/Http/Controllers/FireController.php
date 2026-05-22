@@ -304,8 +304,16 @@ class FireController extends Controller
             if (!is_array($coords) || count($coords) < 2 || !is_array($props)) {
                 continue;
             }
+            // IPMA serves the strike time as a naive ISO string (no Z / no
+            // offset) but the values are UTC. Append Z so the frontend
+            // doesn't misread it as local time.
+            $time = $props['time'] ?? null;
+            if (is_string($time) && $time !== '' && !preg_match('/[zZ]|[+\-]\d{2}:?\d{2}$/', $time)) {
+                $time .= 'Z';
+            }
+
             $items[] = [
-                'timestamp' => $props['time'] ?? null,
+                'timestamp' => $time,
                 'payload'   => [
                     'latitude'  => (float) $coords[1],
                     'longitude' => (float) $coords[0],
