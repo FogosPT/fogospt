@@ -588,7 +588,7 @@ $(document).ready(function () {
 
     function refreshLightnings() {
         $.ajax({
-            url: '/lightnings',
+            url: '/' + locale + '/lightnings',
             dataType: 'json',
             method: 'GET',
             success: function (data) {

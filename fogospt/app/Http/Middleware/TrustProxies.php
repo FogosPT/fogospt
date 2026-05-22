@@ -10,9 +10,14 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * '*' lets Laravel honour X-Forwarded-* from any proxy in front of the
+     * container (nginx → CDN/Cloudflare). Without this the framework saw
+     * the request as plain HTTP and produced http:// redirects on https://
+     * pages, triggering Mixed Content blocks in the browser.
+     *
      * @var array|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
