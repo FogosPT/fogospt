@@ -258,6 +258,10 @@ $(document).ready(function () {
             if (this._velocity && map.hasLayer(this._velocity)) {
                 map.removeLayer(this._velocity);
             }
+            if (this._unitObserver) {
+                this._unitObserver.disconnect();
+                this._unitObserver = null;
+            }
             this._velocity = null;
             this._map = null;
             return this;
@@ -271,6 +275,10 @@ $(document).ready(function () {
                     position: 'bottomright',
                     emptyString: '-',
                     angleConvention: 'bearingCW',
+                    // leaflet-velocity converts using this token AND prints it
+                    // literally — so "k/h" gives the right value but the wrong
+                    // label. We keep it for the conversion and rewrite the
+                    // rendered string below.
                     speedUnit: 'k/h'
                 },
                 data: this._data,
@@ -282,6 +290,31 @@ $(document).ready(function () {
                 attribution: IPMA_ATTR
             });
             this._velocity.addTo(this._map);
+            this._installUnitRewrite();
+        },
+        _installUnitRewrite: function () {
+            var self = this;
+            // The readout div is created asynchronously on first mousemove.
+            // Poll briefly for it, then watch and rewrite "k/h" → "km/h" in
+            // place. Replacement only fires when the substring "k/h" is
+            // present, so the resulting "km/h" doesn't re-trigger us.
+            var tries = 0;
+            (function find() {
+                var el = document.querySelector('.leaflet-control-velocity, .velocity-mouse-position');
+                if (!el) {
+                    if (++tries < 40 && self._velocity) setTimeout(find, 100);
+                    return;
+                }
+                var rewrite = function () {
+                    var html = el.innerHTML;
+                    if (html.indexOf('k/h') !== -1) {
+                        el.innerHTML = html.replace(/k\/h/g, 'km/h');
+                    }
+                };
+                rewrite();
+                self._unitObserver = new MutationObserver(rewrite);
+                self._unitObserver.observe(el, { childList: true, characterData: true, subtree: true });
+            })();
         }
     });
 
