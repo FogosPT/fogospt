@@ -92,6 +92,10 @@
             rows.push('<hr style="margin:4px 0">');
             rows.push('<div style="max-width:280px;font-size:12px">' + ev.summary.text + '</div>');
         }
+        var eid = ev.id != null ? ev.id : ev.event_id;
+        if (eid != null) {
+            rows.push('<button type="button" class="gaia-timeline-btn" data-event-id="' + eid + '" style="margin-top:6px;padding:4px 8px;border:1px solid #d33;background:#fff;color:#d33;border-radius:4px;cursor:pointer;font-size:12px"><i class="fas fa-play" style="font-size:10px;margin-right:4px"></i>Ver evolução</button>');
+        }
         return rows.join('<br>');
     }
 
@@ -171,7 +175,170 @@
         delineationsLayer.addTo(map);
         selectedLayer.addTo(map);
 
+        // --- Timeline (event evolution) state & UI ---
+        var FRAME_MS = 700;
+        var timeline = null;       // { eventId, features, index, playing, interval, _fitDone }
+        var timelineDiv = null;
+
+        function extractSnapshotDate(feat) {
+            var p = feat && feat.properties ? feat.properties : feat || {};
+            return p.timestamp || p.date || p.observed_at || p.observed_date
+                || p.snapshot_at || p.detected_at || p.acquired_at || p.last_seen
+                || p.time || null;
+        }
+
+        function renderTimelineFrame() {
+            if (!timeline) return;
+            selectedLayer.clearLayers();
+            var feat = timeline.features[timeline.index];
+            if (!feat) return;
+            var gj = L.geoJSON(feat, {
+                style: { color: '#d33', weight: 2, fillColor: '#f55', fillOpacity: 0.3 }
+            });
+            gj.addTo(selectedLayer);
+            if (timeline._fitDone !== true) {
+                try {
+                    var b = gj.getBounds();
+                    if (b.isValid()) map.fitBounds(b, { padding: [40, 40], maxZoom: 13 });
+                } catch (e) {}
+                timeline._fitDone = true;
+            }
+        }
+
+        function updateTimelineUI() {
+            if (!timelineDiv || !timeline) return;
+            var slider = timelineDiv.querySelector('[data-role="slider"]');
+            slider.max   = String(timeline.features.length - 1);
+            slider.value = String(timeline.index);
+            var dateRaw = extractSnapshotDate(timeline.features[timeline.index]);
+            timelineDiv.querySelector('[data-role="date"]').textContent = dateRaw ? fmtDate(dateRaw) : '';
+            timelineDiv.querySelector('[data-role="pos"]').textContent  = (timeline.index + 1) + '/' + timeline.features.length;
+            timelineDiv.querySelector('[data-role="play"]').innerHTML   = timeline.playing
+                ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        }
+
+        function showTimelinePanel() {
+            if (timelineDiv) timelineDiv.style.display = '';
+            updateTimelineUI();
+        }
+        function hideTimelinePanel() {
+            stopTimelinePlay();
+            if (timelineDiv) timelineDiv.style.display = 'none';
+            timeline = null;
+            selectedLayer.clearLayers();
+        }
+
+        function startTimelinePlay() {
+            if (!timeline) return;
+            if (timeline.index >= timeline.features.length - 1) timeline.index = 0;
+            timeline.playing = true;
+            renderTimelineFrame();
+            updateTimelineUI();
+            timeline.interval = setInterval(function () {
+                if (timeline.index >= timeline.features.length - 1) {
+                    stopTimelinePlay();
+                    return;
+                }
+                timeline.index++;
+                renderTimelineFrame();
+                updateTimelineUI();
+            }, FRAME_MS);
+        }
+        function stopTimelinePlay() {
+            if (!timeline) return;
+            timeline.playing = false;
+            if (timeline.interval) { clearInterval(timeline.interval); timeline.interval = null; }
+            updateTimelineUI();
+        }
+        function toggleTimelinePlay() {
+            if (!timeline) return;
+            if (timeline.playing) stopTimelinePlay(); else startTimelinePlay();
+        }
+
+        function buildTimelineControl() {
+            var c = L.control({ position: 'bottomleft' });
+            c.onAdd = function () {
+                var div = L.DomUtil.create('div', 'gaia-timeline');
+                div.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.18);font:12px/1.3 sans-serif;width:320px;display:none;user-select:none';
+                div.innerHTML =
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+                    '  <strong>Evolução do evento</strong>' +
+                    '  <button type="button" data-role="close" aria-label="Fechar" style="background:transparent;border:0;cursor:pointer;font-size:16px;line-height:1;color:#666">×</button>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+                    '  <button type="button" data-role="play" style="border:1px solid #ccc;background:#fafafa;border-radius:4px;width:30px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-play"></i></button>' +
+                    '  <input type="range" data-role="slider" min="0" max="0" value="0" step="1" style="flex:1">' +
+                    '</div>' +
+                    '<div style="color:#666;font-size:11px;display:flex;justify-content:space-between"><span data-role="date"></span><span data-role="pos"></span></div>';
+                L.DomEvent.disableClickPropagation(div);
+                L.DomEvent.disableScrollPropagation(div);
+                timelineDiv = div;
+
+                L.DomEvent.on(div.querySelector('[data-role="close"]'), 'click', function (e) {
+                    L.DomEvent.stop(e); hideTimelinePanel();
+                });
+                L.DomEvent.on(div.querySelector('[data-role="play"]'), 'click', function (e) {
+                    L.DomEvent.stop(e); toggleTimelinePlay();
+                });
+                var slider = div.querySelector('[data-role="slider"]');
+                L.DomEvent.on(slider, 'input', function () {
+                    if (!timeline) return;
+                    stopTimelinePlay();
+                    timeline.index = parseInt(slider.value, 10) || 0;
+                    renderTimelineFrame();
+                    updateTimelineUI();
+                });
+                return div;
+            };
+            c.addTo(map);
+        }
+
+        function loadEventTimeline(eventId) {
+            stopTimelinePlay();
+            setStatus('A carregar timeline #' + eventId + '…');
+            return fetchJSON('/gaia/v1/events/' + encodeURIComponent(eventId) + '/timeline')
+                .then(function (data) {
+                    var items = Array.isArray(data) ? data
+                        : (data && Array.isArray(data.features) ? data.features
+                        : (data && Array.isArray(data.snapshots) ? data.snapshots
+                        : (data && Array.isArray(data.items)    ? data.items
+                        : (data && Array.isArray(data.data)     ? data.data : []))));
+                    var features = items.map(function (it) {
+                        if (it && it.type === 'Feature' && it.geometry) return it;
+                        if (it && it.geometry) return { type: 'Feature', geometry: it.geometry, properties: it };
+                        return null;
+                    }).filter(Boolean);
+                    if (!features.length) { setStatus('Sem timeline para o evento'); return; }
+                    timeline = {
+                        eventId: eventId,
+                        features: features,
+                        index: features.length - 1,
+                        playing: false,
+                        interval: null,
+                        _fitDone: false
+                    };
+                    renderTimelineFrame();
+                    showTimelinePanel();
+                    setStatus('Timeline #' + eventId + ' (' + features.length + ' snapshots)');
+                })
+                .catch(function (err) {
+                    console.warn('[gaia] timeline fetch failed', err);
+                    setStatus('Erro ao carregar timeline');
+                });
+        }
+
+        buildTimelineControl();
+
+        // Popup buttons are rendered inside Leaflet popups, so we delegate.
+        document.addEventListener('click', function (e) {
+            var btn = e.target && e.target.closest && e.target.closest('.gaia-timeline-btn');
+            if (!btn) return;
+            var id = btn.getAttribute('data-event-id');
+            if (id) loadEventTimeline(id);
+        });
+
         function loadEventPolygon(eventId) {
+            hideTimelinePanel();
             setStatus('A carregar evento #' + eventId + '…');
             return fetchJSON('/gaia/v1/events/' + encodeURIComponent(eventId))
                 .then(function (data) {
