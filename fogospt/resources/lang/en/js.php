@@ -88,5 +88,14 @@ return [
         'satellite' => 'Satellite hotspots',
         'weather'   => 'Weather',
         'ipma'      => 'IPMA forecast',
+        'filters'       => 'Filters',
+        'allIncidents'  => 'Show all incidents',
+    ],
+    'filtersPanel' => [
+        'title'    => 'Advanced filters',
+        'minHours' => 'Active for more than (h)',
+        'minMeios' => 'Total resources ≥',
+        'clear'    => 'Clear',
+        'showing'  => 'Showing {shown} of {total}',
     ],
 ];

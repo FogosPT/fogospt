@@ -52,6 +52,7 @@
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <script src="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.min.js"></script>
     <script src="/js/map-panel.js?v=2"></script>
+    <script src="/js/map-filters.js?v=1"></script>
     <script src="/js/photos.js?v=1"></script>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';

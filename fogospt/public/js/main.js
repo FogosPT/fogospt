@@ -103,6 +103,7 @@ $(document).ready(function () {
     panel.addItem('base', 'satellite', window.trans.map.satellite, satelliteLayer, false);
 
     panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
+    panel.registerSection('filters', tp.filters || 'Filtros', 'checkbox');
     panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
     panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'radio');
@@ -149,6 +150,27 @@ $(document).ready(function () {
     window.fogosLayers[81] = L.layerGroup()
 
     window.fogosLayers[81].addTo(mymap)
+
+    // "Show all incidents" filter. The stub layer carries no markers; its
+    // onAdd/onRemove flip a flag and refetch fires with ?all=1, so the
+    // backend returns non-fire incidents too.
+    var allIncidentsLayer = L.layerGroup();
+    allIncidentsLayer.onAdd = function (map) {
+        L.LayerGroup.prototype.onAdd.call(this, map);
+        window.fogosShowAllIncidents = true;
+        if (window.fogosFiresLoaded) getNewFires(mymap, true);
+    };
+    allIncidentsLayer.onRemove = function (map) {
+        L.LayerGroup.prototype.onRemove.call(this, map);
+        window.fogosShowAllIncidents = false;
+        if (window.fogosFiresLoaded) getNewFires(mymap, true);
+    };
+    panel.addItem('filters', 'allIncidents',
+        tp.allIncidents || 'Mostrar todos os incidentes',
+        allIncidentsLayer, false);
+
+    window.fogosFiltersControl = new L.Control.FogosFilters();
+    window.fogosFiltersControl.addTo(mymap);
 
     var obj = getNewFires(mymap);
 
@@ -1228,18 +1250,31 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[81].addTo(mymap)
     }
 
-    var url = 'https://source.fogos.pt/new/fires'
+    var url = 'https://source.fogos.pt/v2/incidents/active'
+    if (window.fogosShowAllIncidents) {
+        url += '?all=1'
+    }
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
             if (data.success) {
+                window.fogosFiresLoaded = true;
+                window.fogosLastFires = data.data;
+                window.fogosLastMap = mymap;
 
                 for (i in data.data) {
                     calculateImportanceValue(data.data[i])
                 }
+                var shown = 0;
                 for (i in data.data) {
+                    if (!fireMatchesFilters(data.data[i])) continue;
                     addMaker(data.data[i], mymap)
+                    shown++;
+                }
+                window.fogosFilterCount = { shown: shown, total: data.data.length };
+                if (window.fogosFiltersControl && window.fogosFiltersControl.refreshCount) {
+                    window.fogosFiltersControl.refreshCount();
                 }
 
                 var t = window.trans.status
@@ -1258,6 +1293,49 @@ function getNewFires(mymap, refresh = false)
     })
 
 }
+
+// Parses item.date ("DD-MM-YYYY") + item.hour ("HH:MM") as local time.
+function parseFireStart(item) {
+    if (!item || !item.date) return null;
+    var d = String(item.date).split('-');
+    if (d.length !== 3) return null;
+    var h = String(item.hour || '00:00').split(':');
+    var dt = new Date(
+        parseInt(d[2], 10),
+        parseInt(d[1], 10) - 1,
+        parseInt(d[0], 10),
+        parseInt(h[0], 10) || 0,
+        parseInt(h[1], 10) || 0
+    );
+    var t = dt.getTime();
+    return isNaN(t) ? null : t;
+}
+
+function fireMatchesFilters(item) {
+    var f = window.fogosFilters;
+    if (!f) return true;
+    if (f.minMeios > 0) {
+        var meios = (parseInt(item.man, 10) || 0)
+                  + (parseInt(item.terrain, 10) || 0)
+                  + (parseInt(item.aerial, 10) || 0);
+        if (meios < f.minMeios) return false;
+    }
+    if (f.minHours > 0) {
+        var start = parseFireStart(item);
+        if (start !== null) {
+            var hoursActive = (Date.now() - start) / 3600000;
+            if (hoursActive < f.minHours) return false;
+        }
+    }
+    return true;
+}
+
+// Reuses the existing refresh path so the layer cleanup and panel
+// re-wiring stay in one place. The filter is then applied in the
+// success callback before addMaker.
+window.fogosApplyFilters = function () {
+    if (window.fogosLastMap) getNewFires(window.fogosLastMap, true);
+};
 
 function addPlane(icao, mymap){
     var url = 'https://source.fogos.pt/v2/planes/' + icao

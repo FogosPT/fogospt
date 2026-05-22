@@ -88,5 +88,14 @@ return [
         'satellite' => 'Hotspots satélite',
         'weather'   => 'Meteorología',
         'ipma'      => 'Previsión IPMA',
+        'filters'       => 'Filtros',
+        'allIncidents'  => 'Mostrar todos los incidentes',
+    ],
+    'filtersPanel' => [
+        'title'    => 'Filtros avanzados',
+        'minHours' => 'Activo desde hace más de (h)',
+        'minMeios' => 'Total de medios ≥',
+        'clear'    => 'Limpiar',
+        'showing'  => 'Mostrando {shown} de {total}',
     ],
 ];
