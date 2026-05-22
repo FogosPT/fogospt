@@ -95,6 +95,7 @@ return [
         'lightningTitle'   => 'Descargas — janela de 1h',
         'lightningLastHour'=> 'Última hora',
         'lightningHoursAgo'=> 'Há {n}h',
+        'lightningNow'     => 'agora',
     ],
     'filtersPanel' => [
         'title'    => 'Filtros avançados',

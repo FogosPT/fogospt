@@ -95,6 +95,7 @@ return [
         'lightningTitle'   => 'Strikes — 1h window',
         'lightningLastHour'=> 'Last hour',
         'lightningHoursAgo'=> '{n}h ago',
+        'lightningNow'     => 'now',
     ],
     'filtersPanel' => [
         'title'    => 'Advanced filters',
