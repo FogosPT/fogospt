@@ -98,6 +98,47 @@ return [
             'legendNote' => 'Whenever this layer is active on the map, its colour legend shows in the bottom-left corner.',
             'source' => 'More info at <a href="https://www.ipma.pt/pt/riscoincendio/rcm.pt/" target="_blank" rel="noopener">IPMA — Rural Fire Danger</a>.',
         ],
+        'mapLayers' => [
+            'title' => 'Additional map layers',
+            'intro' => 'On top of the incident icons, the main map can show several optional layers, toggled from the "Map" panel (top right). What each layer means and what the icons stand for:',
+            'hotspots' => [
+                'title' => 'Satellite hotspots (MODIS, VIIRS, IPMA FRP)',
+                'description' => 'Hotspots detected from space in the last few hours. MODIS (Aqua/Terra) and VIIRS (Suomi NPP / NOAA-20) come from NASA FIRMS; "IPMA FRP" is the Fire Radiative Power product from LSA-SAF, refreshed every 15 minutes. A hotspot is not a fire confirmation — any thermal anomaly (wildfire, volcano, factory, controlled burn) can show up. Useful for spotting active fires visible from space.',
+            ],
+            'lightning' => [
+                'title' => 'Lightning strikes',
+                'description' => 'Strikes detected by the IPMA network over the last 24 hours. Colour encodes amplitude polarity; size encodes the strike type.',
+                'items' => [
+                    'negative' => 'Negative strike (cloud-to-ground) — usually more energetic and more likely to ignite fires.',
+                    'positive' => 'Positive strike (cloud-to-ground).',
+                    'intracloud' => 'Intracloud strike — drawn smaller and dimmer.',
+                    'ageFade' => 'Older strikes fade out (≤1h opaque, then 1–6h, 6–12h, 12–24h progressively more transparent).',
+                ],
+            ],
+            'gaia' => [
+                'title' => 'Satellite events (Gaia)',
+                'description' => 'Available on the <a href="/en/gaia">/gaia</a> view. Red markers = active satellite-detected events; grey = inactive. Click an event to load its current footprint polygon; the "Ver evolução" button opens an animated timeline of the historical perimeter.',
+            ],
+            'windAnimated' => [
+                'title' => 'Animated wind',
+                'description' => 'Particles drifting through the wind field forecast by IPMA\'s AROME model (u/v components at 10 m, current hour). The local intensity in km/h shows in the bottom-right corner while the cursor is over the map.',
+            ],
+            'ipmaValue' => [
+                'title' => 'Point value for IPMA layers',
+                'description' => 'With any IPMA forecast layer on (temperature, wind, humidity, precipitation, wind direction), clicking or tapping the map shows the layer\'s value at that point in the bottom-right corner. The query hits the same AROME model used to render the layer.',
+            ],
+        ],
+        'sources' => [
+            'title' => 'Data sources',
+            'intro' => 'Information on fogos.pt is aggregated from several official sources, all publicly credited:',
+            'items' => [
+                'anepc' => '<strong>ANEPC</strong> — Incident status (dispatched, ongoing, in resolution, etc.), allocated resources (personnel, ground, aerial), incident location and nature. Collected in real time via our internal backend.',
+                'ipma' => '<strong>IPMA</strong> — Hourly weather forecast (AROME model for temperature, wind, humidity, precipitation), Rural Fire Danger (RCM), Canadian indices (FWI/ISI/BUI/DC/DMC/FFMC, ECMWF model), Fire Radiative Power (LSA-SAF) and lightning strikes. <a href="https://www.ipma.pt" target="_blank" rel="noopener">ipma.pt</a>.',
+                'nasa' => '<strong>NASA FIRMS</strong> — Satellite hotspots from MODIS (Aqua/Terra) and VIIRS (S-NPP, NOAA-20). <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">firms.modaps.eosdis.nasa.gov</a>.',
+                'gaia' => '<strong>Gaia platform</strong> — Satellite-based detection and delineation of fire events, with current polygons and a historical perimeter timeline.',
+                'basemaps' => '<strong>Basemaps</strong> — OpenStreetMap (CC-BY-SA), Esri World Imagery / Transportation / Boundaries (satellite view), CARTO Positron (IPMA mode).',
+            ],
+        ],
         'ipmaCharts' => [
             'title' => 'IPMA forecast charts (detail page)',
             'intro' => 'Every incident has an IPMA forecast panel for the exact fire location. Hourly weather variables (next 48 h) are fed by the AROME model. The FWI and the Canadian sub-indices are computed at 12 UTC from the ECMWF model — not from AROME. The LSA-SAF products (daily, 7 days) combine satellite observation with ECMWF forecasts. The dashed red vertical line marks the current hour.',

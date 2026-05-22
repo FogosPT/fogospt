@@ -126,6 +126,65 @@
                     </div>
                 </div>
 
+                <div class="col-12" id="map-layers">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.mapLayers.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.mapLayers.intro')</p>
+
+                            <h5>@lang('pages.information.mapLayers.hotspots.title')</h5>
+                            <p>@lang('pages.information.mapLayers.hotspots.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.lightning.title')</h5>
+                            <p>@lang('pages.information.mapLayers.lightning.description')</p>
+                            <ul class="list-none">
+                                <li>
+                                    <span style="display:inline-block;width:16px;height:16px;background:#d62828;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.negative')
+                                </li>
+                                <li>
+                                    <span style="display:inline-block;width:16px;height:16px;background:#f77f00;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.positive')
+                                </li>
+                                <li>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#d62828;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);opacity:0.55;vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.intracloud')
+                                </li>
+                                <li>@lang('pages.information.mapLayers.lightning.items.ageFade')</li>
+                            </ul>
+
+                            <h5>@lang('pages.information.mapLayers.gaia.title')</h5>
+                            <p>@lang('pages.information.mapLayers.gaia.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.windAnimated.title')</h5>
+                            <p>@lang('pages.information.mapLayers.windAnimated.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.ipmaValue.title')</h5>
+                            <p>@lang('pages.information.mapLayers.ipmaValue.description')</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="data-sources">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.sources.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.sources.intro')</p>
+                            <ul>
+                                <li>{!! __('pages.information.sources.items.anepc') !!}</li>
+                                <li>{!! __('pages.information.sources.items.ipma') !!}</li>
+                                <li>{!! __('pages.information.sources.items.nasa') !!}</li>
+                                <li>{!! __('pages.information.sources.items.gaia') !!}</li>
+                                <li>{!! __('pages.information.sources.items.basemaps') !!}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12" id="ipma-charts">
                     <div class="card">
                         <div class="card-body">

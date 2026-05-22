@@ -104,6 +104,47 @@ return [
             'legendNote' => 'Sempre que esta camada esteja activa no mapa, a respectiva legenda de cores aparece no canto inferior esquerdo.',
             'source' => 'Mais informação no <a href="https://www.ipma.pt/pt/riscoincendio/rcm.pt/" target="_blank" rel="noopener">IPMA — Perigo de Incêndio Rural</a>.',
         ],
+        'mapLayers' => [
+            'title' => 'Camadas adicionais do mapa',
+            'intro' => 'Para além dos ícones de ocorrências, o mapa principal pode mostrar várias camadas opcionais que podem ser ligadas no painel "Mapa" (topo direito). O significado dos ícones e o que cada camada mostra:',
+            'hotspots' => [
+                'title' => 'Hotspots de satélite (MODIS, VIIRS, IPMA FRP)',
+                'description' => 'Pontos quentes detectados por satélite nas últimas horas. MODIS (Aqua/Terra) e VIIRS (Suomi NPP / NOAA-20) são feeds da NASA FIRMS; "IPMA FRP" é o produto Fire Radiative Power da LSA-SAF, em refresh 15 min. Não é uma confirmação de incêndio — qualquer fonte de calor (fogo, vulcão, fábrica, queimadas) pode aparecer. Útil para confirmar fogos activos visíveis do espaço, especialmente em regiões com poucas ocorrências reportadas.',
+            ],
+            'lightning' => [
+                'title' => 'Descargas elétricas (trovoadas)',
+                'description' => 'Descargas detectadas pela rede do IPMA nas últimas 24 horas. A cor indica a polaridade da amplitude; o tamanho indica o tipo de descarga.',
+                'items' => [
+                    'negative' => 'Descarga negativa (nuvem-solo) — tipicamente mais energética e mais perigosa para ignição de fogos.',
+                    'positive' => 'Descarga positiva (nuvem-solo).',
+                    'intracloud' => 'Descarga entre nuvens — desenhada com círculo mais pequeno e mais transparente.',
+                    'ageFade' => 'Quanto mais antiga a descarga, mais transparente o ícone (≤1h opaco, 1–6h, 6–12h, 12–24h cada vez mais ténue).',
+                ],
+            ],
+            'gaia' => [
+                'title' => 'Eventos satélite (Gaia)',
+                'description' => 'Disponível na vista <a href="/pt/gaia">/gaia</a>. Pontos vermelhos = eventos activos detectados por satélite; cinzentos = inactivos. Clicar num evento carrega o polígono actual (footprint); o botão "Ver evolução" abre uma timeline animada com a evolução histórica do perímetro.',
+            ],
+            'windAnimated' => [
+                'title' => 'Vento animado',
+                'description' => 'Partículas que se deslocam segundo o campo de vento previsto pelo modelo AROME do IPMA (componentes u/v a 10 m, hora actual). A intensidade local aparece no canto inferior direito quando o cursor está sobre o mapa, em km/h.',
+            ],
+            'ipmaValue' => [
+                'title' => 'Valor pontual das camadas IPMA',
+                'description' => 'Com qualquer camada de previsão IPMA ligada (temperatura, vento, humidade, precipitação, direcção do vento), clicar (ou tocar) num ponto do mapa mostra o valor da camada nesse local no canto inferior direito. A consulta é feita ao mesmo modelo AROME usado para gerar a camada.',
+            ],
+        ],
+        'sources' => [
+            'title' => 'Fontes de dados',
+            'intro' => 'A informação apresentada no fogos.pt é agregada de várias fontes oficiais, todas com créditos públicos:',
+            'items' => [
+                'anepc' => '<strong>ANEPC</strong> — Estado das ocorrências (despacho, em curso, em resolução, etc.), meios despachados (operacionais, terrestres, aéreos), localização e natureza do incidente. Recolhido em tempo real através do nosso backend interno.',
+                'ipma' => '<strong>IPMA</strong> — Previsão meteorológica horária (modelo AROME para temperatura, vento, humidade, precipitação), Perigo de Incêndio Rural (RCM), índices Canadianos (FWI/ISI/BUI/DC/DMC/FFMC, modelo ECMWF), Fire Radiative Power (LSA-SAF) e descargas elétricas. <a href="https://www.ipma.pt" target="_blank" rel="noopener">ipma.pt</a>.',
+                'nasa' => '<strong>NASA FIRMS</strong> — Hotspots de satélite MODIS (Aqua/Terra) e VIIRS (S-NPP, NOAA-20). <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">firms.modaps.eosdis.nasa.gov</a>.',
+                'gaia' => '<strong>Plataforma Gaia</strong> — Detecção e delineação de eventos de fogo a partir de satélite, com polígonos actuais e timeline histórica do perímetro.',
+                'basemaps' => '<strong>Mapas base</strong> — OpenStreetMap (CC-BY-SA), Esri World Imagery / Transportation / Boundaries (vista satélite), CARTO Positron (modo IPMA).',
+            ],
+        ],
         'ipmaCharts' => [
             'title' => 'Gráficos de Previsão IPMA (página de detalhe)',
             'intro' => 'Cada incidente tem uma secção com gráficos de previsão do IPMA para a localização exacta do fogo. As variáveis meteorológicas horárias (próximas 48 h) são alimentadas pelo modelo AROME. O FWI e os sub-índices Canadianos são calculados para as 12 UTC com base no modelo ECMWF — e não no AROME. Os produtos LSA-SAF (diários, 7 dias) combinam observação por satélite com previsões do ECMWF. A linha vertical a tracejado vermelho marca a hora actual.',
