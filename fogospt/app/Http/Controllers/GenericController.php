@@ -153,16 +153,20 @@ class GenericController extends Controller
             null
         );
 
+        $fcmError = json_decode($body, true)['error'] ?? null;
+        $isStaleToken = ($fcmError === 'The registration is invalid.');
+        $clientError = $isStaleToken ? 'invalid-registration' : null;
+
         if ($httpcode !== 200) {
-            Log::warning('FCM topic subscribe failed', [
+            // Stale tokens are expected and the client recovers transparently
+            // by refreshing and retrying, so they're noise at warning level.
+            $level = $isStaleToken ? 'info' : 'warning';
+            Log::{$level}('FCM topic subscribe failed', [
                 'topic'    => $topic,
                 'httpcode' => $httpcode,
                 'response' => $body,
             ]);
         }
-
-        $fcmError = json_decode($body, true)['error'] ?? null;
-        $clientError = ($fcmError === 'The registration is invalid.') ? 'invalid-registration' : null;
 
         return \Response::json(['success' => $httpcode === 200, 'error' => $clientError]);
     }
@@ -185,7 +189,11 @@ class GenericController extends Controller
         );
 
         if ($httpcode !== 200) {
-            Log::warning('FCM topic unsubscribe failed', [
+            // Same logic as subscribe: invalidated tokens just mean the topic
+            // relationship is gone too, which is the desired end state.
+            $fcmError = json_decode($body, true)['error'] ?? null;
+            $level = ($fcmError === 'The registration is invalid.') ? 'info' : 'warning';
+            Log::{$level}('FCM topic unsubscribe failed', [
                 'topic'    => $topic,
                 'httpcode' => $httpcode,
                 'response' => $body,
