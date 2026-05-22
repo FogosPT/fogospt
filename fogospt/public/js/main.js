@@ -110,7 +110,11 @@ $(document).ready(function () {
 
     addRisk(mymap)
     mymap.on('click', function (e) {
-        mymap.setView(e.latlng)
+        // While an IPMA forecast layer is on, the click is the cursor
+        // value query (see ipma-value handler) — don't recenter the map.
+        if (!(typeof currentIpmaKindOnMap === 'function' && currentIpmaKindOnMap())) {
+            mymap.setView(e.latlng)
+        }
         window.history.pushState('obj', 'Fogos.pt', '/')
 
         var previouslyActive = $('#map').find('.active')
@@ -367,7 +371,6 @@ $(document).ready(function () {
         return kind;
     }
 
-    var ipmaValueDebounce = null;
     var ipmaValueReqId = 0;
     var ipmaKindLabels = {
         temperature:   window.trans.map.temperature,
@@ -377,43 +380,37 @@ $(document).ready(function () {
         humidity:      window.trans.map.humidity
     };
 
-    mymap.on('mousemove', function (e) {
+    mymap.on('click', function (e) {
         var kind = currentIpmaKindOnMap();
-        if (!kind || kind === 'windAnimated') {
-            ipmaValueDisplay.update('');
-            return;
-        }
-        if (ipmaValueDebounce) clearTimeout(ipmaValueDebounce);
+        if (!kind || kind === 'windAnimated') return;
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
-        ipmaValueDebounce = setTimeout(function () {
-            var rid = ++ipmaValueReqId;
-            fetch('/v1/ipma-value?kind=' + encodeURIComponent(kind)
-                + '&lat=' + lat.toFixed(4) + '&lng=' + lng.toFixed(4),
-                { credentials: 'omit' })
-                .then(function (r) { return r.ok ? r.json() : null; })
-                .then(function (data) {
-                    if (rid !== ipmaValueReqId) return;
-                    if (!data || data.value === null || data.value === undefined) {
-                        ipmaValueDisplay.update('');
-                        return;
-                    }
-                    var label = ipmaKindLabels[kind] || kind;
-                    var text;
-                    if (kind === 'windDirection' && data.value && typeof data.value === 'object') {
-                        text = label + ': ' + data.value.speed + ' ' + data.unit + ' (' + data.value.direction + '°)';
-                    } else {
-                        text = label + ': ' + data.value + ' ' + data.unit;
-                    }
-                    ipmaValueDisplay.update(text);
-                })
-                .catch(function () { /* silent */ });
-        }, 250);
+        var rid = ++ipmaValueReqId;
+        ipmaValueDisplay.update('…');
+        fetch('/v1/ipma-value?kind=' + encodeURIComponent(kind)
+            + '&lat=' + lat.toFixed(4) + '&lng=' + lng.toFixed(4),
+            { credentials: 'omit' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (rid !== ipmaValueReqId) return;
+                if (!data || data.value === null || data.value === undefined) {
+                    ipmaValueDisplay.update('');
+                    return;
+                }
+                var label = ipmaKindLabels[kind] || kind;
+                var text;
+                if (kind === 'windDirection' && data.value && typeof data.value === 'object') {
+                    text = label + ': ' + data.value.speed + ' ' + data.unit + ' (' + data.value.direction + '°)';
+                } else {
+                    text = label + ': ' + data.value + ' ' + data.unit;
+                }
+                ipmaValueDisplay.update(text);
+            })
+            .catch(function () { ipmaValueDisplay.update(''); });
     });
-    mymap.on('mouseout', function () { ipmaValueDisplay.update(''); });
     mymap.on('layerremove', function (e) {
         if (e.layer && e.layer._isIpma) {
-            // Clear when an IPMA layer is turned off; the next mousemove
+            // Clear when an IPMA layer is turned off; the next click
             // will refresh if another IPMA layer is still on.
             ipmaValueDisplay.update('');
         }
