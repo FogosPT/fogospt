@@ -261,6 +261,19 @@
             transition: transform 0.15s ease;
         }
         .fogos-photo-divicon .photo-marker:hover { filter: drop-shadow(0 0 3px rgba(0,0,0,0.4)); }
+        .fogos-fire-divicon { background: transparent; border: 0; }
+        .fogos-fire-divicon .fire-marker {
+            position: relative; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .fogos-fire-divicon .fire-marker__dot {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(240, 0, 51, 0.5);
+            border: 2px solid red;
+        }
+        .fogos-fire-divicon .fire-marker img {
+            position: relative; width: 24px; height: 24px;
+        }
     </style>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
@@ -277,12 +290,16 @@
             const osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
             @if(isset($fire['kml']) || isset($fire['kmlVost']))
-                var fireIcon = L.icon({
-                    iconUrl: '/img/ico_fire.svg',
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 32]
+                var fireIcon = L.divIcon({
+                    className: 'fogos-fire-divicon',
+                    html: '<div class="fire-marker">' +
+                        '<span class="fire-marker__dot"></span>' +
+                        '<img src="/img/ico_fire.svg" alt="">' +
+                        '</div>',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
                 });
-                L.marker([{{$fire['lat']}}, {{$fire['lng']}}], { icon: fireIcon }).addTo(map);
+                L.marker([{{$fire['lat']}}, {{$fire['lng']}}], { icon: fireIcon, zIndexOffset: 1000 }).addTo(map);
             @else
                 var circle = L.circle([{{$fire['lat']}}, {{$fire['lng']}}], {
                     color: 'red',
