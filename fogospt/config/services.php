@@ -35,4 +35,9 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'gaia' => [
+        'base' => env('GAIA_API_BASE', 'https://wildfires.gaia-project.cloud/api'),
+        'key'  => env('GAIA_API_KEY', ''),
+    ],
+
 ];

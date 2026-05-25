@@ -12,12 +12,12 @@ class GaiaApi
 {
     private static function baseUrl()
     {
-        return rtrim(env('GAIA_API_BASE', 'https://wildfires.gaia-project.cloud/api'), '/');
+        return rtrim(config('services.gaia.base', 'https://wildfires.gaia-project.cloud/api'), '/');
     }
 
     private static function getClient()
     {
-        $apiKey = env('GAIA_API_KEY', '');
+        $apiKey = (string) config('services.gaia.key', '');
 
         $headers = [
             'Accept' => 'application/json',
@@ -36,12 +36,12 @@ class GaiaApi
 
     private static function request($path, array $query = [], $cacheKey = null, $ttl = 300)
     {
-        if (env('GAIA_API_KEY', '') === '') {
+        if ((string) config('services.gaia.key', '') === '') {
             Log::warning('GAIA_API_KEY not configured; returning empty payload', ['path' => $path]);
             return ['error' => 'gaia_api_key_missing'];
         }
 
-        $useCache = $cacheKey !== null && env('APP_ENV') === 'production';
+        $useCache = $cacheKey !== null && app()->environment('production');
 
         if ($useCache) {
             $cached = Redis::get($cacheKey);
