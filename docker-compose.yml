@@ -13,6 +13,10 @@ services:
       # ./secrets is gitignored. Path inside the container must match
       # FIREBASE_SERVICE_ACCOUNT_PATH in fogospt/.env.
       - ./secrets/firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      # OPcache + realpath cache + memory tuning. The base php:8.3-fpm image
+      # ships opcache as a shared extension but with conservative defaults that
+      # cause noticeable cold-start latency on a Laravel app.
+      - ./assets/php/php.ini:/usr/local/etc/php/conf.d/zz-fogospt.ini:ro
     environment:
       - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
     # No ports here on purpose: PHP-FPM has no auth, so it must only be

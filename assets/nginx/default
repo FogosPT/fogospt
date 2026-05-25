@@ -12,6 +12,15 @@ server {
 	        try_files $uri $uri/ /index.php?$query_string;
         }
 
+        # Long-cache static assets. Most are cache-busted via ?v= in the views,
+        # so browsers can hold them and skip the conditional-GET roundtrip.
+        location ~* \.(?:js|css|woff2?|ttf|eot|otf|svg|jpg|jpeg|png|gif|ico|webp|map)$ {
+                expires 30d;
+                add_header Cache-Control "public, max-age=2592000";
+                access_log off;
+                try_files $uri =404;
+        }
+
         #error_page 404 /404.html;
 
         # redirect server error pages to the static page /50x.html
@@ -29,6 +38,9 @@ server {
         	fastcgi_index index.php;
         	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         	include fastcgi_params;
+        	fastcgi_buffers 16 16k;
+        	fastcgi_buffer_size 32k;
+        	fastcgi_read_timeout 60s;
     	}
         
 	# deny access to .htaccess files, if Apache's document root
