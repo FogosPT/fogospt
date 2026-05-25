@@ -252,7 +252,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
-    <script src="/js/photos.js?v=1"></script>
+    <script src="/js/photos.js?v=2"></script>
+    <style>
+        .fogos-photo-divicon { background: transparent; border: 0; }
+        .fogos-photo-divicon .photo-marker {
+            width: 40px; height: 40px; cursor: pointer;
+            transform-origin: 50% 50%;
+            transition: transform 0.15s ease;
+        }
+        .fogos-photo-divicon .photo-marker:hover { filter: drop-shadow(0 0 3px rgba(0,0,0,0.4)); }
+    </style>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
@@ -305,7 +314,58 @@
             map.fitBounds(boundsVost);
             @endif
 
-
+            var photoMarkers = [];
+            function clearPhotoMarkers() {
+                photoMarkers.forEach(function (m) { map.removeLayer(m); });
+                photoMarkers = [];
+            }
+            function buildPhotoIcon(headingDeg) {
+                var hasHeading = (typeof headingDeg === 'number' && isFinite(headingDeg));
+                var inner;
+                if (hasHeading) {
+                    inner = '<svg viewBox="0 0 40 40" width="40" height="40" style="overflow:visible">' +
+                        '<path d="M20 20 L8 2 A18 18 0 0 1 32 2 Z" fill="rgba(255,140,0,0.45)" stroke="rgba(255,120,0,0.95)" stroke-width="1.2" stroke-linejoin="round"/>' +
+                        '<circle cx="20" cy="20" r="5" fill="#fff" stroke="#ff7800" stroke-width="2"/>' +
+                        '</svg>';
+                } else {
+                    inner = '<svg viewBox="0 0 40 40" width="40" height="40">' +
+                        '<circle cx="20" cy="20" r="9" fill="#fff" stroke="#ff7800" stroke-width="2.5"/>' +
+                        '<circle cx="20" cy="20" r="3.5" fill="#ff7800"/>' +
+                        '</svg>';
+                }
+                var style = hasHeading ? 'transform: rotate(' + headingDeg + 'deg);' : '';
+                return L.divIcon({
+                    className: 'fogos-photo-divicon',
+                    html: '<div class="photo-marker" style="' + style + '">' + inner + '</div>',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+            }
+            function renderPhotoMarkers(items) {
+                clearPhotoMarkers();
+                (items || []).forEach(function (item, idx) {
+                    var g = item && item.gps;
+                    if (!g || g.lat == null || g.lng == null) return;
+                    var marker = L.marker([g.lat, g.lng], {
+                        icon: buildPhotoIcon(g.heading_deg),
+                        zIndexOffset: 500,
+                        keyboard: false
+                    });
+                    marker.on('click', function () {
+                        if (typeof window.openFogosPhoto === 'function') {
+                            window.openFogosPhoto(idx);
+                        }
+                    });
+                    marker.addTo(map);
+                    photoMarkers.push(marker);
+                });
+            }
+            window.addEventListener('fogos-photos-loaded', function (e) {
+                renderPhotoMarkers(e && e.detail && e.detail.items);
+            });
+            if (Array.isArray(window.fogosPhotoItems) && window.fogosPhotoItems.length) {
+                renderPhotoMarkers(window.fogosPhotoItems);
+            }
         } );
     </script>
 

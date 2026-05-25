@@ -10,6 +10,7 @@
     var API = 'https://api.fogos.pt/v2/incidents/';
     var PER_PAGE = 20;
     var state = { id: null, page: 1, total: 0, loaded: 0 };
+    var allItems = [];
     var lightbox = null;
 
     function getSection() {
@@ -103,6 +104,11 @@
 
                 if (state.total === 0 && !append) {
                     section.style.display = 'none';
+                    allItems = [];
+                    window.fogosPhotoItems = allItems;
+                    try {
+                        window.dispatchEvent(new CustomEvent('fogos-photos-loaded', { detail: { items: allItems } }));
+                    } catch (err) { /* noop */ }
                     return;
                 }
 
@@ -110,6 +116,12 @@
                 var html = items.map(renderItem).join('');
                 if (append) gallery.insertAdjacentHTML('beforeend', html);
                 else gallery.innerHTML = html;
+
+                allItems = append ? allItems.concat(items) : items.slice();
+                window.fogosPhotoItems = allItems;
+                try {
+                    window.dispatchEvent(new CustomEvent('fogos-photos-loaded', { detail: { items: allItems } }));
+                } catch (err) { /* IE fallback not needed */ }
 
                 var btn = getLoadMore();
                 if (btn) btn.style.display = (state.loaded < state.total) ? '' : 'none';
@@ -127,11 +139,20 @@
     window.photos = function (id) {
         if (!id) return;
         state = { id: id, page: 1, total: 0, loaded: 0 };
+        allItems = [];
+        window.fogosPhotoItems = allItems;
         var gallery = getGallery();
         if (gallery) gallery.innerHTML = '';
         var section = getSection();
         if (section) section.style.display = 'none';
         load(id, false);
+    };
+
+    window.openFogosPhoto = function (index) {
+        ensureLightbox();
+        if (lightbox && typeof lightbox.loadAndOpen === 'function') {
+            lightbox.loadAndOpen(index);
+        }
     };
 
     document.addEventListener('click', function (e) {
