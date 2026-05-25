@@ -6,6 +6,11 @@ services:
     container_name: fogospt
     hostname: fogospt
     restart: unless-stopped
+    # Run PHP-FPM as the host user so storage/ and bootstrap/cache writes
+    # land with sane ownership on the bind-mounted volume. UID/GID are
+    # read from the project-level .env (see .env.example). Defaults to
+    # 1000:1000 (typical Linux); on macOS export your own (id -u/id -g).
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./fogospt/:/var/www/html
       # Firebase service account JSON (used for FCM topic subscribe/unsubscribe
