@@ -644,21 +644,22 @@ $(document).ready(function () {
     function buildLightningControl() {
         var t = (window.trans && window.trans.panel) || {};
         var ctrl = L.control({ position: 'bottomleft' });
-        // Slider runs left → right as time runs forward: position 0 = oldest
-        // hour (24h ago), position 23 = most recent hour. The internal
-        // hourOffset stays "hours ago" so the rendering math stays simple;
-        // we convert at the UI boundary.
+        // Slider value runs left → right as time moves forward (0 = 24h
+        // ago, SMAX = most recent hour). The internal hourOffset keeps
+        // the "hours ago" semantics so rendering stays simple.
         var SMAX = LIGHTNING_HOURS - 1;
         var sliderValueFor = function (off) { return SMAX - off; };
         var offsetForSlider = function (v) { return SMAX - v; };
 
         ctrl.onAdd = function () {
             var div = L.DomUtil.create('div', 'lightning-control');
-            div.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.18);font:12px/1.3 sans-serif;width:320px;user-select:none;display:none';
-            // 5 evenly-spaced ticks (-24h, -18h, -12h, -6h, agora). Using
-            // a fixed grid so the label positions track the slider track,
-            // which goes edge-to-edge.
+            div.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.18);font:12px/1.3 sans-serif;width:320px;display:none';
             var tickAgora = t.lightningNow || 'agora';
+            // Custom slider: a rail + thumb in a track div. Avoids the
+            // event conflicts that a native <input type="range"> has when
+            // nested inside a Leaflet control (the map captures mousedown
+            // even with stopPropagation in some browsers and the thumb
+            // drag never starts).
             div.innerHTML =
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
                 '  <strong>' + (t.lightningTitle || 'Descargas — janela de 1h') + '</strong>' +
@@ -666,7 +667,11 @@ $(document).ready(function () {
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">' +
                 '  <button type="button" data-role="play" style="border:1px solid #ccc;background:#fafafa;border-radius:4px;width:30px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>' +
-                '  <input type="range" data-role="slider" min="0" max="' + SMAX + '" value="' + SMAX + '" step="1" style="flex:1;cursor:pointer">' +
+                '  <div data-role="track" style="position:relative;flex:1;height:24px;cursor:pointer;touch-action:none">' +
+                '    <div style="position:absolute;left:0;right:0;top:10px;height:4px;background:#d0d4d9;border-radius:2px"></div>' +
+                '    <div data-role="progress" style="position:absolute;left:0;top:10px;height:4px;background:#3b6db5;border-radius:2px;pointer-events:none"></div>' +
+                '    <div data-role="thumb" style="position:absolute;top:4px;left:0;width:16px;height:16px;margin-left:-8px;background:#3b6db5;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.4);pointer-events:none"></div>' +
+                '  </div>' +
                 '</div>' +
                 '<div style="display:flex;justify-content:space-between;font-size:10px;color:#888;padding:0 38px 0 38px;margin-bottom:4px">' +
                 '  <span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>' + tickAgora + '</span>' +
@@ -677,31 +682,65 @@ $(document).ready(function () {
             L.DomEvent.disableScrollPropagation(div);
             ctrl._div = div;
 
-            var slider = div.querySelector('[data-role="slider"]');
+            var track    = div.querySelector('[data-role="track"]');
+            var progress = div.querySelector('[data-role="progress"]');
+            var thumb    = div.querySelector('[data-role="thumb"]');
+
+            ctrl._setThumb = function () {
+                var pct = sliderValueFor(lightningHourOffset) / SMAX * 100;
+                thumb.style.left    = pct + '%';
+                progress.style.width = pct + '%';
+            };
+
+            var dragging = false;
+            function clientXFromEvent(e) {
+                if (e.touches && e.touches.length) return e.touches[0].clientX;
+                if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
+                return e.clientX;
+            }
+            function offsetFromClientX(x) {
+                var r = track.getBoundingClientRect();
+                if (r.width <= 0) return lightningHourOffset;
+                var rel = (x - r.left) / r.width;
+                if (rel < 0) rel = 0; else if (rel > 1) rel = 1;
+                return offsetForSlider(Math.round(rel * SMAX));
+            }
+            function pointerDown(e) {
+                L.DomEvent.stop(e);
+                dragging = true;
+                lightningStopPlay();
+                lightningHourOffset = offsetFromClientX(clientXFromEvent(e));
+                renderLightningsForOffset();
+            }
+            function pointerMove(e) {
+                if (!dragging) return;
+                L.DomEvent.preventDefault(e);
+                lightningHourOffset = offsetFromClientX(clientXFromEvent(e));
+                renderLightningsForOffset();
+            }
+            function pointerUp() { dragging = false; }
+
+            L.DomEvent.on(track, 'mousedown',  pointerDown);
+            L.DomEvent.on(track, 'touchstart', pointerDown);
+            L.DomEvent.on(document, 'mousemove',  pointerMove);
+            L.DomEvent.on(document, 'touchmove',  pointerMove);
+            L.DomEvent.on(document, 'mouseup',    pointerUp);
+            L.DomEvent.on(document, 'touchend',   pointerUp);
+            L.DomEvent.on(document, 'touchcancel', pointerUp);
+
             L.DomEvent.on(div.querySelector('[data-role="play"]'), 'click', function (e) {
                 L.DomEvent.stop(e);
                 if (lightningPlayInterval) lightningStopPlay();
                 else lightningStartPlay();
             });
-            // input fires on every drag tick; change fires on release.
-            // Wire input so scrubbing feels live.
-            L.DomEvent.on(slider, 'input', function (e) {
-                lightningStopPlay();
-                lightningHourOffset = offsetForSlider(parseInt(e.target.value, 10) || 0);
-                renderLightningsForOffset();
-            });
-            // Stop Leaflet from stealing mouse events on the slider track.
-            L.DomEvent.on(slider, 'mousedown touchstart pointerdown', L.DomEvent.stopPropagation);
             return div;
         };
         ctrl.show = function () { if (this._div) this._div.style.display = ''; this.refresh(); };
         ctrl.hide = function () { if (this._div) this._div.style.display = 'none'; };
         ctrl.refresh = function (shown) {
             if (!this._div) return;
-            var slider = this._div.querySelector('[data-role="slider"]');
-            slider.value = String(sliderValueFor(lightningHourOffset));
+            if (this._setThumb) this._setThumb();
             this._div.querySelector('[data-role="label"]').textContent = lightningHourLabel(lightningHourOffset);
-            // Show the absolute window range in the viewer's local time.
             var end = new Date(Date.now() - lightningHourOffset * 3600000);
             var start = new Date(end.getTime() - 3600000);
             var fmt = function (d) {

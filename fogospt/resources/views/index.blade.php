@@ -59,7 +59,7 @@
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
-    <script src="/js/main.js?cache27=1"></script>
+    <script src="/js/main.js?cache28=1"></script>
 
     @if(!empty($gaia))
         <script>window.fogosGaiaEnabled = true;</script>
