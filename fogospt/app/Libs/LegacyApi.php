@@ -23,10 +23,17 @@ class LegacyApi
 
     private static function getClient()
     {
+        // Hard timeouts are critical: Guzzle's defaults are 0 (= wait forever).
+        // Without them, a stalled source.fogos.pt pins every FPM worker that
+        // touches LegacyApi, the pool drains, and every other request — even
+        // routes that don't call the API at all, like `/` — queues behind the
+        // hung workers, producing 12-17s TTFB on the homepage.
         $client = new GuzzleHttp\Client([
             'headers' => [
                 'FPTS' => env('FPTS', ''),
             ],
+            'connect_timeout' => 3,
+            'timeout'         => 6,
         ]);
 
         return $client;

@@ -22,6 +22,10 @@ services:
       # ships opcache as a shared extension but with conservative defaults that
       # cause noticeable cold-start latency on a Laravel app.
       - ./assets/php/php.ini:/usr/local/etc/php/conf.d/zz-fogospt.ini:ro
+      # FPM pool sizing + slowlog. The base image's pm.max_children=5 is too
+      # small for a public site — a few stalled upstream calls drain the pool
+      # and queue every other request.
+      - ./assets/php/www.conf:/usr/local/etc/php-fpm.d/zz-fogospt.conf:ro
     environment:
       - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
     # No ports here on purpose: PHP-FPM has no auth, so it must only be
