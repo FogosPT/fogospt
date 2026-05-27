@@ -186,63 +186,47 @@ $(document).ready(function () {
         }
     })
 
-    $.ajax({
-        url: '/v1/modis',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.modisLayer = []
-            window.modisLayer[0] = L.layerGroup()
+    // NASA FIRMS hotspots — heavy upstream fetch, so we only hit /v1/modis and
+    // /v1/viirs when the user enables the layer in the control. Each layer
+    // fetches once per session and reuses the markers afterwards.
+    window.modisLayer = [L.layerGroup(), L.layerGroup()]
+    var hotspotLoaded = [false, false]
 
-            var objModis = {}
-            objModis['MODIS'] = window.modisLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objModis, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data) {
-                if (data[i].latitude && data[i].longitude) {
-                    if (insidePT([data[i].longitude, data[i].latitude])) {
-                        addModisPoint(data[i], mymap);
-                    }
-
-                }
-            }
-
-            $.ajax({
-                url: '/v1/viirs',
-                dataType: "json",
-                method: 'GET',
-                success: function (data) {
-                    window.modisLayer[1] = L.layerGroup()
-
-                    var objviirs = {}
-                    objviirs['VIIRS'] = window.modisLayer[1]
-
-
-                    layerControl4 = L.control.layers(null, objviirs, {
-                        position: 'topleft',
-                        collapsed: false,
-                    })
-
-                    layerControl4.addTo(mymap)
-
-                    for (i in data) {
-                        if (data[i].latitude && data[i].longitude) {
-                            if (insidePT([data[i].longitude, data[i].latitude])) {
-                                addVIIRSPoint(data[i], mymap);
-                            }
-                        }
+    function loadHotspots(index, url, addPoint) {
+        if (hotspotLoaded[index]) return;
+        hotspotLoaded[index] = true;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data) {
+                    if (data[i].latitude && data[i].longitude
+                        && insidePT([data[i].longitude, data[i].latitude])) {
+                        addPoint(data[i], mymap);
                     }
                 }
-            })
-        }
-    })
+            },
+            error: function () { hotspotLoaded[index] = false; }
+        })
+    }
+
+    window.modisLayer[0].on('add', function () {
+        loadHotspots(0, '/v1/modis', addModisPoint);
+    });
+    window.modisLayer[1].on('add', function () {
+        loadHotspots(1, '/v1/viirs', addVIIRSPoint);
+    });
+
+    L.control.layers(null, { 'MODIS': window.modisLayer[0] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
+
+    L.control.layers(null, { 'VIIRS': window.modisLayer[1] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
 
     $.ajax({
         type: "GET",

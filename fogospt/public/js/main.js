@@ -804,56 +804,51 @@ $(document).ready(function () {
         (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descargas elétricas',
         lightningLayer, false);
 
-    $.ajax({
-        url: '/v1/modis',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.modisLayer = []
-            window.modisLayer[0] = L.layerGroup()
+    // NASA FIRMS hotspots — heavy upstream fetch, so we only hit /v1/modis and
+    // /v1/viirs when the user actually enables the layer in the panel. Each
+    // layer fetches once per session and reuses the markers afterwards.
+    window.modisLayer = [L.layerGroup(), L.layerGroup()]
+    var hotspotLoaded = [false, false]
 
-            window.fogosPanel.addItem('satellite', 'modis', 'MODIS', window.modisLayer[0], false)
-
-            for (i in data) {
-                if (data[i].latitude && data[i].longitude) {
-                    if (insidePT([data[i].longitude, data[i].latitude])) {
-                        addModisPoint(data[i], mymap);
-                    }
-
-                }
-            }
-
-            $.ajax({
-                url: '/v1/viirs',
-                dataType: "json",
-                method: 'GET',
-                success: function (data) {
-                    window.modisLayer[1] = L.layerGroup()
-
-                    window.fogosPanel.addItem('satellite', 'viirs', 'VIIRS', window.modisLayer[1], false)
-
-                    for (i in data) {
-                        if (data[i].latitude && data[i].longitude) {
-                            if (insidePT([data[i].longitude, data[i].latitude])) {
-                                addVIIRSPoint(data[i], mymap);
-                            }
-                        }
+    function loadHotspots(index, url, addPoint) {
+        if (hotspotLoaded[index]) return;
+        hotspotLoaded[index] = true;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data) {
+                    if (data[i].latitude && data[i].longitude
+                        && insidePT([data[i].longitude, data[i].latitude])) {
+                        addPoint(data[i], mymap);
                     }
                 }
-            })
+            },
+            error: function () { hotspotLoaded[index] = false; }
+        })
+    }
 
-            // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
-            window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',
-                L.tileLayer.wms('/v1/ipma-wms', {
-                    layers: 'lsasaf.frp.continent',
-                    format: 'image/png',
-                    transparent: true,
-                    version: '1.3.0',
-                    opacity: 0.7,
-                    attribution: 'Fire Radiative Power &copy; LSA-SAF / <a href="https://www.ipma.pt" target="_blank">IPMA</a>'
-                }), false)
-        }
-    })
+    window.modisLayer[0].on('add', function () {
+        loadHotspots(0, '/v1/modis', addModisPoint);
+    });
+    window.modisLayer[1].on('add', function () {
+        loadHotspots(1, '/v1/viirs', addVIIRSPoint);
+    });
+
+    window.fogosPanel.addItem('satellite', 'modis', 'MODIS', window.modisLayer[0], false)
+    window.fogosPanel.addItem('satellite', 'viirs', 'VIIRS', window.modisLayer[1], false)
+
+    // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
+    window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',
+        L.tileLayer.wms('/v1/ipma-wms', {
+            layers: 'lsasaf.frp.continent',
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            opacity: 0.7,
+            attribution: 'Fire Radiative Power &copy; LSA-SAF / <a href="https://www.ipma.pt" target="_blank">IPMA</a>'
+        }), false)
 
     $.ajax({
         type: "GET",

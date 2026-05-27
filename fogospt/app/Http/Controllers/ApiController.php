@@ -20,45 +20,45 @@ class ApiController extends Controller
 
     public function getModis()
     {
-
-        if(env('APP_ENV') === 'production'){
-            $exists = Redis::get('modis');
-            if($exists){
-                $response = json_decode($exists);
-            } else {
-                $response = HotSpots::getModis();
-
-
-                if(!empty($response)){
-                    Redis::set('modis', json_encode($response),'EX', 1080);
-                }
-            }
-        } else {
-            $response = HotSpots::getModis();
-        }
-
-        return \Response::json($response);
+        return $this->cachedHotspots('modis', function () {
+            return HotSpots::getModis();
+        });
     }
 
     public function getVIIRS()
     {
-        if(env('APP_ENV') === 'production'){
-            $exists = Redis::get('VIIRS');
-            if($exists){
-                $response = json_decode($exists);
-            } else {
-                $response = HotSpots::getVIIRS();
+        return $this->cachedHotspots('VIIRS', function () {
+            return HotSpots::getVIIRS();
+        });
+    }
 
-
-                if(!empty($response)){
-                    Redis::set('VIIRS', json_encode($response),'EX', 1080);
-                }
-            }
-        } else {
-            $response = HotSpots::getVIIRS();
+    /**
+     * Shared Redis-backed cache for the NASA FIRMS hotspot feeds. The upstream
+     * CSV at fogos.icnf.pt is slow and the response is identical for every
+     * visitor, so we serve the cached JSON for 18 min and let the browser
+     * reuse it for the same window via Cache-Control.
+     */
+    private function cachedHotspots($key, callable $fetch)
+    {
+        $cached = Redis::get($key);
+        if ($cached) {
+            return response($cached, 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=1080')
+                ->header('X-Cache', 'HIT');
         }
 
-        return \Response::json($response);
+        $data = $fetch();
+        $encoded = json_encode($data ?: new \stdClass());
+
+        if (!empty($data)) {
+            Redis::set($key, $encoded, 'EX', 1080);
+        }
+
+        return response($encoded, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=1080')
+            ->header('X-Cache', 'MISS');
     }
 
     /**
