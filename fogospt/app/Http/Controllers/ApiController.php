@@ -82,28 +82,56 @@ class ApiController extends Controller
 
     /**
      * Returns the most recent AROME model run that IPMA's WMS will actually
-     * render, or null if none of the recent candidates respond. Caches the
-     * answer in Redis for 30 min so callers don't reprobe every request.
+     * render, or null if none of the recent candidates respond.
+     *
+     * Single-flight cached: any worker holding the cached value returns it
+     * straight away (soft TTL 30 min). A stale value (up to hard TTL 12 h)
+     * is also returned, with at most one worker at a time probing mf2 in
+     * the background of the request. Without this, a cache miss at peak
+     * traffic stampedes 4 × 3s HEAD probes per worker and starves PHP-FPM.
      */
     private function resolveAromeReferenceTime()
     {
-        $cacheKey = 'ipma:ref-time';
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached) {
-                $decoded = json_decode($cached, true);
-                if (isset($decoded['reference_time'])) {
-                    return $decoded['reference_time'];
-                }
-            }
+        $cacheKey = 'ipma:ref-time:v2';
+        $lockKey  = 'ipma:ref-time:lock';
+        $softTtl  = 1800;     // 30 min — fresh
+        $hardTtl  = 43200;    // 12 h  — usable as stale fallback
+
+        $cached = Redis::get($cacheKey);
+        $entry = $cached ? json_decode($cached, true) : null;
+        $hasEntry = is_array($entry) && isset($entry['reference_time'], $entry['fetched_at']);
+        $isFresh = $hasEntry && (time() - (int) $entry['fetched_at']) < $softTtl;
+
+        if ($isFresh) {
+            return $entry['reference_time'];
         }
 
+        $haveLock = Redis::set($lockKey, '1', 'EX', 20, 'NX');
+        if (!$haveLock) {
+            return $hasEntry ? $entry['reference_time'] : null;
+        }
+
+        try {
+            $found = $this->probeAromeReferenceTime();
+        } finally {
+            Redis::del($lockKey);
+        }
+
+        if ($found !== null) {
+            Redis::set($cacheKey, json_encode(['reference_time' => $found, 'fetched_at' => time()]), 'EX', $hardTtl);
+            return $found;
+        }
+
+        return $hasEntry ? $entry['reference_time'] : null;
+    }
+
+    private function probeAromeReferenceTime()
+    {
         $now = Carbon::now('UTC');
         $runHour = $now->hour < 12 ? 0 : 12;
         $candidate = $now->copy()->setTime($runHour, 0, 0);
 
-        $client = new GuzzleHttp\Client(['timeout' => 10]);
-        $found = null;
+        $client = new GuzzleHttp\Client(['timeout' => 3, 'connect_timeout' => 2]);
 
         for ($i = 0; $i < 4; $i++) {
             $refTime = $candidate->format('Y-m-d\TH:i');
@@ -115,8 +143,7 @@ class ApiController extends Controller
             try {
                 $resp = $client->request('HEAD', $url, ['http_errors' => false]);
                 if ($resp->getStatusCode() === 200) {
-                    $found = $refTime;
-                    break;
+                    return $refTime;
                 }
             } catch (\Exception $e) {
                 // try next candidate
@@ -125,11 +152,7 @@ class ApiController extends Controller
             $candidate->subHours(12);
         }
 
-        if ($found !== null && env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, json_encode(['reference_time' => $found]), 'EX', 1800);
-        }
-
-        return $found;
+        return null;
     }
 
     /**

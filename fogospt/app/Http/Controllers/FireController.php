@@ -255,53 +255,94 @@ class FireController extends Controller
 
     public function getLightnings()
     {
-        $cacheKey = 'lightnings:dea';
+        $cacheKey = 'lightnings:dea:v2';
+        $lockKey  = 'lightnings:dea:lock';
+        $softTtl  = 300;    // 5 min — considered fresh
+        $hardTtl  = 3600;   // 1 h  — usable as stale fallback
+
         $cached = Redis::get($cacheKey);
-        if ($cached) {
-            return response($cached, 200)
+        $entry = $cached ? json_decode($cached, true) : null;
+        $hasEntry = is_array($entry) && isset($entry['payload'], $entry['fetched_at']);
+        $isFresh = $hasEntry && (time() - (int) $entry['fetched_at']) < $softTtl;
+
+        if ($isFresh) {
+            return response($entry['payload'], 200)
                 ->header('Content-Type', 'application/json')
                 ->header('Cache-Control', 'public, max-age=300')
                 ->header('X-Cache', 'HIT');
         }
 
-        $empty = json_encode(['data' => []]);
+        // Single-flight: only one worker may probe IPMA at a time. Anyone else
+        // serves the last stale payload (or empty) immediately — never block
+        // on the upstream, which is what was starving PHP-FPM under load.
+        $haveLock = Redis::set($lockKey, '1', 'EX', 15, 'NX');
+        if (!$haveLock) {
+            return $this->lightningsStaleOrEmpty($entry);
+        }
 
-        // IPMA's old dea.json endpoint stopped being updated (always returns
-        // {"data":[]}). The live feed is embedded in the obs.dea HTML page
-        // as a `var data = {...FeatureCollection...};` assignment, so we
-        // scrape the JSON object out and normalise it to the shape the
-        // map JS already expects: {data: [{timestamp, payload:{...}}, ...]}.
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10]);
+            $payload = $this->fetchLightningsPayload();
+        } finally {
+            Redis::del($lockKey);
+        }
+
+        if ($payload === null) {
+            return $this->lightningsStaleOrEmpty($entry);
+        }
+
+        Redis::set($cacheKey, json_encode(['payload' => $payload, 'fetched_at' => time()]), 'EX', $hardTtl);
+
+        return response($payload, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=300')
+            ->header('X-Cache', 'MISS');
+    }
+
+    private function lightningsStaleOrEmpty($entry)
+    {
+        if (is_array($entry) && isset($entry['payload'])) {
+            return response($entry['payload'], 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=60')
+                ->header('X-Cache', 'STALE');
+        }
+        return response(json_encode(['data' => []]), 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=30')
+            ->header('X-Cache', 'EMPTY');
+    }
+
+    /**
+     * Scrape IPMA's obs.dea page for the live lightning GeoJSON embedded as
+     * `var data = {...FeatureCollection...};`. Returns the normalised JSON
+     * string the frontend expects, or null on any failure.
+     *
+     * Short 4s timeout because this runs inside a request-serving worker;
+     * we'd rather return stale than tie up a slot.
+     */
+    private function fetchLightningsPayload()
+    {
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 4, 'connect_timeout' => 2]);
             $resp = $client->request('GET', 'https://www.ipma.pt/pt/otempo/obs.dea/', [
                 'http_errors' => false,
                 'headers'     => ['User-Agent' => 'Mozilla/5.0 (fogos.pt lightnings proxy)'],
             ]);
         } catch (\Exception $e) {
-            return response($empty, 200)->header('Content-Type', 'application/json');
+            return null;
         }
+        if ($resp->getStatusCode() !== 200) return null;
 
-        if ($resp->getStatusCode() !== 200) {
-            return response($empty, 200)->header('Content-Type', 'application/json');
-        }
-
-        $html = (string) $resp->getBody();
-        $json = $this->extractBalancedJson($html, 'var data = ');
-        if ($json === null) {
-            return response($empty, 200)->header('Content-Type', 'application/json');
-        }
+        $json = $this->extractBalancedJson((string) $resp->getBody(), 'var data = ');
+        if ($json === null) return null;
         $geo = json_decode($json, true);
-        if (!is_array($geo) || !isset($geo['features']) || !is_array($geo['features'])) {
-            return response($empty, 200)->header('Content-Type', 'application/json');
-        }
+        if (!is_array($geo) || !isset($geo['features']) || !is_array($geo['features'])) return null;
 
         $items = [];
         foreach ($geo['features'] as $f) {
             $coords = $f['geometry']['coordinates'] ?? null;
             $props  = $f['properties']             ?? null;
-            if (!is_array($coords) || count($coords) < 2 || !is_array($props)) {
-                continue;
-            }
+            if (!is_array($coords) || count($coords) < 2 || !is_array($props)) continue;
             // IPMA serves the strike time as a naive ISO string (no Z / no
             // offset) but the values are UTC. Append Z so the frontend
             // doesn't misread it as local time.
@@ -309,7 +350,6 @@ class FireController extends Controller
             if (is_string($time) && $time !== '' && !preg_match('/[zZ]|[+\-]\d{2}:?\d{2}$/', $time)) {
                 $time .= 'Z';
             }
-
             $items[] = [
                 'timestamp' => $time,
                 'payload'   => [
@@ -321,17 +361,10 @@ class FireController extends Controller
             ];
         }
 
-        $payload = json_encode([
+        return json_encode([
             'data'    => $items,
             'updated' => $geo['update_date'] ?? null,
         ]);
-
-        Redis::set($cacheKey, $payload, 'EX', 300);
-
-        return response($payload, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Cache-Control', 'public, max-age=300')
-            ->header('X-Cache', 'MISS');
     }
 
     /**
