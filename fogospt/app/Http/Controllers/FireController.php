@@ -256,14 +256,12 @@ class FireController extends Controller
     public function getLightnings()
     {
         $cacheKey = 'lightnings:dea';
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached) {
-                return response($cached, 200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('Cache-Control', 'public, max-age=300')
-                    ->header('X-Cache', 'HIT');
-            }
+        $cached = Redis::get($cacheKey);
+        if ($cached) {
+            return response($cached, 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=300')
+                ->header('X-Cache', 'HIT');
         }
 
         $empty = json_encode(['data' => []]);
@@ -328,9 +326,7 @@ class FireController extends Controller
             'updated' => $geo['update_date'] ?? null,
         ]);
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $payload, 'EX', 300);
-        }
+        Redis::set($cacheKey, $payload, 'EX', 300);
 
         return response($payload, 200)
             ->header('Content-Type', 'application/json')
