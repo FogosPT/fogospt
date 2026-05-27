@@ -169,14 +169,12 @@ class ApiController extends Controller
     {
         $cacheKey = 'ipma:wind';
 
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached) {
-                return response($cached, 200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('Cache-Control', 'public, max-age=1800')
-                    ->header('X-Cache', 'HIT');
-            }
+        $cached = Redis::get($cacheKey);
+        if ($cached) {
+            return response($cached, 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=1800')
+                ->header('X-Cache', 'HIT');
         }
 
         $now = Carbon::now('UTC');
@@ -237,9 +235,7 @@ class ApiController extends Controller
 
         $encoded = json_encode($data);
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $encoded, 'EX', 1800);
-        }
+        Redis::set($cacheKey, $encoded, 'EX', 3600);
 
         return response($encoded, 200)
             ->header('Content-Type', 'application/json')
@@ -265,14 +261,12 @@ class ApiController extends Controller
         }
 
         $cacheKey = sprintf('ipma:point:%.3f:%.3f', $lat, $lng);
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached) {
-                return response($cached, 200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('Cache-Control', 'public, max-age=1800')
-                    ->header('X-Cache', 'HIT');
-            }
+        $cached = Redis::get($cacheKey);
+        if ($cached) {
+            return response($cached, 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=1800')
+                ->header('X-Cache', 'HIT');
         }
 
         $refTime = $this->resolveAromeReferenceTime();
@@ -343,9 +337,7 @@ class ApiController extends Controller
 
         $encoded = json_encode($payload);
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $encoded, 'EX', 3600);
-        }
+        Redis::set($cacheKey, $encoded, 'EX', 3600);
 
         return response($encoded, 200)
             ->header('Content-Type', 'application/json')
@@ -399,16 +391,14 @@ class ApiController extends Controller
         $canonical = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
         $cacheKey = 'ipma:wms:' . sha1($canonical);
 
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached !== null && $cached !== false) {
-                $bytes = base64_decode($cached, true);
-                if ($bytes !== false) {
-                    return response($bytes, 200)
-                        ->header('Content-Type', 'image/png')
-                        ->header('Cache-Control', 'public, max-age=86400, immutable')
-                        ->header('X-Cache', 'HIT');
-                }
+        $cached = Redis::get($cacheKey);
+        if ($cached !== null && $cached !== false) {
+            $bytes = base64_decode($cached, true);
+            if ($bytes !== false) {
+                return response($bytes, 200)
+                    ->header('Content-Type', 'image/png')
+                    ->header('Cache-Control', 'public, max-age=86400, immutable')
+                    ->header('X-Cache', 'HIT');
             }
         }
 
@@ -435,9 +425,7 @@ class ApiController extends Controller
 
         $bytes = (string) $resp->getBody();
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, base64_encode($bytes), 'EX', 86400);
-        }
+        Redis::set($cacheKey, base64_encode($bytes), 'EX', 86400);
 
         return response($bytes, 200)
             ->header('Content-Type', 'image/png')
@@ -482,14 +470,12 @@ class ApiController extends Controller
         $cacheLat = round($lat / 0.05) * 0.05;
         $cacheLng = round($lng / 0.05) * 0.05;
         $cacheKey = sprintf('ipma:value:%s:%s:%.2f:%.2f', $kind, $region, $cacheLat, $cacheLng);
-        if (env('APP_ENV') === 'production') {
-            $cached = Redis::get($cacheKey);
-            if ($cached) {
-                return response($cached, 200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('Cache-Control', 'public, max-age=300')
-                    ->header('X-Cache', 'HIT');
-            }
+        $cached = Redis::get($cacheKey);
+        if ($cached) {
+            return response($cached, 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=300')
+                ->header('X-Cache', 'HIT');
         }
 
         $refTime = $this->resolveAromeReferenceTime();
@@ -574,9 +560,7 @@ class ApiController extends Controller
         ];
         $encoded = json_encode($payload);
 
-        if (env('APP_ENV') === 'production') {
-            Redis::set($cacheKey, $encoded, 'EX', 600);
-        }
+        Redis::set($cacheKey, $encoded, 'EX', 3600);
 
         return response($encoded, 200)
             ->header('Content-Type', 'application/json')
