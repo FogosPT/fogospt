@@ -223,18 +223,28 @@ $(document).ready(function () {
     }
 
     // Resolve the latest AROME run that the WMS will actually render, then
-    // backfill reference_time on every AROME tile. Tiles registered before
-    // this resolves automatically refresh when setParams triggers a redraw.
-    fetch('/v1/ipma-reference-time', { credentials: 'omit' })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) {
-            if (!data || !data.reference_time) return;
-            window.fogosIpmaRefTime = data.reference_time;
-            window.fogosIpmaAromeTiles.forEach(function (tile) {
-                tile.setParams({ reference_time: data.reference_time });
-            });
-        })
-        .catch(function () { /* layers stay inert if the probe fails */ });
+    // backfill reference_time on every AROME tile. Deferred until the user
+    // actually enables an IPMA layer — most visitors never do, and the probe
+    // is server-side (cached, but still a request per page load otherwise).
+    var ipmaRefTimePending = false;
+    window.ensureIpmaRefTime = function () {
+        if (window.fogosIpmaRefTime || ipmaRefTimePending) return;
+        ipmaRefTimePending = true;
+        fetch('/v1/ipma-reference-time', { credentials: 'omit' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (!data || !data.reference_time) { ipmaRefTimePending = false; return; }
+                window.fogosIpmaRefTime = data.reference_time;
+                window.fogosIpmaAromeTiles.forEach(function (tile) {
+                    tile.setParams({ reference_time: data.reference_time });
+                });
+            })
+            .catch(function () { ipmaRefTimePending = false; });
+    };
+    mymap.on('layeradd', function (e) {
+        var l = e.layer;
+        if (l && (l._isIpma || l._ipmaKind)) window.ensureIpmaRefTime();
+    });
     var IPMA_ATTR = 'Previsão &copy; <a href="https://www.ipma.pt" target="_blank">IPMA</a> (modelo AROME)';
 
     // Lazy wrapper for the animated wind layer. Fetches the u/v JSON from

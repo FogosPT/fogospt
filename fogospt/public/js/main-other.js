@@ -156,35 +156,36 @@ $(document).ready(function () {
     }).addTo(mymap)
 
 
-    $.ajax({
-        url: '/lightnings',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.lightningLayer = []
-            window.lightningLayer[0] = L.layerGroup()
+    // Lightnings — defer the /lightnings fetch until the user actually
+    // enables the layer in the control. Most visitors never do, and the
+    // upstream IPMA scrape is expensive even when cached.
+    window.lightningLayer = [L.layerGroup()]
+    var lightningLoaded = false
 
-            var objLightning = {}
-            objLightning['Descargas Elétricas'] = window.lightningLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objLightning, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data.data) {
-                var date = new Date(data.data[i].timestamp)
-                var hours = Math.floor((new Date() - date) / 3600000);
-                if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
-                    addLightning(data.data[i], mymap);
+    window.lightningLayer[0].on('add', function () {
+        if (lightningLoaded) return;
+        lightningLoaded = true;
+        $.ajax({
+            url: '/lightnings',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data.data) {
+                    var date = new Date(data.data[i].timestamp);
+                    var hours = Math.floor((new Date() - date) / 3600000);
+                    if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
+                        addLightning(data.data[i], mymap);
+                    }
                 }
-            }
+            },
+            error: function () { lightningLoaded = false; }
+        })
+    });
 
-        }
-    })
+    L.control.layers(null, { 'Descargas Elétricas': window.lightningLayer[0] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
 
     // NASA FIRMS hotspots — heavy upstream fetch, so we only hit /v1/modis and
     // /v1/viirs when the user enables the layer in the control. Each layer
