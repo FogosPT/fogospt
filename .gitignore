@@ -13,3 +13,5 @@
 .idea
 logs
 secrets/
+
+.DS_Store
