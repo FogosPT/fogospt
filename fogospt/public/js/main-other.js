@@ -167,7 +167,7 @@ $(document).ready(function () {
         if (lightningLoaded) return;
         lightningLoaded = true;
         $.ajax({
-            url: '/' + locale + '/lightnings',
+            url: '/lightnings',
             dataType: 'json',
             method: 'GET',
             success: function (data) {

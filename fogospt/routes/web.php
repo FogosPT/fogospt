@@ -25,6 +25,10 @@ Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])
 Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
 Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMessagingSw'])->name('firebase-messaging-sw');
 
+// /lightnings sets its own Cache-Control + X-Cache headers in the
+// controller (single-flight, stale-while-revalidate) — leave it alone.
+Route::get('/lightnings', [FireController::class, 'getLightnings']);
+
 // Backward compatibility — redirect legacy links (without locale) to /pt/
 Route::redirect('/outros',          '/pt/outros',          301);
 Route::redirect('/madeira',         '/pt/madeira',         301);
@@ -84,10 +88,6 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () use ($C
     Route::get('/new/fires', [FireController::class, 'getAll']);
 
     Route::get('/change-language/{lang}', [GenericController::class, 'getChangeLanguage'])->name('changeLanguage');
-
-    // /lightnings sets its own Cache-Control + X-Cache headers in the
-    // controller (single-flight, stale-while-revalidate) — leave it alone.
-    Route::get('/lightnings', [FireController::class, 'getLightnings']);
 
     Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications')->middleware($CACHE_STATIC);
     Route::get('/privacy-policy', [GenericController::class, 'getPrivacyPolicy'])->name('privacy-policy')->middleware($CACHE_STATIC);
