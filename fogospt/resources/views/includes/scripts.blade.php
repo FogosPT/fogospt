@@ -4,8 +4,10 @@
 @stack('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 
+@php($gaId = config('services.google_analytics'))
+@if($gaId)
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{env('GOOGLE_ANALYTICS')}}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -15,8 +17,9 @@
 
     gtag('js', new Date());
 
-    gtag('config', '{{env('GOOGLE_ANALYTICS')}}');
+    gtag('config', '{{ $gaId }}');
 </script>
+@endif
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>

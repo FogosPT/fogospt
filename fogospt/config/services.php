@@ -40,4 +40,8 @@ return [
         'key'  => env('GAIA_API_KEY', ''),
     ],
 
+    // Read via config('services.google_analytics') in views — calling env()
+    // directly in a Blade template returns null once `config:cache` is run.
+    'google_analytics' => env('GOOGLE_ANALYTICS', ''),
+
 ];
