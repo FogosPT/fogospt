@@ -109,6 +109,37 @@ To install the PHP dependencies from a Docker container, run the following comma
 docker run --rm -it -v "$(pwd):/app" composer:1.10.19 install
 ```
 
+## Deploying to production
+
+After pulling new code on the server, always invalidate Laravel's compiled
+route/config caches — otherwise edits to `routes/web.php` (route-level cache
+middleware, new routes, etc.) will not take effect:
+
+```bash
+php artisan route:clear
+php artisan config:clear
+
+# optional, recompile for the request-time speedup:
+php artisan route:cache
+php artisan config:cache
+```
+
+A change to `assets/php/php.ini` requires a container restart
+(`docker compose restart fogospt`).
+
+### Cloudflare cache rule for HTML
+
+The app sends `Cache-Control: public, s-maxage=…` on cacheable routes (`/{pt|en|es}`,
+`/{locale}/sobre`, `/{locale}/lista`, `/{locale}/fogo/*`, etc.) but Cloudflare
+ignores HTML by default and the dashboard still shows `cf-cache-status: DYNAMIC`.
+Create a Cache Rule:
+
+- **When**: `(http.host eq "fogos.pt") and (http.request.method eq "GET") and (starts_with(http.request.uri.path, "/pt") or starts_with(http.request.uri.path, "/en") or starts_with(http.request.uri.path, "/es"))`
+- **Then**: *Eligible for cache* + *Edge TTL = Use cache-control header from origin*
+
+Without this rule the `s-maxage` directive is wasted — every visit still hits
+the origin.
+
 ## Slack
 
 https://communityinviter.com/apps/fogospt/fogos-pt
