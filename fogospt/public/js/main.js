@@ -1428,15 +1428,34 @@ function getColor(d) {
     return color;
 }
 
+// Risk overlays — three concelho-level choropleths (today / tomorrow /
+// after) backed by source.fogos.pt. The fetches are deferred until the
+// user activates the layer in the panel (or arrives with ?risk /
+// ?risk-tomorrow), so a default visit no longer pays for three sequential
+// AJAX calls on page load. Each layer fetches once per session.
 function addRisk(mymap) {
-    // lel
-    var url = 'https://source.fogos.pt/v1/risk-today'
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            if (data.success) {
-                var riskToday = L.geoJson(concelhos, {
+    var endpoints = {
+        today:    'https://source.fogos.pt/v1/risk-today',
+        tomorrow: 'https://source.fogos.pt/v1/risk-tomorrow',
+        after:    'https://source.fogos.pt/v1/risk-after'
+    };
+    var loaded = { today: false, tomorrow: false, after: false };
+    var groups = {
+        today:    L.layerGroup(),
+        tomorrow: L.layerGroup(),
+        after:    L.layerGroup()
+    };
+    Object.keys(groups).forEach(function (k) { groups[k]._isRisk = true; });
+
+    function loadRisk(kind, onReady) {
+        if (loaded[kind]) { if (onReady) onReady(); return; }
+        loaded[kind] = true;
+        $.ajax({
+            url: endpoints[kind],
+            method: 'GET',
+            success: function (data) {
+                if (!data || !data.success) { loaded[kind] = false; return; }
+                var geo = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm
                         return {
@@ -1446,79 +1465,45 @@ function addRisk(mymap) {
                             fillColor: getColor(d)
                         }
                     }
-                })
-                riskToday._isRisk = true;
+                });
+                groups[kind].addLayer(geo);
+                if (onReady) onReady();
+            },
+            error: function () { loaded[kind] = false; }
+        });
+    }
 
-                // for phantom
-                if (getParameterByName('risk')) {
-                    riskToday.addTo(mymap)
-                    $('main #map .map-marker').hide()
-                    document.getElementById('map').classList.add('risk-layer-ready')
-                }
+    // Phantom-screenshot signal — only flip the ready class once the
+    // GeoJSON is actually drawn, mirroring the old behaviour where the
+    // class was set after the AJAX resolved.
+    function markRiskReady() {
+        $('main #map .map-marker').hide();
+        document.getElementById('map').classList.add('risk-layer-ready');
+    }
 
-                var url = 'https://source.fogos.pt/v1/risk-tomorrow'
-                $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function (data) {
-                        if (data.success) {
-                            var riskTomorrow = L.geoJson(concelhos, {
-                                style: function (feature) {
-                                    var d = data.data.local[feature.properties.DICO].data.rcm
-                                    return {
-                                        weight: 1.0,
-                                        color: '#666',
-                                        fillOpacity: 0.6,
-                                        fillColor: getColor(d)
-                                    }
-                                }
-                            })
-                            riskTomorrow._isRisk = true;
+    groups.today.on('add',    function () { loadRisk('today'); });
+    groups.tomorrow.on('add', function () { loadRisk('tomorrow'); });
+    groups.after.on('add',    function () { loadRisk('after'); });
 
-                            // for phantom
-                            if (getParameterByName('risk-tomorrow')) {
-                                riskTomorrow.addTo(mymap)
-                                $('main #map .map-marker').hide()
-                                document.getElementById('map').classList.add('risk-layer-ready')
-                            }
+    if (window.fogosPanel) {
+        var riskForced     = !!getParameterByName('risk')
+        var tomorrowForced = !!getParameterByName('risk-tomorrow')
+        window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    groups.today,    riskForced,    riskForced)
+        window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, groups.tomorrow, tomorrowForced, tomorrowForced)
+        window.fogosPanel.addItem('risk', 'after',    window.trans.risk.after,    groups.after,    false)
+    }
 
-                            var url = 'https://source.fogos.pt/v1/risk-after'
-                            $.ajax({
-                                url: url,
-                                method: 'GET',
-                                success: function (data) {
-                                    if (data.success) {
-                                        var riskAfter = L.geoJson(concelhos, {
-                                            style: function (feature) {
-                                                var d = data.data.local[feature.properties.DICO].data.rcm
-                                                return {
-                                                    weight: 1.0,
-                                                    color: '#666',
-                                                    fillOpacity: 0.6,
-                                                    fillColor: getColor(d)
-                                                }
-                                            }
-                                        })
-                                        riskAfter._isRisk = true;
-
-                                        if (window.fogosPanel) {
-                                            var riskForced   = !!getParameterByName('risk')
-                                            var tomorrowForced = !!getParameterByName('risk-tomorrow')
-                                            window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    riskToday,    riskForced,    riskForced)
-                                            window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, riskTomorrow, tomorrowForced, tomorrowForced)
-                                            window.fogosPanel.addItem('risk', 'after',    window.trans.risk.after,    riskAfter,    false)
-                                        }
-                                    }
-                                }
-                            })
-
-                        }
-                    }
-                })
-
-            }
-        }
-    })
+    // ?risk / ?risk-tomorrow URL hooks — keep the phantom-render path
+    // working by adding the layer to the map and flipping the ready class
+    // once the fetch resolves.
+    if (getParameterByName('risk')) {
+        groups.today.addTo(mymap);
+        loadRisk('today', markRiskReady);
+    }
+    if (getParameterByName('risk-tomorrow')) {
+        groups.tomorrow.addTo(mymap);
+        loadRisk('tomorrow', markRiskReady);
+    }
 }
 
 function getParameterByName(name, url) {
