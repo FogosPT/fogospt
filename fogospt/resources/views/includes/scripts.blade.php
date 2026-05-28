@@ -32,11 +32,11 @@
         projectId: "admob-app-id-6663345165",
         storageBucket: "admob-app-id-6663345165.appspot.com",
         messagingSenderId: "726949968874",
-        appId: @json(env('FIREBASE_APP_ID', ''))
+        appId: @json(config('services.firebase.app_id'))
     };
     firebase.initializeApp(config);
     // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
-    window.__FIREBASE_VAPID_KEY__ = @json(env('FIREBASE_VAPID_KEY', ''));
+    window.__FIREBASE_VAPID_KEY__ = @json(config('services.firebase.vapid_key'));
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>

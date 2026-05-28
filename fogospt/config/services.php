@@ -44,4 +44,9 @@ return [
     // directly in a Blade template returns null once `config:cache` is run.
     'google_analytics' => env('GOOGLE_ANALYTICS', ''),
 
+    'firebase' => [
+        'app_id' => env('FIREBASE_APP_ID', ''),
+        'vapid_key' => env('FIREBASE_VAPID_KEY', ''),
+    ],
+
 ];
