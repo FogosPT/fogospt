@@ -1110,6 +1110,34 @@ function fillSidebar(item) {
     }
 }
 
+function escapeFireText(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Hover summary on each fire marker: location, start time and the
+// resource counts (men / ground / aerial). Lets visitors triage the
+// map without clicking through to the sidebar/detail page.
+function buildFireTooltip(item) {
+    var t = (window.trans && window.trans.fire) || {};
+    var loc = escapeFireText(item.location || '');
+    if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
+    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
+    var men     = parseInt(item.man,     10) || 0;
+    var terrain = parseInt(item.terrain, 10) || 0;
+    var aerial  = parseInt(item.aerial,  10) || 0;
+    return ''
+        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
+        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
+            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
+        + '<div class="fire-tooltip-row">'
+        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
+        + '</div>';
+}
+
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng)
     var coords = [x['latitude'], x['longitude']]
@@ -1173,6 +1201,14 @@ function addMaker(item, mymap) {
 
     marker.addTo(mymap);
     marker.id = item.id
+
+    marker.bindTooltip(buildFireTooltip(item), {
+        direction: 'top',
+        offset: [0, -8],
+        opacity: 0.95,
+        className: 'fire-tooltip',
+        sticky: false
+    });
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor)

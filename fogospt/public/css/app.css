@@ -47,3 +47,9 @@
 .ipma-charts__attribution{margin-bottom:.75rem}
 .ipma-charts__grid > [class^="col-"]{margin-bottom:1.25rem}
 .ipma-charts__grid canvas{max-width:100%;height:auto}
+
+.fire-tooltip{font:12px/1.4 'Roboto',sans-serif;color:#222;background:#fff;border:1px solid rgba(0,0,0,.12);box-shadow:0 2px 8px rgba(0,0,0,.18);border-radius:6px;padding:6px 8px;white-space:nowrap}
+.fire-tooltip:before{display:none}
+.fire-tooltip-title{font-weight:600;margin-bottom:2px;max-width:280px;white-space:normal}
+.fire-tooltip-row{color:#444}
+.fire-tooltip-row i{color:#666;margin-right:2px}

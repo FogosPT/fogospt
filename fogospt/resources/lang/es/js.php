@@ -50,6 +50,10 @@ return [
     ],
     'fire' => [
         'moreDetails' => 'Más detalles',
+        'tooltipStart'   => 'Inicio',
+        'tooltipMen'     => 'Operativos',
+        'tooltipTerrain' => 'Terrestres',
+        'tooltipAerial'  => 'Aéreos',
     ],
     'photos' => [
         'takenAt' => 'Tomada el',
