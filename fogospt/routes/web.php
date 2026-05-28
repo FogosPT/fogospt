@@ -46,40 +46,58 @@ Route::get('/fogo/{id}',         fn($id) => redirect("/pt/fogo/$id",         301
 Route::get('/fogo/{id}/detalhe', fn($id) => redirect("/pt/fogo/$id/detalhe", 301));
 Route::get('/madeira/fogo/{id}', fn($id) => redirect("/pt/madeira/fogo/$id", 301));
 
-Route::prefix('{locale}')->middleware('locale.match')->group(function () {
-    Route::get('/', [GenericController::class, 'getIndex'])->name('home');
-    Route::get('/gaia', [GaiaController::class, 'getIndex'])->name('gaia');
-    Route::get('/outros', [GenericController::class, 'getOtherFires'])->name('other-fires');
-    Route::get('/madeira', [GenericController::class, 'getIndexMadeira'])->name('homeMadeira');
-    Route::get('/sobre', [GenericController::class, 'getAbout'])->name('about');
-    Route::get('/lista', [GenericController::class, 'getTable'])->name('list');
-    Route::get('/tabela', [GenericController::class, 'getTable'])->name('table');
-    Route::get('/avisos', [GenericController::class, 'getWarnings'])->name('warnings');
-    Route::get('/madeira/avisos', [GenericController::class, 'getWarningsMadeira'])->name('warningsMadeira');
-    Route::get('/informacoes', [GenericController::class, 'getInformation'])->name('information');
-    Route::get('/parceiros', [GenericController::class, 'getPartnerships'])->name('partnerships');
-    Route::get('/estatisticas', [GenericController::class, 'getStats'])->name('stats');
-    Route::get('/api', [GenericController::class, 'api'])->name('api');
-    Route::get('/api-termos', [GenericController::class, 'apiTerms'])->name('api-termos');
+// Cache profiles applied via Laravel's SetCacheHeaders middleware:
+//   STATIC    — info pages that rarely change. CDN holds for 1h, browser 5 min.
+//   MAP       — home/Madeira map. No server data inline, but data injected by
+//               JS is highly dynamic, so keep CDN window short.
+//   FIRES     — pages that render server-fetched fire/warning/stats data.
+//               Short CDN window absorbs traffic spikes on hot fires without
+//               making the data feel stale.
+//
+// `no_cache=0;private=0` strips the no-cache/private directives Symfony
+// pre-seeds into every Response — without that, the Cache-Control header
+// ships as e.g. `max-age=300, no-cache, public, s-maxage=3600`, which
+// forces CDNs and browsers to revalidate every hit and defeats s-maxage.
+$CACHE_STATIC = 'cache.headers:public;max_age=300;s_maxage=3600;no_cache=0;private=0';
+$CACHE_MAP    = 'cache.headers:public;max_age=60;s_maxage=120;no_cache=0;private=0';
+$CACHE_FIRES  = 'cache.headers:public;max_age=30;s_maxage=60;no_cache=0;private=0';
 
-    Route::get('/fogo/{id}', [FireController::class, 'get'])->name('fire');
-    Route::get('/fogo/{id}/detalhe', [FireController::class, 'getDetails'])->name('fireDetail');
-    Route::get('/madeira/fogo/{id}', [FireController::class, 'getMadeira']);
+Route::prefix('{locale}')->middleware('locale.match')->group(function () use ($CACHE_STATIC, $CACHE_MAP, $CACHE_FIRES) {
+    Route::get('/', [GenericController::class, 'getIndex'])->name('home')->middleware($CACHE_MAP);
+    Route::get('/gaia', [GaiaController::class, 'getIndex'])->name('gaia')->middleware($CACHE_MAP);
+    Route::get('/outros', [GenericController::class, 'getOtherFires'])->name('other-fires')->middleware($CACHE_FIRES);
+    Route::get('/madeira', [GenericController::class, 'getIndexMadeira'])->name('homeMadeira')->middleware($CACHE_MAP);
+    Route::get('/sobre', [GenericController::class, 'getAbout'])->name('about')->middleware($CACHE_STATIC);
+    Route::get('/lista', [GenericController::class, 'getTable'])->name('list')->middleware($CACHE_FIRES);
+    Route::get('/tabela', [GenericController::class, 'getTable'])->name('table')->middleware($CACHE_FIRES);
+    Route::get('/avisos', [GenericController::class, 'getWarnings'])->name('warnings')->middleware($CACHE_FIRES);
+    Route::get('/madeira/avisos', [GenericController::class, 'getWarningsMadeira'])->name('warningsMadeira')->middleware($CACHE_FIRES);
+    Route::get('/informacoes', [GenericController::class, 'getInformation'])->name('information')->middleware($CACHE_STATIC);
+    Route::get('/parceiros', [GenericController::class, 'getPartnerships'])->name('partnerships')->middleware($CACHE_STATIC);
+    Route::get('/estatisticas', [GenericController::class, 'getStats'])->name('stats')->middleware($CACHE_FIRES);
+    Route::get('/api', [GenericController::class, 'api'])->name('api')->middleware($CACHE_STATIC);
+    Route::get('/api-termos', [GenericController::class, 'apiTerms'])->name('api-termos')->middleware($CACHE_STATIC);
+
+    Route::get('/fogo/{id}', [FireController::class, 'get'])->name('fire')->middleware($CACHE_FIRES);
+    Route::get('/fogo/{id}/detalhe', [FireController::class, 'getDetails'])->name('fireDetail')->middleware($CACHE_FIRES);
+    Route::get('/madeira/fogo/{id}', [FireController::class, 'getMadeira'])->middleware($CACHE_FIRES);
     Route::get('/new/fires', [FireController::class, 'getAll']);
 
     Route::get('/change-language/{lang}', [GenericController::class, 'getChangeLanguage'])->name('changeLanguage');
 
+    // /lightnings sets its own Cache-Control + X-Cache headers in the
+    // controller (single-flight, stale-while-revalidate) — leave it alone.
     Route::get('/lightnings', [FireController::class, 'getLightnings']);
 
-    Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications');
-    Route::get('/privacy-policy', [GenericController::class, 'getPrivacyPolicy'])->name('privacy-policy');
+    Route::get('/notificacoes', [GenericController::class, 'getNotifications'])->name('notifications')->middleware($CACHE_STATIC);
+    Route::get('/privacy-policy', [GenericController::class, 'getPrivacyPolicy'])->name('privacy-policy')->middleware($CACHE_STATIC);
 
     if (app()->environment() !== 'production') {
         Route::get('/manifesto', [GenericController::class, 'getManifest'])->name('manifest');
     }
 });
 
-Route::middleware('locale.match')->group(function () {
+Route::middleware(['locale.match', $CACHE_FIRES])->group(function () {
     Route::get('/{locale}/views/risk/{id}', [FireController::class, 'getGeneralCard']);
     Route::get('/{locale}/views/status/{id}', [FireController::class, 'getStatusCard']);
     Route::get('/{locale}/views/meteo/{id}', [FireController::class, 'getMeteoCard']);

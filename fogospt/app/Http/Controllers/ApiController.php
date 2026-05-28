@@ -15,7 +15,8 @@ class ApiController extends Controller
     {
         $contributors = LegacyApi::getMobileContributors();
 
-        return \Response::json($contributors);
+        return \Response::json($contributors)
+            ->header('Cache-Control', 'public, max-age=3600');
     }
 
     public function getModis()
