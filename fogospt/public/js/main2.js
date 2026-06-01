@@ -229,7 +229,10 @@ function calculateImportanceValue(data) {
     const terrainFactor = 3
     const aerialFactor = 7
 
-    var importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
+    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
+    var importance = hasUnknownMeios
+        ? 10 * manFactor
+        : data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
 
     DATA_FIRES.number += 1
     if (DATA_FIRES.topImportance < importance) {
