@@ -145,6 +145,8 @@
                                 </div>
                             </div>
 
+                            @include('elements.cards.photos')
+
                             <div class="ipma-charts mt-4"
                                  data-lat="{{ $fire['lat'] ?? '' }}"
                                  data-lng="{{ $fire['lng'] ?? '' }}">
@@ -175,8 +177,6 @@
                                     </a>
                                 </p>
                             </div>
-
-                            @include('elements.cards.photos')
                         </div>
                     </div>
                 </div>
