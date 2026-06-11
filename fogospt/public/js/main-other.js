@@ -232,7 +232,7 @@ $(document).ready(function () {
 
     $.ajax({
         type: "GET",
-        url: 'https://api-dev.fogos.pt/v1/warnings/site',
+        url: 'https://source.fogos.pt/v1/warnings/site',
         success: function (data) {
             if (data.success && data.data[0] && data.data[0].active) {
                 $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
