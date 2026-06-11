@@ -7,7 +7,11 @@
                 <div class="col-sm-12 col-md-12">
                     <div class="card">
                                 <div style="height: 400px" id="mymap"></div>
-                            <p> @if(isset($fire['kml']))Área Ardida segundo dados do ICNF @endif @if(isset($fire['kmlVost']))Área de interesse por <a href="https://vost.pt">VOST.pt</a> @endif </p>
+                            <p>
+                                @if(isset($fire['kml']))Área Ardida segundo dados do ICNF. @endif
+                                @if(isset($fire['kmlVost']))Áreas a <span style="color:#3388ff;font-weight:bold">azul</span>: área de interesse por <a href="https://vost.pt">VOST.pt</a>. @endif
+                                <span class="js-kml-firms-legend d-none">Áreas a <span style="color:#e60000;font-weight:bold">vermelho</span>: área de interesse automática com base nos pontos VIIRS/MODIS/IPMA FRP.</span>
+                            </p>
 
                         <div class="card-body">
 
@@ -114,7 +118,9 @@
                                             @endisset
                                         </span>
                                     </div>
-                                    <canvas class="px-2 py-0" id="myChart" width="400" height="150" data-id="{{$fire['id']}}"></canvas>
+                                    <div style="position:relative;min-height:220px">
+                                        <canvas class="px-2 py-0" id="myChart" width="400" height="150" data-id="{{$fire['id']}}"></canvas>
+                                    </div>
 
                                     <h4 class="card-title">@lang('elements.cards.status.status')</h4>
                                     <div class="f-status">
@@ -376,7 +382,7 @@
                     if (firmsDoc.getElementsByTagName('parsererror').length) return;
                     var firmsTrack = new L.KML(firmsDoc);
                     map.addLayer(firmsTrack);
-                    $('.js-kml-firms-link').removeClass('d-none');
+                    $('.js-kml-firms-link, .js-kml-firms-legend').removeClass('d-none');
                 } catch (e) {}
             });
             @endisset
