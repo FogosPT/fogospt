@@ -287,7 +287,20 @@
         $(document).ready( function () {
             // Make basemap
             const map = new L.Map('mymap', { center: new L.LatLng({{$fire['lat']}}, {{$fire['lng']}}), zoom: 11 });
-            const osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            const normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {});
+            const satLayer = L.layerGroup([
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19,
+                    attribution: 'Imagery &copy; <a href="https://www.esri.com" target="_blank">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community'
+                }),
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19
+                }),
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19
+                })
+            ]);
+            const osm = normalLayer;
 
             @if(isset($fire['kml']) || isset($fire['kmlVost']))
                 var fireIcon = L.divIcon({
@@ -310,6 +323,11 @@
             @endif
 
             map.addLayer(osm);
+
+            L.control.layers({
+                'Normal': normalLayer,
+                'Satélite': satLayer
+            }, {}, { collapsed: true, position: 'topright' }).addTo(map);
 
             @if(isset($fire['kml']))
                 // Load kml file
@@ -339,6 +357,22 @@
             const boundsVost = trackVost.getBounds();
             map.fitBounds(boundsVost);
             @endif
+
+            @isset($fire['id'])
+            $.ajax({
+                url: 'https://source.fogos.pt/v2/incidents/{{ $fire['id'] }}/kmlFirms',
+                method: 'GET',
+                dataType: 'text'
+            }).done(function (kmlFirmsText) {
+                if (!kmlFirmsText || !kmlFirmsText.trim()) return;
+                try {
+                    var firmsDoc = new DOMParser().parseFromString(kmlFirmsText, 'text/xml');
+                    if (firmsDoc.getElementsByTagName('parsererror').length) return;
+                    var firmsTrack = new L.KML(firmsDoc);
+                    map.addLayer(firmsTrack);
+                } catch (e) {}
+            });
+            @endisset
 
             var photoMarkers = [];
             function clearPhotoMarkers() {
