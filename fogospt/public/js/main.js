@@ -173,6 +173,7 @@ $(document).ready(function () {
     panel.addItem('filters', 'allIncidents',
         tp.allIncidents || 'Mostrar todos os incidentes',
         allIncidentsLayer, false);
+    panel.markOneWay('filters', 'allIncidents');
 
     window.fogosFiltersControl = new L.Control.FogosFilters();
     window.fogosFiltersControl.addTo(mymap);
