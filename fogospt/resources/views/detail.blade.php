@@ -59,9 +59,15 @@
                                     @if(isset($fire['icnf']['burnArea']) || isset($fire['kmlVost']))
                                         <h4 class="card-title">@lang('elements.cards.detail.burn.title')</h4>
                                         <p class="f-nature">
-                                            @isset($fire['icnf']['burnArea']){{ $fire['icnf']['burnArea']['total'] }} HA @endisset @isset($fire['kml']) <a target="_blank" href="https://{{env('API_URL')}}/v2/incidents/{{$fire['id']}}/kml">Download ICNF</a> @endisset @isset($fire['kmlVost']) <a target="_blank" href="https://{{env('API_URL')}}/v2/incidents/{{$fire['id']}}/kmlVost">Download VOST.pt</a> @endisset
+                                            @isset($fire['icnf']['burnArea']){{ $fire['icnf']['burnArea']['total'] }} HA @endisset @isset($fire['kml']) <a target="_blank" href="https://api.fogos.pt/v2/incidents/{{$fire['id']}}/kml">Download ICNF</a> @endisset @isset($fire['kmlVost']) <a target="_blank" href="https://api.fogos.pt/v2/incidents/{{$fire['id']}}/kmlVost">Download VOST.pt</a> @endisset
                                         </p>
                                     @endif
+
+                                    @isset($fire['id'])
+                                        <p class="f-nature small text-muted js-kml-firms-link d-none" data-fire-id="{{ $fire['id'] }}">
+                                            <a target="_blank" href="https://source.fogos.pt/v2/incidents/{{ $fire['id'] }}/kmlFirms">Download área de interesse automática (VIIRS/MODIS/IPMA FRP)</a>
+                                        </p>
+                                    @endisset
 
                                     @isset($fire['icnf']['tipocausa'])
                                         <h4 class="card-title">@lang('elements.cards.detail.cause.title')</h4>
@@ -370,6 +376,7 @@
                     if (firmsDoc.getElementsByTagName('parsererror').length) return;
                     var firmsTrack = new L.KML(firmsDoc);
                     map.addLayer(firmsTrack);
+                    $('.js-kml-firms-link').removeClass('d-none');
                 } catch (e) {}
             });
             @endisset
