@@ -264,7 +264,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
-    <script src="/js/photos.js?v=2"></script>
+    <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
     <style>
         .fogos-photo-divicon { background: transparent; border: 0; }
         .fogos-photo-divicon .photo-marker {
@@ -293,7 +293,7 @@
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
     <script src="{{ asset('js/detail.js') }}"></script>
-    <script src="/js/ipma-charts.js?v=14"></script>
+    <script src="/js/ipma-charts.js?v={{ filemtime(public_path('js/ipma-charts.js')) }}"></script>
 
     <script>
         $(document).ready( function () {

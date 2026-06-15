@@ -20,7 +20,6 @@ L.Control.FogosPanel = L.Control.extend({
         this._map = map;
         this._sections = {};
         this._order = [];
-        this._oneWay = {};
         this._state = this._load();
 
         var c = this._container = L.DomUtil.create('div', 'fogos-panel');
@@ -111,14 +110,6 @@ L.Control.FogosPanel = L.Control.extend({
         return !!this._state[this._stateKey(sectionKey, id)];
     },
 
-    // Mark an item as one-way: once it is on, clicking it again is a no-op
-    // instead of toggling it off. Avoids re-triggering expensive side effects
-    // (e.g. refetching markers) on repeated clicks.
-    markOneWay: function (sectionKey, id) {
-        this._oneWay[this._stateKey(sectionKey, id)] = true;
-        return this;
-    },
-
     // ----- internals -----
 
     _stateKey: function (sectionKey, id) {
@@ -166,7 +157,6 @@ L.Control.FogosPanel = L.Control.extend({
             }
         } else {
             if (this._state[stateKey]) {
-                if (this._oneWay[stateKey]) return;
                 this._removeLayer(item.layer);
                 this._state[stateKey] = false;
             } else {

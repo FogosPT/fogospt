@@ -51,19 +51,19 @@
     <script src="{{ asset('js/share.js') }}"></script>
     <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
     <script src="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.min.js"></script>
-    <script src="/js/map-panel.js?v=2"></script>
-    <script src="/js/map-filters.js?v=1"></script>
-    <script src="/js/photos.js?v=1"></script>
+    <script src="/js/map-panel.js?v={{ filemtime(public_path('js/map-panel.js')) }}"></script>
+    <script src="/js/map-filters.js?v={{ filemtime(public_path('js/map-filters.js')) }}"></script>
+    <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
-    <script src="/js/main.js?cache30=1"></script>
+    <script src="/js/main.js?v={{ filemtime(public_path('js/main.js')) }}"></script>
 
     @if(!empty($gaia))
         <script>window.fogosGaiaEnabled = true;</script>
-        <script src="/js/gaia.js?v=5"></script>
+        <script src="/js/gaia.js?v={{ filemtime(public_path('js/gaia.js')) }}"></script>
     @endif
 
 @endpush
