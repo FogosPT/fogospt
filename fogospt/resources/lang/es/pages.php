@@ -31,9 +31,9 @@ return [
         'notifications'=> [ 'title' => 'Notificaciones de Incendios',            'description' => 'Suscríbete a notificaciones de incendios en Portugal por distrito o incidente concreto.' ],
         'privacyPolicy'=> [ 'title' => 'Política de Privacidad',                 'description' => 'Política de privacidad de Fogos.pt.' ],
         'fire' => [
-            'title'       => 'Incendio en :location (:concelho) — :status',
-            'title_no_concelho' => 'Incendio en :location — :status',
-            'description' => 'Incendio en :location, :concelho. Estado: :status. :man efectivos, :terrain medios terrestres, :aerial medios aéreos.',
+            'title'             => '[:date :hour] Incendio en :location (:concelho) — :status',
+            'title_no_concelho' => '[:date :hour] Incendio en :location — :status',
+            'description'       => '[:date :hour] Incendio en :location (:concelho). Estado: :status. :man efectivos, :terrain medios terrestres, :aerial medios aéreos.',
         ],
     ],
 

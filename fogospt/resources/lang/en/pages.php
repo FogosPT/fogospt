@@ -31,9 +31,9 @@ return [
         'notifications'=> [ 'title' => 'Wildfire Notifications',            'description' => 'Subscribe to wildfire notifications in Portugal by district or specific incident.' ],
         'privacyPolicy'=> [ 'title' => 'Privacy Policy',                    'description' => 'Fogos.pt privacy policy.' ],
         'fire' => [
-            'title'       => 'Wildfire in :location (:concelho) — :status',
-            'title_no_concelho' => 'Wildfire in :location — :status',
-            'description' => 'Wildfire in :location, :concelho. Status: :status. :man personnel, :terrain ground vehicles, :aerial aircraft.',
+            'title'             => '[:date :hour] Wildfire in :location (:concelho) — :status',
+            'title_no_concelho' => '[:date :hour] Wildfire in :location — :status',
+            'description'       => '[:date :hour] Wildfire in :location (:concelho). Status: :status. :man personnel, :terrain ground vehicles, :aerial aircraft.',
         ],
     ],
 

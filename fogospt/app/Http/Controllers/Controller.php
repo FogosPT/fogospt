@@ -24,14 +24,24 @@ class Controller extends BaseController
             $location = trim((string) @$this->fire['location']);
             $concelho = trim((string) @$this->fire['concelho']);
             $status   = trim((string) @$this->fire['status']);
+            // Snapshot timestamp baked in at render time: fire pages are
+            // CDN-cached and the meio counts drift, so the meta needs to
+            // say "as of X" — otherwise stale snippets in SERPs/social
+            // misrepresent the situation.
+            $date = date('d-m-Y');
+            $hour = date('H:i');
 
             $titleKey = $concelho !== '' ? 'pages.seo.fire.title' : 'pages.seo.fire.title_no_concelho';
             $title = __($titleKey, [
+                'date'     => $date,
+                'hour'     => $hour,
                 'location' => $location !== '' ? $location : '—',
                 'concelho' => $concelho,
                 'status'   => $status !== '' ? $status : '—',
             ]);
             $description = __('pages.seo.fire.description', [
+                'date'     => $date,
+                'hour'     => $hour,
                 'location' => $location !== '' ? $location : '—',
                 'concelho' => $concelho !== '' ? $concelho : ($location !== '' ? $location : '—'),
                 'status'   => $status !== '' ? $status : '—',
