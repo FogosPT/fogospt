@@ -21,24 +21,28 @@
 </script>
 @endif
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 <script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M",
-        authDomain: "admob-app-id-6663345165.firebaseapp.com",
-        databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
-        projectId: "admob-app-id-6663345165",
-        storageBucket: "admob-app-id-6663345165.appspot.com",
-        messagingSenderId: "726949968874",
-        appId: @json(config('services.firebase.app_id'))
-    };
-    firebase.initializeApp(config);
     // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
     window.__FIREBASE_VAPID_KEY__ = @json(config('services.firebase.vapid_key'));
+    // Firebase SDK scripts above use `defer` so they don't block parsing; the
+    // SDK is only consumed inside user-triggered handlers, never at parse
+    // time. Defer guarantees they run before DOMContentLoaded, so this init
+    // is safe in that event.
+    document.addEventListener('DOMContentLoaded', function () {
+        firebase.initializeApp({
+            apiKey: "AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M",
+            authDomain: "admob-app-id-6663345165.firebaseapp.com",
+            databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
+            projectId: "admob-app-id-6663345165",
+            storageBucket: "admob-app-id-6663345165.appspot.com",
+            messagingSenderId: "726949968874",
+            appId: @json(config('services.firebase.app_id'))
+        });
+    });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
 
 <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="55340827-93d2-4bcc-a2e2-2e3ba451bafb" type="text/javascript" async></script>

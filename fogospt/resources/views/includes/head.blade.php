@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
 <link rel="preconnect" href="https://use.fontawesome.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://maxcdn.bootstrapcdn.com">
 
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -18,7 +19,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/img/favicon-512x512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
-<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.1/css/all.css" crossorigin="anonymous">
 
