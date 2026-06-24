@@ -1,13 +1,17 @@
 @php
-    $currentPath  = request()->path(); // e.g. "pt/fogo/123"
-    $pathWithoutLocale = preg_replace('#^[a-z]{2}(/|$)#', '', $currentPath); // e.g. "fogo/123"
-    $canonicalUrl = url('pt/' . $pathWithoutLocale);
+    $currentPath  = request()->path(); // e.g. "pt/fogo/123" or "pt"
+    $pathWithoutLocale = trim(preg_replace('#^[a-z]{2}(/|$)#', '', $currentPath), '/');
+    $suffix = $pathWithoutLocale === '' ? '' : '/' . $pathWithoutLocale;
+    $ptUrl = url('pt' . $suffix);
+    $enUrl = url('en' . $suffix);
+    $esUrl = url('es' . $suffix);
+    $canonicalUrl = url(app()->getLocale() . $suffix);
 @endphp
 <link rel="canonical" href="{{ $canonicalUrl }}">
-<link rel="alternate" hreflang="x-default" href="{{ $canonicalUrl }}">
-<link rel="alternate" hreflang="pt" href="{{ url('pt/' . $pathWithoutLocale) }}">
-<link rel="alternate" hreflang="en" href="{{ url('en/' . $pathWithoutLocale) }}">
-<link rel="alternate" hreflang="es" href="{{ url('es/' . $pathWithoutLocale) }}">
+<link rel="alternate" hreflang="x-default" href="{{ $ptUrl }}">
+<link rel="alternate" hreflang="pt" href="{{ $ptUrl }}">
+<link rel="alternate" hreflang="en" href="{{ $enUrl }}">
+<link rel="alternate" hreflang="es" href="{{ $esUrl }}">
 
 <meta name="Description" content="{{$metadata['description']}}">
 <meta name="Keywords"

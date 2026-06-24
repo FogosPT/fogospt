@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\FireController;
 use App\Http\Controllers\GaiaController;
 use App\Http\Controllers\GenericController;
+use App\Http\Controllers\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMess
 // /lightnings sets its own Cache-Control + X-Cache headers in the
 // controller (single-flight, stale-while-revalidate) — leave it alone.
 Route::get('/lightnings', [FireController::class, 'getLightnings']);
+
+// Dynamic sitemap for active fires. SitemapController caches the rendered
+// XML in Redis for 15 min and sets its own Cache-Control headers.
+Route::get('/sitemap-fires.xml', [SitemapController::class, 'fires'])->name('sitemap-fires');
 
 // Backward compatibility — redirect legacy links (without locale) to /pt/
 Route::redirect('/outros',          '/pt/outros',          301);

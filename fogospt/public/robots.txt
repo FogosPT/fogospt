@@ -1,2 +1,5 @@
 User-agent: *
 Disallow: /gaia
+
+Sitemap: https://fogos.pt/sitemap.xml
+Sitemap: https://fogos.pt/sitemap-fires.xml
