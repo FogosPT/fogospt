@@ -17,6 +17,6 @@ return [
         'active' => 'Now'
     ],
     'meta' => [
-        'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, ANEPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv, forest fires, forest fires portugal, forest fires app portugal, forest fires, rural fires'
+        'content' => 'Portugal wildfires, Portugal forest fires, Portugal fires map, active fires Portugal, wildfires today Portugal, ANEPC, Portugal civil protection, Madeira wildfires, rural fires, firefighting Portugal'
     ]
 ];

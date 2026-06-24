@@ -1,6 +1,42 @@
 <?php
 
 return [
+    'seo' => [
+        'brand_suffix' => ' | Fogos.pt',
+        'home' => [
+            'title'       => 'Mapa de Incendios en Portugal en Tiempo Real',
+            'h1'          => 'Mapa de Incendios Forestales en Portugal',
+            'description' => 'Sigue en tiempo real los incendios en Portugal. Mapa con fuegos activos, medios desplegados, avisos meteorológicos y estadísticas oficiales de ANEPC, ICNF e IPMA.',
+            'intro'       => 'Sigue en tiempo real los incendios forestales en Portugal continental y Madeira. Consulta fuegos activos, medios desplegados por bomberos y protección civil, avisos meteorológicos del IPMA y estadísticas oficiales de ANEPC e ICNF.',
+            'menu_label'  => 'Inicio',
+        ],
+        'madeira' => [
+            'title'       => 'Incendios en Madeira – Mapa en Vivo',
+            'h1'          => 'Mapa de Incendios en Madeira',
+            'description' => 'Sigue en tiempo real los incendios en la Región Autónoma de Madeira. Mapa con fuegos activos, medios desplegados y avisos meteorológicos.',
+            'intro'       => 'Sigue en tiempo real los incendios forestales en la Región Autónoma de Madeira. Fuegos activos, medios desplegados y avisos oficiales.',
+            'menu_label'  => 'Madeira',
+        ],
+        'list'        => [ 'title' => 'Lista de Incendios en Portugal',          'description' => 'Lista actualizada de todos los incendios registrados en Portugal continental.' ],
+        'table'       => [ 'title' => 'Tabla de Incendios en Portugal',          'description' => 'Tabla detallada con estado, medios y ubicación de los incendios en Portugal.' ],
+        'stats'       => [ 'title' => 'Estadísticas de Incendios en Portugal',   'description' => 'Estadísticas actualizadas: número de incendios, área quemada, causas y medios desplegados en Portugal.' ],
+        'warnings'    => [ 'title' => 'Avisos Meteorológicos – Portugal',        'description' => 'Avisos meteorológicos del IPMA y alertas de protección civil en Portugal continental.' ],
+        'warningsMadeira' => [ 'title' => 'Avisos Meteorológicos – Madeira',     'description' => 'Avisos meteorológicos del IPMA y alertas de protección civil para Madeira.' ],
+        'otherFires'  => [ 'title' => 'Otros Incidentes – Portugal',             'description' => 'Otros incidentes registrados por la ANEPC: quemas controladas, gestión de combustible.' ],
+        'about'       => [ 'title' => 'Sobre Fogos.pt',                          'description' => 'Sobre el proyecto Fogos.pt, operado por VOST Portugal. Fuentes de datos, socios y misión.' ],
+        'information' => [ 'title' => 'Información sobre Incendios y Medios',    'description' => 'Significado de los estados de incendio, tipos de medios, índices de riesgo y capas del mapa.' ],
+        'partnerships'=> [ 'title' => 'Socios de Fogos.pt',                      'description' => 'Socios institucionales y tecnológicos de Fogos.pt: ANEPC, AGIF, PTServidor, Cloudflare, Mapbox.' ],
+        'api'         => [ 'title' => 'API Pública de Fogos.pt',                 'description' => 'Documentación de la API pública de Fogos.pt para datos de incendios en Portugal.' ],
+        'apiTerms'    => [ 'title' => 'Términos de la API',                      'description' => 'Términos de uso de la API pública de Fogos.pt.' ],
+        'notifications'=> [ 'title' => 'Notificaciones de Incendios',            'description' => 'Suscríbete a notificaciones de incendios en Portugal por distrito o incidente concreto.' ],
+        'privacyPolicy'=> [ 'title' => 'Política de Privacidad',                 'description' => 'Política de privacidad de Fogos.pt.' ],
+        'fire' => [
+            'title'       => 'Incendio en :location (:concelho) — :status',
+            'title_no_concelho' => 'Incendio en :location — :status',
+            'description' => 'Incendio en :location, :concelho. Estado: :status. :man efectivos, :terrain medios terrestres, :aerial medios aéreos.',
+        ],
+    ],
+
     'about' => [
         'entries_from' => 'Datos basados en registros de la ANEPC – Autoridad Nacional de Emergencia y Protección Civil.',
         'update_interval' => 'Actualizaciones frecuentes.',

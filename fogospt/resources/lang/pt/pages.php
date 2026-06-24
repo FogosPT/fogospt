@@ -1,6 +1,42 @@
 <?php
 
 return [
+    'seo' => [
+        'brand_suffix' => ' | Fogos.pt',
+        'home' => [
+            'title'       => 'Mapa de Fogos e Incêndios em Portugal',
+            'h1'          => 'Mapa de Incêndios e Fogos em Portugal',
+            'description' => 'Acompanha em tempo real os incêndios em Portugal. Mapa com fogos ativos, meios mobilizados, avisos meteorológicos e estatísticas da ANEPC, ICNF e IPMA.',
+            'intro'       => 'Acompanha em tempo real os incêndios florestais em Portugal continental e Madeira. Vê fogos ativos, meios mobilizados pelos bombeiros e proteção civil, avisos meteorológicos do IPMA e estatísticas oficiais da ANEPC e ICNF.',
+            'menu_label'  => 'Início',
+        ],
+        'madeira' => [
+            'title'       => 'Incêndios na Madeira — Mapa em Tempo Real',
+            'h1'          => 'Mapa de Incêndios na Madeira',
+            'description' => 'Acompanha em tempo real os incêndios na Região Autónoma da Madeira. Mapa com fogos ativos, meios mobilizados e avisos meteorológicos.',
+            'intro'       => 'Acompanha em tempo real os incêndios florestais na Região Autónoma da Madeira. Fogos ativos, meios mobilizados e avisos oficiais.',
+            'menu_label'  => 'Madeira',
+        ],
+        'list'        => [ 'title' => 'Lista de Incêndios em Portugal',         'description' => 'Lista atualizada de todos os incêndios registados em Portugal continental.' ],
+        'table'       => [ 'title' => 'Tabela de Incêndios em Portugal',        'description' => 'Tabela detalhada com estado, meios e localização dos incêndios em Portugal.' ],
+        'stats'       => [ 'title' => 'Estatísticas de Incêndios em Portugal',  'description' => 'Estatísticas atualizadas: número de incêndios, área ardida, causas e meios mobilizados em Portugal.' ],
+        'warnings'    => [ 'title' => 'Avisos Meteorológicos — Portugal',       'description' => 'Avisos meteorológicos do IPMA e alertas de proteção civil em Portugal continental.' ],
+        'warningsMadeira' => [ 'title' => 'Avisos Meteorológicos — Madeira',    'description' => 'Avisos meteorológicos do IPMA e alertas de proteção civil para a Madeira.' ],
+        'otherFires'  => [ 'title' => 'Outras Ocorrências — Portugal',          'description' => 'Outras ocorrências registadas pela ANEPC: queimadas, queimas, gestão de combustível.' ],
+        'about'       => [ 'title' => 'Sobre o Fogos.pt',                       'description' => 'Sobre o projeto Fogos.pt, operado pela VOST Portugal. Fontes de dados, parceiros e missão.' ],
+        'information' => [ 'title' => 'Informação sobre Incêndios e Meios',     'description' => 'Significado dos estados de incêndio, tipos de meios, índices de risco e camadas do mapa.' ],
+        'partnerships'=> [ 'title' => 'Parcerias do Fogos.pt',                  'description' => 'Parceiros institucionais e tecnológicos do Fogos.pt: ANEPC, AGIF, PTServidor, Cloudflare, Mapbox.' ],
+        'api'         => [ 'title' => 'API Pública do Fogos.pt',                'description' => 'Documentação da API pública do Fogos.pt para dados de incêndios em Portugal.' ],
+        'apiTerms'    => [ 'title' => 'Termos da API',                          'description' => 'Termos de utilização da API pública do Fogos.pt.' ],
+        'notifications'=> [ 'title' => 'Notificações de Incêndios',             'description' => 'Subscreve notificações de incêndios em Portugal por distrito ou ocorrência específica.' ],
+        'privacyPolicy'=> [ 'title' => 'Política de Privacidade',               'description' => 'Política de privacidade do Fogos.pt.' ],
+        'fire' => [
+            'title'       => 'Incêndio em :location (:concelho) — :status',
+            'title_no_concelho' => 'Incêndio em :location — :status',
+            'description' => 'Incêndio em :location, :concelho. Estado: :status. :man operacionais, :terrain meios terrestres, :aerial meios aéreos.',
+        ],
+    ],
+
     'about' => [
         'entries_from' => 'Registos com base em dados da ANEPC – Autoridade Nacional de Emergência e Proteção Civil.',
         'update_interval' => 'Atualizações frequentes.',

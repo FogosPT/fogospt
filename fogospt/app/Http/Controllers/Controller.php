@@ -11,27 +11,44 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    // Subclasses set this to look up SEO copy from pages.seo.{seoKey}
+    // (e.g. 'home', 'madeira', 'list'). FireController bypasses this and
+    // builds the title from the fire payload instead.
+    protected $seoKey = 'home';
+
     protected function generateMetadata()
     {
-        switch (get_class($this)){
-            case "App\Http\Controllers\FireController":
-                $pageTitle = sprintf( "- Incêndio em %s - ", @$this->fire['location']);
-                $title = sprintf( "[%s] Incêndio em %s", date("d-m-Y H:i"), @$this->fire['location']);
-                $description = sprintf( "Estado: %s - Operacionais: %d, Meios Terrestres: %d, Meios Aéreos: %d ", @$this->fire['status'], @$this->fire['man'], @$this->fire['terrain'], @$this->fire['aerial']);
-                break;
-            default:
-                $pageTitle = sprintf( "- %s", $this->pageName);
-                $title = sprintf( "- %s", $this->pageName);
-                $description = "Vê num mapa o estado dos incêndios florestais em Portugal";
+        $brand = __('pages.seo.brand_suffix');
+
+        if (get_class($this) === \App\Http\Controllers\FireController::class) {
+            $location = trim((string) @$this->fire['location']);
+            $concelho = trim((string) @$this->fire['concelho']);
+            $status   = trim((string) @$this->fire['status']);
+
+            $titleKey = $concelho !== '' ? 'pages.seo.fire.title' : 'pages.seo.fire.title_no_concelho';
+            $title = __($titleKey, [
+                'location' => $location !== '' ? $location : '—',
+                'concelho' => $concelho,
+                'status'   => $status !== '' ? $status : '—',
+            ]);
+            $description = __('pages.seo.fire.description', [
+                'location' => $location !== '' ? $location : '—',
+                'concelho' => $concelho !== '' ? $concelho : ($location !== '' ? $location : '—'),
+                'status'   => $status !== '' ? $status : '—',
+                'man'      => (int) @$this->fire['man'],
+                'terrain'  => (int) @$this->fire['terrain'],
+                'aerial'   => (int) @$this->fire['aerial'],
+            ]);
+        } else {
+            $title       = __('pages.seo.' . $this->seoKey . '.title');
+            $description = __('pages.seo.' . $this->seoKey . '.description');
         }
 
-        $metadata = array(
-            'pageTitle' => $pageTitle,
-            'title' => $title,
+        return [
+            'pageTitle'   => $title . $brand,
+            'title'       => $title,
             'description' => $description,
-            'url' => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
-        );
-
-        return $metadata;
+            'url'         => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
+        ];
     }
 }

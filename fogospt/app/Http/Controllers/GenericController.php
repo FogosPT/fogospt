@@ -29,55 +29,55 @@ class GenericController extends Controller
 
     public function getIndex()
     {
-        $this->setPageName('Início');
+        $this->seoKey = 'home';
         return view('index')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getIndexMadeira()
     {
-        $this->setPageName('Madeira - Início');
+        $this->seoKey = 'madeira';
         return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getOtherFires()
     {
-        $this->setPageName('Outros incêndios');
+        $this->seoKey = 'otherFires';
         return view('other-fires')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getAbout()
     {
-        $this->setPageName(__('includes.menu.about'));
+        $this->seoKey = 'about';
         return view('about')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getInformation()
     {
-        $this->setPageName(__('includes.menu.information'));
+        $this->seoKey = 'information';
         return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getNotifications()
     {
-        $this->setPageName(__('includes.menu.notifications'));
+        $this->seoKey = 'notifications';
         return view('notifications')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getManifest()
     {
-        $this->setPageName(__('includes.menu.manifest'));
+        $this->seoKey = 'about';
         return view('manifest')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getPartnerships()
     {
-        $this->setPageName(__('includes.menu.partnerships'));
+        $this->seoKey = 'partnerships';
         return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getList()
     {
-        $this->setPageName(__('includes.menu.list'));
+        $this->seoKey = 'list';
         $fires = LegacyApi::getFires();
 
         return view('list', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
@@ -85,7 +85,7 @@ class GenericController extends Controller
 
     public function getTable()
     {
-        $this->setPageName(__('includes.menu.table'));
+        $this->seoKey = 'table';
         $fires = LegacyApi::getFires();
 
         return view('table', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
@@ -93,7 +93,7 @@ class GenericController extends Controller
 
     public function getWarnings()
     {
-        $this->setPageName(__('includes.menu.warnings'));
+        $this->seoKey = 'warnings';
         $warnings = LegacyApi::getWarnings();
 
         return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
@@ -101,7 +101,7 @@ class GenericController extends Controller
 
     public function getWarningsMadeira()
     {
-        $this->setPageName(__('includes.menu.warnings'));
+        $this->seoKey = 'warningsMadeira';
         $warnings = LegacyApi::getWarningsMadeira();
 
         return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
@@ -109,7 +109,7 @@ class GenericController extends Controller
 
     public function getStats()
     {
-        $this->setPageName(__('includes.menu.stats'));
+        $this->seoKey = 'stats';
         $now = LegacyApi::getNow();
         $data = array(
             'now' => $now['data'],
@@ -120,21 +120,21 @@ class GenericController extends Controller
 
     public function api()
     {
-        $this->setPageName(__('api-docs.meta_title'));
+        $this->seoKey = 'api';
 
         return view('api')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function apiTerms()
     {
-        $this->setPageName(__('api-terms.meta_title'));
+        $this->seoKey = 'apiTerms';
 
         return view('api-terms')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getPrivacyPolicy()
     {
-        $this->setPageName('Política de Privacidade');
+        $this->seoKey = 'privacyPolicy';
 
         return view('privacy-policy')->with(['metadata' => $this->generateMetadata()]);
     }

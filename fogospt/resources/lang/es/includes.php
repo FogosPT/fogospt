@@ -18,7 +18,7 @@
             'active'      => '(actual)'
         ],
         'meta' => [
-            'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANEPC, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv, incendios portugal app, incendios florestales en portugal, fuegos en portugal'
+            'content' => 'incendios Portugal, incendios forestales Portugal, mapa incendios Portugal, fuegos en Portugal, incendios Portugal hoy, protección civil Portugal, alertas Portugal, incendios Madeira, ANEPC, bomberos Portugal'
         ]
 
     ];

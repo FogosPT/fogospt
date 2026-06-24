@@ -1,6 +1,42 @@
 <?php
 
 return [
+    'seo' => [
+        'brand_suffix' => ' | Fogos.pt',
+        'home' => [
+            'title'       => 'Portugal Wildfires – Forest Fires Map',
+            'h1'          => 'Portugal Wildfires & Forest Fires Map',
+            'description' => 'Real-time tracking of wildfires in Portugal. Live map with active fires, deployed resources, weather warnings and official ANEPC, ICNF and IPMA statistics.',
+            'intro'       => 'Real-time tracking of wildfires across mainland Portugal and Madeira. View active fires, firefighting resources, IPMA weather warnings and official statistics from ANEPC and ICNF.',
+            'menu_label'  => 'Home',
+        ],
+        'madeira' => [
+            'title'       => 'Madeira Wildfires – Live Map',
+            'h1'          => 'Madeira Wildfires Map',
+            'description' => 'Real-time tracking of wildfires in the Autonomous Region of Madeira. Live map with active fires, deployed resources and weather warnings.',
+            'intro'       => 'Real-time tracking of wildfires in the Madeira Autonomous Region. Active fires, deployed resources and official warnings.',
+            'menu_label'  => 'Madeira',
+        ],
+        'list'        => [ 'title' => 'Portugal Fires List',                'description' => 'Up-to-date list of all wildfires recorded in mainland Portugal.' ],
+        'table'       => [ 'title' => 'Portugal Fires Table',               'description' => 'Detailed table with status, resources and location for fires in Portugal.' ],
+        'stats'       => [ 'title' => 'Portugal Fires Statistics',          'description' => 'Up-to-date statistics: number of fires, burned area, causes and resources deployed in Portugal.' ],
+        'warnings'    => [ 'title' => 'Weather Warnings – Portugal',        'description' => 'IPMA weather warnings and civil protection alerts for mainland Portugal.' ],
+        'warningsMadeira' => [ 'title' => 'Weather Warnings – Madeira',     'description' => 'IPMA weather warnings and civil protection alerts for Madeira.' ],
+        'otherFires'  => [ 'title' => 'Other Incidents – Portugal',         'description' => 'Other incidents reported by ANEPC: controlled burns, fuel management.' ],
+        'about'       => [ 'title' => 'About Fogos.pt',                     'description' => 'About the Fogos.pt project, operated by VOST Portugal. Data sources, partners and mission.' ],
+        'information' => [ 'title' => 'Fire Information & Resources',       'description' => 'Meaning of fire states, types of resources, risk indices and map layers.' ],
+        'partnerships'=> [ 'title' => 'Fogos.pt Partners',                  'description' => 'Institutional and technology partners of Fogos.pt: ANEPC, AGIF, PTServidor, Cloudflare, Mapbox.' ],
+        'api'         => [ 'title' => 'Fogos.pt Public API',                'description' => 'Public API documentation of Fogos.pt for fire data in Portugal.' ],
+        'apiTerms'    => [ 'title' => 'API Terms',                          'description' => 'Terms of use for the Fogos.pt public API.' ],
+        'notifications'=> [ 'title' => 'Wildfire Notifications',            'description' => 'Subscribe to wildfire notifications in Portugal by district or specific incident.' ],
+        'privacyPolicy'=> [ 'title' => 'Privacy Policy',                    'description' => 'Fogos.pt privacy policy.' ],
+        'fire' => [
+            'title'       => 'Wildfire in :location (:concelho) — :status',
+            'title_no_concelho' => 'Wildfire in :location — :status',
+            'description' => 'Wildfire in :location, :concelho. Status: :status. :man personnel, :terrain ground vehicles, :aerial aircraft.',
+        ],
+    ],
+
     'about' => [
         'entries_from' => 'Data based on ANEPC – Portuguese National Emergency and Civil Protection Authority records.',
         'update_interval' => 'Frequent updates.',
