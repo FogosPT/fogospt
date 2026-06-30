@@ -44,18 +44,41 @@
         return (Date.now() - t) / 60000;
     }
 
-    // Top-down plane silhouette, nose at the top (north). Rotating by `track`
-    // degrees (0 = north, clockwise) gives a heading-correct icon.
-    function planeIconHtml(track, stale) {
-        var rotation = (typeof track === 'number' && !isNaN(track)) ? track : 0;
-        var color = stale ? COLOR_STALE : COLOR_ACTIVE;
-        var svg = ''
+    // Top-down silhouettes, nose at the top (north). Rotating the wrapper by
+    // `track` degrees (0 = north, clockwise) gives a heading-correct icon.
+    function planeSvg(color) {
+        return ''
             + '<svg viewBox="0 0 24 24" width="' + ICON_SIZE + '" height="' + ICON_SIZE + '" aria-hidden="true">'
             +   '<path fill="' + color + '" stroke="#ffffff" stroke-width="0.9" stroke-linejoin="round"'
             +     ' d="M12 1.5 L13.3 9.6 L22 12 L22 14 L13.3 12.8 L13 19 L15.2 20.3 L15.2 21.6 L12 20.5 L8.8 21.6 L8.8 20.3 L11 19 L10.7 12.8 L2 14 L2 12 L10.7 9.6 Z"/>'
             + '</svg>';
+    }
+
+    function helicopterSvg(color) {
+        // Cabin (ellipse) + tail boom pointing south + tail rotor, with a
+        // faint rotor disc and rotor-blade cross to read as a helicopter
+        // at small sizes even before rotation.
         return ''
-            + '<div class="fogos-plane-marker" style="'
+            + '<svg viewBox="0 0 24 24" width="' + ICON_SIZE + '" height="' + ICON_SIZE + '" aria-hidden="true">'
+            +   '<circle cx="12" cy="10" r="10.5" fill="' + color + '" opacity="0.15"/>'
+            +   '<g stroke="' + color + '" stroke-width="1.4" stroke-linecap="round" opacity="0.85">'
+            +     '<line x1="2" y1="10" x2="22" y2="10"/>'
+            +     '<line x1="12" y1="0" x2="12" y2="20"/>'
+            +   '</g>'
+            +   '<ellipse cx="12" cy="10" rx="2.6" ry="4.2" fill="' + color + '" stroke="#ffffff" stroke-width="0.6"/>'
+            +   '<path fill="' + color + '" stroke="#ffffff" stroke-width="0.4" stroke-linejoin="round"'
+            +     ' d="M10.8 13.4 L13.2 13.4 L12.7 22 L11.3 22 Z"/>'
+            +   '<line x1="10.5" y1="22.5" x2="13.5" y2="22.5" stroke="' + color + '" stroke-width="1.2" stroke-linecap="round"/>'
+            + '</svg>';
+    }
+
+    function iconHtml(kind, track, stale) {
+        var rotation = (typeof track === 'number' && !isNaN(track)) ? track : 0;
+        var color = stale ? COLOR_STALE : COLOR_ACTIVE;
+        var svg = (kind === 'helicopter') ? helicopterSvg(color) : planeSvg(color);
+        var cls = (kind === 'helicopter') ? 'fogos-heli-marker' : 'fogos-plane-marker';
+        return ''
+            + '<div class="' + cls + '" style="'
             +   'width:' + ICON_SIZE + 'px;height:' + ICON_SIZE + 'px;'
             +   'display:flex;align-items:center;justify-content:center;'
             +   'transform:rotate(' + rotation + 'deg);'
@@ -151,7 +174,7 @@
 
                         var icon = L.divIcon({
                             className: 'fogos-plane-icon',
-                            html: planeIconHtml(last.track, stale),
+                            html: iconHtml(plane.kind, last.track, stale),
                             iconSize: [ICON_SIZE, ICON_SIZE],
                             iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2]
                         });
