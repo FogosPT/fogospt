@@ -107,6 +107,7 @@ $(document).ready(function () {
     panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
     panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
     panel.registerSection('lightning', tp.lightning || 'Trovoadas', 'checkbox');
+    panel.registerSection('aerial', tp.aerial || 'Meios aéreos', 'checkbox');
     panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'radio');
 
     addRisk(mymap)
@@ -848,6 +849,14 @@ $(document).ready(function () {
 
     window.fogosPanel.addItem('satellite', 'modis', 'MODIS', window.modisLayer[0], false)
     window.fogosPanel.addItem('satellite', 'viirs', 'VIIRS', window.modisLayer[1], false)
+
+    // Live tracking of DECIR firefighting aircraft (FR24-fed backend).
+    if (typeof window.createPlanesLayer === 'function') {
+        window.planesLayer = window.createPlanesLayer(mymap);
+        window.fogosPanel.addItem('aerial', 'planes',
+            (tp.planes || 'Aviões e helicópteros'),
+            window.planesLayer, false);
+    }
 
     // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
     window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',

@@ -100,6 +100,15 @@ return [
         'lightningLastHour'=> 'Last hour',
         'lightningHoursAgo'=> '{n}h ago',
         'lightningNow'     => 'now',
+        'aerial'           => 'Aerial assets',
+        'planes'           => 'Planes & helicopters',
+    ],
+    'planes' => [
+        'altitude' => 'Altitude',
+        'speed'    => 'Speed',
+        'heading'  => 'Heading',
+        'onGround' => 'On the ground',
+        'lastSeen' => 'Last seen',
     ],
     'filtersPanel' => [
         'title'    => 'Advanced filters',

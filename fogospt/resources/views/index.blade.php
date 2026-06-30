@@ -56,6 +56,7 @@
     <script src="/js/map-panel.js?v={{ filemtime(public_path('js/map-panel.js')) }}"></script>
     <script src="/js/map-filters.js?v={{ filemtime(public_path('js/map-filters.js')) }}"></script>
     <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
+    <script src="/js/planes.js?v={{ filemtime(public_path('js/planes.js')) }}"></script>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;

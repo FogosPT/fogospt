@@ -100,6 +100,15 @@ return [
         'lightningLastHour'=> 'Última hora',
         'lightningHoursAgo'=> 'Hace {n}h',
         'lightningNow'     => 'ahora',
+        'aerial'           => 'Medios aéreos',
+        'planes'           => 'Aviones y helicópteros',
+    ],
+    'planes' => [
+        'altitude' => 'Altitud',
+        'speed'    => 'Velocidad',
+        'heading'  => 'Dirección',
+        'onGround' => 'En tierra',
+        'lastSeen' => 'Última posición',
     ],
     'filtersPanel' => [
         'title'    => 'Filtros avanzados',
