@@ -109,6 +109,7 @@ return [
         'heading'  => 'Direção',
         'onGround' => 'No solo',
         'lastSeen' => 'Última posição',
+        'source'   => 'Dados via subscrição da API do FlightRadar24',
     ],
     'filtersPanel' => [
         'title'    => 'Filtros avançados',

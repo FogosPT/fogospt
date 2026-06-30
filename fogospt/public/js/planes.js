@@ -18,6 +18,7 @@
     var COLOR_ACTIVE = '#ff512f';
     var COLOR_STALE  = '#9aa0a6';
     var ICON_SIZE = 40;
+    var ATTRIBUTION = 'Tracking aéreo via <a href="https://www.flightradar24.com" target="_blank" rel="noopener">FlightRadar24</a>';
 
     function tr(key, fallback) {
         var t = window.trans && window.trans.planes;
@@ -84,6 +85,8 @@
         if (last.sampled_at) {
             parts.push(tr('lastSeen', 'Última posição') + ': ' + fmtTime(last.sampled_at));
         }
+        parts.push('');
+        parts.push('<small><em>' + tr('source', 'Dados via subscrição da API do FlightRadar24') + '</em></small>');
         return parts.join('<br>');
     }
 
@@ -176,11 +179,13 @@
 
         group.onAdd = function (map) {
             L.LayerGroup.prototype.onAdd.call(this, map);
+            if (map.attributionControl) map.attributionControl.addAttribution(ATTRIBUTION);
             refresh();
             if (!pollTimer) pollTimer = setInterval(refresh, REFRESH_MS);
         };
         group.onRemove = function (map) {
             if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+            if (map.attributionControl) map.attributionControl.removeAttribution(ATTRIBUTION);
             clearAll();
             L.LayerGroup.prototype.onRemove.call(this, map);
         };

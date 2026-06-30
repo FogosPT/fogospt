@@ -109,6 +109,7 @@ return [
         'heading'  => 'Heading',
         'onGround' => 'On the ground',
         'lastSeen' => 'Last seen',
+        'source'   => 'Data via FlightRadar24 API subscription',
     ],
     'filtersPanel' => [
         'title'    => 'Advanced filters',
