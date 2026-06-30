@@ -15,8 +15,9 @@
     var ENDPOINT = 'https://api.fogos.pt/v2/planes/recent?hours=6';
     var REFRESH_MS = 60000;
     var STALE_MIN = 10;
-    var COLOR_ACTIVE = '#1f6feb';
+    var COLOR_ACTIVE = '#ff512f';
     var COLOR_STALE  = '#9aa0a6';
+    var ICON_SIZE = 40;
 
     function tr(key, fallback) {
         var t = window.trans && window.trans.planes;
@@ -44,16 +45,17 @@
         var rotation = (typeof track === 'number' && !isNaN(track)) ? track : 0;
         var color = stale ? COLOR_STALE : COLOR_ACTIVE;
         var svg = ''
-            + '<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">'
-            +   '<path fill="' + color + '" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="round"'
+            + '<svg viewBox="0 0 24 24" width="' + ICON_SIZE + '" height="' + ICON_SIZE + '" aria-hidden="true">'
+            +   '<path fill="' + color + '" stroke="#ffffff" stroke-width="0.9" stroke-linejoin="round"'
             +     ' d="M12 1.5 L13.3 9.6 L22 12 L22 14 L13.3 12.8 L13 19 L15.2 20.3 L15.2 21.6 L12 20.5 L8.8 21.6 L8.8 20.3 L11 19 L10.7 12.8 L2 14 L2 12 L10.7 9.6 Z"/>'
             + '</svg>';
         return ''
             + '<div class="fogos-plane-marker" style="'
-            +   'width:28px;height:28px;display:flex;align-items:center;justify-content:center;'
+            +   'width:' + ICON_SIZE + 'px;height:' + ICON_SIZE + 'px;'
+            +   'display:flex;align-items:center;justify-content:center;'
             +   'transform:rotate(' + rotation + 'deg);'
             +   'opacity:' + (stale ? 0.55 : 1) + ';'
-            +   'filter:drop-shadow(0 1px 1px rgba(0,0,0,0.35));'
+            +   'filter:drop-shadow(0 1px 2px rgba(0,0,0,0.45));'
             + '">' + svg + '</div>';
     }
 
@@ -143,8 +145,8 @@
                         var icon = L.divIcon({
                             className: 'fogos-plane-icon',
                             html: planeIconHtml(last.track, stale),
-                            iconSize: [28, 28],
-                            iconAnchor: [14, 14]
+                            iconSize: [ICON_SIZE, ICON_SIZE],
+                            iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2]
                         });
 
                         if (markers[plane.icao]) {
