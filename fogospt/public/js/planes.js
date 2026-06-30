@@ -18,7 +18,11 @@
     var COLOR_ACTIVE = '#ff512f';
     var COLOR_STALE  = '#9aa0a6';
     var ICON_SIZE = 40;
-    var ATTRIBUTION = 'Tracking aéreo via <a href="https://www.flightradar24.com" target="_blank" rel="noopener">FlightRadar24</a>';
+    var ATTRIBUTION = 'Aeronaves: Powered by '
+        + '<a href="https://www.flightradar24.com" target="_blank" rel="noopener">Flightradar24</a>'
+        + ', complementado por '
+        + '<a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a>'
+        + ' e <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a>';
 
     function tr(key, fallback) {
         var t = window.trans && window.trans.planes;

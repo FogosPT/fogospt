@@ -43,6 +43,14 @@
                     <ul>
                         <li>@lang('pages.about.data_other_text')</li>
                     </ul>
+                    <p><strong>@lang('pages.about.data_aerial_title')</strong></p>
+                    <p>@lang('pages.about.data_aerial_intro')</p>
+                    <ul>
+                        <li>{!! __('pages.about.data_aerial_fr24') !!}</li>
+                        <li>{!! __('pages.about.data_aerial_alive') !!}</li>
+                        <li>{!! __('pages.about.data_aerial_adsbfi') !!}</li>
+                    </ul>
+                    <p><small>@lang('pages.about.data_aerial_disclaimer')</small></p>
                     <p>@lang('pages.about.data_footer')</p>
                 </div>
             </div>

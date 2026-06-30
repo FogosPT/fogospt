@@ -59,6 +59,12 @@ return [
         'data_satellites_text' => 'Copernicus, NASA, Meteosat and Mapbox',
         'data_other_title' => 'Other complementary sources',
         'data_other_text' => 'Waze and OSINT contributions by VOST Portugal volunteers',
+        'data_aerial_title' => 'Aerial assets (real-time tracking)',
+        'data_aerial_intro' => 'Tracking of DECIR aerial firefighting assets uses three complementary ADS-B sources:',
+        'data_aerial_fr24' => '<strong><a href="https://www.flightradar24.com" target="_blank" rel="noopener">Flightradar24</a></strong> — market-leading commercial aggregator, accessed via API subscription.',
+        'data_aerial_alive' => '<strong><a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a></strong> — community-driven ADS-B aggregator.',
+        'data_aerial_adsbfi' => '<strong><a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a></strong> — open data from volunteer ADS-B receivers.',
+        'data_aerial_disclaimer' => 'Positions may lag by seconds to minutes. Coverage depends on the ADS-B receiver network — low-flying aircraft or those in mountainous terrain may temporarily lose signal.',
         'data_footer' => 'All data is integrated, processed and validated by VOST Portugal, including verification, normalisation and operational contextualisation processes.',
 
         'partners_title' => 'Partners and supporters',

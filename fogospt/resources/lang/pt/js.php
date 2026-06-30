@@ -109,7 +109,7 @@ return [
         'heading'  => 'Direção',
         'onGround' => 'No solo',
         'lastSeen' => 'Última posição',
-        'source'   => 'Dados via subscrição da API do FlightRadar24',
+        'source'   => 'Posições fornecidas por <a href="https://www.flightradar24.com" target="_blank" rel="noopener">Flightradar24</a>, <a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a> e <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> (agregadores ADS-B em tempo real).',
     ],
     'filtersPanel' => [
         'title'    => 'Filtros avançados',

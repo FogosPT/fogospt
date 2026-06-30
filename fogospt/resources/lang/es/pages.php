@@ -59,6 +59,12 @@ return [
         'data_satellites_text' => 'Copernicus, NASA, Meteosat y Mapbox',
         'data_other_title' => 'Otras fuentes complementarias',
         'data_other_text' => 'Waze y contribuciones OSINT de voluntarios de VOST Portugal',
+        'data_aerial_title' => 'Medios aéreos (tracking en tiempo real)',
+        'data_aerial_intro' => 'El tracking de los medios aéreos del DECIR usa tres fuentes complementarias de datos ADS-B:',
+        'data_aerial_fr24' => '<strong><a href="https://www.flightradar24.com" target="_blank" rel="noopener">Flightradar24</a></strong> — agregador comercial líder del mercado, accedido vía suscripción de la API.',
+        'data_aerial_alive' => '<strong><a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a></strong> — agregador comunitario de datos ADS-B.',
+        'data_aerial_adsbfi' => '<strong><a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a></strong> — open data de receptores ADS-B voluntarios.',
+        'data_aerial_disclaimer' => 'Las posiciones pueden tener un retraso de segundos a minutos. La cobertura depende de la red de receptores ADS-B — aeronaves a baja altitud o en zonas montañosas pueden quedar temporalmente sin señal.',
         'data_footer' => 'Todos los datos son integrados, procesados y validados por VOST Portugal, incluyendo procesos de verificación, normalización y contextualización operacional.',
 
         'partners_title' => 'Socios y apoyos',
