@@ -72,6 +72,25 @@
             + '</svg>';
     }
 
+    // Backend authoritative field is `plane.kind` ("airplane"|"helicopter"),
+    // but until it ships everywhere we fall back to a heuristic on the free-
+    // form `aircraft_type` / DECIR callsign. Covers the DECIR fleet: rotor
+    // types (AS3xx/AS5xx, EC13x/EC14x/EC22x, KA-32, Bell 212/412, MI-8,
+    // Sikorsky S-6x) plus the HOTEL / HELI / H0-H9 callsign prefixes.
+    function inferKind(plane) {
+        var explicit = (plane && plane.kind || '').toString().toLowerCase();
+        if (explicit === 'helicopter' || explicit === 'airplane') return explicit;
+
+        var t = (plane && plane.aircraft_type || '').toString().toUpperCase().replace(/[\s-]/g, '');
+        var n = (plane && plane.name || '').toString().toUpperCase();
+
+        if (/^(AS3|AS5|EC1|EC2|KA3|B21|B41|BELL|MI8|S6|H500|R44|R66|EH10|AW1|H1|H2)/.test(t)) return 'helicopter';
+        if (/HELI|HELIBOMBEIRO/.test(t) || /HELI|HELIBOMBEIRO/.test(n)) return 'helicopter';
+        if (/^HOTEL|^HELI|^H\d/.test(n)) return 'helicopter';
+
+        return 'airplane';
+    }
+
     function iconHtml(kind, track, stale) {
         var rotation = (typeof track === 'number' && !isNaN(track)) ? track : 0;
         var color = stale ? COLOR_STALE : COLOR_ACTIVE;
@@ -172,9 +191,10 @@
                             }
                         }
 
+                        var kind = inferKind(plane);
                         var icon = L.divIcon({
                             className: 'fogos-plane-icon',
-                            html: iconHtml(plane.kind, last.track, stale),
+                            html: iconHtml(kind, last.track, stale),
                             iconSize: [ICON_SIZE, ICON_SIZE],
                             iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2]
                         });
