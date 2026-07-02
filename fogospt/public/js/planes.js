@@ -44,6 +44,20 @@
         return (Date.now() - t) / 60000;
     }
 
+    // Deterministic per-aircraft hue so each track keeps the same colour
+    // across refreshes. Fixed saturation/lightness keeps every colour
+    // legible against both light and dark map tiles. Cascades icao ->
+    // registration -> name because a big chunk of the fleet still comes
+    // through with icao=null and would otherwise collapse to a single hue.
+    function trackColor(plane) {
+        var s = String(plane.icao || plane.registration || plane.name || '');
+        var h = 0;
+        for (var i = 0; i < s.length; i++) {
+            h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+        }
+        return 'hsl(' + (Math.abs(h) % 360) + ', 72%, 42%)';
+    }
+
     // Top-down silhouettes, nose at the top (north). Rotating the wrapper by
     // `track` degrees (0 = north, clockwise) gives a heading-correct icon.
     function planeSvg(color) {
@@ -175,17 +189,18 @@
                         // most ~6h of points, cheap to rewrite).
                         var pts = positions.map(function (p) { return [p.lat, p.lon]; });
                         if (pts.length > 1) {
+                            var trackHue = trackColor(plane);
                             if (tracks[plane.icao]) {
                                 tracks[plane.icao].setLatLngs(pts);
                                 tracks[plane.icao].setStyle({
-                                    color: stale ? COLOR_STALE : COLOR_ACTIVE,
-                                    opacity: stale ? 0.4 : 0.7
+                                    color: trackHue,
+                                    opacity: stale ? 0.35 : 0.75
                                 });
                             } else {
                                 tracks[plane.icao] = L.polyline(pts, {
-                                    color: stale ? COLOR_STALE : COLOR_ACTIVE,
-                                    weight: 2,
-                                    opacity: stale ? 0.4 : 0.7,
+                                    color: trackHue,
+                                    weight: 2.5,
+                                    opacity: stale ? 0.35 : 0.75,
                                     dashArray: '4 4'
                                 }).addTo(group);
                             }
