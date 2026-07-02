@@ -35,8 +35,8 @@
             '.fogos-filters.is-collapsed .fogos-filters__collapse i{transform:rotate(180deg)}' +
             '.fogos-filters__header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(135deg,#3b6db5,#1f3f73);color:#fff;font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:.4px}' +
             '.fogos-filters__title{flex:1}' +
-            '.fogos-filters__collapse{background:transparent;border:0;color:#fff;cursor:pointer;padding:4px 6px;font-size:14px;line-height:1}' +
-            '.fogos-filters__collapse i{transition:transform .2s}' +
+            '.fogos-filters__collapse{background:transparent;border:0;color:#fff;cursor:pointer;padding:4px 6px;font-size:14px;line-height:1;flex-shrink:0}' +
+            '.fogos-filters__collapse i{transition:transform .2s;display:inline-block;min-width:14px;text-align:center}' +
             '.fogos-filters__body{padding:10px 12px}' +
             '.fogos-filters__row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}' +
             '.fogos-filters__row:last-child{margin-bottom:0}' +

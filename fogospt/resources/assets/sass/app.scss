@@ -1105,6 +1105,7 @@ têm margens uniformes. */
     padding: 4px 6px;
     font-size: 14px;
     line-height: 1;
+    flex-shrink: 0;
 
     &:focus {
       outline: none;
@@ -1112,6 +1113,9 @@ têm margens uniformes. */
 
     i {
       transition: transform 0.2s;
+      display: inline-block;
+      min-width: 14px;
+      text-align: center;
     }
   }
 
@@ -1197,7 +1201,7 @@ têm margens uniformes. */
     width: 220px;
 
     &.is-collapsed {
-      width: 40px;
+      width: 44px;
     }
 
     &__body {
