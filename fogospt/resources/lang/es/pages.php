@@ -244,6 +244,14 @@ return [
     ],
     'table' => [
         'reload' => 'esta página se actualiza automáticamente.'
+    ],
+    'list' => [
+        'no-data'       => 'Sin registro de incendios',
+        'search'        => 'Buscar:',
+        'info'          => 'Mostrando _TOTAL_ incendios',
+        'info-empty'    => 'Mostrando 0 incendios',
+        'info-filtered' => '(filtrado de un total de _MAX_ incendios)',
+        'zero-records'  => 'Ningún incendio encontrado',
     ]
 
 ];

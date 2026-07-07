@@ -252,7 +252,12 @@ return [
         'reload' => 'Esta página é atualizada automaticamente.'
     ],
     'list' => [
-        'no-data' => 'Sem registo de incêndios'
+        'no-data'       => 'Sem registo de incêndios',
+        'search'        => 'Pesquisar:',
+        'info'          => 'A mostrar _TOTAL_ incêndios',
+        'info-empty'    => 'A mostrar 0 incêndios',
+        'info-filtered' => '(filtrado de um total de _MAX_ incêndios)',
+        'zero-records'  => 'Nenhum incêndio encontrado',
     ]
 
 ];
