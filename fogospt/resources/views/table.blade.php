@@ -62,7 +62,14 @@
             $('#fires').DataTable({
                 paging: false,
                 stateSave: true,
-                order: [[ 0, 'desc' ]]
+                order: [[ 0, 'desc' ]],
+                language: {
+                    search:       @json(__('pages.list.search')),
+                    info:         @json(__('pages.list.info')),
+                    infoEmpty:    @json(__('pages.list.info-empty')),
+                    infoFiltered: @json(__('pages.list.info-filtered')),
+                    zeroRecords:  @json(__('pages.list.zero-records'))
+                }
             });
 
             setTimeout(function() {

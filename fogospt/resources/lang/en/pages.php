@@ -239,6 +239,11 @@ return [
         'reload' => 'This page auto refreshes.'
     ],
     'list' => [
-        'no-data' => 'Sem registo de incêndios'
+        'no-data'       => 'No fire incidents',
+        'search'        => 'Search:',
+        'info'          => 'Showing _TOTAL_ fires',
+        'info-empty'    => 'Showing 0 fires',
+        'info-filtered' => '(filtered from _MAX_ total fires)',
+        'zero-records'  => 'No matching fires found',
     ]
 ];
