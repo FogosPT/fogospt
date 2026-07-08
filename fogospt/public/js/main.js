@@ -1311,20 +1311,23 @@ function plot(id) {
                             data: man,
                             fill: false,
                             backgroundColor: '#EFC800',
-                            borderColor: '#EFC800'
+                            borderColor: '#EFC800',
+                            yAxisID: 'y-left'
                         },
                             {
                                 label: window.trans.chart.terrestrial,
                                 data: terrain,
                                 fill: false,
                                 backgroundColor: '#6D720B',
-                                borderColor: '#6D720B'
+                                borderColor: '#6D720B',
+                                yAxisID: 'y-left'
                             }, {
                                 label: window.trans.chart.aerial,
                                 data: aerial,
                                 fill: false,
                                 backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
+                                borderColor: '#4E88B2',
+                                yAxisID: 'y-right'
                             }
                         ]
                     },
@@ -1336,7 +1339,16 @@ function plot(id) {
                         },
                         scales: {
                             yAxes: [{
-                                ticks: {}
+                                id: 'y-left',
+                                position: 'left',
+                                ticks: { beginAtZero: true, precision: 0 },
+                                scaleLabel: { display: true, labelString: window.trans.chart.humans + ' / ' + window.trans.chart.terrestrial }
+                            }, {
+                                id: 'y-right',
+                                position: 'right',
+                                ticks: { beginAtZero: true, precision: 0 },
+                                gridLines: { drawOnChartArea: false },
+                                scaleLabel: { display: true, labelString: window.trans.chart.aerial }
                             }]
                         }
                     }
