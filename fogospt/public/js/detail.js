@@ -33,20 +33,23 @@ $(document).ready(function () {
                                 data: man,
                                 fill: false,
                                 backgroundColor: '#EFC800',
-                                borderColor: '#EFC800'
+                                borderColor: '#EFC800',
+                                yAxisID: 'y-left'
                             },
                                 {
                                     label: 'Terrestres',
                                     data: terrain,
                                     fill: false,
                                     backgroundColor: '#6D720B',
-                                    borderColor: '#6D720B'
+                                    borderColor: '#6D720B',
+                                    yAxisID: 'y-left'
                                 }, {
                                     label: 'Aéreos',
                                     data: aerial,
                                     fill: false,
                                     backgroundColor: '#4E88B2',
-                                    borderColor: '#4E88B2'
+                                    borderColor: '#4E88B2',
+                                    yAxisID: 'y-right'
                                 }
                             ]
                         },
@@ -60,7 +63,16 @@ $(document).ready(function () {
                             },
                             scales: {
                                 yAxes: [{
-                                    ticks: {}
+                                    id: 'y-left',
+                                    position: 'left',
+                                    ticks: { beginAtZero: true, precision: 0 },
+                                    scaleLabel: { display: true, labelString: 'Operacionais / Terrestres' }
+                                }, {
+                                    id: 'y-right',
+                                    position: 'right',
+                                    ticks: { beginAtZero: true, precision: 0 },
+                                    gridLines: { drawOnChartArea: false },
+                                    scaleLabel: { display: true, labelString: 'Aéreos' }
                                 }]
                             }
                         }
