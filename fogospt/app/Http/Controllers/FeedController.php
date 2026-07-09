@@ -76,9 +76,17 @@ class FeedController extends Controller
             if ($nature !== '') {
                 $descParts[] = 'Natureza: ' . $nature;
             }
-            $descParts[] = 'Meios: ' . $this->meios($men, 'operacional', 'operacionais')
-                . ', ' . $this->meios($terrain, 'terrestre', 'terrestres')
-                . ', ' . $this->meios($aerial, 'aéreo', 'aéreos');
+            // Upstream uses -1 to flag counts that haven't been reported yet
+            // (see main.js: `hasUnknownMeios = man == -1 || terrain == -1 ||
+            // aerial == -1`). Treat the whole row as unconfirmed rather than
+            // printing "-1 operacionais".
+            if ($men < 0 || $terrain < 0 || $aerial < 0) {
+                $descParts[] = 'Meios: por confirmar';
+            } else {
+                $descParts[] = 'Meios: ' . $this->meios($men, 'operacional', 'operacionais')
+                    . ', ' . $this->meios($terrain, 'terrestre', 'terrestres')
+                    . ', ' . $this->meios($aerial, 'aéreo', 'aéreos');
+            }
             $description = implode('. ', $descParts) . '.';
 
             $geo = '';

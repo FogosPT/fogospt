@@ -41,6 +41,23 @@ class FeedControllerTest extends TestCase
     }
 
     /** @test */
+    public function fires_feed_marks_unconfirmed_when_upstream_sends_minus_one(): void
+    {
+        $fires = [[
+            'id' => '789', 'status' => 'Despacho', 'location' => 'Braga',
+            'man' => -1, 'terrain' => -1, 'aerial' => -1,
+            'dateTime' => ['sec' => 1782957840],
+        ]];
+
+        $xml = $this->render('renderFiresFeed', [$fires]);
+
+        $this->assertStringContainsString('Meios: por confirmar', $xml);
+        $this->assertStringNotContainsString('-1 operacionais', $xml);
+        $this->assertStringNotContainsString('-1 terrestres', $xml);
+        $this->assertStringNotContainsString('-1 aéreos', $xml);
+    }
+
+    /** @test */
     public function warnings_feed_derives_time_from_objectid_and_escapes(): void
     {
         $xml = $this->render('renderWarningsFeed', [$this->sampleWarnings()]);
