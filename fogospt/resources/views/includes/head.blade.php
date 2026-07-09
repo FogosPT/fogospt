@@ -19,6 +19,11 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/img/favicon-512x512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+
+{{-- RSS 2.0 feed autodiscovery (see FeedController / routes/web.php) --}}
+<link rel="alternate" type="application/rss+xml" title="Fogos.pt — Incêndios ativos" href="/rss/fires.xml">
+<link rel="alternate" type="application/rss+xml" title="Fogos.pt — Avisos" href="/rss/warnings.xml">
+
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.1/css/all.css" crossorigin="anonymous">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FireController;
 use App\Http\Controllers\GaiaController;
 use App\Http\Controllers\GenericController;
@@ -33,6 +34,12 @@ Route::get('/lightnings', [FireController::class, 'getLightnings']);
 // Dynamic sitemap for active fires. SitemapController caches the rendered
 // XML in Redis for 15 min and sets its own Cache-Control headers.
 Route::get('/sitemap-fires.xml', [SitemapController::class, 'fires'])->name('sitemap-fires');
+
+// RSS 2.0 feeds for active fires and warnings. Locale-agnostic, root-scope so
+// readers get one stable subscribe URL. FeedController caches the rendered XML
+// in Redis and sets its own Cache-Control headers.
+Route::get('/rss/fires.xml', [FeedController::class, 'fires'])->name('rss-fires');
+Route::get('/rss/warnings.xml', [FeedController::class, 'warnings'])->name('rss-warnings');
 
 // Backward compatibility — redirect legacy links (without locale) to /pt/
 Route::redirect('/outros',          '/pt/outros',          301);
