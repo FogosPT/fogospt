@@ -102,6 +102,7 @@ return [
         'lightningNow'     => 'now',
         'aerial'           => 'Aerial assets',
         'planes'           => 'Planes & helicopters',
+        'planesTracks'     => 'Planes & helicopters with tracks',
     ],
     'planes' => [
         'altitude' => 'Altitude',

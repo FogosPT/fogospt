@@ -102,6 +102,7 @@ return [
         'lightningNow'     => 'agora',
         'aerial'           => 'Meios aéreos',
         'planes'           => 'Aviões e helicópteros',
+        'planesTracks'     => 'Aviões e helicópteros com trajetos',
     ],
     'planes' => [
         'altitude' => 'Altitude',

@@ -150,10 +150,17 @@
         return parts.join('<br>');
     }
 
-    window.createPlanesLayer = function (mymap) {
+    window.createPlanesLayer = function (mymap, opts) {
+        opts = opts || {};
+        // showAllTracks=true → draw every aircraft's polyline (default legacy
+        // behaviour). false → only draw the track for the aircraft whose
+        // popup is currently open (single-selection, driven by popup events).
+        var showAllTracks = !!opts.showAllTracks;
+
         var group = L.layerGroup();
-        var markers = {};   // icao -> L.marker
-        var tracks  = {};   // icao -> L.polyline
+        var markers = {};      // icao -> L.marker
+        var tracks  = {};      // icao -> L.polyline (currently drawn)
+        var cache   = {};      // icao -> { pts, color, stale } cached path
         var pollTimer = null;
         var inFlight = false;
 
@@ -166,6 +173,29 @@
                 group.removeLayer(tracks[k2]);
                 delete tracks[k2];
             }
+            cache = {};
+        }
+
+        function drawTrack(icao) {
+            var c = cache[icao];
+            if (!c || !c.pts || c.pts.length < 2) return;
+            if (tracks[icao]) {
+                tracks[icao].setLatLngs(c.pts);
+                tracks[icao].setStyle({ color: c.color, opacity: c.stale ? 0.35 : 0.75 });
+                return;
+            }
+            tracks[icao] = L.polyline(c.pts, {
+                color: c.color,
+                weight: 2.5,
+                opacity: c.stale ? 0.35 : 0.75,
+                dashArray: '4 4'
+            }).addTo(group);
+        }
+
+        function removeTrack(icao) {
+            if (!tracks[icao]) return;
+            group.removeLayer(tracks[icao]);
+            delete tracks[icao];
         }
 
         function refresh() {
@@ -184,26 +214,21 @@
                         var positions = plane.positions;
                         var last = positions[positions.length - 1];
                         var stale = ageMinutes(last.created) > STALE_MIN;
+                        var pts = positions.map(function (p) { return [p.lat, p.lon]; });
+
+                        cache[plane.icao] = {
+                            pts: pts,
+                            color: trackColor(plane),
+                            stale: stale
+                        };
 
                         // Track polyline (re-set on each refresh — payload is at
                         // most ~6h of points, cheap to rewrite).
-                        var pts = positions.map(function (p) { return [p.lat, p.lon]; });
-                        if (pts.length > 1) {
-                            var trackHue = trackColor(plane);
-                            if (tracks[plane.icao]) {
-                                tracks[plane.icao].setLatLngs(pts);
-                                tracks[plane.icao].setStyle({
-                                    color: trackHue,
-                                    opacity: stale ? 0.35 : 0.75
-                                });
-                            } else {
-                                tracks[plane.icao] = L.polyline(pts, {
-                                    color: trackHue,
-                                    weight: 2.5,
-                                    opacity: stale ? 0.35 : 0.75,
-                                    dashArray: '4 4'
-                                }).addTo(group);
-                            }
+                        if (showAllTracks) {
+                            if (pts.length > 1) drawTrack(plane.icao);
+                        } else if (tracks[plane.icao]) {
+                            // Currently visible (popup open) — keep it fresh.
+                            drawTrack(plane.icao);
                         }
 
                         var kind = inferKind(plane);
@@ -219,10 +244,20 @@
                             markers[plane.icao].setIcon(icon);
                             markers[plane.icao].setPopupContent(buildPopup(plane, last));
                         } else {
+                            var icao = plane.icao;
                             var m = L.marker([last.lat, last.lon], { icon: icon });
                             m.bindPopup(buildPopup(plane, last));
+                            if (!showAllTracks) {
+                                // Popup-driven single selection: opening a popup
+                                // reveals that aircraft's track; closing hides
+                                // it. Leaflet auto-closes any other popup when a
+                                // new one opens, giving the "click another to
+                                // switch" behaviour for free.
+                                m.on('popupopen',  function () { drawTrack(icao); });
+                                m.on('popupclose', function () { removeTrack(icao); });
+                            }
                             m.addTo(group);
-                            markers[plane.icao] = m;
+                            markers[icao] = m;
                         }
                     });
 
@@ -232,7 +267,8 @@
                         if (!seen[k]) {
                             group.removeLayer(markers[k]);
                             delete markers[k];
-                            if (tracks[k]) { group.removeLayer(tracks[k]); delete tracks[k]; }
+                            removeTrack(k);
+                            delete cache[k];
                         }
                     }
                 })
