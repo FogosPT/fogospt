@@ -120,7 +120,7 @@
                                 <label class="custom-control custom-checkbox d-inline-flex align-items-center">
                                     <input type="checkbox" class="custom-control-input js-concelho-all-incidents">
                                     <span class="custom-control-indicator"></span>
-                                    <span class="ml-1">Receber todas as ocorrências (não só incêndios)</span>
+                                    <span class="ms-1">Receber todas as ocorrências (não só incêndios)</span>
                                 </label>
                             </div>
                         </div>
@@ -148,9 +148,7 @@
 
             <div class="alert alert-warning alert-dismissible collapse" role="alert">
                 <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </main>
     </div>

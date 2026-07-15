@@ -8,8 +8,8 @@
 
 @section('content')
     <main role="main" class="mb-auto">
-        <h1 class="sr-only">{{ __('pages.seo.home.h1') }}</h1>
-        <p class="sr-only">{{ __('pages.seo.home.intro') }}</p>
+        <h1 class="visually-hidden">{{ __('pages.seo.home.h1') }}</h1>
+        <p class="visually-hidden">{{ __('pages.seo.home.intro') }}</p>
         @include('includes.sidebar')
         <div id="map">
             <a href="http://mapbox.com/about/maps" class='mapbox-wordmark' target="_blank">Mapbox</a>
@@ -21,15 +21,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Aviso</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
