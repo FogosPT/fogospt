@@ -6,8 +6,8 @@
 
 @section('content')
     <main role="main" class="mb-auto">
-        <h1 class="sr-only">{{ __('pages.seo.madeira.h1') }}</h1>
-        <p class="sr-only">{{ __('pages.seo.madeira.intro') }}</p>
+        <h1 class="visually-hidden">{{ __('pages.seo.madeira.h1') }}</h1>
+        <p class="visually-hidden">{{ __('pages.seo.madeira.intro') }}</p>
         @include('includes.sidebar')
         <div id="map">
             <a href="http://mapbox.com/about/maps" class='mapbox-wordmark' target="_blank">Mapbox</a>

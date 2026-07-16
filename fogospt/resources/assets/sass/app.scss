@@ -65,11 +65,12 @@ body {
 }
 
 header {
-  height: 80px;
+  height: $header-height;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
   .navbar {
-    padding: 0rem 1rem;
+    padding: 0 1rem;
     text-transform: uppercase;
-    min-height: 80px;
+    min-height: $header-height;
     align-items: center;
     .navbar-nav {
       padding-top: 1rem;
@@ -95,23 +96,108 @@ header {
     .navbar-collapse {
       position: fixed;
       right: 0;
-      top: 80px;
+      top: $header-height;
       bottom: 0;
-      width: 200px;
+      width: 260px;
       background: #fff;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, .12);
       transition: transform .3s !important;
       display: block;
       transform: translate3d(100%, 0, 0);
-      overflow-y: scroll !important;
-      max-height: calc(100vh - 80px);
+      overflow-y: auto !important;
+      max-height: calc(100vh - #{$header-height});
       &.collapsing {
         height: auto !important;
       }
       a {
-        color: #ff512f !important;
+        color: #444 !important;
       }
       a:hover {
-        color: #f09819 !important;
+        color: #ff512f !important;
+      }
+    }
+
+    .menu-panel {
+      padding: .5rem 0 1.5rem;
+
+      .nav-item, .nav-link {
+        text-transform: none;
+      }
+    }
+
+    .menu-links {
+      display: flex;
+      flex-direction: column;
+
+      .nav-link {
+        padding: .625rem 1.5rem;
+        font-size: .9375rem;
+        font-weight: 400;
+        border-left: 3px solid transparent;
+        transition: background-color .15s ease, border-color .15s ease;
+
+        i {
+          width: 1.25rem;
+          margin-right: .5rem;
+          text-align: center;
+          color: #bbb;
+        }
+
+        &:hover {
+          background: #fdf3f0;
+        }
+
+        &.active {
+          border-left-color: #ff512f;
+          font-weight: 600;
+          color: #ff512f !important;
+
+          i {
+            color: #ff512f;
+          }
+        }
+      }
+    }
+
+    .menu-divider {
+      margin: .75rem 1.5rem;
+      border: 0;
+      border-top: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .menu-social {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: 0 1.5rem;
+
+      .menu-social-link {
+        font-size: 1.25rem;
+        color: #888 !important;
+
+        &:hover {
+          color: #ff512f !important;
+        }
+      }
+    }
+
+    .menu-lang {
+      padding: 0 1.5rem;
+      text-align: center;
+
+      .dropdown-toggle {
+        display: inline-block;
+        text-transform: uppercase;
+        font-size: .8125rem;
+        font-weight: 600;
+        letter-spacing: .05em;
+        padding: .25rem .75rem;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 1rem;
+
+        &::after {
+          margin-left: .4em;
+        }
       }
     }
   }
@@ -181,7 +267,7 @@ img, svg {
 
 main {
   transition: opacity .5s linear;
-  padding-top: 80px;
+  padding-top: $header-height;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -262,6 +348,8 @@ main {
     width: 100%;
     background: #f5f5f5;
     flex-basis: 100%;
+    padding: .75rem;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, .08);
 
     &.active {
       display: block;
@@ -275,11 +363,22 @@ main {
   }
 
   .card {
-    margin-bottom: 1rem;
+    margin-bottom: .875rem;
     border: 0;
-    border-radius: 0;
+    border-radius: .5rem;
     background: white;
-    //overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .08);
+    transition: box-shadow .2s ease, transform .2s ease;
+    overflow: hidden;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
     .table {
       margin-top: 1rem;
     }
@@ -301,12 +400,14 @@ main {
   h1,h2,h3,h4 {
     font-weight: 300;
     text-transform: uppercase;
+    letter-spacing: .02em;
     color: #ff512f
   }
   h6 {
     text-transform: uppercase;
     font-size: .875rem;
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: .03em;
   }
   .data-source {
     font-size: .75rem;
@@ -518,12 +619,22 @@ main {
       flex-basis: 40%;
       height: 100%;
       background: #f5f5f5;
-      overflow-y: scroll;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #ccc transparent;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+      }
     }
 
     #map {
       position: absolute;
-      top: 80px;
+      top: $header-height;
       right: 0;
       bottom: 0;
       width: 100%;
@@ -559,7 +670,36 @@ main {
 
 .notification-container{
   display:none;
-  margin-left: 1rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.field {
+  margin-bottom: .75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-label {
+  margin-bottom: .25rem;
+}
+
+.field-value {
+  margin-bottom: 0;
+  color: #333;
+}
+
+.field-divider {
+  margin: .75rem 0;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, .08);
+}
+
+.card .card-body {
+  position: relative;
 }
 
 .f-local{
@@ -584,7 +724,7 @@ main {
     background-image: url('https://fogos.pt/assets/images/markers/CE773C.png');
   }
 
-  &.87D37C {
+  &.\38 7D37C {
     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
   }
 }
