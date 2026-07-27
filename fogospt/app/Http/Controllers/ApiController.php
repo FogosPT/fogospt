@@ -408,20 +408,20 @@ class ApiController extends Controller
         $upstreamUrl = 'https://mf2.ipma.pt/services/?' . $canonical;
 
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10]);
+            $client = new GuzzleHttp\Client(['connect_timeout' => 2, 'timeout' => 3]);
             $resp = $client->request('GET', $upstreamUrl, ['http_errors' => false]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'upstream_unavailable'], 502);
+            return $this->emptyWmsTile();
         }
 
         if ($resp->getStatusCode() !== 200) {
-            return response()->json(['error' => 'upstream_status', 'status' => $resp->getStatusCode()], 502);
+            return $this->emptyWmsTile();
         }
 
         $contentType = $resp->getHeaderLine('Content-Type');
         if (stripos($contentType, 'image/png') === false) {
             // mf2 returns XML ServiceExceptionReport on errors — do not cache.
-            return response()->json(['error' => 'upstream_non_image'], 502);
+            return $this->emptyWmsTile();
         }
 
         $bytes = (string) $resp->getBody();
@@ -432,6 +432,15 @@ class ApiController extends Controller
             ->header('Content-Type', 'image/png')
             ->header('Cache-Control', 'public, max-age=86400, immutable')
             ->header('X-Cache', 'MISS');
+    }
+
+    private function emptyWmsTile()
+    {
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=');
+        return response($png, 200)
+            ->header('Content-Type', 'image/png')
+            ->header('Cache-Control', 'public, max-age=60')
+            ->header('X-Cache', 'FALLBACK');
     }
 
     /**
