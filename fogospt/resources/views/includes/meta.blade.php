@@ -43,7 +43,7 @@
             "url": "https://fogos.pt",
             "logo": "https://fogos.pt/img/og-image.png",
             "sameAs": [
-                "https://twitter.com/tomahock",
+                "https://x.com/tomahock",
                 "https://github.com/FogosPT"
             ]
         },
