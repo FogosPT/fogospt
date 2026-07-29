@@ -96,7 +96,7 @@ class GenericController extends Controller
         $this->seoKey = 'warnings';
         $warnings = LegacyApi::getWarnings();
 
-        return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings', ['data' => @$warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarningsMadeira()
@@ -104,7 +104,7 @@ class GenericController extends Controller
         $this->seoKey = 'warningsMadeira';
         $warnings = LegacyApi::getWarningsMadeira();
 
-        return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings-madeira', ['data' => @$warnings['data']])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getStats()
