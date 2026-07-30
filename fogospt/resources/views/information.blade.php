@@ -185,6 +185,31 @@
                     </div>
                 </div>
 
+                <div class="col-12" id="satellite-perimeter">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.satellitePerimeter.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.satellitePerimeter.intro')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.perimeter.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.perimeter.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.simulation.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.simulation.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.use.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.use.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.limits.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.limits.description')</p>
+
+                            <p>{!! __('pages.information.satellitePerimeter.source') !!}</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12" id="ipma-charts">
                     <div class="card">
                         <div class="card-body">

@@ -187,6 +187,27 @@ return [
                 'basemaps' => '<strong>Mapas base</strong> — OpenStreetMap (CC-BY-SA), Esri World Imagery / Transportation / Boundaries (vista satélite), CARTO Positron (modo IPMA).',
             ],
         ],
+        'satellitePerimeter' => [
+            'title' => 'Perímetro y propagación (satélite)',
+            'intro' => 'En la página de cada incidente aparece, al final, un mapa con dos productos derivados de satélite: el <strong>perímetro</strong> actual del fuego y una <strong>simulación de propagación para las próximas 6 horas</strong>. Ambos se actualizan cada 15 minutos y solo se muestran cuando hay dato satélite para esa incidencia.',
+            'perimeter' => [
+                'title' => 'Perímetro (polígono rojo)',
+                'description' => 'Traza el área que los satélites Meteosat Third Generation (MTG) están viendo arder. El sistema agrupa las detecciones FRP (Fire Radiative Power — potencia radiativa del fuego) de las últimas pasadas y las une en un polígono, dando una estimación en tiempo casi real del footprint del incendio en el terreno. No es lo mismo que el área quemada oficial del ICNF (elaborada a posteriori); es una visión en vivo de lo que está activo ahora.',
+            ],
+            'simulation' => [
+                'title' => 'Propagación (isócronas +1 h a +6 h)',
+                'description' => 'Las curvas concéntricas rojas, del centro (más oscuro) hacia fuera (más claro), representan el área que el fuego podría cubrir en cada una de las próximas 6 horas. Es una simulación: el motor combina el relieve del terreno (pendiente, exposición), la previsión de viento del IPMA y la humedad estimada del combustible vegetal para dibujar el escenario más probable. En el mapa las isócronas aparecen animadas, revelando hora a hora cómo tiende a propagarse el fuego.',
+            ],
+            'use' => [
+                'title' => 'Para qué sirve',
+                'description' => 'El perímetro ayuda a percibir la dimensión real del incendio en el momento; la simulación de propagación ayuda a anticipar lo que queda en su trayectoria — aldeas, carreteras, infraestructuras — para quien debe tomar decisiones de protección o evacuación. El sello bajo el título indica la hora de la última actualización satélite.',
+            ],
+            'limits' => [
+                'title' => 'Limitaciones y advertencias',
+                'description' => 'La detección por satélite depende de la hora de pasada y de la nubosidad: fuegos muy recientes, pequeños o cubiertos por nubes densas pueden no aparecer aún. La simulación asume las condiciones meteorológicas previstas — si el viento cambia bruscamente o pasa un frente, la evolución real puede alejarse del escenario. Estos productos son herramientas de apoyo situacional; no sustituyen a la información oficial de la ANEPC ni a los avisos de las autoridades.',
+            ],
+            'source' => 'Datos del procesador MTG FRP mantenido por <a href="https://vost.pt" target="_blank" rel="noopener">VOST Portugal</a>, integrados con la previsión AROME del IPMA. Motor de simulación: PyroCast.',
+        ],
         'ipmaCharts' => [
             'title' => 'Gráficos de previsión IPMA (página de detalle)',
             'intro' => 'Cada incidente tiene un panel con gráficos de previsión del IPMA para la ubicación exacta del fuego. Las variables meteorológicas horarias (próximas 48 h) se alimentan del modelo AROME. El FWI y los subíndices canadienses se calculan a las 12 UTC a partir del modelo ECMWF — no del AROME. Los productos LSA-SAF (diarios, 7 días) combinan observación por satélite con previsiones del ECMWF. La línea vertical roja a trazos marca la hora actual.',

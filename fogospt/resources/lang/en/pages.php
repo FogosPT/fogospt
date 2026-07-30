@@ -181,6 +181,27 @@ return [
                 'basemaps' => '<strong>Basemaps</strong> — OpenStreetMap (CC-BY-SA), Esri World Imagery / Transportation / Boundaries (satellite view), CARTO Positron (IPMA mode).',
             ],
         ],
+        'satellitePerimeter' => [
+            'title' => 'Perimeter and spread (satellite)',
+            'intro' => 'At the bottom of every incident page there is a map with two satellite-derived products: the current fire <strong>perimeter</strong> and a <strong>6-hour spread simulation</strong>. Both refresh every 15 minutes and only appear when there is satellite data for that incident.',
+            'perimeter' => [
+                'title' => 'Perimeter (red polygon)',
+                'description' => 'Traces the area the Meteosat Third Generation (MTG) satellites are currently seeing on fire. The system clusters the last passes\' FRP (Fire Radiative Power) detections and joins them into a polygon, giving a near-real-time estimate of the incident footprint on the ground. This is not the same as the official ICNF burned-area figure, which is compiled after the fact; it is a live view of what is actively burning.',
+            ],
+            'simulation' => [
+                'title' => 'Spread (isochrones +1 h to +6 h)',
+                'description' => 'The concentric red rings, from the darker centre outward, represent the area the fire could reach in each of the next 6 hours. It is a simulation: the engine combines terrain (slope, aspect), the IPMA wind forecast and estimated fuel moisture to draw the most likely scenario. On the map the isochrones animate, unfolding hour by hour so you can see how the fire tends to spread.',
+            ],
+            'use' => [
+                'title' => 'What it is for',
+                'description' => 'The perimeter helps you gauge the current real size of the incident; the spread simulation helps anticipate what lies in its path — villages, roads, infrastructure — for anyone who has to make protective or evacuation decisions. The badge under the title shows the time of the last satellite update.',
+            ],
+            'limits' => [
+                'title' => 'Caveats and limits',
+                'description' => 'Satellite detection depends on overpass timing and cloud cover: very recent, very small or thickly clouded fires may not yet appear. The simulation assumes the forecast weather — a sudden wind shift or a passing front can drive the real behaviour away from the modelled scenario. These products are situational-awareness tools and do not replace the ANEPC\'s official information nor the authorities\' warnings.',
+            ],
+            'source' => 'Data from the MTG FRP processor maintained by <a href="https://vost.pt" target="_blank" rel="noopener">VOST Portugal</a>, integrated with the IPMA AROME forecast. Simulation engine: PyroCast.',
+        ],
         'ipmaCharts' => [
             'title' => 'IPMA forecast charts (detail page)',
             'intro' => 'Every incident has an IPMA forecast panel for the exact fire location. Hourly weather variables (next 48 h) are fed by the AROME model. The FWI and the Canadian sub-indices are computed at 12 UTC from the ECMWF model — not from AROME. The LSA-SAF products (daily, 7 days) combine satellite observation with ECMWF forecasts. The dashed red vertical line marks the current hour.',
