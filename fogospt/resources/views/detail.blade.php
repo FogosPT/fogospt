@@ -10,7 +10,6 @@
                             <p>
                                 @if(isset($fire['kml']))Área Ardida segundo dados do ICNF. @endif
                                 @if(isset($fire['kmlVost']))Áreas a <span style="color:#3388ff;font-weight:bold">azul</span>: área de interesse por <a href="https://vost.pt">VOST.pt</a>. @endif
-                                <span class="js-kml-firms-legend d-none">Áreas a <span style="color:#e60000;font-weight:bold">vermelho</span>: área de interesse automática com base nos pontos VIIRS/MODIS/IPMA FRP.</span>
                             </p>
 
                         <div class="card-body">
@@ -403,13 +402,7 @@
                 dataType: 'text'
             }).done(function (kmlFirmsText) {
                 if (!kmlFirmsText || !kmlFirmsText.trim()) return;
-                try {
-                    var firmsDoc = new DOMParser().parseFromString(kmlFirmsText, 'text/xml');
-                    if (firmsDoc.getElementsByTagName('parsererror').length) return;
-                    var firmsTrack = new L.KML(firmsDoc);
-                    map.addLayer(firmsTrack);
-                    $('.js-kml-firms-link, .js-kml-firms-legend').removeClass('d-none');
-                } catch (e) {}
+                $('.js-kml-firms-link').removeClass('d-none');
             });
             @endisset
 
