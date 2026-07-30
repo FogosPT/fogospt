@@ -238,6 +238,59 @@
         var $areas = $('.js-sat-areas');
         var hasFitted = false;
 
+        // Animation state — bloom hour-by-hour, hold, loop.
+        var animTimer = null;
+        var animStep = 0;
+        var animBadgeControl = L.Control.extend({
+            options: { position: 'bottomright' },
+            onAdd: function () {
+                var el = L.DomUtil.create('div', 'fogos-sat-badge fogos-sat-anim');
+                this._el = el;
+                return el;
+            },
+            setText: function (txt) { if (this._el) this._el.textContent = txt; }
+        });
+        var animBadge = new animBadgeControl();
+
+        function hideAllIsochrones() {
+            simLayer.eachLayer(function (l) {
+                if (l.setStyle) l.setStyle({ opacity: 0, fillOpacity: 0 });
+            });
+        }
+        function showIsochronesUpTo(hour) {
+            simLayer.eachLayer(function (l) {
+                var h = l.feature && l.feature.properties && l.feature.properties.hour;
+                if (h && h <= hour && l.setStyle) l.setStyle(styleForHour(l.feature));
+                else if (l.setStyle) l.setStyle({ opacity: 0, fillOpacity: 0 });
+            });
+        }
+        function stopAnimation() {
+            if (animTimer) { clearTimeout(animTimer); animTimer = null; }
+            if (animBadge._map) map.removeControl(animBadge);
+        }
+        function startAnimation() {
+            stopAnimation();
+            if (simLayer.getLayers().length === 0) return;
+            animBadge.addTo(map);
+            animStep = 1;
+            function tick() {
+                if (animStep <= 6) {
+                    showIsochronesUpTo(animStep);
+                    animBadge.setText('+' + animStep + 'h');
+                    animStep++;
+                    animTimer = setTimeout(tick, 700);
+                } else {
+                    // Hold the full state, then reset.
+                    animBadge.setText('+6h');
+                    animTimer = setTimeout(function () {
+                        animStep = 1;
+                        tick();
+                    }, 1800);
+                }
+            }
+            tick();
+        }
+
         function fitOnce(layer) {
             if (hasFitted) return;
             try {
@@ -262,6 +315,7 @@
             }).fail(function () { /* silent */ });
 
             sReq.done(function (fc) {
+                stopAnimation();
                 simLayer.clearLayers();
                 if (!fc || !fc.features || !fc.features.length) { updateEmpty(); return; }
                 // Draw largest → smallest so hour 1 sits on top.
@@ -272,6 +326,8 @@
                 if (fc.fetched_at) updateTimestamp(fc.fetched_at);
                 if (!hasFitted) fitOnce(simLayer);
                 updateEmpty();
+                hideAllIsochrones();
+                startAnimation();
             }).fail(function () { /* silent */ });
         }
 
@@ -292,7 +348,19 @@
         }
 
         var poll = startPoll(refresh, intervalMs);
-        return { map: map, perimeter: perimLayer, simulation: simLayer, stop: poll.stop };
+
+        // Pause animation while the tab is hidden — restart on refocus.
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) stopAnimation();
+            else if (simLayer.getLayers().length) startAnimation();
+        });
+
+        return {
+            map: map,
+            perimeter: perimLayer,
+            simulation: simLayer,
+            stop: function () { poll.stop(); stopAnimation(); }
+        };
     }
 
     window.FogosSat = { installMain: installMain, installDetail: installDetail };

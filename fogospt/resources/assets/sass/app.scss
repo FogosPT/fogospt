@@ -1587,3 +1587,21 @@ têm margens uniformes. */
 .fogos-sat-badge:empty {
   display: none;
 }
+
+.fogos-sat-anim {
+  background: $c-orange;
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: .5px;
+}
+
+.fogos-sat-map .leaflet-interactive {
+  transition: opacity .35s ease, fill-opacity .35s ease;
+}
+
+// Detail page — card titles in fogos orange.
+main .card-title {
+  color: $c-orange;
+}
