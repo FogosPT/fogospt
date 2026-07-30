@@ -45,22 +45,6 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    function bindIncidentPopup(feature, layer) {
-        var p = feature && feature.properties;
-        var inc = p && p.fogospt_incident;
-        if (!inc) return;
-        var line = [inc.concelho, inc.freguesia].filter(function (v) { return !!v; }).map(escapeHtml).join(' — ');
-        var url = inc.url || '/fogo/' + encodeURIComponent(inc.id);
-        var html = ''
-            + '<div style="min-width:160px">'
-            + '<b>' + escapeHtml(inc.natureza || 'Incêndio') + '</b>'
-            + (line ? '<br>' + line : '')
-            + (inc.status ? '<br><small>' + escapeHtml(inc.status) + '</small>' : '')
-            + '<br><a href="' + escapeHtml(url) + '">' + escapeHtml((window.trans && window.trans.fire && window.trans.fire.moreDetails) || 'Detalhes') + '</a>'
-            + '</div>';
-        layer.bindPopup(html);
-    }
-
     function bindIsochroneTooltip(feature, layer) {
         var p = feature && feature.properties;
         if (!p) return;
@@ -154,7 +138,7 @@
         var label = tp.perimeters || 'Perímetros satélite';
         var itemLabel = tp.perimetersActive || label;
 
-        var perimLayer = L.geoJSON(null, { style: perimeterStyle, onEachFeature: bindIncidentPopup });
+        var perimLayer = L.geoJSON(null, { style: perimeterStyle, interactive: false });
 
         // Small floating timestamp badge — only mounted while the layer is on.
         var TsControl = L.Control.extend({
@@ -230,7 +214,7 @@
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        var perimLayer = L.geoJSON(null, { style: perimeterStyle, onEachFeature: bindIncidentPopup }).addTo(map);
+        var perimLayer = L.geoJSON(null, { style: perimeterStyle, interactive: false }).addTo(map);
         var simLayer = L.geoJSON(null, { style: styleForHour, onEachFeature: bindIsochroneTooltip }).addTo(map);
 
         var $ts = $('.js-sat-ts');
