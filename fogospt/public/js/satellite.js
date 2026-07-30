@@ -98,19 +98,45 @@
 
     function renderAreasList(features, $mount) {
         var t = (window.trans && window.trans.sat) || {};
-        var conc = {}, freg = {}, ord = [];
+        var conc = {}, concOrd = [];
+        var freg = {}, fregOrd = [];
+
+        function addConcelho(name) {
+            if (!name || conc[name]) return;
+            conc[name] = true; concOrd.push(name);
+        }
+        function addFreguesia(name, municipio) {
+            if (!name) return;
+            var key = (municipio || '') + '|' + name;
+            if (freg[key]) return;
+            freg[key] = municipio ? (name + ' (' + municipio + ')') : name;
+            fregOrd.push(key);
+        }
+
         features.forEach(function (f) {
-            var inc = f && f.properties && f.properties.fogospt_incident;
-            if (!inc) return;
-            if (inc.concelho && !conc[inc.concelho]) { conc[inc.concelho] = true; ord.push(inc.concelho); }
-            if (inc.freguesia) {
-                var key = (inc.concelho || '') + '|' + inc.freguesia;
-                if (!freg[key]) freg[key] = inc.freguesia;
+            var p = f && f.properties;
+            if (!p) return;
+
+            if (Array.isArray(p.concelhos)) {
+                p.concelhos.forEach(function (c) { addConcelho(c && (c.municipio || c.concelho)); });
+            }
+            if (Array.isArray(p.freguesias)) {
+                p.freguesias.forEach(function (fr) { addFreguesia(fr && fr.freguesia, fr && fr.municipio); });
+            }
+
+            // Fallback: aggregated /v2/fire/perimeters exposes only fogospt_incident.
+            if (!Array.isArray(p.concelhos) && !Array.isArray(p.freguesias)) {
+                var inc = p.fogospt_incident;
+                if (inc) {
+                    addConcelho(inc.concelho);
+                    addFreguesia(inc.freguesia, inc.concelho);
+                }
             }
         });
-        var concList = ord.map(escapeHtml).join(', ');
-        var fregList = Object.keys(freg).map(function (k) { return escapeHtml(freg[k]); }).join(', ');
+
         var none = escapeHtml(t.none || '—');
+        var concList = concOrd.map(escapeHtml).join(', ');
+        var fregList = fregOrd.map(function (k) { return escapeHtml(freg[k]); }).join(', ');
         var html = ''
             + '<h5>' + escapeHtml(t.affectedConcelhos || 'Concelhos afetados') + '</h5>'
             + '<p class="mb-2">' + (concList || none) + '</p>'
