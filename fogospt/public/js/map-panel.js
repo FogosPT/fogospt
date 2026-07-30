@@ -90,7 +90,11 @@ L.Control.FogosPanel = L.Control.extend({
         var on = !!this._state[this._stateKey(sectionKey, id)];
         if (this._map.hasLayer(item.layer)) this._map.removeLayer(item.layer);
         item.layer = newLayer;
+        // Reconcile map membership with panel state. If the caller mounted
+        // newLayer before invoking us (e.g. so children could render DOM), the
+        // "off" branch is what actually enforces the persisted toggle.
         if (on) this._addLayer(newLayer);
+        else this._removeLayer(newLayer);
         return this;
     },
 

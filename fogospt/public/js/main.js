@@ -155,6 +155,19 @@ $(document).ready(function () {
     window.fogosLayers[80] = L.layerGroup()
     window.fogosLayers[81] = L.layerGroup()
 
+    // Groups must be on the map before addMaker runs so that
+    // group.addLayer(marker) propagates the marker (and its DOM) to the
+    // map. Panel.addItem below toggles them off when persisted state says so.
+    window.fogosLayers[3].addTo(mymap)
+    window.fogosLayers[4].addTo(mymap)
+    window.fogosLayers[5].addTo(mymap)
+    window.fogosLayers[6].addTo(mymap)
+    window.fogosLayers[7].addTo(mymap)
+    window.fogosLayers[8].addTo(mymap)
+    window.fogosLayers[9].addTo(mymap)
+    window.fogosLayers[10].addTo(mymap)
+    window.fogosLayers[11].addTo(mymap)
+    window.fogosLayers[12].addTo(mymap)
     window.fogosLayers[81].addTo(mymap)
 
     // "Show all incidents" filter. The stub layer carries no markers; its
@@ -1220,7 +1233,6 @@ function addMaker(item, mymap) {
 
     window.fogosLayers[item.statusCode].addLayer(marker)
 
-    marker.addTo(mymap);
     marker.id = item.id
 
     marker.bindTooltip(buildFireTooltip(item), {
@@ -1651,6 +1663,18 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[80] = L.layerGroup()
         window.fogosLayers[81] = L.layerGroup()
 
+        // Mirror the init: mount status groups so addMaker can create marker DOM.
+        // updateLayer below removes the ones whose panel state is off.
+        window.fogosLayers[3].addTo(mymap)
+        window.fogosLayers[4].addTo(mymap)
+        window.fogosLayers[5].addTo(mymap)
+        window.fogosLayers[6].addTo(mymap)
+        window.fogosLayers[7].addTo(mymap)
+        window.fogosLayers[8].addTo(mymap)
+        window.fogosLayers[9].addTo(mymap)
+        window.fogosLayers[10].addTo(mymap)
+        window.fogosLayers[11].addTo(mymap)
+        window.fogosLayers[12].addTo(mymap)
         window.fogosLayers[81].addTo(mymap)
     }
 
