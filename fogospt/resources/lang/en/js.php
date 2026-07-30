@@ -103,6 +103,8 @@ return [
         'aerial'           => 'Aerial assets',
         'planes'           => 'Planes & helicopters',
         'planesTracks'     => 'Planes & helicopters with tracks',
+        'perimeters'       => 'Satellite perimeters',
+        'perimetersActive' => 'Active (latest passes)',
     ],
     'planes' => [
         'altitude' => 'Altitude',

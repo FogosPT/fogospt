@@ -58,6 +58,15 @@ return [
             'learnMore' => 'What do these charts mean?',
             'run' => 'Model run: :time (local time)',
         ],
+        'satellite' => [
+            'title'              => 'Perimeter and spread (satellite)',
+            'legend'             => 'Red perimeter: estimated burned area. Isochrones: simulated spread at 1–6 h.',
+            'empty'              => 'No satellite data available for this incident.',
+            'lastUpdate'         => 'Satellite',
+            'affectedConcelhos'  => 'Affected municipalities',
+            'affectedFreguesias' => 'Affected parishes',
+            'none'               => '—',
+        ],
         'detail' => [
             'burn' => [
                 'title' => 'Burned area'

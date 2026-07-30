@@ -897,6 +897,8 @@ $(document).ready(function () {
         getNewFires(mymap, true);
     },60000)
 
+    if (window.FogosSat) FogosSat.installMain(mymap, panel, { defaultOn: false });
+
 })
 
 

@@ -1540,3 +1540,50 @@ têm margens uniformes. */
     }
   }
 }
+
+.fogos-sat {
+  &-map {
+    height: 340px;
+    border-radius: .5rem;
+    overflow: hidden;
+  }
+
+  &-timestamp {
+    background: $c-orange;
+    color: #fff;
+    font-weight: 500;
+    font-size: .75rem;
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+  }
+
+  &-timestamp:empty {
+    display: none;
+  }
+
+  &-areas {
+    h5 {
+      font-size: .95rem;
+      color: $c-orange;
+      margin-top: .5rem;
+      margin-bottom: .25rem;
+    }
+    p {
+      color: #333;
+    }
+  }
+}
+
+.fogos-sat-badge {
+  background: rgba(255, 255, 255, .92);
+  color: #333;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.fogos-sat-badge:empty {
+  display: none;
+}

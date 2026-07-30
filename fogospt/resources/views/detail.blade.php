@@ -189,6 +189,21 @@
                                     </a>
                                 </p>
                             </div>
+
+                            <div class="fogos-sat mt-4">
+                                <h4 class="card-title d-flex align-items-center flex-wrap">
+                                    <span>@lang('elements.cards.satellite.title')</span>
+                                    <span class="fogos-sat-timestamp badge bg-secondary ms-2 js-sat-ts"></span>
+                                </h4>
+                                <div id="sat-map" class="fogos-sat-map"></div>
+                                <p class="fogos-sat-legend small text-muted mt-2 mb-0">
+                                    @lang('elements.cards.satellite.legend')
+                                </p>
+                                <div class="fogos-sat-empty alert alert-info small mt-2 d-none js-sat-empty">
+                                    @lang('elements.cards.satellite.empty')
+                                </div>
+                                <div class="fogos-sat-areas js-sat-areas mt-3"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -292,9 +307,22 @@
     </script>
     <script src="{{ asset('js/detail.js') }}"></script>
     <script src="/js/ipma-charts.js?v={{ filemtime(public_path('js/ipma-charts.js')) }}"></script>
+    <script src="/js/satellite.js?v={{ filemtime(public_path('js/satellite.js')) }}"></script>
+    <script>
+        window.trans = window.trans || {};
+        window.trans.sat = @json(__('elements.cards.satellite'));
+        window.trans.fire = window.trans.fire || @json(__('elements.cards.general'));
+    </script>
 
     <script>
         $(document).ready( function () {
+            if (window.FogosSat) FogosSat.installDetail({
+                mapEl: 'sat-map',
+                fireId: '{{ $fire['id'] }}',
+                lat: {{ $fire['lat'] }},
+                lng: {{ $fire['lng'] }}
+            });
+
             // Make basemap
             const map = new L.Map('mymap', { center: new L.LatLng({{$fire['lat']}}, {{$fire['lng']}}), zoom: 11 });
             const normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {});

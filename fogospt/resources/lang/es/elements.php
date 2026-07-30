@@ -53,6 +53,15 @@
                 'error'  => 'No se pudieron obtener datos de IPMA para esta ubicación.',
                 'learnMore' => '¿Qué significan estos gráficos?',
                 'run' => 'Corrida del modelo: :time (hora local)',
+            ],
+            'satellite' => [
+                'title'              => 'Perímetro y propagación (satélite)',
+                'legend'             => 'Perímetro rojo: área quemada estimada. Isócronas: propagación simulada a 1–6 h.',
+                'empty'              => 'Sin datos satélite disponibles para esta incidencia.',
+                'lastUpdate'         => 'Satélite',
+                'affectedConcelhos'  => 'Municipios afectados',
+                'affectedFreguesias' => 'Parroquias afectadas',
+                'none'               => '—',
             ]
         ],
         'riskLevels' => [

@@ -80,6 +80,8 @@ $(document).ready(function () {
         plot(res[1])
     }
 
+    if (window.FogosSat) FogosSat.installMain(mymap, null, { defaultOn: false });
+
     window.fogosLayers = []
     window.fogosLayers[3] = L.layerGroup()
     window.fogosLayers[4] = L.layerGroup()

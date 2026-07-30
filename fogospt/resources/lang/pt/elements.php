@@ -56,6 +56,15 @@
                 'learnMore' => 'O que significam estes gráficos?',
                 'run' => 'Corrida do modelo: :time (hora local)',
             ],
+            'satellite' => [
+                'title'              => 'Perímetro e propagação (satélite)',
+                'legend'             => 'Perímetro vermelho: área ardida estimada. Isócronas: propagação simulada a 1–6 h.',
+                'empty'              => 'Sem dados satélite disponíveis para esta ocorrência.',
+                'lastUpdate'         => 'Satélite',
+                'affectedConcelhos'  => 'Concelhos afetados',
+                'affectedFreguesias' => 'Freguesias afetadas',
+                'none'               => '—',
+            ],
             'detail' => [
                 'burn' => [
                     'title' => 'Área ardida'
