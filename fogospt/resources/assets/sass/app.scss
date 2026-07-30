@@ -359,7 +359,17 @@ main {
       margin: 0;
     }
 
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: $c-orange;
+    }
 
+    .field-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: $c-orange;
+    }
   }
 
   .card {
