@@ -367,8 +367,8 @@
             }, {}, { collapsed: true, position: 'topright' }).addTo(map);
 
             @if(isset($fire['kml']))
-                // Load kml file
-                var kmltext = '{!! $kml !!}';
+                // Load kml file (@json escapes quotes/newlines so XML attribute quoting doesn't break the JS string)
+                var kmltext = @json($kml);
                 // Create new kml overlay
                 const parser = new DOMParser();
                 const kml = parser.parseFromString(kmltext, 'text/xml');
@@ -383,7 +383,7 @@
 
             @if(isset($fire['kmlVost']))
                 // Load kml file
-                var kmltextVost = '{!! $kmlVost !!}';
+                var kmltextVost = @json($kmlVost);
                 // Create new kml overlay
                 const parserVost = new DOMParser();
                 const kmlVost = parserVost.parseFromString(kmltextVost, 'text/xml');
