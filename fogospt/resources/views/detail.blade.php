@@ -221,7 +221,7 @@
     <script src="https://unpkg.com/mapbox-gl-leaflet@0.0.16/leaflet-mapbox-gl.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script src="/js/vendor/store2.min.js"></script>
-    <script src="/js/notifications.js"></script>
+    <script src="/js/notifications.js?v={{ filemtime(public_path('js/notifications.js')) }}"></script>
     <script>
         $(document).ready(function () {
             var $wrap = $('.js-fire-subscribe');

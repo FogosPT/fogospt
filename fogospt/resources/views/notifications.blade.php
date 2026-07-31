@@ -2,7 +2,7 @@
 
 @push('scripts')
     <script src="/js/vendor/store2.min.js"></script>
-    <script src="/js/notifications.js"></script>
+    <script src="/js/notifications.js?v={{ filemtime(public_path('js/notifications.js')) }}"></script>
 @endpush
 
 @section('content')
