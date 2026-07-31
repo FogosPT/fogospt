@@ -367,7 +367,8 @@
             }, {}, { collapsed: true, position: 'topright' }).addTo(map);
 
             @if(isset($fire['kml']))
-                // Load kml file (@json escapes quotes/newlines so XML attribute quoting doesn't break the JS string)
+                // Load kml file — payload embedded via the json Blade directive so
+                // inner XML attribute quotes do not terminate the JS string early.
                 var kmltext = @json($kml);
                 // Create new kml overlay
                 const parser = new DOMParser();
