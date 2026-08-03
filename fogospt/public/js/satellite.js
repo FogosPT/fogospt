@@ -1,6 +1,9 @@
 /**
  * Satellite overlays — fire perimeters and 6h propagation isochrones,
- * fed by the api.fogos.pt v2 MTG FRP endpoints.
+ * fed by the source.fogos.pt v2 MTG FRP endpoints. All requests go
+ * through the internal source host with the FPTSC header, so this
+ * module works even on pages (e.g. detail) that never call the global
+ * $.ajaxSetup wiring from main.js.
  *
  * Public API:
  *   FogosSat.installMain(map, panel, opts)
@@ -18,7 +21,17 @@
  * known layer visible.
  */
 (function () {
-    var API = 'https://api.fogos.pt';
+    var API = 'https://source.fogos.pt';
+    var FPTSC = 'xw2gfca9l7';
+
+    function apiGet(path) {
+        return $.ajax({
+            url: API + path,
+            method: 'GET',
+            cache: false,
+            headers: { FPTSC: FPTSC }
+        });
+    }
 
     var HOUR_RAMP = {
         1: '#7f0000',
@@ -155,7 +168,7 @@
 
         var poll = null;
         function refresh() {
-            $.ajax({ url: API + '/v2/fire/perimeters', method: 'GET', cache: false })
+            apiGet('/v2/fire/perimeters')
                 .done(function (fc, _s, xhr) {
                     if (!fc || !fc.features || !fc.features.length) {
                         perimLayer.clearLayers();
@@ -284,8 +297,8 @@
         }
 
         function refresh() {
-            var pReq = $.ajax({ url: API + '/v2/incidents/' + encodeURIComponent(fireId) + '/perimeter', method: 'GET', cache: false });
-            var sReq = $.ajax({ url: API + '/v2/incidents/' + encodeURIComponent(fireId) + '/simulation', method: 'GET', cache: false });
+            var pReq = apiGet('/v2/incidents/' + encodeURIComponent(fireId) + '/perimeter');
+            var sReq = apiGet('/v2/incidents/' + encodeURIComponent(fireId) + '/simulation');
 
             pReq.done(function (fc) {
                 perimLayer.clearLayers();
