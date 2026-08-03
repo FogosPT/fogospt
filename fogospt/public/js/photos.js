@@ -1,13 +1,14 @@
 /**
  * Photo gallery for fire incident pages.
  *
- * Exposes window.photos(id) — fetches the public photo list from
- * api.fogos.pt and renders a thumbnail grid into #f-photos-gallery,
+ * Exposes window.photos(id) — fetches the photo list from
+ * source.fogos.pt and renders a thumbnail grid into #f-photos-gallery,
  * wiring up PhotoSwipe v5 as the lightbox. Hides the whole section
  * when there are no photos or the request fails.
  */
 (function () {
-    var API = 'https://api.fogos.pt/v2/incidents/';
+    var API = 'https://source.fogos.pt/v2/incidents/';
+    var FPTSC = 'xw2gfca9l7';
     var PER_PAGE = 20;
     var state = { id: null, page: 1, total: 0, loaded: 0 };
     var allItems = [];
@@ -87,7 +88,7 @@
 
     function load(id, append) {
         var url = API + encodeURIComponent(id) + '/photos?page=' + state.page + '&per_page=' + PER_PAGE;
-        return fetch(url, { credentials: 'omit' })
+        return fetch(url, { credentials: 'omit', headers: { 'FPTSC': FPTSC } })
             .then(function (r) {
                 if (!r.ok) throw new Error('http_' + r.status);
                 return r.json();

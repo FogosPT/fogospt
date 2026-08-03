@@ -1,7 +1,7 @@
 /**
  * Aerial firefighting assets layer (DECIR planes & helicopters).
  *
- * Source: https://api.fogos.pt/v2/planes/recent?hours=6
+ * Source: https://source.fogos.pt/v2/planes/recent?hours=6
  * Refresh: every 60s on the client (backend caches 60s and polls FR24 every
  * 3 min, so anything more aggressive is wasted). The backend only ingests
  * between sunrise+1h and sunset-1h Lisbon time and when there are active
@@ -12,7 +12,8 @@
  * position is older than 10 min are drawn dimmed and grey.
  */
 (function () {
-    var ENDPOINT = 'https://api.fogos.pt/v2/planes/recent?hours=6';
+    var ENDPOINT = 'https://source.fogos.pt/v2/planes/recent?hours=6';
+    var FPTSC = 'xw2gfca9l7';
     var REFRESH_MS = 60000;
     var STALE_MIN = 10;
     var COLOR_ACTIVE = '#ff512f';
@@ -201,7 +202,7 @@
         function refresh() {
             if (inFlight) return;
             inFlight = true;
-            fetch(ENDPOINT, { credentials: 'omit' })
+            fetch(ENDPOINT, { credentials: 'omit', headers: { 'FPTSC': FPTSC } })
                 .then(function (r) { return r.ok ? r.json() : null; })
                 .then(function (body) {
                     inFlight = false;

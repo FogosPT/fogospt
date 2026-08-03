@@ -62,7 +62,7 @@
                                     @if(isset($fire['icnf']['burnArea']) || isset($fire['kmlVost']))
                                         <h4 class="card-title">@lang('elements.cards.detail.burn.title')</h4>
                                         <p class="f-nature">
-                                            @isset($fire['icnf']['burnArea']){{ $fire['icnf']['burnArea']['total'] }} HA @endisset @isset($fire['kml']) <a target="_blank" href="https://api.fogos.pt/v2/incidents/{{$fire['id']}}/kml">Download ICNF</a> @endisset @isset($fire['kmlVost']) <a target="_blank" href="https://api.fogos.pt/v2/incidents/{{$fire['id']}}/kmlVost">Download VOST.pt</a> @endisset
+                                            @isset($fire['icnf']['burnArea']){{ $fire['icnf']['burnArea']['total'] }} HA @endisset @isset($fire['kml']) <a target="_blank" href="https://source.fogos.pt/v2/incidents/{{$fire['id']}}/kml">Download ICNF</a> @endisset @isset($fire['kmlVost']) <a target="_blank" href="https://source.fogos.pt/v2/incidents/{{$fire['id']}}/kmlVost">Download VOST.pt</a> @endisset
                                         </p>
                                     @endif
 

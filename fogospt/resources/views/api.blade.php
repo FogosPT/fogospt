@@ -85,7 +85,7 @@
                             </p>
 
                             <div class="alert alert-info">
-                                👉 <strong><a href="https://api.fogos.pt/api/request-access">{{ __('api-docs.form_label') }}</a></strong>
+                                👉 <strong><a href="https://source.fogos.pt/api/request-access">{{ __('api-docs.form_label') }}</a></strong>
                             </div>
 
                             <p>{{ __('api-docs.review_intro') }}</p>
