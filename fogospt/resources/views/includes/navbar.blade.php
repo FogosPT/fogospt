@@ -24,6 +24,7 @@
                     <a class="nav-item nav-link" href="{{route('api', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-code"></i> @lang('includes.menu.api')</a>
                     <a class="nav-item nav-link" href="{{route('api-termos', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-file-contract"></i> @lang('includes.menu.api-termos')</a>
                     <a class="nav-item nav-link" href="{{route('about', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-circle-question"></i> @lang('includes.menu.about')</a>
+                    <a class="nav-item nav-link" href="#" onclick="event.preventDefault(); if (window.FogosConsent) FogosConsent.open();"><i class="fa-solid fa-cookie-bite"></i> @lang('includes.menu.cookies')</a>
                     <a class="nav-item nav-link" href="https://vost.pt" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Vost.pt</a>
                 </div>
 

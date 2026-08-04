@@ -6,19 +6,10 @@
 
 @php($gaId = config('services.google_analytics'))
 @if($gaId)
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', '{{ $gaId }}');
-</script>
+<!-- Google Analytics — the gtag script is loaded on demand by
+     cookie-consent.js only if the user grants the "analytics" category.
+     Do NOT add a direct <script src="…/gtag/js"> here. -->
+<script>window.__FOGOS_GA_ID__ = @json($gaId);</script>
 @endif
 
 <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -45,4 +36,8 @@
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
 
-<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="55340827-93d2-4bcc-a2e2-2e3ba451bafb" type="text/javascript" async></script>
+{{-- First-party cookie consent (replaces Cookiebot). Reads window.trans.consent
+     for labels, so this must come after the window.trans blob is set in
+     app.blade.php's inline script. Loading it after all other scripts here
+     keeps the banner from blocking anything else. --}}
+<script src="/js/cookie-consent.js?v={{ filemtime(public_path('js/cookie-consent.js')) }}" defer></script>

@@ -14,6 +14,7 @@ return [
         'table' => 'Table',
         'warnings' => 'Warnings',
         'warnings-madeira' => 'Warnings Madeira',
+        'cookies'     => 'Manage cookies',
         'active' => 'Now'
     ],
     'meta' => [

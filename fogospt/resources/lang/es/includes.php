@@ -15,6 +15,7 @@
             'table' => 'Tabla',
             'warnings' => 'Avisos',
             'warnings-madeira' => 'Avisos Madeira',
+            'cookies'     => 'Gestionar cookies',
             'active'      => '(actual)'
         ],
         'meta' => [
