@@ -1,6 +1,6 @@
 @extends('app')
 
-@push('head')
+@push('styles')
     <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css">
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.css">
