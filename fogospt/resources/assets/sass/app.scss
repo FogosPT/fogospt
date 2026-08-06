@@ -430,9 +430,11 @@ main {
     }
   }
   .fire-status {
+    position: relative;
     margin: 0 0 1rem 0;
     color: #fff;
     text-transform: uppercase;
+    min-height: calc(1em * 1.5 + 20px);
     li {
       padding: 10px 6px;
       border-radius: 3px;
@@ -460,6 +462,13 @@ main {
         width: 100%;
         &:before {
           content: attr(data-status);
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          text-align: center;
+          pointer-events: none;
         }
       }
     }
