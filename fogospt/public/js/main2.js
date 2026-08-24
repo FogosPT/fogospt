@@ -95,7 +95,7 @@ $(document).ready(function () {
     window.fogosLayers[12] = L.layerGroup()
     window.fogosLayers[80] = L.layerGroup()
 
-    var url = 'https://api-beta.fogos.pt/v1/madeira/fires'
+    var url = 'https://source.fogos.pt/v1/madeira/fires'
     $.ajax({
         url: url,
         method: 'GET',

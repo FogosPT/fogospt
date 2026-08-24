@@ -590,7 +590,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
+    var url = 'https://source.fogos.pt/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -760,7 +760,7 @@ function getColor(d) {
 
 function addRisk(mymap) {
     // lel
-    var url = 'https://api-dev.fogos.pt/v1/risk-today'
+    var url = 'https://source.fogos.pt/v1/risk-today'
     $.ajax({
         url: url,
         method: 'GET',
@@ -784,7 +784,7 @@ function addRisk(mymap) {
                     $('main #map .map-marker').hide()
                 }
 
-                var url = 'https://api-dev.fogos.pt/v1/risk-tomorrow'
+                var url = 'https://source.fogos.pt/v1/risk-tomorrow'
                 $.ajax({
                     url: url,
                     method: 'GET',
@@ -808,7 +808,7 @@ function addRisk(mymap) {
                                 $('main #map .map-marker').hide()
                             }
 
-                            var url = 'https://api-dev.fogos.pt/v1/risk-after'
+                            var url = 'https://source.fogos.pt/v1/risk-after'
                             $.ajax({
                                 url: url,
                                 method: 'GET',
@@ -1005,7 +1005,7 @@ function getNewFires(mymap, refresh = false)
 }
 
 function addPlane(icao, mymap){
-    var url = 'https://api-dev.fogos.pt/v2/planes/' + icao
+    var url = 'https://source.fogos.pt/v2/planes/' + icao
     $.ajax({
         url: url,
         method: 'GET',

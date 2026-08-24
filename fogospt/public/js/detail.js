@@ -1,3 +1,5 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
+
 $(document).ready(function () {
 
     var id = $('#myChart').data('id');
@@ -6,7 +8,7 @@ $(document).ready(function () {
     if (typeof photos === 'function') photos(id);
 
     function plot(id) {
-        var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
+        var url = 'https://source.fogos.pt/fires/data?id=' + id
         $.ajax({
             url: url,
             method: 'GET',
