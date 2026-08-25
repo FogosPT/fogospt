@@ -36,7 +36,7 @@ return [
     'change_intro' => 'Todos os pedidos à API deverão cumprir:',
 
     'req_auth_intro' => 'Autenticação obrigatória via header:',
-    'req_auth_pre' => 'FOGOS-PT-AUTH: {token}',
+    'req_auth_pre' => 'X-API-Key: {token}',
 
     'req_token' => 'Utilização de <strong>token individual</strong>',
     'req_user_agent' => 'User-Agent <strong>identificável e personalizado</strong>',

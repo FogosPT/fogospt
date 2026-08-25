@@ -36,7 +36,7 @@ return [
     'change_intro' => 'All API requests must meet the following:',
 
     'req_auth_intro' => 'Mandatory authentication via header:',
-    'req_auth_pre' => 'FOGOS-PT-AUTH: {token}',
+    'req_auth_pre' => 'X-API-Key: {token}',
 
     'req_token' => 'Use of an <strong>individual token</strong>',
     'req_user_agent' => 'An identifiable and specific <strong>User-Agent</strong>',
