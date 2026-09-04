@@ -451,12 +451,12 @@ $(document).ready(function () {
         mymap.getPane('ipmaLabels').style.zIndex = 450; // above overlayPane (400)
         mymap.getPane('ipmaLabels').style.pointerEvents = 'none';
     }
-    var ipmaBaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}{r}.png', {
+    var ipmaBaseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
         maxZoom: 19,
         subdomains: 'abcd',
         attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
     });
-    var ipmaLabelsLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+    var ipmaLabelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
         maxZoom: 19,
         subdomains: 'abcd',
         pane: 'ipmaLabels'
