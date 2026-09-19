@@ -17,6 +17,7 @@
                     <a class="nav-item nav-link" href="{{route('table', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-table"></i> @lang('includes.menu.table')</a>
                     <a class="nav-item nav-link" href="{{route('warnings', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-triangle-exclamation"></i> @lang('includes.menu.warnings')</a>
                     <a class="nav-item nav-link" href="{{route('warningsMadeira', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-mountain"></i> @lang('includes.menu.warnings-madeira')</a>
+                    <a class="nav-item nav-link" href="{{route('mapConfigurator', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-map-location-dot"></i> @lang('includes.menu.mapConfigurator')</a>
                     <a class="nav-item nav-link" href="{{route('information', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-circle-info"></i> @lang('includes.menu.information')</a>
                     <a class="nav-item nav-link" href="{{route('stats', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-chart-column"></i> @lang('includes.menu.stats')</a>
                     <a class="nav-item nav-link" href="{{route('notifications', ['locale' => \App::getLocale()])}}"><i class="fa-solid fa-bell"></i> @lang('includes.menu.notifications')</a>

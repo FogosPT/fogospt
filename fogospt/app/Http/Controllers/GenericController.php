@@ -39,6 +39,18 @@ class GenericController extends Controller
         return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
     }
 
+    public function getMapCustom()
+    {
+        $this->seoKey = 'mapCustom';
+        return view('map-custom')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getMapConfigurator()
+    {
+        $this->seoKey = 'mapConfigurator';
+        return view('map-configurator')->with(['metadata' => $this->generateMetadata()]);
+    }
+
     public function getOtherFires()
     {
         $this->seoKey = 'otherFires';

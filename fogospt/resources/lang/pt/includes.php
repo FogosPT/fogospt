@@ -15,6 +15,7 @@
             'table' => 'Tabela',
             'warnings' => 'Avisos',
             'warnings-madeira' => 'Avisos Madeira',
+            'mapConfigurator'  => 'Mapa personalizado',
             'cookies'     => 'Gerir cookies',
             'active'      => '(atual)'
         ],

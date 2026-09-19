@@ -57,6 +57,8 @@ Route::redirect('/api-termos',      '/pt/api-termos',      301);
 Route::redirect('/notificacoes',    '/pt/notificacoes',    301);
 Route::redirect('/privacy-policy',  '/pt/privacy-policy',  301);
 Route::redirect('/gaia',            '/pt/gaia',            301);
+Route::redirect('/mapa',            '/pt/mapa',            301);
+Route::redirect('/mapa/configurar', '/pt/mapa/configurar', 301);
 
 Route::get('/fogo/{id}',         fn($id) => redirect("/pt/fogo/$id",         301));
 Route::get('/fogo/{id}/detalhe', fn($id) => redirect("/pt/fogo/$id/detalhe", 301));
@@ -83,6 +85,8 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () use ($C
     Route::get('/gaia', [GaiaController::class, 'getIndex'])->name('gaia')->middleware($CACHE_MAP);
     Route::get('/outros', [GenericController::class, 'getOtherFires'])->name('other-fires')->middleware($CACHE_FIRES);
     Route::get('/madeira', [GenericController::class, 'getIndexMadeira'])->name('homeMadeira')->middleware($CACHE_MAP);
+    Route::get('/mapa', [GenericController::class, 'getMapCustom'])->name('mapCustom')->middleware($CACHE_MAP);
+    Route::get('/mapa/configurar', [GenericController::class, 'getMapConfigurator'])->name('mapConfigurator')->middleware($CACHE_STATIC);
     Route::get('/sobre', [GenericController::class, 'getAbout'])->name('about')->middleware($CACHE_STATIC);
     Route::get('/lista', [GenericController::class, 'getTable'])->name('list')->middleware($CACHE_FIRES);
     Route::get('/tabela', [GenericController::class, 'getTable'])->name('table')->middleware($CACHE_FIRES);

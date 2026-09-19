@@ -14,6 +14,7 @@ return [
         'table' => 'Table',
         'warnings' => 'Warnings',
         'warnings-madeira' => 'Warnings Madeira',
+        'mapConfigurator' => 'Custom map',
         'cookies'     => 'Manage cookies',
         'active' => 'Now'
     ],

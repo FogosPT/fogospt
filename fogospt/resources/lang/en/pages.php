@@ -23,6 +23,8 @@ return [
         'warnings'    => [ 'title' => 'Weather Warnings – Portugal',        'description' => 'IPMA weather warnings and civil protection alerts for mainland Portugal.' ],
         'warningsMadeira' => [ 'title' => 'Weather Warnings – Madeira',     'description' => 'IPMA weather warnings and civil protection alerts for Madeira.' ],
         'otherFires'  => [ 'title' => 'Other Incidents – Portugal',         'description' => 'Other incidents reported by ANEPC: controlled burns, fuel management.' ],
+        'mapCustom'   => [ 'title' => 'Custom Wildfires Map',               'description' => 'Portugal wildfires map filtered by chosen municipalities, statuses and layers.' ],
+        'mapConfigurator' => [ 'title' => 'Build a Shareable Map',          'description' => 'Create a custom map with a fixed URL — pick municipalities, statuses and layers.' ],
         'about'       => [ 'title' => 'About Fogos.pt',                     'description' => 'About the Fogos.pt project, operated by VOST Portugal. Data sources, partners and mission.' ],
         'information' => [ 'title' => 'Fire Information & Resources',       'description' => 'Meaning of fire states, types of resources, risk indices and map layers.' ],
         'partnerships'=> [ 'title' => 'Fogos.pt Partners',                  'description' => 'Institutional and technology partners of Fogos.pt: ANEPC, AGIF, PTServidor, Cloudflare, Mapbox.' ],

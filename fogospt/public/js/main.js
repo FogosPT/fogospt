@@ -45,8 +45,80 @@ $(document).ready(function () {
         $('#map').css({top:0});
     }
 
+    // Shareable-map URL params (used by /mapa?...):
+    //   c=<dico,dico,…>  concelho DICO codes to keep — filters markers and
+    //                    fits the view to the union of those polygons.
+    //   s=<statusCode,…> incident statusCodes to keep.
+    //   k=todos          include non-fire incidents (equivalent to
+    //                    enabling filters:allIncidents; adds ?all=1 upstream).
+    //   b=satellite      pick the satellite basemap by default.
+    //   l=<alias,alias,…> extra layers to force ON via the panel; aliases
+    //                    map to sectionKey:itemId below.
+    // All params are optional; when none are set the map behaves like /.
+    var LAYER_ALIASES = {
+        'modis':               'satellite:modis',
+        'viirs':               'satellite:viirs',
+        'frp':                 'satellite:frp',
+        'lightning':           'lightning:dea',
+        'planes':              'aerial:planes',
+        'planesTracks':        'aerial:planesTracks',
+        'risk-today':          'risk:today',
+        'risk-tomorrow':       'risk:tomorrow',
+        'risk-after':          'risk:after',
+        'ipma-temperature':    'ipma:temperature',
+        'ipma-wind':           'ipma:wind',
+        'ipma-wind-direction': 'ipma:windDirection',
+        'ipma-wind-animated':  'ipma:windAnimated',
+        'ipma-precipitation':  'ipma:precipitation',
+        'ipma-humidity':       'ipma:humidity',
+        'perimeters':          'perimeters:active'
+    };
+    window.fogosForceOnLayers = new Set();
+    (function readShareableParams() {
+        var cParam = getParameterByName('c');
+        if (cParam) {
+            window.fogosDicoFilter = new Set(cParam.split(',').filter(Boolean));
+        }
+        var sParam = getParameterByName('s');
+        if (sParam) {
+            window.fogosStatusFilter = new Set(sParam.split(',').map(function (v) {
+                return parseInt(v, 10);
+            }).filter(function (n) { return !isNaN(n); }));
+        }
+        if (getParameterByName('k') === 'todos') {
+            window.fogosShowAllIncidents = true;
+            window.fogosForceOnLayers.add('filters:allIncidents');
+        }
+        if (getParameterByName('b') === 'satellite') {
+            window.fogosForceOnLayers.add('base:satellite');
+        }
+        var lParam = getParameterByName('l');
+        if (lParam) {
+            lParam.split(',').forEach(function (alias) {
+                var key = LAYER_ALIASES[alias];
+                if (key) window.fogosForceOnLayers.add(key);
+            });
+        }
+    })();
 
-    var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
+    var mymap = L.map('map');
+    var didFitToDicos = false;
+    if (window.fogosDicoFilter && typeof concelhos !== 'undefined') {
+        var wanted = window.fogosDicoFilter;
+        var subset = concelhos.features.filter(function (f) {
+            return wanted.has(f.properties.DICO);
+        });
+        if (subset.length) {
+            var bounds = L.geoJson({ type: 'FeatureCollection', features: subset }).getBounds();
+            if (bounds.isValid()) {
+                mymap.fitBounds(bounds, { padding: [20, 20] });
+                didFitToDicos = true;
+            }
+        }
+    }
+    if (!didFitToDicos) {
+        mymap.setView([40.5050025, -7.9053189], 7);
+    }
 
     if (getParameterByName('icao')) {
         addPlane(getParameterByName('icao'), mymap);
@@ -96,6 +168,20 @@ $(document).ready(function () {
     var panel = new L.Control.FogosPanel();
     panel.addTo(mymap);
     window.fogosPanel = panel;
+
+    // Shareable-map hook: every panel.addItem call is intercepted so any
+    // sectionKey:id present in fogosForceOnLayers (populated from ?l= / ?b= /
+    // ?k=todos above) is forced ON regardless of what localStorage says. Uses
+    // the panel's own force=true arg so state is written back consistently.
+    if (window.fogosForceOnLayers && window.fogosForceOnLayers.size) {
+        var _origAddItem = panel.addItem.bind(panel);
+        panel.addItem = function (sectionKey, id, label, layer, defaultOn, force) {
+            if (window.fogosForceOnLayers.has(sectionKey + ':' + id)) {
+                return _origAddItem(sectionKey, id, label, layer, true, true);
+            }
+            return _origAddItem(sectionKey, id, label, layer, defaultOn, force);
+        };
+    }
 
     var tp = (window.trans && window.trans.panel) || {};
     panel.registerSection('base', tp.base || 'Base', 'radio');
@@ -1740,6 +1826,14 @@ function parseFireStart(item) {
 }
 
 function fireMatchesFilters(item) {
+    // Shareable-map filters (from /mapa?c=…&s=…): reject early so the
+    // upstream refresh loop keeps applying them on every 60s tick.
+    if (window.fogosDicoFilter && !window.fogosDicoFilter.has(String(item.dico))) {
+        return false;
+    }
+    if (window.fogosStatusFilter && !window.fogosStatusFilter.has(parseInt(item.statusCode, 10))) {
+        return false;
+    }
     var f = window.fogosFilters;
     if (!f) return true;
     if (f.minMeios > 0) {
