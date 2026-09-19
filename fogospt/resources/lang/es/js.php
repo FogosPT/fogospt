@@ -145,6 +145,11 @@ return [
         'reset'              => 'Restablecer',
         'noMunicipalities'   => 'Sin municipios elegidos — el mapa muestra Portugal continental.',
         'searchMunicipality' => 'Filtrar municipio…',
+        'autoRefreshNote'    => 'El mapa generado se actualiza automáticamente cada minuto — no hace falta recargar.',
+        'editOptions'        => 'Editar opciones',
+        'selectedInfo'       => 'Mapa personalizado',
+        'moreCount'          => '+ {n} más',
+        'allMunicipalities'  => 'Portugal continental (sin filtro de municipios)',
     ],
     'consent' => [
         'title'              => 'Preferencias de cookies',

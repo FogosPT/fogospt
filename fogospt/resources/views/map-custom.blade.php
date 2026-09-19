@@ -4,6 +4,53 @@
     <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css">
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.css">
+    <style>
+        .fogos-map-summary {
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+            padding: 8px 10px;
+            font: 12px/1.35 sans-serif;
+            color: #222;
+            max-width: 280px;
+        }
+        .fogos-map-summary__title {
+            font-weight: 600;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #b81e1f;
+            margin-bottom: 3px;
+        }
+        .fogos-map-summary__list {
+            text-transform: capitalize;
+            margin-bottom: 6px;
+            max-height: 96px;
+            overflow-y: auto;
+        }
+        .fogos-map-summary__edit {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .82rem;
+            padding: 4px 10px;
+            background: #b81e1f;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .fogos-map-summary__edit:hover {
+            background: #9a1919;
+            color: #fff;
+        }
+        .fogos-map-summary__more {
+            color: #666;
+            font-size: .78rem;
+            font-style: italic;
+            text-transform: none;
+        }
+    </style>
 @endpush
 
 @section('content')

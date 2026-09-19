@@ -14,7 +14,19 @@
         }
         .map-configurator .intro {
             color: #555;
+            margin: 0 0 8px;
+        }
+        .map-configurator .mc-auto-refresh {
+            background: #eef7ff;
+            border: 1px solid #cfe3f6;
+            color: #205a8c;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: .88rem;
             margin: 0 0 20px;
+        }
+        .map-configurator .mc-auto-refresh i {
+            margin-right: 6px;
         }
         .map-configurator .grid {
             display: grid;
@@ -203,6 +215,7 @@
         <div class="map-configurator">
             <h1>{{ __('pages.seo.mapConfigurator.title') }}</h1>
             <p class="intro">{{ __('pages.seo.mapConfigurator.description') }}</p>
+            <p class="mc-auto-refresh"><i class="fa-solid fa-arrows-rotate"></i> {{ __('js.mapConfig.autoRefreshNote') }}</p>
 
             <div class="grid">
                 <div>

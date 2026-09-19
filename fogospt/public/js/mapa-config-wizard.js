@@ -340,15 +340,74 @@
         });
     }
 
+    // ---- Restore state from URL (used when the /mapa/configurar page is
+    // opened via the "Edit options" link from an existing custom map). Only
+    // seeds the internal state — the DOM sync happens after each render.
+    function readStateFromLocation() {
+        var qs = window.location.search;
+        if (!qs || qs.length < 2) return;
+        var params = new URLSearchParams(qs);
+        var c = params.get('c');
+        if (c) c.split(',').forEach(function (d) { if (d) state.dicos.add(d); });
+        var s = params.get('s');
+        if (s) s.split(',').forEach(function (v) {
+            var n = parseInt(v, 10);
+            if (!isNaN(n)) state.statuses.add(n);
+        });
+        var k = params.get('k');
+        if (k === 'todos') state.kind = 'todos';
+        var b = params.get('b');
+        if (b === 'satellite') state.base = 'satellite';
+        var l = params.get('l');
+        if (l) l.split(',').forEach(function (a) { if (a) state.layers.add(a); });
+    }
+
+    // Apply the internal state onto the just-rendered form controls so the
+    // wizard opens with everything ticked as it was in the URL.
+    function applyStateToDom() {
+        state.dicos.forEach(function (dico) {
+            var cb = document.querySelector('input[data-dico="' + dico + '"]');
+            if (cb) {
+                cb.checked = true;
+                var group = cb.closest('.mc-district');
+                if (group) group.classList.add('is-open');
+            }
+        });
+        state.statuses.forEach(function (code) {
+            var cb = document.querySelector('[data-mc-status] input[value="' + code + '"]');
+            if (cb) cb.checked = true;
+        });
+        var kindRadio = document.querySelector('[data-mc-kind] input[value="' + state.kind + '"]');
+        if (kindRadio) kindRadio.checked = true;
+        var baseRadio = document.querySelector('[data-mc-base] input[value="' + state.base + '"]');
+        if (baseRadio) baseRadio.checked = true;
+        state.layers.forEach(function (key) {
+            var cb = document.querySelector('[data-mc-layers] input[value="' + key + '"]');
+            if (cb) cb.checked = true;
+        });
+    }
+
     // ---- Boot ----
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof concelhos === 'undefined' || !concelhos.features) return;
+
+        readStateFromLocation();
 
         renderDistricts(document.querySelector('[data-mc-districts]'));
         renderStatus(document.querySelector('[data-mc-status]'));
         renderKind(document.querySelector('[data-mc-kind]'));
         renderBase(document.querySelector('[data-mc-base]'));
         renderLayers(document.querySelector('[data-mc-layers]'));
+
+        applyStateToDom();
+
+        // Strip the query string from the address bar. The wizard is
+        // stateful via its own DOM; keeping params in the URL would
+        // encourage users to bookmark /mapa/configurar?… when they meant
+        // to bookmark the generated /mapa?… link.
+        if (window.history && window.history.replaceState && window.location.search) {
+            window.history.replaceState('', document.title, window.location.pathname);
+        }
 
         urlInput  = document.querySelector('[data-mc-url]');
         openLink  = document.querySelector('[data-mc-open]');

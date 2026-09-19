@@ -183,6 +183,51 @@ $(document).ready(function () {
         };
     }
 
+    // Custom map summary control — only rendered on the /mapa route (the view
+    // sets window.fogosCustomMap = true). Shows the chosen concelhos plus a
+    // link back to /mapa/configurar with the current querystring so users can
+    // tweak the selection instead of hand-editing the URL.
+    if (window.fogosCustomMap) {
+        var mcLocale = (window.location.pathname.split('/')[1] || 'pt');
+        var mcNames = [];
+        if (window.fogosDicoFilter && typeof concelhos !== 'undefined') {
+            window.fogosDicoFilter.forEach(function (dico) {
+                var f = concelhos.features.find(function (feat) {
+                    return feat.properties.DICO === dico;
+                });
+                if (f) mcNames.push(f.properties.Concelho);
+            });
+            mcNames.sort(function (a, b) { return a.localeCompare(b, 'pt'); });
+        }
+        var mcTexts = (window.trans && window.trans.mapConfig) || {};
+        var mcListHtml;
+        if (mcNames.length) {
+            var preview = mcNames.slice(0, 4);
+            var extra = mcNames.length - preview.length;
+            var moreTmpl = mcTexts.moreCount || '+ {n} more';
+            mcListHtml = preview.map(function (n) { return n.toLowerCase(); }).join(', ')
+                + (extra > 0 ? ' <span class="fogos-map-summary__more">'
+                    + moreTmpl.replace('{n}', extra) + '</span>' : '');
+        } else {
+            mcListHtml = '<span class="fogos-map-summary__more">'
+                + (mcTexts.allMunicipalities || 'Portugal continental') + '</span>';
+        }
+        var mcEditHref = '/' + mcLocale + '/mapa/configurar' + (window.location.search || '');
+        var mcControl = L.control({ position: 'bottomleft' });
+        mcControl.onAdd = function () {
+            var div = L.DomUtil.create('div', 'fogos-map-summary leaflet-control');
+            L.DomEvent.disableClickPropagation(div);
+            div.innerHTML =
+                '<div class="fogos-map-summary__title">' + (mcTexts.selectedInfo || 'Custom map') + '</div>'
+                + '<div class="fogos-map-summary__list">' + mcListHtml + '</div>'
+                + '<a class="fogos-map-summary__edit" href="' + mcEditHref + '">'
+                + '<i class="fa-solid fa-pen-to-square"></i> '
+                + (mcTexts.editOptions || 'Edit options') + '</a>';
+            return div;
+        };
+        mcControl.addTo(mymap);
+    }
+
     var tp = (window.trans && window.trans.panel) || {};
     panel.registerSection('base', tp.base || 'Base', 'radio');
     panel.addItem('base', 'normal',    window.trans.map.normal,    normalLayer,    true);

@@ -145,6 +145,11 @@ return [
         'reset'              => 'Reset',
         'noMunicipalities'   => 'No municipalities picked — map shows mainland Portugal.',
         'searchMunicipality' => 'Filter municipality…',
+        'autoRefreshNote'    => 'The generated map refreshes automatically every minute — no need to reload.',
+        'editOptions'        => 'Edit options',
+        'selectedInfo'       => 'Custom map',
+        'moreCount'          => '+ {n} more',
+        'allMunicipalities'  => 'Mainland Portugal (no municipality filter)',
     ],
     'consent' => [
         'title'              => 'Cookie preferences',
