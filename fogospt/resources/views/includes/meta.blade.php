@@ -6,6 +6,7 @@
     $enUrl = url('en' . $suffix);
     $esUrl = url('es' . $suffix);
     $canonicalUrl = url(app()->getLocale() . $suffix);
+    $ogImage = $metadata['ogImage'] ?? 'https://fogos.pt/img/og-image.png';
 @endphp
 <link rel="canonical" href="{{ $canonicalUrl }}">
 <link rel="alternate" hreflang="x-default" href="{{ $ptUrl }}">
@@ -21,7 +22,7 @@
 <meta property="og:locale" content="{{ ['pt' => 'pt_PT', 'en' => 'en_GB', 'es' => 'es_ES'][app()->getLocale()] ?? 'pt_PT' }}">
 <meta property="og:description" content="{{$metadata['description']}}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://fogos.pt/img/og-image.png">
+<meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
@@ -30,7 +31,7 @@
 <meta name="twitter:site" content="@tomahock">
 <meta name="twitter:title" content="{{$metadata['pageTitle']}}">
 <meta name="twitter:description" content="{{$metadata['description']}}">
-<meta name="twitter:image" content="https://fogos.pt/img/og-image.png">
+<meta name="twitter:image" content="{{ $ogImage }}">
 
 <script type="application/ld+json">
 {

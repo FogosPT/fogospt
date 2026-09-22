@@ -12,6 +12,14 @@ server {
 	        try_files $uri $uri/ /index.php?$query_string;
         }
 
+        # Dynamic per-fire OG card. Must be matched before the static asset
+        # regex below or nginx would try_files `/og/fogo/{id}.png` and 404
+        # (the PNG lives in storage/, not public/). The Laravel controller
+        # writes its own Cache-Control + X-Cache headers.
+        location ~* ^/og/fogo/[0-9]+\.png$ {
+                try_files /nonexistent-file-force-fallback /index.php?$query_string;
+        }
+
         # Long-cache static assets. Most are cache-busted via ?v= in the views,
         # so browsers can hold them and skip the conditional-GET roundtrip.
         location ~* \.(?:js|css|woff2?|ttf|eot|otf|svg|jpg|jpeg|png|gif|ico|webp|map)$ {

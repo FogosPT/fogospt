@@ -36,5 +36,29 @@ services:
     image: redis
     command: redis-server
 
+  # Headless-Chromium sidecar that renders the social share card Blade
+  # (/{locale}/og/fogo/{id}/render) into a 1200x630 PNG. Not exposed to the
+  # host — called only from PHP via http://og-renderer:3000 on the compose
+  # network. See ./assets/og-renderer/ for the tiny Fastify wrapper.
+  og-renderer:
+    image: ghcr.io/puppeteer/puppeteer:latest
+    container_name: og-renderer
+    restart: unless-stopped
+    working_dir: /app
+    # First boot installs fastify (puppeteer is baked into the base image).
+    # npm install is a no-op on subsequent boots because node_modules is
+    # persisted inside the container.
+    command: ["sh", "-c", "npm install --omit=dev --no-audit --no-fund && node server.js"]
+    environment:
+      - PORT=3000
+      - RENDER_TIMEOUT_MS=10000
+    volumes:
+      - ./assets/og-renderer:/app
+    # PHP renders the internal Blade at the host's nginx (127.0.0.1:8093 on
+    # the host). Inside the container we resolve that via host.docker.internal;
+    # on Linux the extra_hosts entry maps it to the host gateway.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 networks:
   default:

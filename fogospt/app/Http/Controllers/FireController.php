@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
+use App\Libs\OgRenderer;
 use GuzzleHttp;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redis;
@@ -31,7 +32,8 @@ class FireController extends Controller
             $this->fire['statusHistory'] = false;
         }
 
-        $metadata = $this->generateMetadata();
+        $hash = OgRenderer::hash($this->fire);
+        $metadata = $this->generateMetadata($id, $hash);
         $shares = new Share();
         $s = $shares->page($metadata['url'])
             ->facebook()
@@ -62,7 +64,8 @@ class FireController extends Controller
             $this->fire['statusHistory'] = false;
         }
 
-        $metadata = $this->generateMetadata();
+        $hash = OgRenderer::hash($this->fire);
+        $metadata = $this->generateMetadata($id, $hash);
         $shares = new Share();
         $s = $shares->page($metadata['url'])
             ->facebook()
@@ -81,6 +84,78 @@ class FireController extends Controller
         }
 
         return view('detail', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
+    }
+
+    // Public endpoint that FB/WhatsApp/X hit for og:image. Always answers
+    // 200 with a PNG — even for missing / broken fires we fall back to the
+    // legacy static card, because a 404 makes the crawler give up on the
+    // preview entirely.
+    public function getOgImage($id)
+    {
+        $this->setFireById($id);
+        if ($this->fire === null) {
+            return $this->serveStaticOg(60);
+        }
+
+        // Enrich with the same fields generateMetadata() would see so the
+        // hash reflects everything meaningful.
+        $risk   = LegacyApi::getRiskByFire($id);
+        $status = LegacyApi::getStatusByFire($id);
+        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
+
+        $hash = OgRenderer::hash($this->fire);
+
+        $base = rtrim((string) config('services.og_renderer.internal_app_url', 'http://host.docker.internal:8093'), '/');
+        $renderUrl = "{$base}/pt/og/fogo/{$id}/render?t={$hash}";
+
+        $path = OgRenderer::render((string) $id, $hash, $renderUrl);
+
+        if ($path === null) {
+            // Sidecar failed — serve the fallback with a short TTL so we
+            // can retry soon without poisoning the CDN with a stale error.
+            return $this->serveStaticOg(60, 'MISS-FALLBACK');
+        }
+
+        return response()->file($path, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => 'public, max-age=300, s-maxage=900, stale-while-revalidate=86400',
+            'X-Cache'       => is_file($path) && (time() - filemtime($path) > 5) ? 'HIT' : 'MISS',
+        ]);
+    }
+
+    // Renders the slim 1200x630 Blade that the headless sidecar screenshots.
+    // Gated by the `og.internal` middleware — never reachable from the web.
+    public function renderOgHtml($locale, $id)
+    {
+        $this->setFireById($id);
+        if ($this->fire === null) {
+            abort(404);
+        }
+
+        $risk   = LegacyApi::getRiskByFire($id);
+        $status = LegacyApi::getStatusByFire($id);
+        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
+
+        $kml     = isset($this->fire['kml'])     ? preg_replace("/\r|\n/", '', $this->fire['kml'])     : null;
+        $kmlVost = isset($this->fire['kmlVost']) ? preg_replace("/\r|\n/", '', $this->fire['kmlVost']) : null;
+
+        return response()->view('og.fire', [
+            'fire'    => $this->fire,
+            'kml'     => $kml,
+            'kmlVost' => $kmlVost,
+        ])->header('Cache-Control', 'private, no-store');
+    }
+
+    private function serveStaticOg(int $maxAge, string $xCache = 'STATIC'): Response
+    {
+        $path = public_path('img/og-image.png');
+        return response()->file($path, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => "public, max-age={$maxAge}, s-maxage={$maxAge}",
+            'X-Cache'       => $xCache,
+        ]);
     }
 
     public function getSharesCard($locale, $id)

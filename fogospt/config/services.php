@@ -49,4 +49,12 @@ return [
         'vapid_key' => env('FIREBASE_VAPID_KEY', ''),
     ],
 
+    // Headless-Chrome sidecar that renders the per-fire OG card. `url` is
+    // where PHP posts render requests; `internal_app_url` is the URL prefix
+    // the sidecar uses to reach the internal Blade endpoint on nginx.
+    'og_renderer' => [
+        'url'              => env('OG_RENDERER_URL', 'http://og-renderer:3000'),
+        'internal_app_url' => env('OG_RENDERER_INTERNAL_APP_URL', 'http://host.docker.internal:8093'),
+    ],
+
 ];

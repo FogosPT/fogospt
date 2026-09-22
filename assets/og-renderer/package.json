@@ -1,0 +1,13 @@
+{
+  "name": "fogospt-og-renderer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Headless-Chrome sidecar that renders /og/fogo/{id}/render into a 1200x630 PNG for social share cards.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1"
+  }
+}

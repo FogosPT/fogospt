@@ -31,6 +31,14 @@ Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMess
 // controller (single-flight, stale-while-revalidate) — leave it alone.
 Route::get('/lightnings', [FireController::class, 'getLightnings']);
 
+// Dynamic Open Graph card per fire. Locale-agnostic on purpose — social
+// crawlers do not carry a locale prefix, and the image itself is language-
+// neutral. The controller writes its own Cache-Control (public, s-maxage=15m,
+// SWR=1d) so we skip the shared cache middleware here.
+Route::get('/og/fogo/{id}.png', [FireController::class, 'getOgImage'])
+    ->where('id', '[0-9]+')
+    ->name('fire-og');
+
 // Dynamic sitemap for active fires. SitemapController caches the rendered
 // XML in Redis for 15 min and sets its own Cache-Control headers.
 Route::get('/sitemap-fires.xml', [SitemapController::class, 'fires'])->name('sitemap-fires');
@@ -100,6 +108,13 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () use ($C
 
     Route::get('/fogo/{id}', [FireController::class, 'get'])->name('fire')->middleware($CACHE_FIRES);
     Route::get('/fogo/{id}/detalhe', [FireController::class, 'getDetails'])->name('fireDetail')->middleware($CACHE_FIRES);
+
+    // Slim Blade the og-renderer sidecar screenshots into /og/fogo/{id}.png.
+    // Gated by `og.internal` so it can never be indexed or hit by users.
+    Route::get('/og/fogo/{id}/render', [FireController::class, 'renderOgHtml'])
+        ->where('id', '[0-9]+')
+        ->middleware('og.internal')
+        ->name('fireOgRender');
     Route::get('/madeira/fogo/{id}', [FireController::class, 'getMadeira'])->middleware($CACHE_FIRES);
     Route::get('/new/fires', [FireController::class, 'getAll']);
 

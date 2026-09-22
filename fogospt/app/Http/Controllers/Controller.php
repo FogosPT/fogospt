@@ -16,7 +16,7 @@ class Controller extends BaseController
     // builds the title from the fire payload instead.
     protected $seoKey = 'home';
 
-    protected function generateMetadata()
+    protected function generateMetadata($id = null, $hash = null)
     {
         $brand = __('pages.seo.brand_suffix');
 
@@ -54,11 +54,20 @@ class Controller extends BaseController
             $description = __('pages.seo.' . $this->seoKey . '.description');
         }
 
-        return [
+        $meta = [
             'pageTitle'   => $title . $brand,
             'title'       => $title,
             'description' => $description,
             'url'         => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
         ];
+
+        // Cache-buster in the query string forces FB/WhatsApp to re-scrape
+        // the card when the fire's status or resources bucket changes. The
+        // image endpoint is locale-agnostic (crawlers don't carry locale).
+        if ($id !== null && $hash !== null) {
+            $meta['ogImage'] = url("/og/fogo/{$id}.png") . '?v=' . $hash;
+        }
+
+        return $meta;
     }
 }
