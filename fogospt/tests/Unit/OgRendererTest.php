@@ -62,6 +62,24 @@ class OgRendererTest extends TestCase
     }
 
     /** @test */
+    public function hash_changes_when_status_history_grows(): void
+    {
+        // Re-entering the same top-level state (Vigilância → Em Curso →
+        // Vigilância) leaves `status` and meios untouched but adds a
+        // timeline entry. The card must refresh so the new event shows.
+        $base = ['status' => 'Vigilância', 'man' => 5, 'terrain' => 2, 'aerial' => 0];
+
+        $before = OgRenderer::hash($base + ['statusHistory' => [['statusCode' => 7]]]);
+        $after  = OgRenderer::hash($base + ['statusHistory' => [
+            ['statusCode' => 7],
+            ['statusCode' => 4],
+            ['statusCode' => 7],
+        ]]);
+
+        $this->assertNotSame($before, $after);
+    }
+
+    /** @test */
     public function missing_meios_default_to_zero_so_partial_payloads_still_hash(): void
     {
         // Upstream may omit fields on very-new incidents. We must not fatal.

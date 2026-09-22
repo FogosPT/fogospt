@@ -11,7 +11,7 @@ use Tests\TestCase;
 class OgFireBladeTest extends TestCase
 {
     /** @test */
-    public function it_renders_the_status_location_meios_and_map_container(): void
+    public function it_renders_status_location_meios_bars_and_timeline(): void
     {
         $html = view('og.fire', [
             'fire' => [
@@ -22,8 +22,12 @@ class OgFireBladeTest extends TestCase
                 'man'      => 42,
                 'terrain'  => 12,
                 'aerial'   => 3,
-                'lat'      => 40.5,
-                'lng'      => -8.2,
+                'statusHistory' => [
+                    ['statusCode' => 3,  'label' => '14:03', 'status' => 'Despacho'],
+                    ['statusCode' => 4,  'label' => '14:12', 'status' => 'Em Curso'],
+                    ['statusCode' => 7,  'label' => '15:30', 'status' => 'Vigilância'],
+                    ['statusCode' => 4,  'label' => '16:23', 'status' => 'Em Curso'],
+                ],
             ],
             'kml'     => null,
             'kmlVost' => null,
@@ -35,11 +39,53 @@ class OgFireBladeTest extends TestCase
         $this->assertStringContainsString('Viseu', $html);
         $this->assertStringContainsString('>42<', $html);
         $this->assertStringContainsString('>12<', $html);
+        // The bar-fill widths are the visual meios chart; without them
+        // the section is just numbers. Assert the man bar computed a
+        // width so a future refactor cannot silently drop the chart.
+        $this->assertMatchesRegularExpression('/bar-fill.*width:\s*100\.00%/', $html);
+        // Timeline must show every event we passed in (order is
+        // oldest-first so "Despacho" leads).
+        $this->assertStringContainsString('Despacho', $html);
+        $this->assertStringContainsString('Vigilância', $html);
+        $this->assertStringContainsString('14:03', $html);
+        $this->assertStringContainsString('16:23', $html);
         $this->assertStringContainsString('window.__ogReady', $html);
-        // 1200x630 is the size the FB/X/WhatsApp crawlers expect for a
-        // large image card. The viewport meta drives Chrome's viewport in
-        // the sidecar too.
         $this->assertStringContainsString('width=1200', $html);
+    }
+
+    /** @test */
+    public function it_shows_overflow_when_history_has_more_than_five_events(): void
+    {
+        $history = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $history[] = ['statusCode' => 4, 'label' => "1{$i}:00", 'status' => 'Em Curso'];
+        }
+
+        $html = view('og.fire', [
+            'fire' => ['status' => 'Em Curso', 'location' => 'X', 'statusHistory' => $history],
+            'kml'     => null,
+            'kmlVost' => null,
+        ])->render();
+
+        // 8 events, we show last 5, overflow reads "+3 anteriores"
+        $this->assertStringContainsString('+3 anteriores', $html);
+        $this->assertStringNotContainsString('11:00', $html); // trimmed
+        $this->assertStringNotContainsString('12:00', $html); // trimmed
+        $this->assertStringNotContainsString('13:00', $html); // trimmed
+        $this->assertStringContainsString('14:00', $html); // kept
+        $this->assertStringContainsString('18:00', $html); // kept
+    }
+
+    /** @test */
+    public function it_shows_empty_state_when_history_is_missing(): void
+    {
+        $html = view('og.fire', [
+            'fire' => ['status' => 'Despacho', 'location' => 'X'],
+            'kml'     => null,
+            'kmlVost' => null,
+        ])->render();
+
+        $this->assertStringContainsString('Sem histórico', $html);
     }
 
     /** @test */

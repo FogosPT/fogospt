@@ -22,13 +22,21 @@ class OgRenderer
     // Force fresh scrape of FB/WhatsApp caches whenever the underlying
     // status/meios change. Bucket to 20 min so we don't churn the URL for
     // no reason — matches the CDN s-maxage on the PNG response.
+    // statusHistory count catches the case where an incident re-enters
+    // the same top-level status (e.g. Vigilância → Em Curso → Vigilância)
+    // and the timeline in the card grew without the status changing.
     public static function hash(array $fire): string
     {
         $bucket = (int) floor(time() / 1200);
+        $historyN = 0;
+        if (isset($fire['statusHistory']) && is_array($fire['statusHistory'])) {
+            $historyN = count($fire['statusHistory']);
+        }
         $key = ($fire['status']  ?? '')
              . '|' . (int) ($fire['man']     ?? 0)
              . '|' . (int) ($fire['terrain'] ?? 0)
              . '|' . (int) ($fire['aerial']  ?? 0)
+             . '|' . $historyN
              . '|' . $bucket;
         return substr(md5($key), 0, 8);
     }
