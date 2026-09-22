@@ -48,7 +48,9 @@ async function getBrowser() {
 
 app.get('/health', async () => ({ ok: true }));
 
-async function renderPng(log, { url, w, h, token }) {
+const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 15000);
+
+async function renderPngInner(log, { url, w, h, token }) {
     let page;
     try {
         const browser = await getBrowser();
@@ -62,9 +64,15 @@ async function renderPng(log, { url, w, h, token }) {
             await page.setExtraHTTPHeaders({ 'X-Og-Token': token });
         }
 
+        // `domcontentloaded` instead of `networkidle0`: the Leaflet map
+        // keeps requesting tiles (and fitBounds triggers another wave)
+        // long after the useful pixels are painted, so networkidle0 could
+        // stretch past 20s or never fire. The Blade sets window.__ogReady
+        // once tiles have loaded (via `on('load')`) with a 2.5s belt —
+        // that's the authoritative "safe to screenshot" signal.
         const resp = await page.goto(url, {
-            waitUntil: 'networkidle0',
-            timeout: RENDER_TIMEOUT_MS,
+            waitUntil: 'domcontentloaded',
+            timeout: 6000,
         });
         if (!resp || !resp.ok()) {
             const status = resp ? resp.status() : 0;
@@ -73,10 +81,9 @@ async function renderPng(log, { url, w, h, token }) {
             throw err;
         }
 
-        // Wait for the Blade to declare tiles/KML settled. The Blade's
-        // belt-and-braces fires at 2.5s so this 4s window is safe. Fall
-        // through if the flag never appears — the map may fail to load
-        // remote tiles under network pressure and we still want *something*.
+        // Wait for the Blade to declare tiles/KML settled. Falls through
+        // on timeout — a card without perfect tile coverage still beats
+        // no card at all in a share preview.
         try {
             await page.waitForFunction(READY_FLAG, { timeout: 4000 });
         } catch (e) {
@@ -87,6 +94,19 @@ async function renderPng(log, { url, w, h, token }) {
     } finally {
         if (page) await page.close().catch(() => {});
     }
+}
+
+// Wrap the actual render in a hard cap so a hung page (crashed tab, dead
+// browser socket, tile CDN blackhole) can never pin an inFlight entry
+// forever. Rejection clears the map and the next request retries fresh.
+function renderPng(log, opts) {
+    return Promise.race([
+        renderPngInner(log, opts),
+        new Promise((_, reject) => setTimeout(
+            () => reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`)),
+            HARD_RENDER_CAP_MS
+        )),
+    ]);
 }
 
 app.post('/render', async (req, reply) => {
