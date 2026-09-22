@@ -6,21 +6,24 @@ const puppeteer = require('puppeteer');
 
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
-const RENDER_TIMEOUT_MS = Number(process.env.RENDER_TIMEOUT_MS || 10000);
 const READY_FLAG = 'window.__ogReady === true';
+const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 18000);
+const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 3);
+const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS || 5000);
 
 const app = Fastify({ logger: true });
+
+// Memoised browser. Cleared on disconnect so the next getBrowser() call
+// launches a fresh instance instead of handing out a dead reference.
 let browserPromise = null;
 
-// Coalesce concurrent renders of the same URL. When many crawlers hit
-// /og/fogo/{id}.png at once and every request misses the PHP disk cache,
-// each one spawns a Chrome page — 300 MB × N + CPU. Keyed by url+size so
-// two clients asking for the same card wait on the same rendering
-// promise. Cleared on completion (success or failure).
-const inFlight = new Map();
-
 async function getBrowser() {
-    if (browserPromise) return browserPromise;
+    if (browserPromise) {
+        const b = await browserPromise;
+        if (b && b.isConnected()) return b;
+        // Stale — fall through to a fresh launch.
+        browserPromise = null;
+    }
     browserPromise = puppeteer.launch({
         headless: 'new',
         // In production, https://fogos.pt is served by nginx with a
@@ -37,18 +40,59 @@ async function getBrowser() {
             '--font-render-hinting=medium',
             '--ignore-certificate-errors',
         ],
+    }).then((b) => {
+        // If Chromium ever dies (OOM, segfault, docker kill), forget it so
+        // the next request rebuilds. Without this the memoised promise
+        // hands out a stale, disconnected Browser and every subsequent
+        // newPage() throws with a confusing "Protocol error" trace.
+        b.on('disconnected', () => {
+            app.log.warn('browser disconnected — will relaunch on next request');
+            browserPromise = null;
+        });
+        return b;
     }).catch((err) => {
-        // If launch fails, clear the memoised promise so the next request
-        // retries instead of returning the same rejection forever.
         browserPromise = null;
         throw err;
     });
     return browserPromise;
 }
 
-app.get('/health', async () => ({ ok: true }));
+// Counting semaphore. Caps concurrent Chrome pages so a MISS storm can't
+// swamp memory (each page holds ~150-250 MB of Chromium state). Waiters
+// are woken FIFO; anyone that waits more than QUEUE_WAIT_MS gives up so
+// the caller can fall back to the static card instead of piling up.
+let activeRenders = 0;
+const waiters = [];
 
-const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 15000);
+function acquireSlot() {
+    if (activeRenders < MAX_CONCURRENT_RENDERS) {
+        activeRenders++;
+        return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+        const t = setTimeout(() => {
+            const i = waiters.indexOf(entry);
+            if (i !== -1) waiters.splice(i, 1);
+            const err = new Error(`queue wait ${QUEUE_WAIT_MS}ms exceeded (${activeRenders}/${MAX_CONCURRENT_RENDERS} slots busy)`);
+            err.statusCode = 503;
+            reject(err);
+        }, QUEUE_WAIT_MS);
+        const entry = { resolve, timeout: t };
+        waiters.push(entry);
+    });
+}
+
+function releaseSlot() {
+    const next = waiters.shift();
+    if (next) {
+        clearTimeout(next.timeout);
+        next.resolve();
+    } else {
+        activeRenders--;
+    }
+}
+
+app.get('/health', async () => ({ ok: true, activeRenders, queued: waiters.length }));
 
 async function renderPngInner(log, { url, w, h, token }) {
     let page;
@@ -57,9 +101,6 @@ async function renderPngInner(log, { url, w, h, token }) {
         page = await browser.newPage();
         await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
 
-        // The rendered Blade route is gated by the OgInternal middleware,
-        // which checks a matching HMAC token in X-Og-Token. Forward it so
-        // the sidecar can reach the app.
         if (token && typeof token === 'string') {
             await page.setExtraHTTPHeaders({ 'X-Og-Token': token });
         }
@@ -98,16 +139,32 @@ async function renderPngInner(log, { url, w, h, token }) {
 
 // Wrap the actual render in a hard cap so a hung page (crashed tab, dead
 // browser socket, tile CDN blackhole) can never pin an inFlight entry
-// forever. Rejection clears the map and the next request retries fresh.
+// forever. On timeout we also kill the browser — if a page hung this
+// long the whole Chromium instance is probably wedged.
 function renderPng(log, opts) {
+    let timeoutId;
     return Promise.race([
-        renderPngInner(log, opts),
-        new Promise((_, reject) => setTimeout(
-            () => reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`)),
-            HARD_RENDER_CAP_MS
-        )),
+        renderPngInner(log, opts).then((v) => { clearTimeout(timeoutId); return v; }),
+        new Promise((_, reject) => {
+            timeoutId = setTimeout(async () => {
+                log.error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded — killing browser`);
+                try {
+                    const b = browserPromise ? await browserPromise : null;
+                    if (b) await b.close().catch(() => {});
+                } catch (e) { /* noop */ }
+                browserPromise = null;
+                reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`));
+            }, HARD_RENDER_CAP_MS);
+        }),
     ]);
 }
+
+// Coalesce concurrent renders of the same URL. When many crawlers hit
+// /og/fogo/{id}.png at once and every request misses the PHP disk cache,
+// each one would spawn a Chrome page — 200 MB × N + CPU. Keyed by url+size
+// so two clients asking for the same card wait on the same rendering
+// promise. Cleared on completion (success or failure).
+const inFlight = new Map();
 
 app.post('/render', async (req, reply) => {
     const { url, width, height, token } = req.body || {};
@@ -119,11 +176,16 @@ app.post('/render', async (req, reply) => {
     const h = Number(height) ||  630;
     const key = `${url}|${w}x${h}`;
 
-    // Coalesce identical concurrent requests onto one render.
     let promise = inFlight.get(key);
     if (!promise) {
-        promise = renderPng(req.log, { url, w, h, token })
-            .finally(() => inFlight.delete(key));
+        promise = (async () => {
+            await acquireSlot();
+            try {
+                return await renderPng(req.log, { url, w, h, token });
+            } finally {
+                releaseSlot();
+            }
+        })().finally(() => inFlight.delete(key));
         inFlight.set(key, promise);
     } else {
         req.log.info({ key }, 'coalesced onto in-flight render');

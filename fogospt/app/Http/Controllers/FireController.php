@@ -148,7 +148,11 @@ class FireController extends Controller
         ])->header('Cache-Control', 'private, no-store');
     }
 
-    private function serveStaticOg(int $maxAge, string $xCache = 'STATIC'): Response
+    // Return type intentionally untyped: response()->file() returns
+    // Symfony\BinaryFileResponse, which is NOT Illuminate\Http\Response
+    // (they share a Symfony base but not a Laravel one). Declaring
+    // : Response caused every fallback to crash with TypeError.
+    private function serveStaticOg(int $maxAge, string $xCache = 'STATIC')
     {
         $path = public_path('img/og-image.png');
         return response()->file($path, [

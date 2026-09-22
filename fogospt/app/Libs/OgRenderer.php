@@ -60,9 +60,13 @@ class OgRenderer
         $endpoint = rtrim((string) config('services.og_renderer.url', 'http://og-renderer:3000'), '/') . '/render';
 
         try {
+            // Total request timeout must exceed the sidecar's own hard
+            // render cap (currently 15s, see assets/og-renderer/server.js
+            // HARD_RENDER_CAP_MS) — otherwise curl aborts mid-render and
+            // we never see the sidecar's 500 body, poisoning the diagnosis.
             $client = new GuzzleHttp\Client([
                 'connect_timeout' => 2,
-                'timeout'         => 12,
+                'timeout'         => 20,
             ]);
             $resp = $client->request('POST', $endpoint, [
                 'http_errors' => false,
