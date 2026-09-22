@@ -16,11 +16,19 @@ async function getBrowser() {
     if (browserPromise) return browserPromise;
     browserPromise = puppeteer.launch({
         headless: 'new',
+        // In production, https://fogos.pt is served by nginx with a
+        // Cloudflare Origin CA certificate — trusted by the CF edge, but
+        // not by public root stores. The sidecar navigates there via a
+        // host-gateway mapping (see docker-compose.yml extra_hosts) so
+        // the request never leaves the box, and it's already gated by an
+        // HMAC token. Chrome refusing on cert grounds is pure friction.
+        acceptInsecureCerts: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--font-render-hinting=medium',
+            '--ignore-certificate-errors',
         ],
     }).catch((err) => {
         // If launch fails, clear the memoised promise so the next request
