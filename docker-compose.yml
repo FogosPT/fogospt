@@ -50,11 +50,17 @@ services:
     environment:
       - PORT=3000
       - RENDER_TIMEOUT_MS=10000
-    # PHP renders the internal Blade at the host's nginx (127.0.0.1:8093 on
-    # the host). Inside the container we resolve that via host.docker.internal;
-    # on Linux the extra_hosts entry maps it to the host gateway.
+    # The sidecar navigates to https://fogos.pt/... to render the internal
+    # Blade. Mapping fogos.pt (and www) to the host gateway means the
+    # request never leaves the box: Chrome connects to nginx directly with
+    # SNI = fogos.pt, the certificate matches, and nginx's server_name
+    # routes as usual — no Cloudflare hop, no public DNS round-trip.
+    # host.docker.internal stays mapped for dev overrides.
     extra_hosts:
       - "host.docker.internal:host-gateway"
+      - "fogos.pt:host-gateway"
+      - "www.fogos.pt:host-gateway"
+      - "beta.fogos.pt:host-gateway"
 
 networks:
   default:
