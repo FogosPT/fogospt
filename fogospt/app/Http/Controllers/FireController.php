@@ -107,7 +107,7 @@ class FireController extends Controller
         $hash = OgRenderer::hash($this->fire);
 
         $base = rtrim((string) config('services.og_renderer.internal_app_url', 'http://host.docker.internal:8093'), '/');
-        $renderUrl = "{$base}/pt/og/fogo/{$id}/render?t={$hash}";
+        $renderUrl = "{$base}/og/fogo/{$id}/render?t={$hash}";
 
         $path = OgRenderer::render((string) $id, $hash, $renderUrl);
 
@@ -126,7 +126,7 @@ class FireController extends Controller
 
     // Renders the slim 1200x630 Blade that the headless sidecar screenshots.
     // Gated by the `og.internal` middleware — never reachable from the web.
-    public function renderOgHtml($locale, $id)
+    public function renderOgHtml($id)
     {
         $this->setFireById($id);
         if ($this->fire === null) {

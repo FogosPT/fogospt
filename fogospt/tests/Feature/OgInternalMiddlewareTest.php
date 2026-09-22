@@ -17,7 +17,7 @@ class OgInternalMiddlewareTest extends TestCase
     {
         // Simulate a public IP so the loopback / host-gateway allow-list
         // doesn't kick in. TrustProxies is TrustedIps=[] by default in tests.
-        $this->get('/pt/og/fogo/12345/render', [
+        $this->get('/og/fogo/12345/render', [
             'X-Forwarded-For' => '203.0.113.10',
         ])->assertStatus(403);
     }
@@ -25,7 +25,7 @@ class OgInternalMiddlewareTest extends TestCase
     /** @test */
     public function render_endpoint_rejects_requests_with_wrong_token(): void
     {
-        $this->get('/pt/og/fogo/12345/render', [
+        $this->get('/og/fogo/12345/render', [
             'X-Og-Token'      => str_repeat('0', 64),
             'X-Forwarded-For' => '203.0.113.10',
         ])->assertStatus(403);
@@ -41,7 +41,7 @@ class OgInternalMiddlewareTest extends TestCase
         // controller aborts 404 for the unknown fire — but crucially it is
         // not 403, which is what we're proving here: the middleware let us
         // through when the token was correct.
-        $response = $this->get("/pt/og/fogo/{$id}/render", [
+        $response = $this->get("/og/fogo/{$id}/render", [
             'X-Og-Token'      => $token,
             'X-Forwarded-For' => '203.0.113.10',
         ]);
