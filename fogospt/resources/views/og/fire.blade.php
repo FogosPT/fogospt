@@ -182,8 +182,15 @@
                 zoom: 12
             });
 
-            var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // CARTO Voyager instead of raw OSM tiles: OSM's public tile
+            // server throttles heavy IPs and the sidecar renders enough
+            // cards in a burst to trip it. CARTO's rate limits are much
+            // friendlier and the key is already used elsewhere in the app
+            // (see public/js/main.js). {s} subdomain sharding lets Chrome
+            // parallelise tile fetches.
+            var osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
                 maxZoom: 19,
+                subdomains: 'abcd',
                 crossOrigin: true
             });
 

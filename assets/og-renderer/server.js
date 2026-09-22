@@ -17,10 +17,21 @@ const app = Fastify({ logger: true });
 // launches a fresh instance instead of handing out a dead reference.
 let browserPromise = null;
 
+function browserIsAlive(b) {
+    if (!b) return false;
+    // Puppeteer v22+ exposes `connected` as a getter; older versions had
+    // an `isConnected()` method. Handle either without exploding.
+    if (typeof b.connected === 'boolean') return b.connected;
+    if (typeof b.isConnected === 'function') {
+        try { return b.isConnected(); } catch (e) { return false; }
+    }
+    return true;
+}
+
 async function getBrowser() {
     if (browserPromise) {
-        const b = await browserPromise;
-        if (b && b.isConnected()) return b;
+        const b = await browserPromise.catch(() => null);
+        if (browserIsAlive(b)) return b;
         // Stale — fall through to a fresh launch.
         browserPromise = null;
     }
@@ -137,22 +148,18 @@ async function renderPngInner(log, { url, w, h, token }) {
     }
 }
 
-// Wrap the actual render in a hard cap so a hung page (crashed tab, dead
-// browser socket, tile CDN blackhole) can never pin an inFlight entry
-// forever. On timeout we also kill the browser — if a page hung this
-// long the whole Chromium instance is probably wedged.
+// Wrap the actual render in a hard cap so a hung page can never pin an
+// inFlight entry forever. We do NOT kill the browser here — that would
+// yank sessions out from under sibling renders in progress (which then
+// die with "Session closed"). If the browser truly wedged, its
+// `disconnected` event handler nulls out browserPromise on its own.
 function renderPng(log, opts) {
     let timeoutId;
     return Promise.race([
         renderPngInner(log, opts).then((v) => { clearTimeout(timeoutId); return v; }),
         new Promise((_, reject) => {
-            timeoutId = setTimeout(async () => {
-                log.error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded — killing browser`);
-                try {
-                    const b = browserPromise ? await browserPromise : null;
-                    if (b) await b.close().catch(() => {});
-                } catch (e) { /* noop */ }
-                browserPromise = null;
+            timeoutId = setTimeout(() => {
+                log.error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`);
                 reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`));
             }, HARD_RENDER_CAP_MS);
         }),
