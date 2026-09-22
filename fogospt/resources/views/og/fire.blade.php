@@ -1,7 +1,9 @@
 @php
-    // Standalone 1200x630 card for the headless-Chrome sidecar. No site
-    // chrome, no analytics, no shared layout — everything the screenshot
-    // needs lives in this file so the render is fast and reproducible.
+    // Standalone 1200x630 data-first card for the headless-Chrome sidecar.
+    // No map, no tiles, no async loads — the screenshot is stable within
+    // one frame of DOMContentLoaded. This baseline earns us a working
+    // pipeline end-to-end; a map variant can come back as an iteration
+    // once we know the sidecar path is solid.
 
     $status   = trim((string) ($fire['status'] ?? ''));
     $location = trim((string) ($fire['location'] ?? ''));
@@ -12,248 +14,220 @@
     $terrain = (int) ($fire['terrain'] ?? 0);
     $aerial  = (int) ($fire['aerial']  ?? 0);
 
-    $lat = isset($fire['lat']) ? (float) $fire['lat'] : 39.5;
-    $lng = isset($fire['lng']) ? (float) $fire['lng'] : -8.0;
+    // Upstream sometimes sends -1 to mean "not confirmed yet" — surface
+    // that explicitly instead of "-1 operacionais".
+    $unconfirmed = ($man < 0 || $terrain < 0 || $aerial < 0);
 
-    // Palette per operational state. Fallback keeps the card usable even if
-    // upstream sends a value we don't know yet.
     $statusColors = [
-        'Em Curso'              => '#dc2626', // red-600
-        'Em Resolução'          => '#ea580c', // orange-600
-        'Conclusão'             => '#d97706', // amber-600
-        'Vigilância'            => '#ca8a04', // yellow-600
-        'Chegada ao TO'         => '#e11d48', // rose-600
-        'Despacho'              => '#b45309', // amber-700
+        'Em Curso'              => '#dc2626',
+        'Em Resolução'          => '#ea580c',
+        'Conclusão'             => '#d97706',
+        'Vigilância'            => '#ca8a04',
+        'Chegada ao TO'         => '#e11d48',
+        'Despacho'              => '#b45309',
         'Despacho de 1º Alerta' => '#b45309',
-        'Encerrada'             => '#16a34a', // green-600
-        'Falso Alarme'          => '#6b7280', // gray-500
+        'Encerrada'             => '#16a34a',
+        'Falso Alarme'          => '#6b7280',
         'Falso Alerta'          => '#6b7280',
     ];
     $statusColor = $statusColors[$status] ?? '#dc2626';
+
+    $region = trim(implode(' · ', array_filter([$concelho, $distrito])));
 @endphp
 <!doctype html>
 <html lang="pt">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=1200,initial-scale=1">
-    <title>Fogos.pt — Cartão OG</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <title>Fogos.pt — Cartão</title>
     <style>
+        * { box-sizing: border-box; }
         html, body {
             margin: 0; padding: 0;
             width: 1200px; height: 630px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #fff;
             background: #0f172a;
             overflow: hidden;
-            color: #fff;
         }
-        #map {
-            position: absolute; inset: 0;
-            z-index: 1;
-            background: #0f172a;
-        }
-        .leaflet-control-attribution,
-        .leaflet-control-zoom { display: none !important; }
 
-        /* Vignette so the overlays stay readable regardless of the tile luminance */
-        .vignette {
-            position: absolute; inset: 0;
-            z-index: 5;
+        .card {
+            position: relative;
+            width: 1200px; height: 630px;
             background:
-                linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.85) 100%),
-                radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.35) 100%);
-            pointer-events: none;
+                radial-gradient(ellipse at top left, rgba(255,255,255,0.06) 0%, transparent 55%),
+                linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 60px 64px;
+            display: flex; flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Full-width color strip at the top — reads instantly in a feed
+           even at thumbnail size before the reader parses any text. */
+        .card::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 10px;
+            background: {{ $statusColor }};
         }
 
         .top {
-            position: absolute; top: 32px; left: 40px; right: 40px;
-            z-index: 10;
-            display: flex; justify-content: space-between; align-items: flex-start;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .brand {
             display: flex; align-items: center; gap: 14px;
-            background: rgba(15, 23, 42, 0.85);
-            padding: 14px 22px;
-            border-radius: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
         }
-        .brand__logo { width: 42px; height: 42px; display: block; }
+        .brand__logo {
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            background: {{ $statusColor }};
+            border-radius: 12px;
+            font-size: 30px; line-height: 1;
+        }
         .brand__name {
-            font-size: 26px; font-weight: 800; letter-spacing: -0.5px;
-            color: #fff;
+            font-size: 30px; font-weight: 800; letter-spacing: -0.5px;
         }
+
         .status {
-            padding: 14px 24px;
-            border-radius: 14px;
+            padding: 12px 24px;
+            border-radius: 999px;
             font-size: 22px; font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.8px;
             color: #fff;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            white-space: nowrap;
+            background: {{ $statusColor }};
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
         }
 
-        .bottom {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            z-index: 10;
-            padding: 60px 48px 40px;
-            display: flex; flex-direction: column; gap: 18px;
-        }
         .location {
-            font-size: 60px; font-weight: 800; line-height: 1.02;
-            letter-spacing: -1.8px;
+            font-size: 78px; font-weight: 800; line-height: 1.02;
+            letter-spacing: -2px;
             margin: 0;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+            text-wrap: balance;
         }
         .region {
-            font-size: 28px; font-weight: 500;
+            font-size: 34px; font-weight: 500;
             margin: 0;
-            opacity: 0.92;
-            text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+            opacity: 0.75;
         }
-        .meios {
-            display: flex; gap: 36px; align-items: center;
-            margin-top: 8px;
-        }
-        .meios__item {
-            display: flex; align-items: center; gap: 12px;
-            font-size: 30px; font-weight: 700;
-            background: rgba(15, 23, 42, 0.65);
-            padding: 10px 18px;
-            border-radius: 12px;
-        }
-        .meios__icon { width: 34px; height: 34px; display: inline-block; filter: brightness(0) invert(1); }
 
-        .timestamp {
-            position: absolute; right: 48px; bottom: 44px;
-            z-index: 11;
-            font-size: 22px; font-weight: 600;
-            background: rgba(15, 23, 42, 0.7);
-            padding: 10px 18px;
-            border-radius: 10px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+        .meios {
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .stat {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 24px 28px;
+            display: flex; flex-direction: column;
+            gap: 4px;
+        }
+        .stat__label {
+            font-size: 20px; font-weight: 600;
+            opacity: 0.7;
+            display: flex; align-items: center; gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .stat__icon {
+            width: 26px; height: 26px;
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+        .stat__value {
+            font-size: 58px; font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1;
+        }
+        .stat__value--unconfirmed {
+            font-size: 26px;
+            font-weight: 700;
+            opacity: 0.6;
+            padding-top: 20px;
+            letter-spacing: 0;
+        }
+
+        .footer {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 22px;
+            opacity: 0.55;
+        }
+        .footer__url {
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <div class="vignette"></div>
-
-    <div class="top">
-        <div class="brand">
-            <img class="brand__logo" src="/img/logo.svg" alt="">
-            <span class="brand__name">Fogos.pt</span>
+    <div class="card">
+        <div class="top">
+            <div class="brand">
+                <div class="brand__logo">🔥</div>
+                <span class="brand__name">Fogos.pt</span>
+            </div>
+            @if($status !== '')
+                <div class="status">{{ $status }}</div>
+            @endif
         </div>
-        @if($status !== '')
-            <div class="status" style="background: {{ $statusColor }};">{{ $status }}</div>
-        @endif
-    </div>
 
-    <div class="bottom">
-        <h1 class="location">{{ $location !== '' ? $location : '—' }}</h1>
-        @if($concelho !== '' || $distrito !== '')
-            <p class="region">
-                {{ $concelho }}{{ $concelho !== '' && $distrito !== '' ? ' · ' : '' }}{{ $distrito }}
-            </p>
-        @endif
+        <div>
+            <h1 class="location">{{ $location !== '' ? $location : '—' }}</h1>
+            @if($region !== '')
+                <p class="region">{{ $region }}</p>
+            @endif
+        </div>
+
         <div class="meios">
-            <span class="meios__item"><img class="meios__icon" src="/img/fireman.svg" alt="">{{ $man }}</span>
-            <span class="meios__item"><img class="meios__icon" src="/img/firetruck.svg" alt="">{{ $terrain }}</span>
-            <span class="meios__item"><img class="meios__icon" src="/img/plane.svg" alt="">{{ $aerial }}</span>
+            <div class="stat">
+                <div class="stat__label">
+                    <img class="stat__icon" src="/img/fireman.svg" alt="">
+                    Operacionais
+                </div>
+                @if($man < 0)
+                    <div class="stat__value stat__value--unconfirmed">por confirmar</div>
+                @else
+                    <div class="stat__value">{{ $man }}</div>
+                @endif
+            </div>
+            <div class="stat">
+                <div class="stat__label">
+                    <img class="stat__icon" src="/img/firetruck.svg" alt="">
+                    Terrestres
+                </div>
+                @if($terrain < 0)
+                    <div class="stat__value stat__value--unconfirmed">por confirmar</div>
+                @else
+                    <div class="stat__value">{{ $terrain }}</div>
+                @endif
+            </div>
+            <div class="stat">
+                <div class="stat__label">
+                    <img class="stat__icon" src="/img/plane.svg" alt="">
+                    Aéreos
+                </div>
+                @if($aerial < 0)
+                    <div class="stat__value stat__value--unconfirmed">por confirmar</div>
+                @else
+                    <div class="stat__value">{{ $aerial }}</div>
+                @endif
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>{{ date('H:i') }} · {{ date('d-m-Y') }}</span>
+            <span class="footer__url">fogos.pt</span>
         </div>
     </div>
 
-    <div class="timestamp">{{ date('H:i') }} · {{ date('d-m-Y') }}</div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/js/vendor/L.KLM.js"></script>
     <script>
-        (function () {
-            var lat = {{ $lat }};
-            var lng = {{ $lng }};
-
-            var map = L.map('map', {
-                zoomControl: false,
-                attributionControl: false,
-                zoomAnimation: false,
-                fadeAnimation: false,
-                markerZoomAnimation: false,
-                center: [lat, lng],
-                zoom: 12
-            });
-
-            // CARTO Voyager instead of raw OSM tiles: OSM's public tile
-            // server throttles heavy IPs and the sidecar renders enough
-            // cards in a burst to trip it. CARTO's rate limits are much
-            // friendlier and the key is already used elsewhere in the app
-            // (see public/js/main.js). {s} subdomain sharding lets Chrome
-            // parallelise tile fetches.
-            var osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
-                maxZoom: 19,
-                subdomains: 'abcd',
-                crossOrigin: true
-            });
-
-            // Signal to the sidecar when to capture. `load` fires once the
-            // currently-in-view tiles have all decoded; give it a small
-            // safety buffer to let KML repaint on top. The listener MUST
-            // be attached before addTo() — on fast boxes the initial
-            // `load` fires synchronously during addTo, so a listener
-            // registered after would miss it and __ogReady would never
-            // flip.
-            var settled = false;
-            function settle(delay) {
-                if (settled) return;
-                settled = true;
-                setTimeout(function () { window.__ogReady = true; }, delay);
-            }
-            osm.on('load', function () { settle(300); });
-
-            // Belt-and-braces: if OSM tiles hang, still capture after
-            // 2.5s so the sidecar's waitForFunction(__ogReady, 4s)
-            // catches it before its own timeout fires.
-            setTimeout(function () { settle(0); }, 2500);
-
-            osm.addTo(map);
-
-            var fireIcon = L.divIcon({
-                className: 'og-fire-marker',
-                html: '<div style="width:28px;height:28px;border-radius:50%;background:rgba(240,0,51,0.85);border:3px solid #fff;box-shadow:0 0 0 8px rgba(240,0,51,0.35), 0 2px 8px rgba(0,0,0,0.5);"></div>',
-                iconSize: [28, 28],
-                iconAnchor: [14, 14]
-            });
-            L.marker([lat, lng], { icon: fireIcon }).addTo(map);
-
-            var bounds = null;
-            @if(!empty($kml))
-                try {
-                    var kmltext = @json($kml);
-                    var kmlDoc = new DOMParser().parseFromString(kmltext, 'text/xml');
-                    var track = new L.KML(kmlDoc);
-                    map.addLayer(track);
-                    var b = track.getBounds();
-                    if (b && b.isValid()) bounds = b;
-                } catch (e) { console.warn('KML parse failed', e); }
-            @endif
-            @if(!empty($kmlVost))
-                try {
-                    var kmlVostText = @json($kmlVost);
-                    var kmlVostDoc = new DOMParser().parseFromString(kmlVostText, 'text/xml');
-                    var trackVost = new L.KML(kmlVostDoc);
-                    map.addLayer(trackVost);
-                    var bV = trackVost.getBounds();
-                    if (bV && bV.isValid()) {
-                        bounds = bounds ? bounds.extend(bV) : bV;
-                    }
-                } catch (e) { console.warn('KML VOST parse failed', e); }
-            @endif
-
-            if (bounds) {
-                // Leave headroom for the bottom overlay so the perimeter is
-                // not covered by the location text.
-                map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
-            }
-        })();
+        // No async work in this build — flip the ready flag as soon as
+        // the layout has been painted. requestAnimationFrame ensures we
+        // don't screenshot before styles apply on very fast machines.
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { window.__ogReady = true; });
+        });
     </script>
 </body>
 </html>

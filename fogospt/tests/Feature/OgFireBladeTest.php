@@ -35,12 +35,35 @@ class OgFireBladeTest extends TestCase
         $this->assertStringContainsString('Viseu', $html);
         $this->assertStringContainsString('>42<', $html);
         $this->assertStringContainsString('>12<', $html);
-        $this->assertStringContainsString('id="map"', $html);
         $this->assertStringContainsString('window.__ogReady', $html);
         // 1200x630 is the size the FB/X/WhatsApp crawlers expect for a
         // large image card. The viewport meta drives Chrome's viewport in
         // the sidecar too.
         $this->assertStringContainsString('width=1200', $html);
+    }
+
+    /** @test */
+    public function it_surfaces_unconfirmed_meios_when_upstream_sends_minus_one(): void
+    {
+        // The upstream API uses -1 to mean "not yet confirmed" on very
+        // new incidents. Rendering "-1 Operacionais" would be a lie.
+        $html = view('og.fire', [
+            'fire' => [
+                'status'   => 'Despacho',
+                'location' => 'Braga',
+                'concelho' => 'Braga',
+                'man'      => -1,
+                'terrain'  => -1,
+                'aerial'   => -1,
+                'lat'      => 41.5,
+                'lng'      => -8.4,
+            ],
+            'kml'     => null,
+            'kmlVost' => null,
+        ])->render();
+
+        $this->assertStringContainsString('por confirmar', $html);
+        $this->assertStringNotContainsString('>-1<', $html);
     }
 
     /** @test */
@@ -55,7 +78,9 @@ class OgFireBladeTest extends TestCase
             'kmlVost' => null,
         ])->render();
 
-        $this->assertStringContainsString('id="map"', $html);
         $this->assertStringContainsString('Fogos.pt', $html);
+        // Even on a bare payload, the ready flag script must ship — the
+        // sidecar hangs on waitForFunction otherwise.
+        $this->assertStringContainsString('window.__ogReady', $html);
     }
 }

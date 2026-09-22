@@ -7,8 +7,12 @@ const puppeteer = require('puppeteer');
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 const READY_FLAG = 'window.__ogReady === true';
-const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 18000);
-const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 3);
+// The data-first Blade has no async I/O (no tiles, no KML), so a render
+// is essentially "load HTML + paint + screenshot". Sub-second on a warm
+// browser. Lower the hard cap and lift the concurrency ceiling; RAM is
+// cheap here, tail latency is not.
+const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 8000);
+const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 8);
 const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS || 5000);
 
 const app = Fastify({ logger: true });
@@ -133,13 +137,14 @@ async function renderPngInner(log, { url, w, h, token }) {
             throw err;
         }
 
-        // Wait for the Blade to declare tiles/KML settled. Falls through
-        // on timeout — a card without perfect tile coverage still beats
-        // no card at all in a share preview.
+        // Blade sets __ogReady on the second requestAnimationFrame, so
+        // this normally resolves within one frame. Any timeout here now
+        // is a real bug (script never ran) — but still fall through and
+        // capture rather than 500 the crawler.
         try {
-            await page.waitForFunction(READY_FLAG, { timeout: 4000 });
+            await page.waitForFunction(READY_FLAG, { timeout: 2000 });
         } catch (e) {
-            log.warn({ err: e.message }, 'ogReady flag not set within 4s, capturing anyway');
+            log.warn({ err: e.message }, 'ogReady flag not set within 2s, capturing anyway');
         }
 
         return await page.screenshot({ type: 'png', clip: { x: 0, y: 0, width: w, height: h } });
