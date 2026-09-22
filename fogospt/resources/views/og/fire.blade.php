@@ -186,6 +186,27 @@
                 maxZoom: 19,
                 crossOrigin: true
             });
+
+            // Signal to the sidecar when to capture. `load` fires once the
+            // currently-in-view tiles have all decoded; give it a small
+            // safety buffer to let KML repaint on top. The listener MUST
+            // be attached before addTo() — on fast boxes the initial
+            // `load` fires synchronously during addTo, so a listener
+            // registered after would miss it and __ogReady would never
+            // flip.
+            var settled = false;
+            function settle(delay) {
+                if (settled) return;
+                settled = true;
+                setTimeout(function () { window.__ogReady = true; }, delay);
+            }
+            osm.on('load', function () { settle(300); });
+
+            // Belt-and-braces: if OSM tiles hang, still capture after
+            // 2.5s so the sidecar's waitForFunction(__ogReady, 4s)
+            // catches it before its own timeout fires.
+            setTimeout(function () { settle(0); }, 2500);
+
             osm.addTo(map);
 
             var fireIcon = L.divIcon({
@@ -225,21 +246,6 @@
                 // not covered by the location text.
                 map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
             }
-
-            // Signal to the sidecar when to capture. `load` fires once the
-            // currently-in-view tiles have all decoded; give it a small
-            // safety buffer to let KML repaint on top.
-            var settled = false;
-            function settle(delay) {
-                if (settled) return;
-                settled = true;
-                setTimeout(function () { window.__ogReady = true; }, delay);
-            }
-            osm.on('load', function () { settle(300); });
-
-            // Belt-and-braces: if OSM tiles hang, still capture after 5s so
-            // the sidecar never times out on a slow tile CDN.
-            setTimeout(function () { settle(0); }, 5000);
         })();
     </script>
 </body>

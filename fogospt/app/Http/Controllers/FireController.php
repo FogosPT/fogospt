@@ -119,7 +119,7 @@ class FireController extends Controller
 
         return response()->file($path, [
             'Content-Type'  => 'image/png',
-            'Cache-Control' => 'public, max-age=300, s-maxage=900, stale-while-revalidate=86400',
+            'Cache-Control' => 'public, max-age=600, s-maxage=1200, stale-while-revalidate=86400',
             'X-Cache'       => is_file($path) && (time() - filemtime($path) > 5) ? 'HIT' : 'MISS',
         ]);
     }

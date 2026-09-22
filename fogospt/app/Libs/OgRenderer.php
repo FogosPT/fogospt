@@ -20,11 +20,11 @@ class OgRenderer
     }
 
     // Force fresh scrape of FB/WhatsApp caches whenever the underlying
-    // status/meios change. Bucket to 15 min so we don't churn the URL for
-    // no reason.
+    // status/meios change. Bucket to 20 min so we don't churn the URL for
+    // no reason — matches the CDN s-maxage on the PNG response.
     public static function hash(array $fire): string
     {
-        $bucket = (int) floor(time() / 900);
+        $bucket = (int) floor(time() / 1200);
         $key = ($fire['status']  ?? '')
              . '|' . (int) ($fire['man']     ?? 0)
              . '|' . (int) ($fire['terrain'] ?? 0)
