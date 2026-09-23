@@ -238,6 +238,46 @@ class LegacyApi
         return $result;
     }
 
+    // Redis-cached wrappers used only by the OG share-card pipeline.
+    // The pipeline hits `getFire` and `getStatusByFire` twice per render
+    // (once in FireController::getOgImage to compute the cache-busting
+    // hash, once in FireController::renderOgHtml when the headless sidecar
+    // navigates to /og/fogo/{id}/render). Under concurrent load that pushed
+    // the sidecar past its 8s hard cap, showing up as "og-renderer failed"
+    // warnings. A short Redis cache eliminates the duplication; 10 min is
+    // fine for social crawlers, which themselves cache the PNG for hours.
+    // Failures are never cached, so a bad response one minute doesn't
+    // starve callers for the full TTL.
+    public static function getFireCached($id, $ttl = 600)
+    {
+        $key = 'og:fire:' . $id;
+        $cached = Redis::get($key);
+        if ($cached !== null) {
+            $decoded = json_decode($cached, true);
+            if (is_array($decoded)) return $decoded;
+        }
+        $fire = self::getFire($id);
+        if (isset($fire['data']) && !isset($fire['error'])) {
+            Redis::set($key, json_encode($fire), 'EX', $ttl);
+        }
+        return $fire;
+    }
+
+    public static function getStatusByFireCached($id, $ttl = 600)
+    {
+        $key = 'og:fire-status:' . $id;
+        $cached = Redis::get($key);
+        if ($cached !== null) {
+            $decoded = json_decode($cached, true);
+            if (is_array($decoded)) return $decoded;
+        }
+        $status = self::getStatusByFire($id);
+        if (isset($status['data']) && !isset($status['error'])) {
+            Redis::set($key, json_encode($status), 'EX', $ttl);
+        }
+        return $status;
+    }
+
     public static function getStatusByFireMadeira($id)
     {
         $client = self::getClient();

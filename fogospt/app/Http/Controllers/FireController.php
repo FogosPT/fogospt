@@ -92,16 +92,15 @@ class FireController extends Controller
     // preview entirely.
     public function getOgImage($id)
     {
-        $this->setFireById($id);
+        $this->setFireByIdCached($id);
         if ($this->fire === null) {
             return $this->serveStaticOg(60);
         }
 
-        // Enrich with the same fields generateMetadata() would see so the
-        // hash reflects everything meaningful.
-        $risk   = LegacyApi::getRiskByFire($id);
-        $status = LegacyApi::getStatusByFire($id);
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        // Only statusHistory participates in the hash — risk is not used by
+        // the OG blade, so skipping getRiskByFire drops a wasted API round
+        // trip from this side of the pipeline.
+        $status = LegacyApi::getStatusByFireCached($id);
         $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
 
         $hash = OgRenderer::hash($this->fire);
@@ -128,14 +127,14 @@ class FireController extends Controller
     // Gated by the `og.internal` middleware — never reachable from the web.
     public function renderOgHtml($id)
     {
-        $this->setFireById($id);
+        $this->setFireByIdCached($id);
         if ($this->fire === null) {
             abort(404);
         }
 
-        $risk   = LegacyApi::getRiskByFire($id);
-        $status = LegacyApi::getStatusByFire($id);
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        // OG blade doesn't reference $fire['risk']; skipping getRiskByFire
+        // saves another API round trip on the sidecar-facing side.
+        $status = LegacyApi::getStatusByFireCached($id);
         $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
 
         $kml     = isset($this->fire['kml'])     ? preg_replace("/\r|\n/", '', $this->fire['kml'])     : null;
@@ -312,6 +311,21 @@ class FireController extends Controller
     private function setFireById($id)
     {
         $fire = LegacyApi::getFire($id);
+
+        if (isset($fire['data'])) {
+            $this->fire = $fire['data'];
+        } else {
+            $this->fire = null;
+        }
+    }
+
+    // OG-only variant that reads from the Redis-cached fetcher. The PHP
+    // controller and the sidecar-facing renderOgHtml both need the same
+    // fire payload, and without cache they each pay for an upstream round
+    // trip. See LegacyApi::getFireCached for the caching contract.
+    private function setFireByIdCached($id)
+    {
+        $fire = LegacyApi::getFireCached($id);
 
         if (isset($fire['data'])) {
             $this->fire = $fire['data'];
