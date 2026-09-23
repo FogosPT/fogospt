@@ -1,3 +1,6 @@
+// cache-bust: force a fresh mtime after CF cached a stale copy under an old
+// ?v= querystring (see e893807 — the fix was on origin but the CDN kept
+// serving pre-fix bytes for the same versioned URL).
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 var locale = window.location.pathname.split('/')[1] || 'pt';
 
