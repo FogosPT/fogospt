@@ -8,10 +8,12 @@ const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 const READY_FLAG = 'window.__ogReady === true';
 // The data-first Blade has no async I/O (no tiles, no KML), so a render
-// is essentially "load HTML + paint + screenshot". Sub-second on a warm
-// browser. Lower the hard cap and lift the concurrency ceiling; RAM is
-// cheap here, tail latency is not.
-const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 8000);
+// is essentially "load HTML + paint + screenshot" — sub-second on a warm
+// browser in isolation. Under a crawler storm, though, N concurrent
+// Chrome pages contend for CPU and each phase (goto/paint/screenshot)
+// stretches out; observed p99 lands around 10-12s. Give the cap real
+// headroom so a legitimately slow render still succeeds instead of 500ing.
+const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 15000);
 const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 8);
 const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS || 5000);
 
@@ -128,7 +130,7 @@ async function renderPngInner(log, { url, w, h, token }) {
         // that's the authoritative "safe to screenshot" signal.
         const resp = await page.goto(url, {
             waitUntil: 'domcontentloaded',
-            timeout: 6000,
+            timeout: 10000,
         });
         if (!resp || !resp.ok()) {
             const status = resp ? resp.status() : 0;

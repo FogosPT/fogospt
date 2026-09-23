@@ -69,8 +69,8 @@ class OgRenderer
 
         try {
             // Total request timeout must exceed the sidecar's own hard
-            // render cap (currently 15s, see assets/og-renderer/server.js
-            // HARD_RENDER_CAP_MS) — otherwise curl aborts mid-render and
+            // render cap (15s, see HARD_RENDER_CAP_MS in server.js and
+            // docker-compose.yml) — otherwise curl aborts mid-render and
             // we never see the sidecar's 500 body, poisoning the diagnosis.
             $client = new GuzzleHttp\Client([
                 'connect_timeout' => 2,

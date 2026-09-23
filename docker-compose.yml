@@ -49,7 +49,10 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3000
-      - RENDER_TIMEOUT_MS=10000
+      # Name must match the var read in assets/og-renderer/server.js — a
+      # prior RENDER_TIMEOUT_MS here never took effect and the 8s default
+      # applied, causing "hard render cap exceeded" 500s under crawler load.
+      - HARD_RENDER_CAP_MS=15000
     # The sidecar navigates to https://fogos.pt/... to render the internal
     # Blade. Mapping fogos.pt (and www) to the host gateway means the
     # request never leaves the box: Chrome connects to nginx directly with
