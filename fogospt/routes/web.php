@@ -34,19 +34,12 @@ Route::get('/lightnings', [FireController::class, 'getLightnings']);
 // Dynamic Open Graph card per fire. Locale-agnostic on purpose — social
 // crawlers do not carry a locale prefix, and the image itself is language-
 // neutral. The controller writes its own Cache-Control (public, s-maxage=20m,
-// SWR=1d) so we skip the shared cache middleware here.
+// SWR=1d) so we skip the shared cache middleware here. The Blade HTML is
+// rendered inline and POSTed to the og-renderer sidecar — the sidecar no
+// longer navigates back into this app, so there is no `/render` sub-route.
 Route::get('/og/fogo/{id}.png', [FireController::class, 'getOgImage'])
     ->where('id', '[0-9]+')
     ->name('fire-og');
-
-// Slim Blade the og-renderer sidecar screenshots into /og/fogo/{id}.png.
-// Gated by `og.internal` (HMAC token) so it can never be indexed or hit
-// by users. Locale-agnostic: the card is language-neutral, all strings
-// come straight from the upstream fire payload.
-Route::get('/og/fogo/{id}/render', [FireController::class, 'renderOgHtml'])
-    ->where('id', '[0-9]+')
-    ->middleware('og.internal')
-    ->name('fire-og-render');
 
 // Dynamic sitemap for active fires. SitemapController caches the rendered
 // XML in Redis for 15 min and sets its own Cache-Control headers.

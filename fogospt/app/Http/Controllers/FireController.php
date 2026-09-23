@@ -90,6 +90,12 @@ class FireController extends Controller
     // 200 with a PNG — even for missing / broken fires we fall back to the
     // legacy static card, because a 404 makes the crawler give up on the
     // preview entirely.
+    //
+    // Pipeline: fetch fire+status → render the Blade to HTML in this same
+    // worker → POST the HTML to the sidecar → sidecar setContent + screenshot.
+    // No second HTTP hop back into PHP-FPM, so a crawler storm can't starve
+    // the pool by pinning every worker on a sidecar wait while the sidecar
+    // itself needs a free worker to navigate.
     public function getOgImage($id)
     {
         $this->setFireByIdCached($id);
@@ -104,11 +110,19 @@ class FireController extends Controller
         $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
 
         $hash = OgRenderer::hash($this->fire);
+        $path = OgRenderer::cachePath((string) $id, $hash);
 
-        $base = rtrim((string) config('services.og_renderer.internal_app_url', 'http://host.docker.internal:8093'), '/');
-        $renderUrl = "{$base}/og/fogo/{$id}/render?t={$hash}";
+        // Fast path: PNG already on disk. Skip both the Blade render and
+        // the sidecar hop entirely.
+        if (!is_file($path) || filesize($path) === 0) {
+            $html = view('og.fire', [
+                'fire'    => $this->fire,
+                'kml'     => null,
+                'kmlVost' => null,
+            ])->render();
 
-        $path = OgRenderer::render((string) $id, $hash, $renderUrl);
+            $path = OgRenderer::render((string) $id, $hash, $html);
+        }
 
         if ($path === null) {
             // Sidecar failed — serve the fallback with a short TTL so we
@@ -121,30 +135,6 @@ class FireController extends Controller
             'Cache-Control' => 'public, max-age=600, s-maxage=1200, stale-while-revalidate=86400',
             'X-Cache'       => is_file($path) && (time() - filemtime($path) > 5) ? 'HIT' : 'MISS',
         ]);
-    }
-
-    // Renders the slim 1200x630 Blade that the headless sidecar screenshots.
-    // Gated by the `og.internal` middleware — never reachable from the web.
-    public function renderOgHtml($id)
-    {
-        $this->setFireByIdCached($id);
-        if ($this->fire === null) {
-            abort(404);
-        }
-
-        // OG blade doesn't reference $fire['risk']; skipping getRiskByFire
-        // saves another API round trip on the sidecar-facing side.
-        $status = LegacyApi::getStatusByFireCached($id);
-        $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
-
-        $kml     = isset($this->fire['kml'])     ? preg_replace("/\r|\n/", '', $this->fire['kml'])     : null;
-        $kmlVost = isset($this->fire['kmlVost']) ? preg_replace("/\r|\n/", '', $this->fire['kmlVost']) : null;
-
-        return response()->view('og.fire', [
-            'fire'    => $this->fire,
-            'kml'     => $kml,
-            'kmlVost' => $kmlVost,
-        ])->header('Cache-Control', 'private, no-store');
     }
 
     // Return type intentionally untyped: response()->file() returns
@@ -319,10 +309,10 @@ class FireController extends Controller
         }
     }
 
-    // OG-only variant that reads from the Redis-cached fetcher. The PHP
-    // controller and the sidecar-facing renderOgHtml both need the same
-    // fire payload, and without cache they each pay for an upstream round
-    // trip. See LegacyApi::getFireCached for the caching contract.
+    // OG-only variant that reads from the Redis-cached fetcher. A burst of
+    // crawlers hitting the same fresh incident would otherwise fan out to
+    // as many upstream calls. See LegacyApi::getFireCached for the caching
+    // contract.
     private function setFireByIdCached($id)
     {
         $fire = LegacyApi::getFireCached($id);

@@ -4,11 +4,11 @@ namespace App\Libs;
 
 use GuzzleHttp;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
-// Thin client for the og-renderer sidecar. Encapsulates the HMAC token, the
-// disk cache path, and the "call the sidecar and save the PNG" flow so the
-// controller can stay a one-liner.
+// Thin client for the og-renderer sidecar. The controller pre-renders the
+// Blade to HTML and hands it here — the sidecar then does setContent +
+// screenshot, no navigation, no callback into PHP. That decoupling is what
+// keeps a crawler storm from starving the PHP-FPM pool.
 class OgRenderer
 {
     // Keep the disk cache path shape stable so a small cronjob can vacuum
@@ -41,18 +41,10 @@ class OgRenderer
         return substr(md5($key), 0, 8);
     }
 
-    // Symmetric token: OgInternal middleware recomputes the same HMAC on
-    // the way in and compares. APP_KEY is the shared secret; if it rotates,
-    // in-flight sidecar calls fail once, then recover on the next miss.
-    public static function token(string $id): string
-    {
-        return hash_hmac('sha256', $id, (string) config('app.key'));
-    }
-
     // Returns the absolute path to a PNG on disk (either cache hit or
     // freshly rendered), or null if the sidecar was unreachable / errored.
     // The caller is expected to fall back to the static PNG when null.
-    public static function render(string $id, string $hash, string $renderUrl): ?string
+    public static function render(string $id, string $hash, string $html): ?string
     {
         $path = self::cachePath($id, $hash);
 
@@ -79,10 +71,9 @@ class OgRenderer
             $resp = $client->request('POST', $endpoint, [
                 'http_errors' => false,
                 'json' => [
-                    'url'    => $renderUrl,
+                    'html'   => $html,
                     'width'  => 1200,
                     'height' => 630,
-                    'token'  => self::token($id),
                 ],
             ]);
         } catch (\Throwable $e) {

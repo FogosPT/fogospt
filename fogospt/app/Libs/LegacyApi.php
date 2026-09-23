@@ -238,13 +238,10 @@ class LegacyApi
         return $result;
     }
 
-    // Redis-cached wrappers used only by the OG share-card pipeline.
-    // The pipeline hits `getFire` and `getStatusByFire` twice per render
-    // (once in FireController::getOgImage to compute the cache-busting
-    // hash, once in FireController::renderOgHtml when the headless sidecar
-    // navigates to /og/fogo/{id}/render). Under concurrent load that pushed
-    // the sidecar past its 8s hard cap, showing up as "og-renderer failed"
-    // warnings. A short Redis cache eliminates the duplication; 10 min is
+    // Redis-cached wrappers used by the OG share-card pipeline. Every
+    // crawler hit on /og/fogo/{id}.png needs the fire payload and its
+    // status history; without a cache a burst of FB + WhatsApp + X hitting
+    // the same fresh incident would fan out to N upstream calls. 10 min is
     // fine for social crawlers, which themselves cache the PNG for hours.
     // Failures are never cached, so a bad response one minute doesn't
     // starve callers for the full TTL.

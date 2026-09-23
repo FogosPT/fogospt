@@ -36,12 +36,12 @@ services:
     image: redis
     command: redis-server
 
-  # Headless-Chromium sidecar that renders the social share card Blade
-  # (/{locale}/og/fogo/{id}/render) into a 1200x630 PNG. Not exposed to the
-  # host — called only from PHP via http://og-renderer:3000 on the compose
-  # network. Deps are baked into the image (see assets/og-renderer/Dockerfile);
-  # runtime `npm install` was fragile because the upstream puppeteer image
-  # runs as UID 10001 and the bind-mounted node_modules refused writes.
+  # Headless-Chromium sidecar. PHP renders the per-fire OG Blade to HTML,
+  # POSTs it here, and this container does `page.setContent + screenshot`
+  # into a 1200x630 PNG. Not exposed to the host — called only from PHP via
+  # http://og-renderer:3000 on the compose network. Deps are baked into the
+  # image (see assets/og-renderer/Dockerfile). No extra_hosts needed:
+  # the sidecar never navigates back into this app.
   og-renderer:
     build:
       context: ./assets/og-renderer
@@ -49,21 +49,8 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3000
-      # Name must match the var read in assets/og-renderer/server.js — a
-      # prior RENDER_TIMEOUT_MS here never took effect and the 8s default
-      # applied, causing "hard render cap exceeded" 500s under crawler load.
+      # Name must match the var read in assets/og-renderer/server.js.
       - HARD_RENDER_CAP_MS=15000
-    # The sidecar navigates to https://fogos.pt/... to render the internal
-    # Blade. Mapping fogos.pt (and www) to the host gateway means the
-    # request never leaves the box: Chrome connects to nginx directly with
-    # SNI = fogos.pt, the certificate matches, and nginx's server_name
-    # routes as usual — no Cloudflare hop, no public DNS round-trip.
-    # host.docker.internal stays mapped for dev overrides.
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "fogos.pt:host-gateway"
-      - "www.fogos.pt:host-gateway"
-      - "beta.fogos.pt:host-gateway"
 
 networks:
   default:

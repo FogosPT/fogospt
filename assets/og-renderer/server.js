@@ -7,17 +7,20 @@ const puppeteer = require('puppeteer');
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 const READY_FLAG = 'window.__ogReady === true';
-// The data-first Blade has no async I/O (no tiles, no KML), so a render
-// is essentially "load HTML + paint + screenshot" — sub-second on a warm
-// browser in isolation. Under a crawler storm, though, N concurrent
-// Chrome pages contend for CPU and each phase (goto/paint/screenshot)
-// stretches out; observed p99 lands around 10-12s. Give the cap real
-// headroom so a legitimately slow render still succeeds instead of 500ing.
+// The Blade renders in PHP and is POSTed here as raw HTML — no navigation,
+// no network I/O beyond the sidecar's own paint. Sub-second on a warm
+// browser in isolation. The cap exists only as a backstop for a wedged
+// Chrome; under healthy load it should never fire.
 const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 15000);
 const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 8);
 const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS || 5000);
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+    logger: true,
+    // The Blade HTML can push past Fastify's 1 MB default when the timeline
+    // and status labels are long. Give ourselves headroom without going wild.
+    bodyLimit: 4 * 1024 * 1024,
+});
 
 // Memoised browser. Cleared on disconnect so the next getBrowser() call
 // launches a fresh instance instead of handing out a dead reference.
@@ -43,19 +46,11 @@ async function getBrowser() {
     }
     browserPromise = puppeteer.launch({
         headless: 'new',
-        // In production, https://fogos.pt is served by nginx with a
-        // Cloudflare Origin CA certificate — trusted by the CF edge, but
-        // not by public root stores. The sidecar navigates there via a
-        // host-gateway mapping (see docker-compose.yml extra_hosts) so
-        // the request never leaves the box, and it's already gated by an
-        // HMAC token. Chrome refusing on cert grounds is pure friction.
-        acceptInsecureCerts: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--font-render-hinting=medium',
-            '--ignore-certificate-errors',
         ],
     }).then((b) => {
         // If Chromium ever dies (OOM, segfault, docker kill), forget it so
@@ -111,91 +106,101 @@ function releaseSlot() {
 
 app.get('/health', async () => ({ ok: true, activeRenders, queued: waiters.length }));
 
-async function renderPngInner(log, { url, w, h, token }) {
-    let page;
+async function renderPngInner(log, state, { html, w, h }) {
     try {
         const browser = await getBrowser();
-        page = await browser.newPage();
-        await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
+        state.page = await browser.newPage();
+        await state.page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
 
-        if (token && typeof token === 'string') {
-            await page.setExtraHTTPHeaders({ 'X-Og-Token': token });
-        }
-
-        // `domcontentloaded` instead of `networkidle0`: the Leaflet map
-        // keeps requesting tiles (and fitBounds triggers another wave)
-        // long after the useful pixels are painted, so networkidle0 could
-        // stretch past 20s or never fire. The Blade sets window.__ogReady
-        // once tiles have loaded (via `on('load')`) with a 2.5s belt —
-        // that's the authoritative "safe to screenshot" signal.
-        const resp = await page.goto(url, {
+        // setContent parses and commits the DOM without any navigation —
+        // no origin fetch, no TLS handshake, no dependency on the PHP-FPM
+        // pool. The Blade must therefore inline every asset it needs
+        // (SVGs, fonts) because relative URLs resolve against about:blank.
+        await state.page.setContent(html, {
             waitUntil: 'domcontentloaded',
-            timeout: 10000,
+            timeout: 5000,
         });
-        if (!resp || !resp.ok()) {
-            const status = resp ? resp.status() : 0;
-            const err = new Error(`origin returned ${status}`);
-            err.statusCode = 502;
-            throw err;
-        }
 
         // Blade sets __ogReady on the second requestAnimationFrame, so
         // this normally resolves within one frame. Any timeout here now
         // is a real bug (script never ran) — but still fall through and
         // capture rather than 500 the crawler.
         try {
-            await page.waitForFunction(READY_FLAG, { timeout: 2000 });
+            await state.page.waitForFunction(READY_FLAG, { timeout: 2000 });
         } catch (e) {
             log.warn({ err: e.message }, 'ogReady flag not set within 2s, capturing anyway');
         }
 
-        return await page.screenshot({ type: 'png', clip: { x: 0, y: 0, width: w, height: h } });
+        return await state.page.screenshot({ type: 'png', clip: { x: 0, y: 0, width: w, height: h } });
     } finally {
-        if (page) await page.close().catch(() => {});
+        // If the hard cap already forced a close, skip — page.close() on an
+        // already-closed page rejects and we'd swallow it anyway.
+        if (state.page && !state.pageClosedByCap) {
+            await state.page.close().catch(() => {});
+        }
     }
 }
 
 // Wrap the actual render in a hard cap so a hung page can never pin an
-// inFlight entry forever. We do NOT kill the browser here — that would
-// yank sessions out from under sibling renders in progress (which then
-// die with "Session closed"). If the browser truly wedged, its
-// `disconnected` event handler nulls out browserPromise on its own.
+// inFlight entry forever. On cap fire we close JUST the current page —
+// killing the whole browser would yank sessions out from under sibling
+// renders (they'd die with "Session closed"). Closing the page is what
+// unblocks any await inside renderPngInner so its finally can run and
+// stop the Chrome tab from leaking.
 function renderPng(log, opts) {
+    const state = { page: null, pageClosedByCap: false };
     let timeoutId;
+    const inner = renderPngInner(log, state, opts);
     return Promise.race([
-        renderPngInner(log, opts).then((v) => { clearTimeout(timeoutId); return v; }),
+        inner.then((v) => { clearTimeout(timeoutId); return v; }),
         new Promise((_, reject) => {
             timeoutId = setTimeout(() => {
                 log.error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`);
+                if (state.page) {
+                    state.pageClosedByCap = true;
+                    state.page.close().catch(() => {});
+                }
                 reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`));
             }, HARD_RENDER_CAP_MS);
         }),
     ]);
 }
 
-// Coalesce concurrent renders of the same URL. When many crawlers hit
+// Coalesce concurrent renders of the same payload. When many crawlers hit
 // /og/fogo/{id}.png at once and every request misses the PHP disk cache,
-// each one would spawn a Chrome page — 200 MB × N + CPU. Keyed by url+size
-// so two clients asking for the same card wait on the same rendering
-// promise. Cleared on completion (success or failure).
+// each one would spawn a Chrome page — 200 MB × N + CPU. Keyed by a hash
+// of the HTML so two clients asking for the same card wait on the same
+// rendering promise. Cleared on completion (success or failure).
 const inFlight = new Map();
 
+function coalesceKey(html, w, h) {
+    // Cheap FNV-1a-ish rolling hash over the HTML — we don't need
+    // cryptographic strength, just something that collides on identical
+    // payloads. Full-string keys would blow the map on long timelines.
+    let h1 = 0x811c9dc5;
+    for (let i = 0; i < html.length; i++) {
+        h1 ^= html.charCodeAt(i);
+        h1 = (h1 * 0x01000193) >>> 0;
+    }
+    return `${h1.toString(16)}|${w}x${h}`;
+}
+
 app.post('/render', async (req, reply) => {
-    const { url, width, height, token } = req.body || {};
-    if (!url || typeof url !== 'string') {
-        return reply.code(400).send({ error: 'url is required' });
+    const { html, width, height } = req.body || {};
+    if (!html || typeof html !== 'string') {
+        return reply.code(400).send({ error: 'html is required' });
     }
 
     const w = Number(width)  || 1200;
     const h = Number(height) ||  630;
-    const key = `${url}|${w}x${h}`;
+    const key = coalesceKey(html, w, h);
 
     let promise = inFlight.get(key);
     if (!promise) {
         promise = (async () => {
             await acquireSlot();
             try {
-                return await renderPng(req.log, { url, w, h, token });
+                return await renderPng(req.log, { html, w, h });
             } finally {
                 releaseSlot();
             }

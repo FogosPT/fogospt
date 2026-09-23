@@ -59,6 +59,5 @@ class Kernel extends HttpKernel
 		'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'locale.match'  => \App\Http\Middleware\LocaleMatch::class,
-		'og.internal'   => \App\Http\Middleware\OgInternal::class,
 	];
 }
