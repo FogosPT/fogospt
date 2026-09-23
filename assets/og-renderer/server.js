@@ -14,6 +14,20 @@ const READY_FLAG = 'window.__ogReady === true';
 const HARD_RENDER_CAP_MS = Number(process.env.HARD_RENDER_CAP_MS || 15000);
 const MAX_CONCURRENT_RENDERS = Number(process.env.MAX_CONCURRENT_RENDERS || 8);
 const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS || 5000);
+// Recycle the browser periodically. A single Chromium instance held open
+// under sustained render churn eventually degrades even on a well-resourced
+// box (accumulated renderer processes, GPU cache, IPC queues) — pages start
+// hanging on waitForFunction or screenshot while CPU and RAM sit idle. We
+// bound that state by closing the browser after either threshold, but only
+// while there are no active renders so we never yank a session mid-flight.
+const RECYCLE_AFTER_RENDERS = Number(process.env.RECYCLE_AFTER_RENDERS || 500);
+const RECYCLE_AFTER_MS = Number(process.env.RECYCLE_AFTER_MS || 30 * 60 * 1000);
+// If we get this many consecutive hard-cap failures with zero success in
+// between, Chrome is wedged — force a browser restart even if there are
+// still active renders. Those active renders would have hit the cap anyway,
+// so we're not throwing away work, just failing them faster and letting
+// the next request find a healthy browser.
+const CAP_FIRES_BEFORE_FORCE_RECYCLE = Number(process.env.CAP_FIRES_BEFORE_FORCE_RECYCLE || 3);
 
 const app = Fastify({
     logger: true,
@@ -25,6 +39,9 @@ const app = Fastify({
 // Memoised browser. Cleared on disconnect so the next getBrowser() call
 // launches a fresh instance instead of handing out a dead reference.
 let browserPromise = null;
+let browserRenderCount = 0;
+let browserLaunchedAt = 0;
+let capFiresSinceSuccess = 0;
 
 function browserIsAlive(b) {
     if (!b) return false;
@@ -44,7 +61,7 @@ async function getBrowser() {
         // Stale — fall through to a fresh launch.
         browserPromise = null;
     }
-    browserPromise = puppeteer.launch({
+    const launch = puppeteer.launch({
         headless: 'new',
         args: [
             '--no-sandbox',
@@ -53,20 +70,53 @@ async function getBrowser() {
             '--font-render-hinting=medium',
         ],
     }).then((b) => {
+        browserLaunchedAt = Date.now();
+        browserRenderCount = 0;
         // If Chromium ever dies (OOM, segfault, docker kill), forget it so
-        // the next request rebuilds. Without this the memoised promise
-        // hands out a stale, disconnected Browser and every subsequent
-        // newPage() throws with a confusing "Protocol error" trace.
+        // the next request rebuilds. Guard against nulling browserPromise
+        // when a fresh browser has already replaced this one — the
+        // recycle path swaps browserPromise before closing the old browser,
+        // and its disconnect fires later; without the identity check we'd
+        // nuke the new browser's promise.
         b.on('disconnected', () => {
             app.log.warn('browser disconnected — will relaunch on next request');
-            browserPromise = null;
+            if (browserPromise === launch) {
+                browserPromise = null;
+            }
         });
         return b;
     }).catch((err) => {
-        browserPromise = null;
+        if (browserPromise === launch) browserPromise = null;
         throw err;
     });
+    browserPromise = launch;
     return browserPromise;
+}
+
+// Swap the browser reference out and close the old one asynchronously.
+// The disconnect handler on the old browser is identity-guarded so it
+// won't null the new promise when it eventually fires.
+function swapBrowser(log, reason) {
+    if (!browserPromise) return;
+    const rendered = browserRenderCount;
+    const ageMs = browserLaunchedAt > 0 ? Date.now() - browserLaunchedAt : 0;
+    const stale = browserPromise;
+    browserPromise = null;
+    browserRenderCount = 0;
+    browserLaunchedAt = 0;
+    capFiresSinceSuccess = 0;
+    log.info({ rendered, ageMs, ...reason }, 'recycling browser');
+    stale.then((b) => b.close().catch(() => {})).catch(() => {});
+}
+
+// Called when a render completes and the slot pool drops to idle. Recycle
+// if the browser has crossed either quiet-threshold (render count or age).
+function maybeRecycleBrowser(log) {
+    if (activeRenders !== 0 || !browserPromise) return;
+    const dueByCount = browserRenderCount >= RECYCLE_AFTER_RENDERS;
+    const dueByTime = browserLaunchedAt > 0 && Date.now() - browserLaunchedAt >= RECYCLE_AFTER_MS;
+    if (!dueByCount && !dueByTime) return;
+    swapBrowser(log, { dueByCount, dueByTime });
 }
 
 // Counting semaphore. Caps concurrent Chrome pages so a MISS storm can't
@@ -104,7 +154,14 @@ function releaseSlot() {
     }
 }
 
-app.get('/health', async () => ({ ok: true, activeRenders, queued: waiters.length }));
+app.get('/health', async () => ({
+    ok: true,
+    activeRenders,
+    queued: waiters.length,
+    browserRenderCount,
+    browserAgeMs: browserLaunchedAt > 0 ? Date.now() - browserLaunchedAt : 0,
+    capFiresSinceSuccess,
+}));
 
 async function renderPngInner(log, state, { html, w, h }) {
     try {
@@ -144,21 +201,34 @@ async function renderPngInner(log, state, { html, w, h }) {
 // Wrap the actual render in a hard cap so a hung page can never pin an
 // inFlight entry forever. On cap fire we close JUST the current page —
 // killing the whole browser would yank sessions out from under sibling
-// renders (they'd die with "Session closed"). Closing the page is what
-// unblocks any await inside renderPngInner so its finally can run and
-// stop the Chrome tab from leaking.
+// renders (they'd die with "Session closed"). Closing the page unblocks
+// any await inside renderPngInner so its finally can run and stop the
+// Chrome tab from leaking.
+//
+// A run of consecutive cap fires with no success in between is treated as
+// a wedged-browser signal — we swap the whole browser out (see swapBrowser).
+// Under sustained load activeRenders may never hit 0, so idle-only
+// recycling wouldn't fire and the wedge would persist.
 function renderPng(log, opts) {
     const state = { page: null, pageClosedByCap: false };
     let timeoutId;
     const inner = renderPngInner(log, state, opts);
     return Promise.race([
-        inner.then((v) => { clearTimeout(timeoutId); return v; }),
+        inner.then((v) => {
+            clearTimeout(timeoutId);
+            capFiresSinceSuccess = 0;
+            return v;
+        }),
         new Promise((_, reject) => {
             timeoutId = setTimeout(() => {
                 log.error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`);
                 if (state.page) {
                     state.pageClosedByCap = true;
                     state.page.close().catch(() => {});
+                }
+                capFiresSinceSuccess++;
+                if (capFiresSinceSuccess >= CAP_FIRES_BEFORE_FORCE_RECYCLE) {
+                    swapBrowser(log, { reason: 'consecutive-cap-fires', fires: capFiresSinceSuccess });
                 }
                 reject(new Error(`hard render cap ${HARD_RENDER_CAP_MS}ms exceeded`));
             }, HARD_RENDER_CAP_MS);
@@ -199,10 +269,12 @@ app.post('/render', async (req, reply) => {
     if (!promise) {
         promise = (async () => {
             await acquireSlot();
+            browserRenderCount++;
             try {
                 return await renderPng(req.log, { html, w, h });
             } finally {
                 releaseSlot();
+                maybeRecycleBrowser(req.log);
             }
         })().finally(() => inFlight.delete(key));
         inFlight.set(key, promise);

@@ -51,6 +51,11 @@ services:
       - PORT=3000
       # Name must match the var read in assets/og-renderer/server.js.
       - HARD_RENDER_CAP_MS=15000
+      # Prod host has 12 cores and idles well under 20% CPU during a
+      # crawler storm — the 8-slot default was leaving capacity on the
+      # table. 12 concurrent renders × ~200 MB Chrome memory per page
+      # still fits comfortably in ~2.5 GB of the box's 7.7 GB RAM.
+      - MAX_CONCURRENT_RENDERS=12
 
 networks:
   default:
