@@ -203,11 +203,16 @@ $(document).ready(function () {
         var mcListHtml;
         if (mcNames.length) {
             var preview = mcNames.slice(0, 4);
-            var extra = mcNames.length - preview.length;
+            // NB: don't shadow the outer `extra` — a plain `var extra` here
+            // hoists to the enclosing $(document).ready closure and clobbers
+            // the global `function extra(id)`, breaking `extra(fireId)` on
+            // every /fogo/{id} load (which then bails out of ready() and
+            // kills every panel section registered later on).
+            var extraCount = mcNames.length - preview.length;
             var moreTmpl = mcTexts.moreCount || '+ {n} more';
             mcListHtml = preview.map(function (n) { return n.toLowerCase(); }).join(', ')
-                + (extra > 0 ? ' <span class="fogos-map-summary__more">'
-                    + moreTmpl.replace('{n}', extra) + '</span>' : '');
+                + (extraCount > 0 ? ' <span class="fogos-map-summary__more">'
+                    + moreTmpl.replace('{n}', extraCount) + '</span>' : '');
         } else {
             mcListHtml = '<span class="fogos-map-summary__more">'
                 + (mcTexts.allMunicipalities || 'Portugal continental') + '</span>';
