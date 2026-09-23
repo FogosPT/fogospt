@@ -143,6 +143,13 @@
                                         @include('elements.meteo')
                                     </div>
 
+                                    @if(!empty($fire['weatherWarnings']) && is_array($fire['weatherWarnings']))
+                                        <h4 class="card-title">@lang('elements.cards.weatherWarnings.title')</h4>
+                                        <div class="f-weather-warnings">
+                                            @include('elements.weather-warnings')
+                                        </div>
+                                    @endif
+
                                     <h4 class="card-title">@lang('elements.cards.shares.title')</h4>
                                     <div class="row justify-content-center">
                                         <div class="col-8">

@@ -42,6 +42,10 @@
             'extra' => [
                 'title' => 'Informação extra'
             ],
+            'weatherWarnings' => [
+                'title' => 'Avisos meteorológicos',
+                'source' => 'Fonte: IPMA',
+            ],
             'shares' => [
                 'title' => 'Partilhar'
             ],

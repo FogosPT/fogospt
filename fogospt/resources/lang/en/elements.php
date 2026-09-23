@@ -44,6 +44,10 @@ return [
         'extra' => [
             'title' => 'More info'
         ],
+        'weatherWarnings' => [
+            'title' => 'Weather warnings',
+            'source' => 'Source: IPMA',
+        ],
         'shares' => [
             'title' => 'Share'
         ],

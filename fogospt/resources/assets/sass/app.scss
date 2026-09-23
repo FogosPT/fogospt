@@ -1210,6 +1210,61 @@ têm margens uniformes. */
   text-wrap: wrap;
 }
 
+/* IPMA weather warnings, per-incident (data delivered inline in the incident
+   payload — see docs/weatherWarnings integration). Card hides itself when
+   there are no active warnings, mirroring .extra. */
+.weather-warnings {
+  display: none;
+
+  &.active {
+    display: flex;
+  }
+}
+
+.weather-warnings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.weather-warnings-item {
+  padding: .5rem 0;
+
+  & + & {
+    border-top: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .25rem;
+  }
+}
+
+.weather-warnings-badge {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.weather-warnings-when {
+  font-size: .8rem;
+  color: #666;
+}
+
+.weather-warnings-text {
+  font-size: .9rem;
+  color: #333;
+}
+
 /* Unified map control panel */
 .fogos-panel {
   width: 260px;

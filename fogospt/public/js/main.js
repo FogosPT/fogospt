@@ -1261,6 +1261,7 @@ function fillSidebar(item) {
     $('.f-update').text(momentDate)
     $('.f-start').text(item.date + ' ' + item.hour)
     $('.click-notification').data('id', item.id)
+    updateWeatherWarningsSidebar(item)
 
     var notificationsAuth = store.get('notificationsAuth')
     if (notificationsAuth) {
@@ -1279,6 +1280,77 @@ function escapeFireText(s) {
     return String(s == null ? '' : s)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// IPMA weather warnings for the fire's district, injected inline in the
+// incident payload by the backend. Rendered client-side because the data
+// arrives with each incident from /v2/incidents/active — no extra fetch.
+var WEATHER_WARNING_BG = { yellow: '#FFB202', orange: '#FF6E02', red: '#B81E1F' };
+
+function formatWeatherWarningTime(iso) {
+    if (!iso) return '';
+    // Backend delivers a naive Europe/Lisbon ISO string ("YYYY-MM-DDTHH:MM:SS"
+    // with no timezone). Feeding it straight to new Date() interprets it as
+    // browser-local time, which is correct enough for a PT-facing site — the
+    // vast majority of visitors are already in Europe/Lisbon and matching the
+    // clock they see on the wall is what they expect.
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return escapeFireText(iso);
+    var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+function renderWeatherWarnings(warnings) {
+    if (!Array.isArray(warnings) || warnings.length === 0) return '';
+    var html = '<ul class="weather-warnings-list">';
+    for (var i = 0; i < warnings.length; i++) {
+        var w = warnings[i] || {};
+        var level = WEATHER_WARNING_BG[w.awarenessLevelID] ? w.awarenessLevelID : 'yellow';
+        var bg = WEATHER_WARNING_BG[level];
+        var type = escapeFireText(w.awarenessTypeName || '');
+        var start = formatWeatherWarningTime(w.startTime);
+        var end = formatWeatherWarningTime(w.endTime);
+        var text = escapeFireText(w.text || '');
+        html += '<li class="weather-warnings-item weather-warnings-item--' + level + '">'
+            + '<div class="weather-warnings-item__head">'
+            +   '<span class="weather-warnings-badge" style="background:' + bg + ';">' + type + '</span>'
+            +   (start && end ? '<span class="weather-warnings-when">' + start + ' → ' + end + '</span>' : '')
+            + '</div>'
+            + (text ? '<p class="weather-warnings-text mb-0">' + text + '</p>' : '')
+            + '</li>';
+    }
+    html += '</ul>';
+    return html;
+}
+
+function highestWeatherWarningLevel(warnings) {
+    var rank = { yellow: 1, orange: 2, red: 3 };
+    var best = 0;
+    var bestLevel = null;
+    for (var i = 0; i < warnings.length; i++) {
+        var lvl = warnings[i] && warnings[i].awarenessLevelID;
+        var r = rank[lvl] || 0;
+        if (r > best) { best = r; bestLevel = lvl; }
+    }
+    return bestLevel;
+}
+
+function updateWeatherWarningsSidebar(item) {
+    var $container = $('.f-weather-warnings');
+    if (!$container.length) return;
+    var warnings = (item && Array.isArray(item.weatherWarnings)) ? item.weatherWarnings : [];
+    var $wrapper = $('.weather-warnings');
+    var $card = $wrapper.find('.card');
+    if (warnings.length === 0) {
+        $container.empty();
+        $wrapper.removeClass('active').css('display', 'none');
+        $card.css('border-left', '');
+        return;
+    }
+    $container.html(renderWeatherWarnings(warnings));
+    $wrapper.addClass('active').css('display', '');
+    var top = highestWeatherWarningLevel(warnings);
+    $card.css('border-left', top ? '4px solid ' + WEATHER_WARNING_BG[top] : '');
 }
 
 // Hover summary on each fire marker: location, start time and the
