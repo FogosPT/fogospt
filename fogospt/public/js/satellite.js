@@ -46,6 +46,12 @@
         return { color: '#c62828', weight: 2, opacity: 0.9, fillColor: '#e53935', fillOpacity: 0.35 };
     }
 
+    // Uncorrelated MTG detections — no matching ANEPC incident. Dashed orange
+    // so they read as "unconfirmed" against the solid red of correlated perimeters.
+    function perimeterUncorrelatedStyle() {
+        return { color: '#ef6c00', weight: 2, opacity: 0.9, fillColor: '#ff9800', fillOpacity: 0.18, dashArray: '5,4' };
+    }
+
     function styleForHour(feature) {
         var h = feature && feature.properties && feature.properties.hour;
         var c = HOUR_RAMP[h] || '#e53935';
@@ -65,6 +71,12 @@
         layer.bindTooltip('+' + p.hour + 'h ' + area, { sticky: true, direction: 'top' });
     }
 
+    function bindPerimeterPopup(feature, layer) {
+        var p = feature && feature.properties;
+        if (!p || !p.disclaimer) return;
+        layer.bindPopup('<div class="fogos-sat-popup">' + escapeHtml(p.disclaimer) + '</div>');
+    }
+
     function fmtHHMM(iso) {
         if (!iso) return '';
         var d = new Date(iso);
@@ -72,6 +84,34 @@
         var hh = String(d.getHours()).padStart(2, '0');
         var mm = String(d.getMinutes()).padStart(2, '0');
         return hh + ':' + mm;
+    }
+
+    // Server sends X-Stale: true only when X-Fetched-At is older than the
+    // upstream freshness window. Used to render an "old data" badge instead
+    // of dropping the layer during a FOCO outage.
+    function readStaleness(xhr) {
+        if (!xhr || !xhr.getResponseHeader) return { stale: false, mins: 0, fetched: null };
+        var stale = xhr.getResponseHeader('X-Stale') === 'true';
+        var fetched = xhr.getResponseHeader('X-Fetched-At');
+        var mins = 0;
+        if (stale && fetched) {
+            var t = new Date(fetched).getTime();
+            if (!isNaN(t)) mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+        }
+        return { stale: stale, mins: mins, fetched: fetched };
+    }
+
+    function formatBadge(fetchedIso, staleness) {
+        var t = (window.trans && window.trans.sat) || {};
+        var prefix = t.lastUpdate || 'Satélite';
+        var hhmm = fmtHHMM(fetchedIso);
+        var base = hhmm ? (prefix + ': ' + hhmm) : '';
+        if (staleness.stale) {
+            var tpl = t.stale || 'Dados de há :mins min';
+            var staleStr = tpl.replace(':mins', staleness.mins);
+            return base ? (base + ' — ' + staleStr) : staleStr;
+        }
+        return base;
     }
 
     function startPoll(fn, ms) {
@@ -150,10 +190,12 @@
         var tp = (window.trans && window.trans.panel) || {};
         var label = tp.perimeters || 'Perímetros satélite';
         var itemLabel = tp.perimetersActive || label;
+        var uncorrLabel = tp.perimetersUncorrelated || 'Detecções por confirmar';
 
         var perimLayer = L.geoJSON(null, { style: perimeterStyle, interactive: false });
+        var uncorrLayer = L.geoJSON(null, { style: perimeterUncorrelatedStyle, interactive: false });
 
-        // Small floating timestamp badge — only mounted while the layer is on.
+        // Small floating timestamp badge — mounted while at least one layer is on.
         var TsControl = L.Control.extend({
             options: { position: 'bottomleft' },
             onAdd: function () {
@@ -162,35 +204,65 @@
                 this._el = el;
                 return el;
             },
-            setText: function (txt) { if (this._el) this._el.textContent = txt; }
+            setText: function (txt) { if (this._el) this._el.textContent = txt; },
+            setStale: function (stale) {
+                if (!this._el) return;
+                this._el.classList.toggle('fogos-sat-badge--stale', !!stale);
+            }
         });
         var ts = new TsControl();
 
-        var poll = null;
-        function refresh() {
+        function ensureBadge() { if (!ts._map) ts.addTo(map); }
+        function maybeRemoveBadge() {
+            if (!map.hasLayer(perimLayer) && !map.hasLayer(uncorrLayer) && ts._map) {
+                map.removeControl(ts);
+            }
+        }
+        function applyBadge(xhr) {
+            var stn = readStaleness(xhr);
+            ts.setText(formatBadge(stn.fetched, stn));
+            ts.setStale(stn.stale);
+        }
+
+        var pollCorr = null;
+        var pollUncorr = null;
+
+        function refreshCorrelated() {
             apiGet('/v2/fire/perimeters')
                 .done(function (fc, _s, xhr) {
-                    if (!fc || !fc.features || !fc.features.length) {
-                        perimLayer.clearLayers();
-                        ts.setText('');
-                        return;
-                    }
                     perimLayer.clearLayers();
-                    perimLayer.addData(fc);
-                    var fetched = xhr.getResponseHeader('X-Fetched-At');
-                    var hhmm = fmtHHMM(fetched);
-                    ts.setText(hhmm ? ('Satélite: ' + hhmm) : '');
+                    if (fc && fc.features && fc.features.length) perimLayer.addData(fc);
+                    applyBadge(xhr);
                 })
                 .fail(function () { /* silent — keep last-known layer */ });
         }
 
+        function refreshUncorrelated() {
+            apiGet('/v2/fire/perimeters/uncorrelated')
+                .done(function (fc, _s, xhr) {
+                    uncorrLayer.clearLayers();
+                    if (fc && fc.features && fc.features.length) uncorrLayer.addData(fc);
+                    if (!map.hasLayer(perimLayer)) applyBadge(xhr);
+                })
+                .fail(function () { /* silent */ });
+        }
+
         perimLayer.on('add', function () {
-            ts.addTo(map);
-            if (!poll) poll = startPoll(refresh, intervalMs);
+            ensureBadge();
+            if (!pollCorr) pollCorr = startPoll(refreshCorrelated, intervalMs);
         });
         perimLayer.on('remove', function () {
-            if (poll) { poll.stop(); poll = null; }
-            if (ts._map) map.removeControl(ts);
+            if (pollCorr) { pollCorr.stop(); pollCorr = null; }
+            maybeRemoveBadge();
+        });
+
+        uncorrLayer.on('add', function () {
+            ensureBadge();
+            if (!pollUncorr) pollUncorr = startPoll(refreshUncorrelated, intervalMs);
+        });
+        uncorrLayer.on('remove', function () {
+            if (pollUncorr) { pollUncorr.stop(); pollUncorr = null; }
+            maybeRemoveBadge();
         });
 
         if (panel && typeof panel.registerSection === 'function') {
@@ -198,15 +270,17 @@
             // toggle. Default-off; user's choice persists in localStorage.
             panel.registerSection('perimeters', label, 'checkbox');
             panel.addItem('perimeters', 'active', itemLabel, perimLayer, defaultOn);
+            panel.addItem('perimeters', 'uncorrelated', uncorrLabel, uncorrLayer, false);
         } else {
             // Madeira fallback — plain L.control.layers overlay.
             var overlays = {};
             overlays[label] = perimLayer;
+            overlays[uncorrLabel] = uncorrLayer;
             L.control.layers(null, overlays, { position: 'topright' }).addTo(map);
             if (defaultOn) perimLayer.addTo(map);
         }
 
-        return { layer: perimLayer };
+        return { layer: perimLayer, uncorrelated: uncorrLayer };
     }
 
     // ---- Detail page ----
@@ -227,13 +301,16 @@
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        var perimLayer = L.geoJSON(null, { style: perimeterStyle, interactive: false }).addTo(map);
+        var perimLayer = L.geoJSON(null, { style: perimeterStyle, onEachFeature: bindPerimeterPopup }).addTo(map);
         var simLayer = L.geoJSON(null, { style: styleForHour, onEachFeature: bindIsochroneTooltip }).addTo(map);
 
         var $ts = $('.js-sat-ts');
         var $empty = $('.js-sat-empty');
         var $areas = $('.js-sat-areas');
+        var $legend = $('.fogos-sat-legend');
+        var legendDefault = $legend.length ? $legend.text() : '';
         var hasFitted = false;
+        var lastPerimeterError = null;
 
         // Animation state — bloom hour-by-hour, hold, loop.
         var animTimer = null;
@@ -296,6 +373,11 @@
             } catch (e) {}
         }
 
+        function updateLegend(disclaimer) {
+            if (!$legend.length) return;
+            $legend.text(disclaimer || legendDefault);
+        }
+
         function refresh() {
             var pReq = apiGet('/v2/incidents/' + encodeURIComponent(fireId) + '/perimeter');
             var sReq = apiGet('/v2/incidents/' + encodeURIComponent(fireId) + '/simulation');
@@ -308,6 +390,10 @@
                 if (hasFeatures) fitOnce(perimLayer);
                 var stamp = hasFeatures ? fc.fetched_at : null;
                 updateTimestamp(stamp);
+                if (fc && fc.disclaimer) updateLegend(fc.disclaimer);
+                lastPerimeterError = (!hasFeatures && fc && Array.isArray(fc.errors) && fc.errors.length)
+                    ? fc.errors[0]
+                    : null;
                 updateEmpty();
             }).fail(function () { /* silent */ });
 
@@ -321,6 +407,7 @@
                 });
                 simLayer.addData(fc);
                 if (fc.fetched_at) updateTimestamp(fc.fetched_at);
+                if (fc.disclaimer && !perimLayer.getLayers().length) updateLegend(fc.disclaimer);
                 if (!hasFitted) fitOnce(simLayer);
                 updateEmpty();
                 hideAllIsochrones();
@@ -340,8 +427,19 @@
 
         function updateEmpty() {
             var isEmpty = (perimLayer.getLayers().length === 0) && (simLayer.getLayers().length === 0);
-            if (isEmpty) { $empty.removeClass('d-none'); $ts.text(''); }
-            else $empty.addClass('d-none');
+            if (!isEmpty) { $empty.addClass('d-none'); return; }
+
+            var t = (window.trans && window.trans.sat) || {};
+            var msg;
+            if (lastPerimeterError) {
+                // No perimeter is possible for this incident (e.g. coordinates outside MTG coverage).
+                var tpl = t.noPerimeter || 'Sem perímetro possível para esta ocorrência: :message';
+                msg = tpl.replace(':message', lastPerimeterError.message || lastPerimeterError.code || '');
+            } else {
+                msg = t.empty || 'Sem dados satélite disponíveis para esta ocorrência.';
+            }
+            $empty.text(msg).removeClass('d-none');
+            $ts.text('');
         }
 
         var poll = startPoll(refresh, intervalMs);

@@ -103,8 +103,9 @@ return [
         'aerial'           => 'Medios aéreos',
         'planes'           => 'Aviones y helicópteros',
         'planesTracks'     => 'Aviones y helicópteros con trayectos',
-        'perimeters'       => 'Perímetros satélite',
-        'perimetersActive' => 'Activos (últimas pasadas)',
+        'perimeters'             => 'Perímetros satélite',
+        'perimetersActive'       => 'Activos (últimas pasadas)',
+        'perimetersUncorrelated' => 'Detecciones por confirmar',
     ],
     'planes' => [
         'altitude' => 'Altitud',

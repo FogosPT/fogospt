@@ -56,9 +56,11 @@
             ],
             'satellite' => [
                 'title'              => 'Perímetro y propagación (satélite)',
-                'legend'             => 'Perímetro rojo: área quemada estimada. Isócronas: propagación simulada a 1–6 h.',
+                'legend'             => 'Evidencia de satélite MTG (LSA SAF/EUMETSAT). Complementa — no sustituye — la información oficial de la ANEPC.',
                 'empty'              => 'Sin datos satélite disponibles para esta incidencia.',
+                'noPerimeter'        => 'Sin perímetro posible para esta incidencia: :message',
                 'lastUpdate'         => 'Satélite',
+                'stale'              => 'Datos de hace :mins min',
                 'affectedConcelhos'  => 'Municipios afectados',
                 'affectedFreguesias' => 'Parroquias afectadas',
                 'none'               => '—',

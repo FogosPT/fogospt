@@ -1652,6 +1652,19 @@ têm margens uniformes. */
   display: none;
 }
 
+// Stale — server flagged X-Stale: true (upstream FOCO cache >30 min old).
+// Keep the layer visible but visually warn the user.
+.fogos-sat-badge--stale {
+  background: rgba(255, 193, 7, .95);
+  color: #5a3a00;
+}
+
+.fogos-sat-popup {
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .fogos-sat-anim {
   background: $c-orange;
   color: #fff;

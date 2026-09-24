@@ -64,9 +64,11 @@ return [
         ],
         'satellite' => [
             'title'              => 'Perimeter and spread (satellite)',
-            'legend'             => 'Red perimeter: estimated burned area. Isochrones: simulated spread at 1–6 h.',
+            'legend'             => 'MTG satellite evidence (LSA SAF/EUMETSAT). Complements — does not replace — official ANEPC data.',
             'empty'              => 'No satellite data available for this incident.',
+            'noPerimeter'        => 'No perimeter available for this incident: :message',
             'lastUpdate'         => 'Satellite',
+            'stale'              => 'Data from :mins min ago',
             'affectedConcelhos'  => 'Affected municipalities',
             'affectedFreguesias' => 'Affected parishes',
             'none'               => '—',

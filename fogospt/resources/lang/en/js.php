@@ -103,8 +103,9 @@ return [
         'aerial'           => 'Aerial assets',
         'planes'           => 'Planes & helicopters',
         'planesTracks'     => 'Planes & helicopters with tracks',
-        'perimeters'       => 'Satellite perimeters',
-        'perimetersActive' => 'Active (latest passes)',
+        'perimeters'             => 'Satellite perimeters',
+        'perimetersActive'       => 'Active (latest passes)',
+        'perimetersUncorrelated' => 'Unconfirmed detections',
     ],
     'planes' => [
         'altitude' => 'Altitude',
