@@ -1,6 +1,10 @@
 services:
   fogospt:
-    image: php:8.3-fpm
+    # Pinned to a patch release (not the floating 8.3-fpm tag) so a stale
+    # cached image can't silently run a vulnerable build. 8.3.36 fixes
+    # CVE-2026-109618 / CVE-2026-109619 (pre-app RCE, 2026-10-21 advisory).
+    # Bump deliberately; never go below 8.3.36.
+    image: php:8.3.36-fpm
     container_name: fogospt
     hostname: fogospt
     restart: unless-stopped
