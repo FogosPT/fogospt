@@ -194,7 +194,8 @@ class ApiController extends Controller
         $usedForecastHour = null;
 
         for ($i = 0; $i < 4; $i++) {
-            $forecastHour = $candidate->diffInHours($now);
+            // Carbon 3 returns a signed float; the IPMA path wants whole hours.
+            $forecastHour = (int) floor($candidate->diffInHours($now, true));
 
             if ($forecastHour >= 1) {
                 $url = sprintf(

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use App\Libs\LegacyApi;
 use Tests\TestCase;
 
@@ -21,18 +23,15 @@ class HardeningTest extends TestCase
         config(['services.fogos.url' => 'http://127.0.0.1:9']);
     }
 
-    /** @test */
+    #[Test]
     public function upstream_transport_errors_return_an_error_array_instead_of_throwing(): void
     {
         $this->assertSame(['error' => 'upstream_unavailable'], LegacyApi::getFire('123'));
         $this->assertSame(['error' => 'upstream_unavailable'], LegacyApi::getFires());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider cardsProvider
-     */
+    #[Test]
+    #[DataProvider('cardsProvider')]
     public function fire_cards_render_when_upstream_is_down(string $card): void
     {
         $this->get("/pt/views/{$card}/123")->assertOk();
@@ -43,11 +42,8 @@ class HardeningTest extends TestCase
         return [['risk'], ['status'], ['meteo'], ['extra'], ['shares']];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider pagesProvider
-     */
+    #[Test]
+    #[DataProvider('pagesProvider')]
     public function pages_render_when_upstream_is_down(string $path, int $status): void
     {
         $this->get($path)->assertStatus($status);
@@ -66,21 +62,21 @@ class HardeningTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function feeds_render_when_upstream_is_down(): void
     {
         $this->get('/rss/fires.xml')->assertOk();
         $this->get('/sitemap-fires.xml')->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function fire_ids_with_query_metacharacters_are_rejected(): void
     {
         $this->get('/pt/fogo/1%26foo%3Dbar')->assertNotFound();
         $this->get('/pt/views/risk/1%26x%3D1')->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function malformed_fcm_tokens_are_rejected_before_any_upstream_call(): void
     {
         $this->post('/notifications/subscribe', [
@@ -94,7 +90,7 @@ class HardeningTest extends TestCase
         ])->assertStatus(400);
     }
 
-    /** @test */
+    #[Test]
     public function wms_proxy_rejects_oversized_tiles_and_unknown_layers(): void
     {
         $this->get('/v1/ipma-wms?REQUEST=GetMap&LAYERS=arome.2m.temperature.continent&WIDTH=4096&HEIGHT=256')
@@ -103,7 +99,7 @@ class HardeningTest extends TestCase
             ->assertStatus(400);
     }
 
-    /** @test */
+    #[Test]
     public function responses_carry_security_headers(): void
     {
         $this->get('/pt/sobre')
@@ -112,13 +108,13 @@ class HardeningTest extends TestCase
             ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
     }
 
-    /** @test */
+    #[Test]
     public function the_custom_map_stays_embeddable(): void
     {
         $this->get('/pt/mapa')->assertHeaderMissing('X-Frame-Options');
     }
 
-    /** @test */
+    #[Test]
     public function share_links_do_not_reflect_the_raw_request_uri(): void
     {
         $html = $this->get('/pt/views/shares/123?"><script>alert(1)</script>')->getContent();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use App\Libs\OgRenderer;
 use Tests\TestCase;
 
@@ -12,7 +13,7 @@ use Tests\TestCase;
 // cachePath() reaches through storage_path() into the app container.
 class OgRendererTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function hash_is_stable_for_the_same_inputs_inside_a_15_minute_bucket(): void
     {
         $fire = ['status' => 'Em Curso', 'man' => 10, 'terrain' => 4, 'aerial' => 1];
@@ -24,7 +25,7 @@ class OgRendererTest extends TestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{8}$/', $a);
     }
 
-    /** @test */
+    #[Test]
     public function hash_changes_when_status_changes(): void
     {
         $emCurso     = OgRenderer::hash(['status' => 'Em Curso',     'man' => 5, 'terrain' => 2, 'aerial' => 0]);
@@ -33,7 +34,7 @@ class OgRendererTest extends TestCase
         $this->assertNotSame($emCurso, $emResolucao);
     }
 
-    /** @test */
+    #[Test]
     public function hash_changes_when_meios_change(): void
     {
         $base = ['status' => 'Em Curso', 'man' => 10, 'terrain' => 4, 'aerial' => 1];
@@ -52,7 +53,7 @@ class OgRendererTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function cache_path_encodes_id_and_hash(): void
     {
         $path = OgRenderer::cachePath('12345', 'abcd1234');
@@ -61,7 +62,7 @@ class OgRendererTest extends TestCase
         $this->assertStringContainsString('/storage/app/og/', $path);
     }
 
-    /** @test */
+    #[Test]
     public function hash_changes_when_status_history_grows(): void
     {
         // Re-entering the same top-level state (Vigilância → Em Curso →
@@ -79,7 +80,7 @@ class OgRendererTest extends TestCase
         $this->assertNotSame($before, $after);
     }
 
-    /** @test */
+    #[Test]
     public function missing_meios_default_to_zero_so_partial_payloads_still_hash(): void
     {
         // Upstream may omit fields on very-new incidents. We must not fatal.
