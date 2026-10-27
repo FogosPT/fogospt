@@ -1,21 +1,23 @@
 {
     "private": true,
+    "engines": {
+        "node": ">=20"
+    },
+    "browserslist": [
+        "defaults"
+    ],
     "scripts": {
-        "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "npm run development -- --watch",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "build": "sass --no-source-map --style=compressed resources/assets/sass/app.scss public/css/app.css && postcss public/css/app.css --use autoprefixer --no-map -r",
+        "dev": "sass --embed-source-map resources/assets/sass/app.scss public/css/app.css",
+        "watch": "sass --watch --embed-source-map resources/assets/sass/app.scss public/css/app.css",
+        "lint:js": "node scripts/check-js.js",
+        "test:smoke": "playwright test -c tests/smoke"
     },
     "devDependencies": {
         "@playwright/test": "^1.62.0",
-        "cross-env": "^7.0.3",
-        "laravel-mix": "^5.0.0",
-        "playwright": "^1.62.0",
-        "resolve-url-loader": "^3.1.0",
-        "sass": "^1.102.0",
-        "sass-loader": "^8.0.2"
+        "autoprefixer": "^10.4.21",
+        "postcss": "^8.5.6",
+        "postcss-cli": "^11.0.1",
+        "sass": "^1.102.0"
     }
 }

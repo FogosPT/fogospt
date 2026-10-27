@@ -46,86 +46,53 @@
 
 ### Requirements
 
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-2. [Node.js](https://nodejs.org/) 14 (and npm 6)
-3. [Python](https://www.python.org/) 2.7 (to install the necessary [node-gyp](https://github.com/nodejs/node-gyp/tree/v3.8.0) version according to the [`package-lock.json`](fogospt/package-lock.json) file)
-4. [PHP](https://www.php.net/) 7 (at least 7.2.5) and [Composer](https://getcomposer.org/) 1
-
-<details>
-
-<summary>Node.js</summary>
-
-If you use a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run the respective command to install and use the required version:
-
-```bash
-nvm use 14
-```
-
-or
-
-```bash
-fnm use 14
-```
-
-</details>
-
-<details>
-
-<summary>Python</summary>
-
-If you use a Python version manager like [pyenv](https://github.com/pyenv/pyenv), run the respective commands to install and use the required version:
-
-```bash
-pyenv install 2.7
-```
-
-and
-
-```bash
-pyenv shell 2.7
-```
-
-</details>
+1. [Docker](https://www.docker.com/products/docker-desktop/)
+2. [Node.js](https://nodejs.org/) 20+ (only to rebuild the CSS)
+3. PHP 8.3 and [Composer](https://getcomposer.org/) 2 — or use the Docker images below
 
 ### Commands
 
+```bash
+git clone https://github.com/FogosPT/fogospt.git
+cd fogospt
+cp .env.example .env                       # docker-compose vars (UID/GID, REDIS_PASSWORD)
+cp fogospt/.env.example fogospt/.env       # Laravel app vars (FPTS, Firebase, ...)
+docker compose up -d                       # PHP-FPM on 127.0.0.1:9001, Redis, og-renderer
+
+cd fogospt
+docker run --rm -v "$PWD:/app" -w /app composer:2 install
+docker run --rm -v "$PWD:/app" -w /app php:8.3.36-fpm php artisan key:generate
+npm ci && npm run build                    # only when changing resources/assets/sass
 ```
-$ git clone https://github.com/FogosPT/fogospt.git
-$ cd fogospt
-$ docker-compose up
-$ cd fogospt
-$ composer install
-$ npm install
-$ npm run dev
-```
 
-#### PHP and Composer
+PHP-FPM has no web server in front of it in this compose file — point a local
+nginx at `127.0.0.1:9001`, or for quick local work run
+`docker run --rm -p 8091:8000 -v "$PWD:/app" -w /app php:8.3.36-fpm php artisan serve --host=0.0.0.0`.
 
-You can use a containerized version of PHP and Composer to run the `composer install` command above. The latest [official Docker image](https://hub.docker.com/_/composer) tag providing PHP 7 and Composer 1 is `1.10.19`.
-
-To install the PHP dependencies from a Docker container, run the following command instead:
+### Tests
 
 ```bash
-docker run --rm -it -v "$(pwd):/app" composer:1.10.19 install
+docker run --rm -v "$PWD:/app" -w /app php:8.3.36-fpm php vendor/bin/phpunit
+npm run lint:js
+SMOKE_URL=http://127.0.0.1:8091 npm run test:smoke   # needs `npx playwright install chromium`
 ```
 
 ## Deploying to production
 
-After pulling new code on the server, always invalidate Laravel's compiled
-route/config caches — otherwise edits to `routes/web.php` (route-level cache
-middleware, new routes, etc.) will not take effect:
+On the production host, from the repo root:
 
 ```bash
-php artisan route:clear
-php artisan config:clear
-
-# optional, recompile for the request-time speedup:
-php artisan route:cache
-php artisan config:cache
+./scripts/deploy.sh
 ```
 
-A change to `assets/php/php.ini` requires a container restart
-(`docker compose restart fogospt`).
+It fast-forwards to `origin/master`, installs PHP dependencies without dev
+packages, rebuilds/recreates the containers, clears and re-warms the Laravel
+config/route/view caches, restarts PHP-FPM (fresh OPcache) and runs smoke
+checks against the live site. Purge the CDN cache afterwards if HTML or CSS
+changed.
+
+CI pushes a production image to `ghcr.io/fogospt/fogospt` on every push to
+master; `docker-compose.image.yml` runs that image instead of the bind mount.
 
 ### Cloudflare cache rule for HTML
 

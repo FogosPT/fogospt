@@ -2,7 +2,8 @@
 # at /home/pptruser/node_modules. Placing our tiny Fastify wrapper under
 # /home/pptruser/app lets `require('puppeteer')` resolve via Node's normal
 # upward lookup — no need to duplicate the ~300 MB puppeteer/chromium deps.
-FROM ghcr.io/puppeteer/puppeteer:latest
+# Pinned: `latest` pulled a new Chrome on every rebuild. Bump deliberately.
+FROM ghcr.io/puppeteer/puppeteer:25.16.0
 
 WORKDIR /home/pptruser/app
 
