@@ -16,8 +16,11 @@
 <script>window.__FOGOS_GA_ID__ = @json($gaId);</script>
 @endif
 
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+{{-- Firebase "compat" builds: the v8 namespaced API (firebase.messaging(),
+     getToken, onMessage) on top of the current SDK. Keep the version in sync
+     with the service worker in GenericController::firebaseMessagingSw. --}}
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js" integrity="sha384-aUtWR1iCiOCHS8pn1nKNXMZm3I/eDrV63IXWXgE+mHHqJfYTWYV+jGk0sCXz57+U" crossorigin="anonymous"></script>
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js" integrity="sha384-/QOgDjfwEvqJ0UAwKZH8I3TZ4W8ebk7PDk6UWIYc2hGanbyE65QrNB0VQuDeVkGe" crossorigin="anonymous"></script>
 <script>
     // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
     window.__FIREBASE_VAPID_KEY__ = @json(config('services.firebase.vapid_key'));
