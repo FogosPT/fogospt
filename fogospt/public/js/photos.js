@@ -40,7 +40,7 @@
             gallery: '#f-photos-gallery',
             children: 'a',
             pswpModule: function () {
-                return import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.js');
+                return import('https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.esm.js');
             }
         });
         lightbox.on('uiRegister', function () {

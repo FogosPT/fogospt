@@ -1,8 +1,8 @@
 @extends('app')
 
 @push('styles')
-    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.css">
+    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2.1.4/dist/leaflet-velocity.css" integrity="sha384-pl8PC81aYCmcJzQSyvD5iTdjHL+H6KjRKasELwYyh1fgroB+bkJqt1+7zP7NRG5v" crossorigin="anonymous">
 @endpush
 
 @section('content')
@@ -28,14 +28,14 @@
     <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
     <script src="/js/share.js?v={{ filemtime(public_path('js/share.js')) }}"></script>
     <script src="/js/vendor/L.KLM.js?v={{ filemtime(public_path('js/vendor/L.KLM.js')) }}"></script>
-    <script src="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.min.js"></script>
+    <script src="https://unpkg.com/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.js" integrity="sha384-b85lDC0R/ZnDE6BRX2EtR/xRZkf9gN3t4x9Y63gB7Z+zJpZjgoa/9LEiMSVSVpAe" crossorigin="anonymous"></script>
     <script src="/js/map-panel.js?v={{ filemtime(public_path('js/map-panel.js')) }}"></script>
     <script src="/js/satellite.js?v={{ filemtime(public_path('js/satellite.js')) }}"></script>
     <script src="/js/map-filters.js?v={{ filemtime(public_path('js/map-filters.js')) }}"></script>
     <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
     <script src="/js/planes.js?v={{ filemtime(public_path('js/planes.js')) }}"></script>
     <script type="module">
-        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.js';
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
