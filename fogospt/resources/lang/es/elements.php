@@ -11,7 +11,9 @@
                 'district' => 'Distrito',
                 'concelho' => 'Condado',
                 'freguesia' => 'Parroquia',
-                'localidade' => 'Localidad'
+                'localidade' => 'Localidad',
+                'cb' => 'Cuerpo de Bomberos',
+                'alertFrom' => 'Fuente de alerta'
             ],
             'resources' => [
                 'units' => 'Medios',
@@ -43,6 +45,10 @@
             'shares' => [
                 'title' => 'Compartir'
             ],
+            'weatherWarnings' => [
+                'title' => 'Avisos meteorológicos',
+                'source' => 'Fuente: IPMA',
+            ],
             'photos' => [
                 'title' => 'Fotos',
                 'loadMore' => 'Cargar más',
@@ -64,6 +70,14 @@
                 'affectedConcelhos'  => 'Municipios afectados',
                 'affectedFreguesias' => 'Parroquias afectadas',
                 'none'               => '—',
+            ],
+            'detail' => [
+                'burn' => [
+                    'title' => 'Área quemada'
+                ],
+                'cause' => [
+                    'title' => 'Causa'
+                ]
             ]
         ],
         'riskLevels' => [

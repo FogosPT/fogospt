@@ -263,7 +263,13 @@ return [
         'yesterday' => 'Ayer',
         'last-night' => 'Última noche',
         'last-days' => 'Últimos dias',
-        'last-night-footer' => 'Incendios entre las 21h e las 09h',
+        'last-night-footer' => 'Incendios entre las 21h y las 09h',
+        'burn-area-last-days' => 'Área quemada en los últimos días',
+        'burn-area-last-days-footer' => 'Datos registrados por el ICNF; no todos los incendios los tienen. En hectáreas.',
+        'motives' => [
+            'title' => 'Causas de incendio en el mes en curso',
+            'footer' => 'Datos registrados por el ICNF; no todos los incendios los tienen.'
+        ],
     ],
     'table' => [
         'reload' => 'esta página se actualiza automáticamente.'
