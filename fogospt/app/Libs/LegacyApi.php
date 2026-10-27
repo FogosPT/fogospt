@@ -66,7 +66,10 @@ class LegacyApi
         }
 
         if ($response->getStatusCode() !== 200) {
-            Log::warning('legacy api bad status', ['path' => $path, 'status' => $response->getStatusCode()]);
+            // 404 is the normal answer for finished/unknown fires (crawlers
+            // follow old links) — not worth a warning on every hit.
+            $level = $response->getStatusCode() === 404 ? 'debug' : 'warning';
+            Log::{$level}('legacy api bad status', ['path' => $path, 'status' => $response->getStatusCode()]);
             return ['error' => 'upstream_status_' . $response->getStatusCode()];
         }
 

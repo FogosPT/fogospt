@@ -54,6 +54,11 @@ services:
       context: ./assets/og-renderer
     container_name: og-renderer
     restart: unless-stopped
+    # Run tini as PID 1. Node never reaps the Chrome subprocesses left behind
+    # by each browser recycle (crashpad handler, zygotes, renderers); as
+    # zombies they pile up until the PID limit is hit and every launch fails
+    # with `posix_spawn … Resource temporarily unavailable (11)`.
+    init: true
     environment:
       - PORT=3000
       # Name must match the var read in assets/og-renderer/server.js.
