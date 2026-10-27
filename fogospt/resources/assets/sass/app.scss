@@ -28,10 +28,10 @@ html, body {
   background-color: #f5f5f5;
 
   a {
-    color: $brand !important;
+    color: $brand-text !important;
   }
   a:hover {
-    color: $brand-hover !important;
+    color: $brand-text-hover !important;
   }
 }
 
@@ -94,7 +94,7 @@ header {
         color: #444 !important;
       }
       a:hover {
-        color: $brand !important;
+        color: $brand-text !important;
       }
     }
 
@@ -131,10 +131,10 @@ header {
         &.active {
           border-left-color: $brand;
           font-weight: 600;
-          color: $brand !important;
+          color: $brand-text !important;
 
           i {
-            color: $brand;
+            color: $brand-text;
           }
         }
       }
@@ -157,7 +157,7 @@ header {
         color: #888 !important;
 
         &:hover {
-          color: $brand !important;
+          color: $brand-text !important;
         }
       }
     }
@@ -343,13 +343,13 @@ main {
     .card-title {
       font-size: 1.35rem;
       font-weight: 700;
-      color: $c-orange;
+      color: $brand-text;
     }
 
     .field-label {
       font-size: 1.05rem;
       font-weight: 700;
-      color: $c-orange;
+      color: $brand-text;
     }
   }
 
@@ -392,7 +392,7 @@ main {
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: .02em;
-    color: $brand
+    color: $brand-text
   }
   h6 {
     text-transform: uppercase;
@@ -548,7 +548,7 @@ main {
     font-size:26px;
 
     a{
-      color: $c-orange;
+      color: $brand-text;
     }
   }
 }
@@ -1030,7 +1030,7 @@ main {
   .status-hour {
     margin-left: 15px;
     margin-bottom: 0;
-    color: $brand;
+    color: $brand-text;
   }
 
   .status-label {
@@ -1309,7 +1309,7 @@ têm margens uniformes. */
 
     &:hover {
       background: #f3f3f3;
-      color: $brand;
+      color: $brand-text;
     }
 
     i {
@@ -1347,7 +1347,7 @@ têm margens uniformes. */
     }
 
     &.is-on label {
-      color: $brand;
+      color: $brand-text;
       font-weight: 500;
     }
   }
@@ -1556,7 +1556,7 @@ têm margens uniformes. */
   }
 
   &-timestamp {
-    background: $c-orange;
+    background: $brand-text;
     color: #fff;
     font-weight: 500;
     font-size: .75rem;
@@ -1571,7 +1571,7 @@ têm margens uniformes. */
   &-areas {
     h5 {
       font-size: .95rem;
-      color: $c-orange;
+      color: $brand-text;
       margin-top: .5rem;
       margin-bottom: .25rem;
     }
@@ -1609,7 +1609,7 @@ têm margens uniformes. */
 }
 
 .fogos-sat-anim {
-  background: $c-orange;
+  background: $brand-text;
   color: #fff;
   font-size: 13px;
   padding: 4px 10px;
@@ -1623,7 +1623,7 @@ têm margens uniformes. */
 
 // Detail page — card titles in fogos orange.
 main .card-title {
-  color: $c-orange;
+  color: $brand-text;
 }
 
 // -------- First-party cookie consent (public/js/cookie-consent.js) --------
@@ -1648,14 +1648,14 @@ main .card-title {
     margin: 0 0 .25rem;
     font-size: 1rem;
     font-weight: 600;
-    color: $c-orange;
+    color: $brand-text;
   }
   &__text {
     margin: 0;
     font-size: .875rem;
     line-height: 1.4;
     color: #333;
-    a { color: $c-orange; text-decoration: underline; }
+    a { color: $brand-text; text-decoration: underline; }
   }
   &__actions {
     display: flex;
@@ -1678,10 +1678,10 @@ main .card-title {
   min-width: 5rem;
 
   &--primary {
-    background: $c-orange;
+    background: $brand-text;
     color: #fff;
-    border-color: $c-orange;
-    &:hover, &:focus { background: #e05f01; border-color: #e05f01; }
+    border-color: $brand-text;
+    &:hover, &:focus { background: $brand-text-hover; border-color: $brand-text-hover; }
   }
   &--outline {
     background: transparent;
@@ -1694,7 +1694,7 @@ main .card-title {
     color: #555;
     border-color: transparent;
     text-decoration: underline;
-    &:hover, &:focus { color: $c-orange; }
+    &:hover, &:focus { color: $brand-text; }
   }
 }
 
@@ -1729,13 +1729,13 @@ main .card-title {
     color: #666;
     cursor: pointer;
     padding: .25rem .5rem;
-    &:hover, &:focus { color: $c-orange; }
+    &:hover, &:focus { color: $brand-text; }
   }
   &__title {
     margin: 0 0 .75rem;
     font-size: 1.125rem;
     font-weight: 600;
-    color: $c-orange;
+    color: $brand-text;
   }
   &__intro { margin: 0 0 1rem; font-size: .875rem; color: #444; }
   &__actions {
@@ -1775,7 +1775,7 @@ main .card-title {
     font-size: .875rem;
     line-height: 1.4;
     color: #333;
-    strong { display: block; color: $c-orange; margin-bottom: .125rem; }
+    strong { display: block; color: $brand-text; margin-bottom: .125rem; }
   }
   &__desc { display: block; font-size: .8125rem; color: #555; }
 }
