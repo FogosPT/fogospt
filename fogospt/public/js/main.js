@@ -127,18 +127,6 @@ $(document).ready(function () {
         addPlane(getParameterByName('icao'), mymap);
     }
 
-    /*var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
-        tileSize: 512,
-        maxZoom: 18,
-        zoomOffset: -1,
-        id: 'mapbox/streets-v11',
-        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg'
-    }).addTo(mymap);*/
-
-
-
-
     var normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     }).addTo(mymap);
 
@@ -158,14 +146,7 @@ $(document).ready(function () {
         })
     ]);
 
-    /*var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
-    })*/
-
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a> <a target="_blank" href="https://www.mapbox.com">Mapbox</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a> <a target="_blank" href="https://www.mapbox.com">Mapbox</a>')
 
     // Unified map control panel — single home for all layer/filter toggles.
     var panel = new L.Control.FogosPanel();
@@ -228,7 +209,7 @@ $(document).ready(function () {
             div.innerHTML =
                 '<div class="fogos-map-summary__title">' + (mcTexts.selectedInfo || 'Custom map') + '</div>'
                 + '<div class="fogos-map-summary__list">' + mcListHtml + '</div>'
-                + '<a class="fogos-map-summary__edit" href="' + mcEditHref + '">'
+                + '<a class="fogos-map-summary__edit" href="' + escapeFireText(mcEditHref) + '">'
                 + '<i class="fa-solid fa-pen-to-square"></i> '
                 + (mcTexts.editOptions || 'Edit options') + '</a>';
             return div;
@@ -953,7 +934,7 @@ $(document).ready(function () {
         lightningHourOffset = 0;
         lightningControl.show();
         refreshLightnings();
-        if (!lightningRefreshInterval) lightningRefreshInterval = setInterval(refreshLightnings, 300000);
+        if (!lightningRefreshInterval) lightningRefreshInterval = setInterval(function () { if (!document.hidden) refreshLightnings(); }, 300000);
     };
     lightningLayer.onRemove = function (map) {
         lightningStopPlay();
@@ -1033,7 +1014,7 @@ $(document).ready(function () {
         url: 'https://source.fogos.pt/v1/warnings/site',
         success: function (data) {
             if (data.success && data.data[0] && data.data[0].active) {
-                $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
+                $('#warning-site').find('.modal-body').empty().append($('<p>').text(data.data[0].text));
                 $('#warning-site').modal('show');
             }
         },
@@ -1044,10 +1025,19 @@ $(document).ready(function () {
         getNewFires(mymap, true);
     });
 
-    setInterval(function (){
+    // Skip refreshes while the tab is hidden; catch up as soon as it's
+    // visible again (saves upstream calls from background tabs).
+    var lastFiresRefresh = Date.now();
+    function refreshFires() {
+        if (document.hidden) return;
+        lastFiresRefresh = Date.now();
         toastr.success(window.trans.map.updating, {timeOut: 1000});
         getNewFires(mymap, true);
-    },60000)
+    }
+    setInterval(refreshFires, 60000);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && Date.now() - lastFiresRefresh >= 60000) refreshFires();
+    });
 
     if (window.FogosSat) FogosSat.installMain(mymap, panel, { defaultOn: false });
 
@@ -1137,12 +1127,12 @@ function addModisPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(date).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(date).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Data: ' + date + '</p><p>Confiança: ' + confidence + '%</p>';
     marker.bindPopup(content);
 
@@ -1174,12 +1164,12 @@ function addVIIRSPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(data).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p><p>Confiança: ' + confidence + '</p>';
     marker.bindPopup(content);
 
@@ -1252,12 +1242,14 @@ function getPonderatedImportanceFactor(importance, statusCode) {
 
 function fillSidebar(item) {
     var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY')
-    var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng
-    var locationText = item.location
+    // Upstream (ANEPC) text — escape everything that lands in .html().
+    var coords = escapeFireText(item.lat + ',' + item.lng)
+    var location = '<a href="https://www.google.com/maps/search/' + encodeURIComponent(item.lat + ',' + item.lng) + '" target="_blank" rel="noopener"><i class="far fa-map"></i></a> ' + coords
+    var locationText = escapeFireText(item.location)
     if (item.localidade) {
-        locationText += ' - ' + item.localidade
+        locationText += ' - ' + escapeFireText(item.localidade)
     }
-    locationText += ' <a href="/' + locale + '/fogo/' + item.id + '/detalhe">' + window.trans.fire.moreDetails + '</a>'
+    locationText += ' <a href="/' + locale + '/fogo/' + encodeURIComponent(item.id) + '/detalhe">' + escapeFireText(window.trans.fire.moreDetails) + '</a>'
 
     $('.sidebar').addClass('active').scrollTop(0)
     $('.f-local').html(locationText)
@@ -1404,7 +1396,7 @@ function addMaker(item, mymap) {
     } else if (item.important) {
         iconHtml += '99'
     } else {
-        iconHtml += item.statusCode
+        iconHtml += parseInt(item.statusCode, 10)
     }
     if (isActive && isActive === item.id) {
         iconHtml += ' active'
@@ -1430,7 +1422,7 @@ function addMaker(item, mymap) {
     if (['3111', '3109', '4335'].indexOf(String(item.naturezaCode)) !== -1) {
         iconHtml += ' style="opacity:0.6"'
     }
-    iconHtml += 'id=' + item.id + '></i>'
+    iconHtml += ' id="' + escapeFireText(item.id) + '"></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
     marker.sizeFactor = sizeFactor
     var size = sizeFactor * BASE_SIZE
@@ -1985,7 +1977,7 @@ window.fogosApplyFilters = function () {
 };
 
 function addPlane(icao, mymap){
-    var url = 'https://source.fogos.pt/v2/planes/' + icao
+    var url = 'https://source.fogos.pt/v2/planes/' + encodeURIComponent(icao)
     $.ajax({
         url: url,
         method: 'GET',
@@ -2016,7 +2008,7 @@ function addPlanePoint(data, mymap) {
     }))
 
 
-    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p>';
     marker.bindPopup(content);
 

@@ -1,8 +1,12 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 @stack('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+<script>
+    // Toast bodies carry upstream/FCM text — never render them as HTML.
+    toastr.options.escapeHtml = true;
+</script>
 
 @php($gaId = config('services.google_analytics'))
 @if($gaId)

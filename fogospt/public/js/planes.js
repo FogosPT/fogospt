@@ -121,15 +121,22 @@
             + '">' + svg + '</div>';
     }
 
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // Aircraft metadata comes from third-party ADS-B feeds — escape it.
     function buildPopup(plane, last) {
         var name = plane.name || plane.registration || plane.icao;
         var line2 = [];
-        if (plane.registration) line2.push(plane.registration);
-        if (plane.aircraft_type) line2.push(plane.aircraft_type);
+        if (plane.registration) line2.push(esc(plane.registration));
+        if (plane.aircraft_type) line2.push(esc(plane.aircraft_type));
 
-        var parts = ['<strong>' + name + '</strong>'];
+        var parts = ['<strong>' + esc(name) + '</strong>'];
         if (line2.length) parts.push(line2.join(' · '));
-        if (plane.operator) parts.push(plane.operator);
+        if (plane.operator) parts.push(esc(plane.operator));
         parts.push('');
         if (typeof last.altitude === 'number') {
             parts.push(tr('altitude', 'Altitude') + ': ' + last.altitude + ' ft');
@@ -280,7 +287,7 @@
             L.LayerGroup.prototype.onAdd.call(this, map);
             if (map.attributionControl) map.attributionControl.addAttribution(ATTRIBUTION);
             refresh();
-            if (!pollTimer) pollTimer = setInterval(refresh, REFRESH_MS);
+            if (!pollTimer) pollTimer = setInterval(function () { if (!document.hidden) refresh(); }, REFRESH_MS);
         };
         group.onRemove = function (map) {
             if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }

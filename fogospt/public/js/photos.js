@@ -69,8 +69,18 @@
             .replace(/>/g, '&gt;');
     }
 
+    // Photo URLs are user-contributed: only allow http(s), never javascript:/data:.
+    function safeUrl(u) {
+        try {
+            var parsed = new URL(u, window.location.href);
+            return /^https?:$/.test(parsed.protocol) ? parsed.href : '';
+        } catch (e) {
+            return '';
+        }
+    }
+
     function renderItem(item) {
-        var url = item.url;
+        var url = safeUrl(item.url);
         if (!url) return '';
         var w = parseInt(item.width, 10) || 1600;
         var h = parseInt(item.height, 10) || 1200;
@@ -82,7 +92,7 @@
             ' data-pswp-width="' + w + '" data-pswp-height="' + h +
             '" data-caption="' + escapeAttr(caption) + '">' +
             '<img src="' + escapeAttr(url) + '" loading="lazy" width="' + w + '" height="' + h +
-            '" alt="" onerror="this.parentElement.style.display=\'none\'">' +
+            '" alt="">' +
             '</a>';
     }
 
@@ -155,6 +165,15 @@
             lightbox.loadAndOpen(index);
         }
     };
+
+    // Hide broken thumbnails. `error` does not bubble, so listen in the
+    // capture phase instead of an inline onerror (keeps the page CSP-friendly).
+    document.addEventListener('error', function (e) {
+        var img = e.target;
+        if (img && img.tagName === 'IMG' && img.parentElement && img.parentElement.classList.contains('photos-item')) {
+            img.parentElement.style.display = 'none';
+        }
+    }, true);
 
     document.addEventListener('click', function (e) {
         var btn = e.target && e.target.closest && e.target.closest('.photos-load-more');

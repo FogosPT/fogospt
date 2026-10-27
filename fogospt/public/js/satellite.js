@@ -68,7 +68,7 @@
         var p = feature && feature.properties;
         if (!p) return;
         var area = (typeof p.area_km2 === 'number') ? p.area_km2.toFixed(1) + ' km²' : '';
-        layer.bindTooltip('+' + p.hour + 'h ' + area, { sticky: true, direction: 'top' });
+        layer.bindTooltip('+' + (parseInt(p.hour, 10) || 0) + 'h ' + area, { sticky: true, direction: 'top' });
     }
 
     function bindPerimeterPopup(feature, layer) {
@@ -298,7 +298,7 @@
         var map = L.map(el, { center: [lat, lng], zoom: 12 });
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         var perimLayer = L.geoJSON(null, { style: perimeterStyle, onEachFeature: bindPerimeterPopup }).addTo(map);

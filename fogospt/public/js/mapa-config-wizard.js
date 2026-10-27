@@ -348,7 +348,7 @@
         if (!qs || qs.length < 2) return;
         var params = new URLSearchParams(qs);
         var c = params.get('c');
-        if (c) c.split(',').forEach(function (d) { if (d) state.dicos.add(d); });
+        if (c) c.split(',').forEach(function (d) { if (/^\d{4}$/.test(d)) state.dicos.add(d); });
         var s = params.get('s');
         if (s) s.split(',').forEach(function (v) {
             var n = parseInt(v, 10);
@@ -359,7 +359,7 @@
         var b = params.get('b');
         if (b === 'satellite') state.base = 'satellite';
         var l = params.get('l');
-        if (l) l.split(',').forEach(function (a) { if (a) state.layers.add(a); });
+        if (l) l.split(',').forEach(function (a) { if (/^[\w-]+$/.test(a)) state.layers.add(a); });
     }
 
     // Apply the internal state onto the just-rendered form controls so the

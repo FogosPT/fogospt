@@ -474,7 +474,7 @@ function plotStatsTotal() {
               ? "<b>" +
                 props.name +
                 "</b><br />" +
-                incendios +
+                (parseInt(incendios, 10) || 0) +
                 " incêndios</sup>"
               : "Clique num distrito");
         };
@@ -596,15 +596,14 @@ function plotStatsTotal() {
   });
 
   var map = L.map("mapid").setView([39.6, -7.9], 7);
+  // Same OSM base layer as the other maps (the Mapbox style needed a token
+  // that was never actually rendered into the page).
   var normalLayer = L.tileLayer(
-    "https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=" +
-      window.mapboxKey,
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution:
-        'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 18,
-      id: "mapbox.streets",
-      accessToken: window.mapboxKey,
     }
   ).addTo(map);
 }

@@ -79,7 +79,6 @@
                                         </p>
                                     @endisset
 
-
                                     <h4 class="card-title">@lang('elements.cards.general.fireRisk')</h4>
                                     <div class="f-danger">
                                         @include('elements.risk')
@@ -91,26 +90,24 @@
                                         </div>
                                     @endif
 
-
-
                                 </div>
 
                                 <div class="col-sm-12 col-md-6">
                                     <h4 class="card-title">@lang('elements.cards.resources.units')</h4>
                                     <div class="assets d-flex flex-md-wrap align-items-center justify-content-center">
-                                        <img class="assets-icon" src="/img/fireman.svg">
+                                        <img class="assets-icon" src="/img/fireman.svg" alt="">
                                         <span class="assets-nr f-man">
                                             @isset($fire['man'])
                                                 {{ $fire['man'] }}
                                             @endisset
                                         </span>
-                                        <img class="assets-icon" src="/img/firetruck.svg">
+                                        <img class="assets-icon" src="/img/firetruck.svg" alt="">
                                         <span class="assets-nr f-terrain">
                                             @isset($fire['terrain'])
                                                 {{ $fire['terrain'] }}
                                             @endisset
                                         </span>
-                                        <img class="assets-icon" src="/img/plane.svg">
+                                        <img class="assets-icon" src="/img/plane.svg" alt="">
                                         <span class="assets-nr f-aerial">
                                             @isset($fire['aerial'])
                                                 {{ $fire['aerial'] }}
@@ -158,7 +155,6 @@
                                             </div>
                                         </div>
                                     </div>
-
 
                                 </div>
                             </div>
@@ -218,16 +214,12 @@
     </main>
 @endsection
 
-
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.4.1/mapbox-gl.min.js" integrity="sha512-NTZ4yfDV+hnycF2x28e43icmAkkDWZ6b+RXZQJkyUGKA78WQb0gIuv7RKF8W+5XAKunxzzJq4i8FD2L04h9O1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script src="https://unpkg.com/mapbox-gl-leaflet@0.0.16/leaflet-mapbox-gl.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-    <script src="/js/vendor/store2.min.js"></script>
+    <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
     <script src="/js/notifications.js?v={{ filemtime(public_path('js/notifications.js')) }}"></script>
     <script>
         $(document).ready(function () {
@@ -281,7 +273,7 @@
             });
         });
     </script>
-    <script src="{{ asset('js/vendor/L.KLM.js') }}"></script>
+    <script src="/js/vendor/L.KLM.js?v={{ filemtime(public_path('js/vendor/L.KLM.js')) }}"></script>
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
     <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
     <style>
@@ -311,7 +303,7 @@
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
-    <script src="{{ asset('js/detail.js') }}"></script>
+    <script src="/js/detail.js?v={{ filemtime(public_path('js/detail.js')) }}"></script>
     <script src="/js/ipma-charts.js?v={{ filemtime(public_path('js/ipma-charts.js')) }}"></script>
     <script src="/js/satellite.js?v={{ filemtime(public_path('js/satellite.js')) }}"></script>
     <script>
@@ -324,13 +316,13 @@
         $(document).ready( function () {
             if (window.FogosSat) FogosSat.installDetail({
                 mapEl: 'sat-map',
-                fireId: '{{ $fire['id'] }}',
-                lat: {{ $fire['lat'] }},
-                lng: {{ $fire['lng'] }}
+                fireId: @json((string) $fire['id']),
+                lat: @json((float) $fire['lat']),
+                lng: @json((float) $fire['lng'])
             });
 
             // Make basemap
-            const map = new L.Map('mymap', { center: new L.LatLng({{$fire['lat']}}, {{$fire['lng']}}), zoom: 11 });
+            const map = new L.Map('mymap', { center: new L.LatLng(@json((float) $fire['lat']), @json((float) $fire['lng'])), zoom: 11 });
             const normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {});
             const satLayer = L.layerGroup([
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -356,9 +348,9 @@
                     iconSize: [40, 40],
                     iconAnchor: [20, 20]
                 });
-                L.marker([{{$fire['lat']}}, {{$fire['lng']}}], { icon: fireIcon, zIndexOffset: 1000 }).addTo(map);
+                L.marker([@json((float) $fire['lat']), @json((float) $fire['lng'])], { icon: fireIcon, zIndexOffset: 1000 }).addTo(map);
             @else
-                var circle = L.circle([{{$fire['lat']}}, {{$fire['lng']}}], {
+                var circle = L.circle([@json((float) $fire['lat']), @json((float) $fire['lng'])], {
                     color: 'red',
                     fillColor: '#f03',
                     fillOpacity: 0.5,
@@ -388,7 +380,6 @@
                 map.fitBounds(bounds);
             @endif
 
-
             @if(isset($fire['kmlVost']))
                 // Load kml file
                 var kmltextVost = @json($kmlVost);
@@ -405,7 +396,7 @@
 
             @isset($fire['id'])
             $.ajax({
-                url: 'https://source.fogos.pt/v2/incidents/{{ $fire['id'] }}/kmlFirms',
+                url: 'https://source.fogos.pt/v2/incidents/' + encodeURIComponent(@json((string) $fire['id'])) + '/kmlFirms',
                 method: 'GET',
                 dataType: 'text'
             }).done(function (kmlFirmsText) {

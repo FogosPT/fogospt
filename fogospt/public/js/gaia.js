@@ -78,23 +78,30 @@
         return d.toLocaleString('pt-PT');
     }
 
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // Gaia is a third-party API — escape every field that lands in the popup.
     function eventPopupHTML(ev) {
         var rows = [];
-        if (ev.event_name) rows.push('<strong>' + ev.event_name + '</strong>');
-        rows.push('<div style="font-size:11px;color:#888">Gaia event #' + ev.id + '</div>');
-        if (ev.first_seen) rows.push('Primeiro: ' + fmtDate(ev.first_seen));
-        if (ev.last_seen)  rows.push('Último: '   + fmtDate(ev.last_seen));
+        if (ev.event_name) rows.push('<strong>' + esc(ev.event_name) + '</strong>');
+        rows.push('<div style="font-size:11px;color:#888">Gaia event #' + esc(ev.id) + '</div>');
+        if (ev.first_seen) rows.push('Primeiro: ' + esc(fmtDate(ev.first_seen)));
+        if (ev.last_seen)  rows.push('Último: '   + esc(fmtDate(ev.last_seen)));
         if (ev.area_km2 != null) rows.push('Área: ' + (+ev.area_km2).toFixed(2) + ' km²');
-        if (ev.detection_count != null) rows.push('Detecções: ' + ev.detection_count);
+        if (ev.detection_count != null) rows.push('Detecções: ' + (parseInt(ev.detection_count, 10) || 0));
         if (ev.is_active === true)  rows.push('<span style="color:#c00">Activo</span>');
         if (ev.is_active === false) rows.push('<span style="color:#888">Inactivo</span>');
         if (ev.summary && ev.summary.text) {
             rows.push('<hr style="margin:4px 0">');
-            rows.push('<div style="max-width:280px;font-size:12px">' + ev.summary.text + '</div>');
+            rows.push('<div style="max-width:280px;font-size:12px">' + esc(ev.summary.text) + '</div>');
         }
         var eid = ev.id != null ? ev.id : ev.event_id;
         if (eid != null) {
-            rows.push('<button type="button" class="gaia-timeline-btn" data-event-id="' + eid + '" style="margin-top:6px;padding:4px 8px;border:1px solid #d33;background:#fff;color:#d33;border-radius:4px;cursor:pointer;font-size:12px"><i class="fas fa-play" style="font-size:10px;margin-right:4px"></i>Ver evolução</button>');
+            rows.push('<button type="button" class="gaia-timeline-btn" data-event-id="' + esc(eid) + '" style="margin-top:6px;padding:4px 8px;border:1px solid #d33;background:#fff;color:#d33;border-radius:4px;cursor:pointer;font-size:12px"><i class="fas fa-play" style="font-size:10px;margin-right:4px"></i>Ver evolução</button>');
         }
         return rows.join('<br>');
     }
