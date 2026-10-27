@@ -1,5 +1,8 @@
+// Madeira map. Shared helpers come from fogos-core.js.
+window.FOGOS_CARD_PREFIX = '/madeira';
+
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
-var locale = window.location.pathname.split('/')[1] || 'pt';
+
 $(document).ready(function () {
     const messaging = firebase.messaging()
 
@@ -37,21 +40,9 @@ $(document).ready(function () {
 
     var mymap = L.map('map').setView([32.753498, -16.982694], 10)
 
-    var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
-    }).addTo(mymap)
-
-    var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
-    })
-
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>')
+    var base = fogosBaseLayers();
+    var normalLayer = base.normal.addTo(mymap);
+    var satLayer = base.satellite;
 
     var xx = {
         'Normal': normalLayer,
@@ -203,87 +194,6 @@ $(document).ready(function () {
 const BASE_SIZE = 22
 var DATA_FIRES = {number: 0, topImportance: 0, average: 0}
 
-function calculateImportanceValue(data) {
-    const manFactor = 1
-    const terrainFactor = 3
-    const aerialFactor = 7
-
-    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
-    var importance = hasUnknownMeios
-        ? 10 * manFactor
-        : data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
-
-    DATA_FIRES.number += 1
-    if (DATA_FIRES.topImportance < importance) {
-        DATA_FIRES.topImportance = importance
-    }
-
-    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance) / (DATA_FIRES.number)
-
-    data.importance = importance
-}
-
-function getPonderatedImportanceFactor(importance, statusCode) {
-    var importanceSize
-
-    // check for fake alarm's or calls
-    if (statusCode == 11 || statusCode == 12) {
-        return 0.6
-    }
-    if (importance > DATA_FIRES.average) {
-        var topPercentage = importance / DATA_FIRES.topImportance
-        topPercentage *= 2.3
-        topPercentage += 0.5
-
-        var avgPercentage = DATA_FIRES.average / importance
-
-        importanceSize = topPercentage - avgPercentage
-
-        if (importanceSize > 1.75) {
-            importanceSize = 1.75
-        }
-
-        if (importanceSize < 1) {
-            importanceSize = 1
-        }
-    }
-
-    if (importance < DATA_FIRES.average) {
-        var avgPercentage = importance / DATA_FIRES.average * 0.8
-        if (avgPercentage < 0.5) {
-            importanceSize = 0.5
-        } else {
-            importanceSize = avgPercentage
-        }
-    }
-    return importanceSize
-}
-
-function escapeFireText(s) {
-    return String(s == null ? '' : s)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-function buildFireTooltip(item) {
-    var t = (window.trans && window.trans.fire) || {};
-    var loc = escapeFireText(item.location || '');
-    if (item.detailLocation) loc += ' — ' + escapeFireText(item.detailLocation);
-    else if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
-    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
-    var men     = parseInt(item.man,     10) || 0;
-    var terrain = parseInt(item.terrain, 10) || 0;
-    var aerial  = parseInt(item.aerial,  10) || 0;
-    return ''
-        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
-        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
-            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
-        + '<div class="fire-tooltip-row">'
-        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
-        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
-        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
-        + '</div>';
-}
 
 function addMaker(item, mymap) {
     console.log(item);
@@ -413,142 +323,15 @@ function plot(id) {
         success: function (data) {
             if (typeof data === 'string') data = JSON.parse(data)
             if (data.success && data.data.length) {
-                labels = []
-                var man = []
-                var terrain = []
-                var aerial = []
-                for (d in data.data) {
-                    labels.push(data.data[d].label)
-                    man.push(data.data[d].man)
-                    terrain.push(data.data[d].terrain)
-                    aerial.push(data.data[d].aerial)
-                }
-
-                var ctx = document.getElementById('myChart')
-                var myLineChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Operacionais',
-                            data: man,
-                            fill: false,
-                            backgroundColor: '#EFC800',
-                            borderColor: '#EFC800'
-                        },
-                            {
-                                label: 'Terrestres',
-                                data: terrain,
-                                fill: false,
-                                backgroundColor: '#6D720B',
-                                borderColor: '#6D720B'
-                            }, {
-                                label: 'Aéreos',
-                                data: aerial,
-                                fill: false,
-                                backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
-                            }]
-                    },
-                    options: {
-                        elements: {
-                            line: {
-                                tension: 0 // disables bezier curves
-                            }
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {}
-                            }]
-                        }
-                    }
-                })
+                fogosResourcesChart(document.getElementById('myChart'), data.data)
             } else {
-                $('#info').find('canvas').remove()
-                $('#info').append('<p>Não há dados disponiveis</p> ')
+                fogosResourcesChartEmpty('#info')
             }
         }
     })
 
 }
 
-function status(id) {
-    $('#status').empty()
-    var url = '/' + locale + '/madeira/views/status/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-status').html(data)
-        }
-    })
-}
-
-function danger(id) {
-    var url = '/' + locale + '/madeira/views/risk/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-danger').html(data)
-        }
-    })
-
-}
-
-function meteo(id) {
-    var url = '/' + locale + '/madeira/views/meteo/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-meteo').html(data)
-        }
-    })
-
-}
-
-function extra(id) {
-    var url = '/' + locale + '/madeira/views/extra/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            if (data && data.length !== 0) {
-                $('.f-extra').html(data)
-                $('.extra').addClass('active')
-            } else {
-                $('.extra').removeClass('active')
-            }
-
-        }
-    })
-
-}
-
-function getColor(d) {
-    var color
-    switch (d) {
-        case 1:
-            color = '#509e2f';
-            break;
-        case 2:
-            color = '#ffe900';
-            break;
-        case 3:
-            color = '#e87722';
-            break;
-        case 4:
-            color = '#cb333b';
-            break;
-        case 5:
-            color = '#6f263d'
-            break;
-        default:
-            color = 'rgb(255,  255,  255)';
-    }
-    return color;
-}
 
 function addRisk(mymap) {
     // lel
@@ -640,70 +423,4 @@ function addRisk(mymap) {
     })
 }
 
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href
-    name = name.replace(/[\[\]]/g, '\\$&')
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url)
-    if (!results) return null
-    if (!results[2]) return ''
-    return decodeURIComponent(results[2].replace(/\+/g, ' '))
-}
 
-function addPageview() {
-    if (window.ga) {
-        if ('ga' in window) {
-            var tracker = window.ga.getAll()[0]
-            if (tracker)
-                tracker.send('pageview')
-        }
-    }
-}
-
-function extend() {
-    for (var o = {}, i = 0; i < arguments.length; i++) {
-        for (var k in arguments[i]) {
-            if (arguments[i].hasOwnProperty(k)) {
-                o[k] = arguments[i][k].constructor === Object ? extend(o[k] || {}, arguments[i][k]) : arguments[i][k]
-            }
-        }
-    }
-    return o
-}
-
-//https://stackoverflow.com/questions/31192451/generate-random-geo-coordinates-within-specific-radius-from-seed-point
-//Create random lat/long coordinates in a specified radius around a center point
-function randomGeo(latitude, longitude) {
-    var radius = 50
-    var y0 = latitude
-    var x0 = longitude
-    var rd = radius / 111300 //about 111300 meters in one degree
-
-    var u = Math.random()
-    var v = Math.random()
-
-    var w = rd * Math.sqrt(u)
-    var t = 2 * Math.PI * v
-    var x = w * Math.cos(t)
-    var y = w * Math.sin(t)
-
-    //Adjust the x-coordinate for the shrinking of the east-west distances
-    var xp = x / Math.cos(y0)
-
-    var newlat = y + y0
-    var newlon = x + x0
-    var newlon2 = xp + x0
-
-    return {
-        'latitude': newlat.toFixed(5),
-        'longitude': newlon2.toFixed(5)
-    }
-}
-
-function changeElementSizeById(id, size) {
-    var markerHtml = document.getElementById(id)
-
-    //Set costum size
-    markerHtml.style.height = size + 'px'
-    markerHtml.style.width = size + 'px'
-}

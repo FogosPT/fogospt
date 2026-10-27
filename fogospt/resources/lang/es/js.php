@@ -23,6 +23,7 @@ return [
         'humans'      => 'Operativos',
         'terrestrial' => 'Terrestres',
         'aerial'      => 'Aéreos',
+        'noData'      => 'No hay datos disponibles',
     ],
     'risk' => [
         'today'    => 'Hoy',

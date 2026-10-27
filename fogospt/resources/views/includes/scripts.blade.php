@@ -38,7 +38,11 @@
     });
 </script>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+{{-- dayjs (+utc) replaces moment.js (maintenance mode, ~10x larger). The
+     plugin is registered by dayjs-setup.js (deferred scripts run in order). --}}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.23/dayjs.min.js" integrity="sha512-XEVgwGep2YaTBuaL+NyliCBBiKVkMy4Rpa0Camg4MBsd5qfpAf6ZQYwBadQTDGtpEex+hFN9q2yOw0saY7mj/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.23/plugin/utc.min.js" integrity="sha512-L6+JBir4Tuvf3skEd3u8/q0ZBW4O1Xu0W/QBLBz+WZ8DiFjpNBMVirATJsFfHcv0TH0GTinCUG/7jVWG0PMnLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer src="/js/dayjs-setup.js?v={{ filemtime(public_path('js/dayjs-setup.js')) }}"></script>
 
 {{-- First-party cookie consent (replaces Cookiebot). Reads window.trans.consent
      for labels, so this must come after the window.trans blob is set in

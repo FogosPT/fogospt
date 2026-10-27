@@ -2,7 +2,6 @@
 // ?v= querystring (see e893807 — the fix was on origin but the CDN kept
 // serving pre-fix bytes for the same versioned URL).
 $.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
-var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
     try {
@@ -1044,23 +1043,6 @@ $(document).ready(function () {
 })
 
 
-function insidePT(point) {
-    var x = point[0], y = point[1];
-
-    var pt = portugal.geometry.coordinates[0][0];
-    var inside = false;
-
-    for (var i = 0, j = pt.length - 1; i < pt.length; j = i++) {
-        var xi = pt[i][0], yi = pt[i][1];
-        var xj = pt[j][0], yj = pt[j][1];
-
-        var intersect = ((yi > y) != (yj > y))
-            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-    return inside;
-};
-
 
 function addLightning(data, mymap) {
     // Fade older strikes so the freshest ones stand out.
@@ -1103,79 +1085,6 @@ function addLightning(data, mymap) {
 }
 
 
-function addModisPoint(data, mymap) {
-    var marker = L.marker([data.latitude, data.longitude])
-
-    marker.properties = {}
-
-    iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
-
-    marker.sizeFactor = 3
-
-    marker.setIcon(L.divIcon({
-        className: 'count-icon-emergency',
-        html: iconHtml,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-    }))
-
-    var confidence = '';
-    if (data.confidence === 'nominal') {
-        confidence = 'normal';
-    } else if (data.confidence === 'low') {
-        confidence = 'baixa';
-    } else if (data.confidence === 'high') {
-        confidence = 'alta';
-    } else {
-        confidence = escapeFireText(data.confidence);
-    }
-
-    var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
-
-    date = moment.utc(date).local().format('DD-MM-YYYY HH:mm');
-    var content = '<p>Data: ' + date + '</p><p>Confiança: ' + confidence + '%</p>';
-    marker.bindPopup(content);
-
-    window.modisLayer[0].addLayer(marker)
-}
-
-function addVIIRSPoint(data, mymap) {
-    var marker = L.marker([data.latitude, data.longitude])
-
-    marker.properties = {}
-
-    iconHtml = '<i class="fab fa-hotjar" style="color: #F96E5B"></i>'
-
-    marker.sizeFactor = 3
-
-    marker.setIcon(L.divIcon({
-        className: 'count-icon-emergency',
-        html: iconHtml,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-    }))
-
-
-    var confidence = '';
-    if (data.confidence === 'nominal') {
-        confidence = 'normal';
-    } else if (data.confidence === 'low') {
-        confidence = 'baixa';
-    } else if (data.confidence === 'high') {
-        confidence = 'alta';
-    } else {
-        confidence = escapeFireText(data.confidence);
-    }
-
-    var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
-
-    date = moment.utc(data).local().format('DD-MM-YYYY HH:mm');
-    var content = '<p>Date: ' + date + '</p><p>Confiança: ' + confidence + '</p>';
-    marker.bindPopup(content);
-
-    window.modisLayer[1].addLayer(marker)
-}
-
 
 const BASE_SIZE = 22
 var DATA_FIRES = {
@@ -1184,64 +1093,9 @@ var DATA_FIRES = {
     average: 0
 }
 
-function calculateImportanceValue(data) {
-    const manFactor = 1
-    const terrainFactor = 3
-    const aerialFactor = 7
-
-    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
-    var importance = hasUnknownMeios
-        ? 10 * manFactor
-        : data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
-
-    DATA_FIRES.number += 1
-    if (DATA_FIRES.topImportance < importance) {
-        DATA_FIRES.topImportance = importance
-    }
-
-    DATA_FIRES.average = (DATA_FIRES.average * (DATA_FIRES.number - 1) + importance) / (DATA_FIRES.number)
-
-    data.importance = importance
-}
-
-function getPonderatedImportanceFactor(importance, statusCode) {
-    var importanceSize
-
-    // check for fake alarm's or calls
-    if (statusCode == 11 || statusCode == 12) {
-        return 0.6
-    }
-    if (importance > DATA_FIRES.average) {
-        var topPercentage = importance / DATA_FIRES.topImportance
-        topPercentage *= 2.3
-        topPercentage += 0.5
-
-        var avgPercentage = DATA_FIRES.average / importance
-
-        importanceSize = topPercentage - avgPercentage
-
-        if (importanceSize > 1.75) {
-            importanceSize = 1.75
-        }
-
-        if (importanceSize < 1) {
-            importanceSize = 1
-        }
-    }
-
-    if (importance < DATA_FIRES.average) {
-        var avgPercentage = importance / DATA_FIRES.average * 0.8
-        if (avgPercentage < 0.5) {
-            importanceSize = 0.5
-        } else {
-            importanceSize = avgPercentage
-        }
-    }
-    return importanceSize
-}
 
 function fillSidebar(item) {
-    var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY')
+    var momentDate = dayjs.unix(item.updated.sec).format('HH:mm DD-MM-YYYY')
     // Upstream (ANEPC) text — escape everything that lands in .html().
     var coords = escapeFireText(item.lat + ',' + item.lng)
     var location = '<a href="https://www.google.com/maps/search/' + encodeURIComponent(item.lat + ',' + item.lng) + '" target="_blank" rel="noopener"><i class="far fa-map"></i></a> ' + coords
@@ -1276,11 +1130,6 @@ function fillSidebar(item) {
     }
 }
 
-function escapeFireText(s) {
-    return String(s == null ? '' : s)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
 
 // IPMA weather warnings for the fire's district, injected inline in the
 // incident payload by the backend. Rendered client-side because the data
@@ -1353,27 +1202,6 @@ function updateWeatherWarningsSidebar(item) {
     $card.css('border-left', top ? '4px solid ' + WEATHER_WARNING_BG[top] : '');
 }
 
-// Hover summary on each fire marker: location, start time and the
-// resource counts (men / ground / aerial). Lets visitors triage the
-// map without clicking through to the sidebar/detail page.
-function buildFireTooltip(item) {
-    var t = (window.trans && window.trans.fire) || {};
-    var loc = escapeFireText(item.location || '');
-    if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
-    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
-    var men     = parseInt(item.man,     10) || 0;
-    var terrain = parseInt(item.terrain, 10) || 0;
-    var aerial  = parseInt(item.aerial,  10) || 0;
-    return ''
-        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
-        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
-            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
-        + '<div class="fire-tooltip-row">'
-        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
-        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
-        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
-        + '</div>';
-}
 
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng)
@@ -1510,171 +1338,16 @@ function plot(id) {
         method: 'GET',
         success: function (data) {
             if (data.success && data.data.length) {
-                labels = []
-                var man = []
-                var terrain = []
-                var aerial = []
-                for (d in data.data) {
-                    labels.push(data.data[d].label)
-                    man.push(data.data[d].man)
-                    terrain.push(data.data[d].terrain)
-                    aerial.push(data.data[d].aerial)
-                }
-
-                var ctx = document.getElementById('myChart')
-
-                if(detailsChart)
-                    detailsChart.destroy()
-
-                detailsChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: window.trans.chart.humans,
-                            data: man,
-                            fill: false,
-                            backgroundColor: '#EFC800',
-                            borderColor: '#EFC800',
-                            yAxisID: 'y-left'
-                        },
-                            {
-                                label: window.trans.chart.terrestrial,
-                                data: terrain,
-                                fill: false,
-                                backgroundColor: '#6D720B',
-                                borderColor: '#6D720B',
-                                yAxisID: 'y-left'
-                            }, {
-                                label: window.trans.chart.aerial,
-                                data: aerial,
-                                fill: false,
-                                backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2',
-                                yAxisID: 'y-right'
-                            }
-                        ]
-                    },
-                    options: {
-                        elements: {
-                            line: {
-                                tension: 0 // disables bezier curves
-                            }
-                        },
-                        scales: {
-                            yAxes: [{
-                                id: 'y-left',
-                                position: 'left',
-                                ticks: { beginAtZero: true, precision: 0 },
-                                scaleLabel: { display: true, labelString: window.trans.chart.humans + ' / ' + window.trans.chart.terrestrial }
-                            }, {
-                                id: 'y-right',
-                                position: 'right',
-                                ticks: { beginAtZero: true, precision: 0 },
-                                gridLines: { drawOnChartArea: false },
-                                scaleLabel: { display: true, labelString: window.trans.chart.aerial }
-                            }]
-                        }
-                    }
-                })
+                if (detailsChart) detailsChart.destroy()
+                detailsChart = fogosResourcesChart(document.getElementById('myChart'), data.data)
             } else {
-                $('#info').find('canvas').remove()
-                $('#info').append('<p>Não há dados disponiveis</p> ')
+                fogosResourcesChartEmpty('#info')
             }
         }
     })
 
 }
 
-function status(id) {
-    var url = '/' + locale + '/views/status/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-status').html(data)
-        }
-    })
-}
-
-function danger(id) {
-    var url = '/' + locale + '/views/risk/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-danger').html(data)
-        }
-    })
-
-}
-
-function meteo(id) {
-    var url = '/' + locale + '/views/meteo/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-meteo').html(data)
-        }
-    })
-
-}
-
-function extra(id) {
-    var url = '/' + locale + '/views/extra/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            if (data && data.length !== 0) {
-                $('.f-extra').html(data)
-                $('.extra').addClass('active')
-            } else {
-                $('.extra').removeClass('active')
-            }
-
-        }
-    })
-
-}
-
-
-function shares(id) {
-    var url = '/' + locale + '/views/shares/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-shares').html(data)
-        }
-    })
-
-}
-
-function getColor(d) {
-    var color
-    switch (d) {
-        case 1:
-            color = '#509e2f';
-            break;
-        case 2:
-            color = '#ffe900';
-            break;
-        case 3:
-            color = '#e87722';
-            break;
-        case 4:
-            color = '#cb333b';
-            break;
-        case 5:
-            color = '#6f263d'
-            break;
-        default:
-            color = 'rgb(255,  255,  255)';
-    }
-    return color;
-}
 
 // Risk overlays — three concelho-level choropleths (today / tomorrow /
 // after) backed by source.fogos.pt. The fetches are deferred until the
@@ -1754,73 +1427,6 @@ function addRisk(mymap) {
     }
 }
 
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href
-    name = name.replace(/[\[\]]/g, '\\$&')
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url)
-    if (!results) return null
-    if (!results[2]) return ''
-    return decodeURIComponent(results[2].replace(/\+/g, ' '))
-}
-
-function addPageview() {
-    if (window.ga) {
-        if ('ga' in window) {
-            var tracker = window.ga.getAll()[0]
-            if (tracker)
-                tracker.send('pageview')
-        }
-    }
-}
-
-function extend() {
-    for (var o = {}, i = 0; i < arguments.length; i++) {
-        for (var k in arguments[i]) {
-            if (arguments[i].hasOwnProperty(k)) {
-                o[k] = arguments[i][k].constructor === Object ? extend(o[k] || {}, arguments[i][k]) : arguments[i][k]
-            }
-        }
-    }
-    return o
-}
-
-//https://stackoverflow.com/questions/31192451/generate-random-geo-coordinates-within-specific-radius-from-seed-point
-//Create random lat/long coordinates in a specified radius around a center point
-function randomGeo(latitude, longitude) {
-    var radius = 50
-    var y0 = latitude
-    var x0 = longitude
-    var rd = radius / 111300 //about 111300 meters in one degree
-
-    var u = Math.random()
-    var v = Math.random()
-
-    var w = rd * Math.sqrt(u)
-    var t = 2 * Math.PI * v
-    var x = w * Math.cos(t)
-    var y = w * Math.sin(t)
-
-    //Adjust the x-coordinate for the shrinking of the east-west distances
-    var xp = x / Math.cos(y0)
-
-    var newlat = y + y0
-    var newlon = x + x0
-    var newlon2 = xp + x0
-
-    return {
-        'latitude': newlat.toFixed(5),
-        'longitude': newlon2.toFixed(5)
-    }
-}
-
-function changeElementSizeById(id, size) {
-    var markerHtml = document.getElementById(id)
-
-    //Set costum size
-    markerHtml.style.height = size + 'px'
-    markerHtml.style.width = size + 'px'
-}
 
 // Maps status code -> { id, labelKey }. Order defines panel display order.
 var FIRE_STATUS_DEFS = [
@@ -1976,41 +1582,4 @@ window.fogosApplyFilters = function () {
     if (window.fogosLastMap) getNewFires(window.fogosLastMap, true);
 };
 
-function addPlane(icao, mymap){
-    var url = 'https://source.fogos.pt/v2/planes/' + encodeURIComponent(icao)
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            if (data.success) {
 
-                for (i in data.data) {
-                    addPlanePoint(data.data[i], mymap)
-                }
-            }
-        }
-    })
-}
-
-
-function addPlanePoint(data, mymap) {
-    var marker = L.marker([data.lat, data.lon])
-
-    marker.properties = {}
-    iconHtml = '<i class="fas fa-plane" style="color: #000000;font-size: 20px;"></i>'
-
-    marker.sizeFactor = 3
-
-    marker.setIcon(L.divIcon({
-        className: 'count-icon-emergency',
-        html: iconHtml,
-        iconSize: [50, 50]
-    }))
-
-
-    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:mm');
-    var content = '<p>Date: ' + date + '</p>';
-    marker.bindPopup(content);
-
-    marker.addTo(mymap);
-}

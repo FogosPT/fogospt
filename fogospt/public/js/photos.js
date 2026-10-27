@@ -28,8 +28,8 @@
 
     function fmtDate(iso) {
         if (!iso) return '';
-        if (typeof moment !== 'undefined') {
-            return moment(iso).format('DD-MM-YYYY HH:mm');
+        if (typeof dayjs !== 'undefined') {
+            return dayjs(iso).format('DD-MM-YYYY HH:mm');
         }
         return iso;
     }

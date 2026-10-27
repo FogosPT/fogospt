@@ -14,74 +14,9 @@ $(document).ready(function () {
             method: 'GET',
             success: function (data) {
                 if (data.success && data.data.length) {
-                    labels = []
-                    var man = []
-                    var terrain = []
-                    var aerial = []
-                    for (d in data.data) {
-                        labels.push(data.data[d].label)
-                        man.push(data.data[d].man)
-                        terrain.push(data.data[d].terrain)
-                        aerial.push(data.data[d].aerial)
-                    }
-
-                    var ctx = document.getElementById('myChart')
-                    var myLineChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Operacionais',
-                                data: man,
-                                fill: false,
-                                backgroundColor: '#EFC800',
-                                borderColor: '#EFC800',
-                                yAxisID: 'y-left'
-                            },
-                                {
-                                    label: 'Terrestres',
-                                    data: terrain,
-                                    fill: false,
-                                    backgroundColor: '#6D720B',
-                                    borderColor: '#6D720B',
-                                    yAxisID: 'y-left'
-                                }, {
-                                    label: 'Aéreos',
-                                    data: aerial,
-                                    fill: false,
-                                    backgroundColor: '#4E88B2',
-                                    borderColor: '#4E88B2',
-                                    yAxisID: 'y-right'
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            elements: {
-                                line: {
-                                    tension: 0 // disables bezier curves
-                                }
-                            },
-                            scales: {
-                                yAxes: [{
-                                    id: 'y-left',
-                                    position: 'left',
-                                    ticks: { beginAtZero: true, precision: 0 },
-                                    scaleLabel: { display: true, labelString: 'Operacionais / Terrestres' }
-                                }, {
-                                    id: 'y-right',
-                                    position: 'right',
-                                    ticks: { beginAtZero: true, precision: 0 },
-                                    gridLines: { drawOnChartArea: false },
-                                    scaleLabel: { display: true, labelString: 'Aéreos' }
-                                }]
-                            }
-                        }
-                    })
+                    fogosResourcesChart(document.getElementById('myChart'), data.data, { maintainAspectRatio: false })
                 } else {
-                    $('#info').find('canvas').remove()
-                    $('#info').append('<p>Não há dados disponiveis</p> ')
+                    fogosResourcesChartEmpty('#info')
                 }
             }
         })

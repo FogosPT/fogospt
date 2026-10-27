@@ -32,8 +32,8 @@
 
     function fmtTime(iso) {
         if (!iso) return '';
-        if (typeof moment !== 'undefined') {
-            return moment.utc(iso).local().format('DD-MM-YYYY HH:mm');
+        if (typeof dayjs !== 'undefined' && dayjs.utc) {
+            return dayjs.utc(iso).local().format('DD-MM-YYYY HH:mm');
         }
         return iso;
     }
