@@ -34,6 +34,25 @@ function fogosBaseLayers() {
     };
 }
 
+// Concelho boundaries (342 KB GeoJSON) are only needed for the risk
+// choropleths, so pages fetch them on demand instead of blocking first
+// paint. Pages that need them at boot (custom map, configurator) still
+// include /js/concelhos.js directly, in which case this resolves at once.
+var fogosConcelhosPromise = null;
+function fogosLoadConcelhos() {
+    if (typeof concelhos !== 'undefined') return Promise.resolve(concelhos);
+    if (!fogosConcelhosPromise) {
+        fogosConcelhosPromise = new Promise(function (resolve, reject) {
+            var s = document.createElement('script');
+            s.src = window.FOGOS_CONCELHOS_URL || '/js/concelhos.js';
+            s.onload = function () { resolve(concelhos); };
+            s.onerror = function () { fogosConcelhosPromise = null; reject(new Error('concelhos')); };
+            document.head.appendChild(s);
+        });
+    }
+    return fogosConcelhosPromise;
+}
+
 // Card HTML is rendered (and escaped) server-side by Blade.
 function status(id) {
     $('#status').empty();

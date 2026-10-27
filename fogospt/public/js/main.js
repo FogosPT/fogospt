@@ -1376,19 +1376,21 @@ function addRisk(mymap) {
             method: 'GET',
             success: function (data) {
                 if (!data || !data.success) { loaded[kind] = false; return; }
-                var geo = L.geoJson(concelhos, {
-                    style: function (feature) {
-                        var d = data.data.local[feature.properties.DICO].data.rcm
-                        return {
-                            weight: 1.0,
-                            color: '#666',
-                            fillOpacity: 0.6,
-                            fillColor: getColor(d)
+                fogosLoadConcelhos().then(function (concelhos) {
+                    var geo = L.geoJson(concelhos, {
+                        style: function (feature) {
+                            var d = data.data.local[feature.properties.DICO].data.rcm
+                            return {
+                                weight: 1.0,
+                                color: '#666',
+                                fillOpacity: 0.6,
+                                fillColor: getColor(d)
+                            }
                         }
-                    }
-                });
-                groups[kind].addLayer(geo);
-                if (onReady) onReady();
+                    });
+                    groups[kind].addLayer(geo);
+                    if (onReady) onReady();
+                }, function () { loaded[kind] = false; });
             },
             error: function () { loaded[kind] = false; }
         });

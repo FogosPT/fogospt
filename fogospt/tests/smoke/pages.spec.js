@@ -123,3 +123,20 @@ test('fire detail page renders charts and sanitises KML popups', async ({ page }
     expect(dialogs).toEqual([]);
     expect(errors).toEqual([]);
 });
+
+test('risk layer lazy-loads concelhos and draws the choropleth', async ({ page }) => {
+    const errors = collectErrors(page);
+    const concelhos = page.waitForRequest(/\/js\/concelhos\.js/, { timeout: 20000 });
+    await page.goto('/pt?risk=1', { waitUntil: 'domcontentloaded' });
+    await concelhos;
+    await expect(page.locator('#map.risk-layer-ready')).toHaveCount(1, { timeout: 20000 });
+    expect(await page.locator('#map path.leaflet-interactive').count()).toBeGreaterThan(200);
+    expect(errors).toEqual([]);
+});
+
+test('main map does not download concelhos until the risk layer is used', async ({ page }) => {
+    const urls = [];
+    page.on('request', (r) => urls.push(r.url()));
+    await page.goto('/pt', { waitUntil: 'networkidle' }).catch(() => {});
+    expect(urls.filter((u) => /\/js\/concelhos\.js/.test(u))).toEqual([]);
+});

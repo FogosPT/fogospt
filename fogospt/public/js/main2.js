@@ -334,6 +334,10 @@ function plot(id) {
 
 
 function addRisk(mymap) {
+    fogosLoadConcelhos().then(function () { addRiskLayers(mymap); });
+}
+
+function addRiskLayers(mymap) {
     // lel
     var url = 'https://source.fogos.pt/v1/risk-today'
     $.ajax({
