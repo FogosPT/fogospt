@@ -57,7 +57,7 @@ services:
       $${REDIS_PASSWORD:+--requirepass "$$REDIS_PASSWORD"}'
     healthcheck:
       test: ["CMD-SHELL", "redis-cli $${REDIS_PASSWORD:+-a \"$$REDIS_PASSWORD\"} --no-auth-warning ping | grep -q PONG"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
       retries: 3
 
@@ -86,7 +86,7 @@ services:
       - render
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
+      interval: 15s
       timeout: 5s
       retries: 3
       start_period: 20s

@@ -49,11 +49,33 @@ check /sitemap-fires.xml 200
 check /css/app.css 200
 check "/pt/fogo/1%26x%3D1" 404
 
-for svc in og-renderer redispt; do
-    status=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}' "$($COMPOSE ps -q $svc)")
-    echo "  $svc: $status"
-done
-echo "  og-renderer pids: $(docker exec og-renderer cat /sys/fs/cgroup/pids.current)"
+# HTTP checks may be answered by the CDN, so check the sidecars directly.
+# Health checks need a few intervals after a recreate: wait, but bounded.
+wait_healthy() {
+    local svc="$1" id status deadline=$((SECONDS + ${HEALTH_TIMEOUT:-120}))
+    id=$($COMPOSE ps -aq "$svc")
+    while :; do
+        status=$( [ -n "$id" ] && docker inspect -f '{{if not .State.Running}}stopped{{else if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}' "$id" 2>/dev/null)
+        status=${status:-missing}
+        case "$status" in
+            healthy) echo "  ok   $svc healthy"; return 0 ;;
+            starting) [ $SECONDS -lt $deadline ] || break; sleep 3 ;;
+            *) break ;;
+        esac
+    done
+    echo "  FAIL $svc: $status"; fail=1
+}
+wait_healthy redispt
+wait_healthy og-renderer
+
+# /health doesn't launch Chrome — render a tiny card end to end.
+render=$(docker exec og-renderer node -e "
+fetch('http://127.0.0.1:3000/render', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ html: '<html><body><script>requestAnimationFrame(()=>requestAnimationFrame(()=>window.__ogReady=true))</script></body></html>', width: 120, height: 63 }) })
+  .then(async (r) => { const b = Buffer.from(await r.arrayBuffer()); console.log(r.status + ' ' + (b.subarray(1, 4).toString() === 'PNG' ? 'png' : 'not-png')); })
+  .catch((e) => console.log('error ' + e.message));" 2>&1 | head -1)
+if [ "$render" = "200 png" ]; then echo "  ok   og-renderer renders"; else echo "  FAIL og-renderer render: $render"; fail=1; fi
+echo "  og-renderer pids: $(docker exec og-renderer cat /sys/fs/cgroup/pids.current 2>/dev/null || echo n/a)"
 
 if [ "$fail" -ne 0 ]; then
     echo -e "\n\033[1;31mSmoke checks failed — check storage/logs.\033[0m"

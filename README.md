@@ -93,6 +93,9 @@ changed.
 
 CI pushes a production image to `ghcr.io/fogospt/fogospt` on every push to
 master; `docker-compose.image.yml` runs that image instead of the bind mount.
+In that mode the image's `public/` is copied to `runtime/public` on every
+`up`, so point the host nginx `root` there — otherwise it would keep serving
+the JS/CSS of whatever is checked out on disk.
 
 ### Cloudflare cache rule for HTML
 
