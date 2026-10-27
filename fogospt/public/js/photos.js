@@ -28,8 +28,8 @@
 
     function fmtDate(iso) {
         if (!iso) return '';
-        if (typeof moment !== 'undefined') {
-            return moment(iso).format('DD-MM-YYYY HH:mm');
+        if (typeof dayjs !== 'undefined') {
+            return dayjs(iso).format('DD-MM-YYYY HH:mm');
         }
         return iso;
     }
@@ -40,7 +40,7 @@
             gallery: '#f-photos-gallery',
             children: 'a',
             pswpModule: function () {
-                return import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.js');
+                return import('https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.esm.js');
             }
         });
         lightbox.on('uiRegister', function () {

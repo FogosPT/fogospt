@@ -1,8 +1,8 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 @stack('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha384-VDls8ImYGI8SwVxpmjX2Bn27U2TcNodzTNROTusVEWO55+lmL+H9NczoQJk6mwZR" crossorigin="anonymous"></script>
 <script>
     // Toast bodies carry upstream/FCM text — never render them as HTML.
     toastr.options.escapeHtml = true;
@@ -16,8 +16,11 @@
 <script>window.__FOGOS_GA_ID__ = @json($gaId);</script>
 @endif
 
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+{{-- Firebase "compat" builds: the v8 namespaced API (firebase.messaging(),
+     getToken, onMessage) on top of the current SDK. Keep the version in sync
+     with the service worker in GenericController::firebaseMessagingSw. --}}
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js" integrity="sha384-aUtWR1iCiOCHS8pn1nKNXMZm3I/eDrV63IXWXgE+mHHqJfYTWYV+jGk0sCXz57+U" crossorigin="anonymous"></script>
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js" integrity="sha384-/QOgDjfwEvqJ0UAwKZH8I3TZ4W8ebk7PDk6UWIYc2hGanbyE65QrNB0VQuDeVkGe" crossorigin="anonymous"></script>
 <script>
     // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
     window.__FIREBASE_VAPID_KEY__ = @json(config('services.firebase.vapid_key'));
@@ -38,7 +41,11 @@
     });
 </script>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+{{-- dayjs (+utc) replaces moment.js (maintenance mode, ~10x larger). The
+     plugin is registered by dayjs-setup.js (deferred scripts run in order). --}}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.23/dayjs.min.js" integrity="sha512-XEVgwGep2YaTBuaL+NyliCBBiKVkMy4Rpa0Camg4MBsd5qfpAf6ZQYwBadQTDGtpEex+hFN9q2yOw0saY7mj/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.23/plugin/utc.min.js" integrity="sha512-L6+JBir4Tuvf3skEd3u8/q0ZBW4O1Xu0W/QBLBz+WZ8DiFjpNBMVirATJsFfHcv0TH0GTinCUG/7jVWG0PMnLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer src="/js/dayjs-setup.js?v={{ filemtime(public_path('js/dayjs-setup.js')) }}"></script>
 
 {{-- First-party cookie consent (replaces Cookiebot). Reads window.trans.consent
      for labels, so this must come after the window.trans blob is set in

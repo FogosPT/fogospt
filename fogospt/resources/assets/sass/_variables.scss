@@ -5,6 +5,11 @@ $header-height: 56px;
 // Brand — use these instead of hard-coded hex values.
 $brand: #ff512f;
 $brand-hover: #f09819;
+// Text-safe variants: $brand / $c-orange on white are 3.2:1 / 2.8:1 (WCAG AA
+// needs 4.5:1). Use these for text, links and white-on-orange buttons; keep
+// $brand for gradients, icons and large decorative surfaces.
+$brand-text: #c9350f;        // 5.25:1 on white, 4.8:1 on #f5f5f5
+$brand-text-hover: #a52b0b;
 $focus-ring: 0 0 0 .2rem rgba(255, 81, 47, .45);
 
 // danger

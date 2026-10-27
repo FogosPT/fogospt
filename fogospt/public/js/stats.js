@@ -223,7 +223,7 @@ function plot() {
               },
             },
             scales: {
-              xAxes: {
+              x: {
                 ticks: {
                   stepSize: 20,
                 },
