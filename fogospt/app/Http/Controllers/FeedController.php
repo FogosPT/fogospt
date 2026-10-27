@@ -17,14 +17,15 @@ class FeedController extends Controller
 {
     private const BASE_URL = 'https://fogos.pt';
     private const CACHE_TTL_SECONDS = 300;
+    private const FAILURE_TTL_SECONDS = 30;
 
     public function fires()
     {
-        $xml = Cache::remember('feed:fires', self::CACHE_TTL_SECONDS, function () {
+        $xml = $this->remember('feed:fires', function () {
             $fires = LegacyApi::getFires();
             $entries = $fires['data'] ?? [];
 
-            return $this->renderFiresFeed(is_array($entries) ? $entries : []);
+            return [$this->renderFiresFeed(is_array($entries) ? $entries : []), isset($fires['error'])];
         });
 
         return $this->xmlResponse($xml);
@@ -32,14 +33,29 @@ class FeedController extends Controller
 
     public function warnings()
     {
-        $xml = Cache::remember('feed:warnings', self::CACHE_TTL_SECONDS, function () {
+        $xml = $this->remember('feed:warnings', function () {
             $warnings = LegacyApi::getWarnings();
             $entries = $warnings['data'] ?? [];
 
-            return $this->renderWarningsFeed(is_array($entries) ? $entries : []);
+            return [$this->renderWarningsFeed(is_array($entries) ? $entries : []), isset($warnings['error'])];
         });
 
         return $this->xmlResponse($xml);
+    }
+
+    // Like Cache::remember, but an empty document rendered because upstream
+    // failed is only kept for a few seconds instead of the full TTL.
+    private function remember(string $key, callable $render): string
+    {
+        $xml = Cache::get($key);
+        if (is_string($xml)) {
+            return $xml;
+        }
+
+        [$xml, $failed] = $render();
+        Cache::put($key, $xml, $failed ? self::FAILURE_TTL_SECONDS : self::CACHE_TTL_SECONDS);
+
+        return $xml;
     }
 
     private function xmlResponse(string $xml)

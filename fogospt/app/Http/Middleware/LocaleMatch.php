@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cookie;
 
 class LocaleMatch
 {
@@ -25,8 +24,6 @@ class LocaleMatch
         }
 
         App::setLocale($locale);
-        
-        Cookie::queue('userLocale', $locale, config('session.lifetime'));
 
         return $next($request);
     }

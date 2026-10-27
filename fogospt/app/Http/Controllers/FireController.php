@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
 use App\Libs\OgRenderer;
 use GuzzleHttp;
@@ -17,10 +16,6 @@ class FireController extends Controller
 
     public function get($locale, $id)
     {
-        if (!$id) {
-            return view('index');
-        }
-
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
@@ -44,10 +39,6 @@ class FireController extends Controller
 
     public function getDetails($locale, $id)
     {
-        if (!$id) {
-            return view('index');
-        }
-
         $this->setFireById($id);
 
         if ($this->fire === null) {
@@ -220,21 +211,14 @@ class FireController extends Controller
     }
 
 
-    public function getAll()
-    {
-        return \Response::json(LegacyApi::getFires());
-    }
-
     public function getMadeira($locale, $id)
     {
-        if (!$id) {
-            return view('index-madeira');
-        }
-
         $this->setMadeiraFireById($id);
 
         if ($this->fire === null) {
-            return view('index-madeira');
+            // Unknown/finished fire (or upstream down): show the Madeira map.
+            $this->seoKey = 'madeira';
+            return view('index-madeira', ['metadata' => $this->generateMetadata()]);
         }
 
         $risk = LegacyApi::getRiskByFire($id);
@@ -290,11 +274,6 @@ class FireController extends Controller
             return \Response::json();
         }
 
-    }
-
-    public function getAllMadeira()
-    {
-        return \Response::json(LegacyApi::getFires());
     }
 
 

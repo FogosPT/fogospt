@@ -1,241 +1,144 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tomahock
- * Date: 03/05/2018
- * Time: 19:08
- */
 
 namespace App\Libs;
 
 use GuzzleHttp;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-
+/**
+ * Single integration point for source.fogos.pt.
+ *
+ * Every method returns either the decoded JSON array or ['error' => <code>].
+ * Error codes are generic on purpose — upstream URLs/bodies are logged, never
+ * returned, so they can't leak into responses or cached pages.
+ */
 class LegacyApi
 {
-    //private static $url = 'http://192.168.176.1:8092';
-    private static $url = 'https://source.fogos.pt';
-    private static $weatherUrl = 'api.openweathermap.org/data/2.5/weather?';
+    // Short in-app cache for per-fire lookups. One marker click fans out into
+    // five /views/* card requests, each needing the same fire payload; without
+    // this every click costs ~7 upstream round-trips.
+    private const FIRE_TTL = 30;
+    private const FIRE_EXTRA_TTL = 60;
 
-    private static function getClient()
+    private static function getClient(): GuzzleHttp\Client
     {
         // Hard timeouts are critical: Guzzle's defaults are 0 (= wait forever).
         // Without them, a stalled source.fogos.pt pins every FPM worker that
         // touches LegacyApi, the pool drains, and every other request — even
         // routes that don't call the API at all, like `/` — queues behind the
         // hung workers, producing 12-17s TTFB on the homepage.
-        $client = new GuzzleHttp\Client([
+        return new GuzzleHttp\Client([
+            'base_uri' => (string) config('services.fogos.url', 'https://source.fogos.pt'),
             'headers' => [
-                'FPTS' => env('FPTS', ''),
+                'FPTS' => (string) config('services.fogos.fpts', ''),
             ],
             'connect_timeout' => 3,
             'timeout'         => 6,
+            'http_errors'     => false,
         ]);
-
-        return $client;
     }
 
-    public static function getFires()
+    // Third-party hosts must never receive the FPTS token.
+    private static function getThirdPartyClient(): GuzzleHttp\Client
     {
-        $client = self::getClient();
+        return new GuzzleHttp\Client([
+            'headers' => ['User-Agent' => 'fogos.pt'],
+            'connect_timeout' => 3,
+            'timeout'         => 6,
+            'http_errors'     => false,
+        ]);
+    }
 
-        $url = self::$url . '/new/fires';
+    private static function request(string $path, array $query = [], ?GuzzleHttp\Client $client = null): array
+    {
+        $client = $client ?? self::getClient();
 
         try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
+            $response = $client->request('GET', $path, $query ? ['query' => $query] : []);
+        } catch (GuzzleException $e) {
+            // ConnectException (timeouts, DNS) is not a RequestException in
+            // Guzzle 7 — catching the interface covers every transport failure.
+            Log::warning('legacy api transport error', ['path' => $path, 'error' => $e->getMessage()]);
+            return ['error' => 'upstream_unavailable'];
         }
 
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        if ($response->getStatusCode() !== 200) {
+            Log::warning('legacy api bad status', ['path' => $path, 'status' => $response->getStatusCode()]);
+            return ['error' => 'upstream_status_' . $response->getStatusCode()];
+        }
+
+        $result = json_decode((string) $response->getBody(), true);
+        if (!is_array($result)) {
+            Log::warning('legacy api invalid json', ['path' => $path]);
+            return ['error' => 'upstream_invalid_json'];
+        }
 
         return $result;
     }
 
-    public static function getWarnings()
+    // Cache successful responses only, so a transient upstream failure never
+    // starves callers for the full TTL.
+    private static function cached(string $key, int $ttl, callable $fetch): array
     {
-        $client = self::getClient();
-
-        $url = self::$url . '/v1/warnings';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
+        $cached = Cache::get($key);
+        if (is_array($cached)) {
+            return $cached;
         }
 
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
+        $result = $fetch();
+        if (!isset($result['error'])) {
+            Cache::put($key, $result, $ttl);
+        }
 
         return $result;
     }
 
-    public static function getWarningsMadeira()
+    public static function getFires(): array
     {
-        $client = self::getClient();
-
-        $url = self::$url . '/v1/madeira/warnings';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-
-        return $result;
+        return self::request('/new/fires');
     }
 
-    public static function getWeekStats()
+    public static function getWarnings(): array
     {
-        $client = self::getClient();
-
-        $url = self::$url . '/v1/stats/week';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-
-        return $result;
+        return self::request('/v1/warnings');
     }
 
-    public static function getFire($id)
+    public static function getWarningsMadeira(): array
     {
-        $client = self::getClient();
-
-        $url = self::$url . '/fires?id=' . $id;
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-
-        return $result;
+        return self::request('/v1/madeira/warnings');
     }
 
-    public static function getMadeiraFire($id)
+    public static function getNow(): array
     {
-        $client = self::getClient();
-
-        $url = self::$url . '/madeira/fires?id=' . $id;
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-
-        return $result;
+        return self::request('/v1/now');
     }
 
-    public static function getRiskByFire($id)
+    public static function getFire($id): array
     {
-        $client = self::getClient();
-        $url = self::$url . '/fires/danger?id=' . $id;
-
-        try {
-            $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
+        return self::cached('legacy:fire:' . $id, self::FIRE_TTL, fn () => self::request('/fires', ['id' => $id]));
     }
 
-    public static function getNow()
+    public static function getMadeiraFire($id): array
     {
-        $client = self::getClient();
-        $url = self::$url . '/v1/now';
-
-        try {
-            $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
+        return self::cached('legacy:madeira-fire:' . $id, self::FIRE_TTL, fn () => self::request('/madeira/fires', ['id' => $id]));
     }
 
-    public static function getBurnedAreaLastDays()
+    public static function getRiskByFire($id): array
     {
-        $client = self::getClient();
-        $url = self::$url . '/v1/stats/burn-area';
-
-        try {
-            $response = $client->request('GET', $url);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
+        return self::cached('legacy:fire-risk:' . $id, self::FIRE_EXTRA_TTL, fn () => self::request('/fires/danger', ['id' => $id]));
     }
 
-    public static function getStatusByFire($id)
+    public static function getStatusByFire($id): array
     {
-        $client = self::getClient();
-        $url = self::$url . '/fires/status?id=' . $id;
+        return self::cached('legacy:fire-status:' . $id, self::FIRE_EXTRA_TTL, fn () => self::request('/fires/status', ['id' => $id]));
+    }
 
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
+    public static function getStatusByFireMadeira($id): array
+    {
+        return self::cached('legacy:madeira-fire-status:' . $id, self::FIRE_EXTRA_TTL, fn () => self::request('/madeira/fires/status', ['id' => $id]));
     }
 
     // Redis-cached wrappers used by the OG share-card pipeline. Every
@@ -245,184 +148,54 @@ class LegacyApi
     // fine for social crawlers, which themselves cache the PNG for hours.
     // Failures are never cached, so a bad response one minute doesn't
     // starve callers for the full TTL.
-    public static function getFireCached($id, $ttl = 600)
+    public static function getFireCached($id, $ttl = 600): array
     {
-        $key = 'og:fire:' . $id;
+        return self::redisCached('og:fire:' . $id, $ttl, fn () => self::request('/fires', ['id' => $id]));
+    }
+
+    public static function getStatusByFireCached($id, $ttl = 600): array
+    {
+        return self::redisCached('og:fire-status:' . $id, $ttl, fn () => self::request('/fires/status', ['id' => $id]));
+    }
+
+    private static function redisCached(string $key, int $ttl, callable $fetch): array
+    {
         $cached = Redis::get($key);
         if ($cached !== null) {
             $decoded = json_decode($cached, true);
             if (is_array($decoded)) return $decoded;
         }
-        $fire = self::getFire($id);
-        if (isset($fire['data']) && !isset($fire['error'])) {
-            Redis::set($key, json_encode($fire), 'EX', $ttl);
+        $result = $fetch();
+        if (isset($result['data']) && !isset($result['error'])) {
+            Redis::set($key, json_encode($result), 'EX', $ttl);
         }
-        return $fire;
-    }
-
-    public static function getStatusByFireCached($id, $ttl = 600)
-    {
-        $key = 'og:fire-status:' . $id;
-        $cached = Redis::get($key);
-        if ($cached !== null) {
-            $decoded = json_decode($cached, true);
-            if (is_array($decoded)) return $decoded;
-        }
-        $status = self::getStatusByFire($id);
-        if (isset($status['data']) && !isset($status['error'])) {
-            Redis::set($key, json_encode($status), 'EX', $ttl);
-        }
-        return $status;
-    }
-
-    public static function getStatusByFireMadeira($id)
-    {
-        $client = self::getClient();
-        $url = self::$url . '/madeira/fires/status?id=' . $id;
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
         return $result;
     }
 
-    public static function getStats8HoursToday()
+    public static function getMobileContributors(): array
     {
-        $client = self::getClient();
-        $url = self::$url . '/v1/stats/8hours';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
-    }
-
-    public static function getStats8HoursYesterday()
-    {
-        $client = self::getClient();
-        $url = self::$url . '/v1/stats/8hours/yesterday';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
-    }
-
-    public static function getStatsLastNight()
-    {
-        $client = self::getClient();
-        $url = self::$url . '/v1/stats/last-night';
-
-        try {
-            $response = $client->request('GET', $url);
-
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
-        }
-
-        $body = $response->getBody();
-        $result = json_decode($body->getContents(), true);
-        return $result;
-    }
-
-    public static function getMeteoByFire($lat, $lng)
-    {
-        if (env('APP_ENV') === 'production') {
-            $exists = Redis::get('weather:' . $lat . ':' . $lng);
-            if ($exists) {
-                return json_decode($exists, true);
-            } else {
-                $client = self::getClient();
-                $weatherUrl = self::$weatherUrl . 'lat=' . $lat . '&lon=' . $lng . '&APPID=' . env('OPENWEATHER_API') . '&units=metric&lang=pt';
-
-                try {
-                    $response = $client->request('GET', $weatherUrl);
-
-                } catch (ClientException $e) {
-                    return ['error' => $e->getMessage()];
-                } catch (RequestException $e) {
-                    return ['error' => $e->getMessage()];
-                }
-
-                $body = $response->getBody();
-                $result = json_decode($body->getContents(), true);
-
-                Redis::set('weather:' . $lat . ':' . $lng, json_encode($result), 'EX', 10800);
+        return self::cached('mobile:contributors', 108000, function () {
+            $client = self::getThirdPartyClient();
+            $result = self::request('https://api.github.com/repos/FogosPT/fogosmobile/contributors', [], $client);
+            if (isset($result['error'])) {
                 return $result;
             }
-        }
-    }
 
-    public static function getMobileContributors()
-    {
-        if (env('APP_ENV') === 'production') {
-            $exists = Redis::get('mobile:contributors');
-            if ($exists) {
-                return json_decode($exists, true);
-            } else {
-                $url = 'https://api.github.com/repos/FogosPT/fogosmobile/contributors';
-
-                $client = self::getClient();
-
-                try {
-                    $response = $client->request('GET', $url);
-
-                } catch (ClientException $e) {
-                    return ['error' => $e->getMessage()];
-                } catch (RequestException $e) {
-                    return ['error' => $e->getMessage()];
+            foreach ($result as &$r) {
+                // Only follow URLs that point back at the GitHub users API —
+                // the list comes from a third-party response.
+                if (!is_array($r) || !is_string($r['url'] ?? null) || !str_starts_with($r['url'], 'https://api.github.com/users/')) {
+                    continue;
                 }
-
-                $body = $response->getBody();
-                $result = json_decode($body->getContents(), true);
-
-                foreach ($result as &$r) {
-                    try {
-                        $responseContributors = $client->request('GET', $r['url']);
-
-                    } catch (ClientException $e) {
-                        return ['error' => $e->getMessage()];
-                    } catch (RequestException $e) {
-                        return ['error' => $e->getMessage()];
-                    }
-
-                    $bodyContributors = $responseContributors->getBody();
-                    $data = json_decode($bodyContributors->getContents(), true);
-
-                    $r = array_merge($r, $data);
+                $data = self::request($r['url'], [], $client);
+                if (isset($data['error'])) {
+                    return $data;
                 }
-
-                Redis::set('mobile:contributors', json_encode($result), 'EX', 108000);
-
-                return $result;
+                $r = array_merge($r, $data);
             }
-        }
-    }
+            unset($r);
 
+            return $result;
+        });
+    }
 }

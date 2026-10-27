@@ -9,24 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class GenericController extends Controller
 {
-    protected $pageName;
-
-    /**
-     * @return mixed
-     */
-    public function getPageName()
-    {
-        return $this->pageName;
-    }
-
-    /**
-     * @param mixed $pageName
-     */
-    public function setPageName($pageName)
-    {
-        $this->pageName = $pageName;
-    }
-
     public function getIndex()
     {
         $this->seoKey = 'home';
@@ -87,20 +69,14 @@ class GenericController extends Controller
         return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
     }
 
-    public function getList()
-    {
-        $this->seoKey = 'list';
-        $fires = LegacyApi::getFires();
-
-        return view('list', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
-    }
-
+    // Upstream failures degrade to the views' "no data" state; LegacyApi
+    // always returns an array, never throws.
     public function getTable()
     {
         $this->seoKey = 'table';
         $fires = LegacyApi::getFires();
 
-        return view('table', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('table', ['data' => $fires['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarnings()
@@ -108,7 +84,7 @@ class GenericController extends Controller
         $this->seoKey = 'warnings';
         $warnings = LegacyApi::getWarnings();
 
-        return view('warnings', ['data' => @$warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings', ['data' => $warnings['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarningsMadeira()
@@ -116,18 +92,15 @@ class GenericController extends Controller
         $this->seoKey = 'warningsMadeira';
         $warnings = LegacyApi::getWarningsMadeira();
 
-        return view('warnings-madeira', ['data' => @$warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings-madeira', ['data' => $warnings['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getStats()
     {
         $this->seoKey = 'stats';
         $now = LegacyApi::getNow();
-        $data = array(
-            'now' => $now['data'],
-        );
 
-        return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);
+        return view('stats', ['data' => ['now' => $now['data'] ?? []]])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function api()
@@ -153,7 +126,7 @@ class GenericController extends Controller
 
     public function subscribe(Request $request)
     {
-        $token = $request->get('token');
+        $token = $this->validToken($request->get('token'));
         $topic = $this->resolveTopic($request->get('topic'));
 
         if (!$token || !$topic) {
@@ -161,7 +134,7 @@ class GenericController extends Controller
         }
 
         [$httpcode, $body] = $this->fcmIidRequest(
-            "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}",
+            'https://iid.googleapis.com/iid/v1/' . rawurlencode($token) . '/rel/topics/' . rawurlencode($topic),
             null
         );
 
@@ -185,7 +158,7 @@ class GenericController extends Controller
 
     public function unsubscribe(Request $request)
     {
-        $token = $request->get('token');
+        $token = $this->validToken($request->get('token'));
         $topic = $this->resolveTopic($request->get('topic'));
 
         if (!$token || !$topic) {
@@ -215,6 +188,16 @@ class GenericController extends Controller
         return \Response::json(['success' => $httpcode === 200]);
     }
 
+    /**
+     * FCM registration tokens are URL-safe base64 plus `:`. Anything else is
+     * rejected before it can reach the IID URL path (where `/` or `?` would
+     * let a caller rewrite the request and bypass the topic whitelist).
+     */
+    private function validToken($token)
+    {
+        return is_string($token) && preg_match('/^[A-Za-z0-9_:\-]{20,512}$/', $token) ? $token : null;
+    }
+
     private function fcmIidRequest($url, $jsonBody)
     {
         $accessToken = $this->fcmAccessToken();
@@ -233,6 +216,8 @@ class GenericController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonBody === null ? '' : $jsonBody);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
         $body = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
@@ -249,8 +234,14 @@ class GenericController extends Controller
      */
     private function fcmAccessToken()
     {
-        return Cache::remember('fcm_oauth_access_token', 3300, function () {
-            $path = env('FIREBASE_SERVICE_ACCOUNT_PATH') ?: env('GOOGLE_APPLICATION_CREDENTIALS');
+        // A missing/broken service account would otherwise be retried (and
+        // logged) on every request — back off for a minute after a failure.
+        if (Cache::has('fcm_oauth_failed')) {
+            return null;
+        }
+
+        $token = Cache::remember('fcm_oauth_access_token', 3300, function () {
+            $path = config('services.firebase.service_account');
             if (!$path || !is_readable($path)) {
                 Log::error('FCM OAuth: service account JSON not readable', [
                     'path'     => $path,
@@ -296,6 +287,8 @@ class GenericController extends Controller
                 'assertion'  => $jwt,
             ]));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 6);
             $resp = curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
@@ -307,6 +300,13 @@ class GenericController extends Controller
             }
             return $data['access_token'];
         });
+
+        if (!$token) {
+            Cache::forget('fcm_oauth_access_token');
+            Cache::put('fcm_oauth_failed', 1, 60);
+        }
+
+        return $token;
     }
 
     /**
@@ -318,7 +318,7 @@ class GenericController extends Controller
      */
     public function firebaseMessagingSw()
     {
-        $appId = env('FIREBASE_APP_ID', '');
+        $appId = (string) config('services.firebase.app_id', '');
 
         $config = json_encode([
             'apiKey'            => 'AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M',
@@ -402,7 +402,7 @@ JS;
             return null;
         }
 
-        $prefix = env('APP_ENV') === 'production' ? '' : 'dev-';
+        $prefix = app()->environment('production') ? '' : 'dev-';
         return $prefix . $topic;
     }
 

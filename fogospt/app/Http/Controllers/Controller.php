@@ -58,7 +58,10 @@ class Controller extends BaseController
             'pageTitle'   => $title . $brand,
             'title'       => $title,
             'description' => $description,
-            'url'         => "https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
+            // request()->url() drops the query string and goes through
+            // Symfony's host validation — never interpolate raw $_SERVER
+            // values: this ends up unescaped inside the share-button HTML.
+            'url'         => preg_replace('~^http:~', 'https:', request()->url()),
         ];
 
         // Cache-buster in the query string forces FB/WhatsApp to re-scrape

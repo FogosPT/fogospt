@@ -3,8 +3,7 @@
 namespace App\Libs;
 
 use GuzzleHttp;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
@@ -45,24 +44,32 @@ class GaiaApi
 
         if ($useCache) {
             $cached = Redis::get($cacheKey);
-            if ($cached) {
-                return json_decode($cached, true);
+            $decoded = $cached ? json_decode($cached, true) : null;
+            if (is_array($decoded)) {
+                return $decoded;
             }
         }
 
         $url = self::baseUrl() . $path;
 
         try {
-            $response = self::getClient()->request('GET', $url, ['query' => $query]);
-        } catch (ClientException $e) {
-            return ['error' => $e->getMessage()];
-        } catch (RequestException $e) {
-            return ['error' => $e->getMessage()];
+            $response = self::getClient()->request('GET', $url, ['query' => $query, 'http_errors' => false]);
+        } catch (GuzzleException $e) {
+            Log::warning('gaia api transport error', ['path' => $path, 'error' => $e->getMessage()]);
+            return ['error' => 'upstream_unavailable'];
         }
 
-        $result = json_decode($response->getBody()->getContents(), true);
+        if ($response->getStatusCode() !== 200) {
+            Log::warning('gaia api bad status', ['path' => $path, 'status' => $response->getStatusCode()]);
+            return ['error' => 'upstream_status_' . $response->getStatusCode()];
+        }
 
-        if ($useCache && $result !== null) {
+        $result = json_decode((string) $response->getBody(), true);
+        if (!is_array($result)) {
+            return ['error' => 'upstream_invalid_json'];
+        }
+
+        if ($useCache) {
             Redis::set($cacheKey, json_encode($result), 'EX', $ttl);
         }
 
@@ -103,10 +110,5 @@ class GaiaApi
     {
         $key = 'gaia:delineations:' . md5(json_encode($filters));
         return self::request('/delineations', $filters, $key, 3600);
-    }
-
-    public static function getSources()
-    {
-        return self::request('/sources', [], 'gaia:sources', 86400);
     }
 }

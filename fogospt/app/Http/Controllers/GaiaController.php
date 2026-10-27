@@ -7,13 +7,6 @@ use Illuminate\Http\Request;
 
 class GaiaController extends Controller
 {
-    protected $pageName;
-
-    public function getPageName()
-    {
-        return $this->pageName;
-    }
-
     private const PT_BBOX = [
         'NorthEastBoundary.Latitude'  => 42.2,
         'NorthEastBoundary.Longitude' => -6.1,
@@ -23,7 +16,7 @@ class GaiaController extends Controller
 
     public function getIndex()
     {
-        $this->pageName = 'Início (Gaia preview)';
+        $this->seoKey = 'home';
         return view('index')->with([
             'metadata' => $this->generateMetadata(),
             'gaia'     => true,
@@ -58,8 +51,8 @@ class GaiaController extends Controller
     {
         $out = [];
         foreach ($allowed as $k) {
-            if ($request->filled($k)) {
-                $out[$k] = $request->query($k);
+            if ($request->filled($k) && is_scalar($request->query($k))) {
+                $out[$k] = (string) $request->query($k);
             }
         }
         return $out;
@@ -73,34 +66,26 @@ class GaiaController extends Controller
         );
 
         $data = GaiaApi::getEvents($filters);
-        return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=300');
+        return $this->respond($data, 300);
     }
 
     public function eventDetail($id)
     {
-        $data = GaiaApi::getEvent($id);
-        if (isset($data['error'])) {
-            return response()->json($data, 502)->header('Cache-Control', 'no-store');
-        }
-        return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=300');
+        return $this->respond(GaiaApi::getEvent($id), 300);
     }
 
     public function timeline($id, Request $request)
     {
         $filters = $this->commonFilters($request, ['StartDate', 'EndDate', 'limit']);
         $data = GaiaApi::getEventTimeline($id, $filters);
-        return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=300');
+        return $this->respond($data, 300);
     }
 
     public function acquisitions($id, Request $request)
     {
         $filters = $this->commonFilters($request, ['StartDate', 'EndDate', 'relationship_type', 'invalid', 'limit']);
         $data = GaiaApi::getEventAcquisitions($id, $filters);
-        return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=1800');
+        return $this->respond($data, 1800);
     }
 
     public function detections(Request $request)
@@ -110,15 +95,26 @@ class GaiaController extends Controller
             $this->commonFilters($request, ['event_id', 'StartDate', 'EndDate', 'sources', 'min_probability', 'limit'])
         );
         $data = GaiaApi::getDetections($filters);
-        return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=300');
+        return $this->respond($data, 300);
     }
 
     public function delineations(Request $request)
     {
         $filters = $this->commonFilters($request, ['event_id', 'StartDate', 'EndDate', 'limit']);
         $data = GaiaApi::getDelineations($filters);
+        return $this->respond($data, 1800);
+    }
+
+    // Upstream failures are never cached by browsers/CDN, and never echo
+    // the upstream error text.
+    private function respond($data, int $maxAge)
+    {
+        if (!is_array($data) || isset($data['error'])) {
+            return response()->json(['error' => 'upstream_unavailable'], 502)
+                ->header('Cache-Control', 'no-store');
+        }
+
         return response()->json($data)
-            ->header('Cache-Control', 'public, max-age=1800');
+            ->header('Cache-Control', 'public, max-age=' . $maxAge);
     }
 }

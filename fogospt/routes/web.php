@@ -23,8 +23,10 @@ Route::redirect('/', '/pt');
 // Locale-agnostic endpoints — must live at the site root (the FCM service
 // worker requires a root-scope URL, and the subscribe/unsubscribe AJAX is
 // posted from any page regardless of locale).
-Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
-Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
+Route::middleware('throttle:30,1')->group(function () {
+    Route::post('/notifications/subscribe', [GenericController::class, 'subscribe'])->name('notifications-subscribe');
+    Route::post('/notifications/unsubscribe', [GenericController::class, 'unsubscribe'])->name('notifications-unsubscribe');
+});
 Route::get('/firebase-messaging-sw.js', [GenericController::class, 'firebaseMessagingSw'])->name('firebase-messaging-sw');
 
 // /lightnings sets its own Cache-Control + X-Cache headers in the
@@ -111,7 +113,6 @@ Route::prefix('{locale}')->middleware('locale.match')->group(function () use ($C
     Route::get('/fogo/{id}', [FireController::class, 'get'])->name('fire')->middleware($CACHE_FIRES);
     Route::get('/fogo/{id}/detalhe', [FireController::class, 'getDetails'])->name('fireDetail')->middleware($CACHE_FIRES);
     Route::get('/madeira/fogo/{id}', [FireController::class, 'getMadeira'])->middleware($CACHE_FIRES);
-    Route::get('/new/fires', [FireController::class, 'getAll']);
 
     Route::get('/change-language/{lang}', [GenericController::class, 'getChangeLanguage'])->name('changeLanguage');
 
@@ -136,7 +137,9 @@ Route::middleware(['locale.match', $CACHE_FIRES])->group(function () {
     Route::get('/{locale}/madeira/views/extra/{id}', [FireController::class, 'getExtraCardMadeira']);
 });
 
-Route::group(['prefix' => 'v1'], function () {
+// Proxies to third-party APIs: throttled so a single client can't drain the
+// FPM pool (IPMA calls can take seconds) or flood the Redis cache.
+Route::group(['prefix' => 'v1', 'middleware' => 'throttle:300,1'], function () {
     Route::get('/mobile-contributors', [ApiController::class, 'getMobileContributors'])->name('getMobileContributors');
     Route::get('/modis', [ApiController::class, 'getModis'])->name('getModis');
     Route::get('/viirs', [ApiController::class, 'getVIIRS'])->name('getVIIRS');
@@ -144,12 +147,13 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/ipma-reference-time', [ApiController::class, 'getIpmaReferenceTime'])->name('getIpmaReferenceTime');
     Route::get('/ipma-point/{lat}/{lng}', [ApiController::class, 'getIpmaPoint'])
         ->where(['lat' => '-?\d+(\.\d+)?', 'lng' => '-?\d+(\.\d+)?'])
+        ->middleware('throttle:30,1')
         ->name('getIpmaPoint');
     Route::get('/ipma-wms', [ApiController::class, 'getIpmaWms'])->name('getIpmaWms');
     Route::get('/ipma-value', [ApiController::class, 'getIpmaValue'])->name('getIpmaValue');
 });
 
-Route::prefix('gaia/v1')->group(function () {
+Route::prefix('gaia/v1')->middleware('throttle:120,1')->group(function () {
     Route::get('/events',                   [GaiaController::class, 'events']);
     Route::get('/events/{id}',              [GaiaController::class, 'eventDetail'])->where('id', '\d+');
     Route::get('/events/{id}/timeline',     [GaiaController::class, 'timeline'])->where('id', '\d+');

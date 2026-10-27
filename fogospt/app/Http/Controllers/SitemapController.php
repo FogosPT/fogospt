@@ -13,12 +13,14 @@ class SitemapController extends Controller
 
     public function fires()
     {
-        $xml = Cache::remember('sitemap:fires', self::CACHE_TTL_SECONDS, function () {
+        $xml = Cache::get('sitemap:fires');
+        if (!is_string($xml)) {
             $fires = LegacyApi::getFires();
             $entries = $fires['data'] ?? [];
-
-            return $this->renderFiresSitemap(is_array($entries) ? $entries : []);
-        });
+            $xml = $this->renderFiresSitemap(is_array($entries) ? $entries : []);
+            // Don't pin an empty sitemap for 15 min because upstream blipped.
+            Cache::put('sitemap:fires', $xml, isset($fires['error']) ? 30 : self::CACHE_TTL_SECONDS);
+        }
 
         return response($xml, 200)
             ->header('Content-Type', 'application/xml; charset=utf-8')
@@ -35,6 +37,9 @@ class SitemapController extends Controller
                 continue;
             }
             $id = (string) $fire['id'];
+            if (!preg_match('/^[0-9A-Za-z_-]+$/', $id)) {
+                continue;
+            }
             $lastmod = $this->resolveLastmod($fire) ?: $now;
 
             foreach (['fogo/' . $id, 'fogo/' . $id . '/detalhe'] as $path) {

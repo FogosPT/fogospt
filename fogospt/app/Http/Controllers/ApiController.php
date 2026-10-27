@@ -178,11 +178,17 @@ class ApiController extends Controller
                 ->header('X-Cache', 'HIT');
         }
 
+        // During an IPMA outage, don't let every hit walk all candidates
+        // again (up to 4 × timeout) and pin an FPM worker.
+        if (Redis::get($cacheKey . ':fail')) {
+            return response()->json(['error' => 'unavailable'], 503);
+        }
+
         $now = Carbon::now('UTC');
         $runHour = $now->hour < 12 ? 0 : 12;
         $candidate = $now->copy()->setTime($runHour, 0, 0);
 
-        $client = new GuzzleHttp\Client(['timeout' => 15]);
+        $client = new GuzzleHttp\Client(['connect_timeout' => 2, 'timeout' => 5]);
         $data = null;
         $usedRun = null;
         $usedForecastHour = null;
@@ -219,6 +225,7 @@ class ApiController extends Controller
         }
 
         if ($data === null) {
+            Redis::set($cacheKey . ':fail', 1, 'EX', 120);
             return response()->json(['error' => 'unavailable'], 503);
         }
 
@@ -253,21 +260,26 @@ class ApiController extends Controller
      */
     public function getIpmaPoint($lat, $lng)
     {
-        $lat = (float) $lat;
-        $lng = (float) $lng;
+        // Snap to ~1 km (AROME runs at 2.5 km) so the cache can't be bypassed
+        // by walking through arbitrarily precise coordinates.
+        $lat = round((float) $lat, 2);
+        $lng = round((float) $lng, 2);
 
         $region = $this->regionForPoint($lat, $lng);
         if ($region === null) {
             return response()->json(['error' => 'out_of_range'], 422);
         }
 
-        $cacheKey = sprintf('ipma:point:%.3f:%.3f', $lat, $lng);
+        $cacheKey = sprintf('ipma:point:%.2f:%.2f', $lat, $lng);
         $cached = Redis::get($cacheKey);
         if ($cached) {
             return response($cached, 200)
                 ->header('Content-Type', 'application/json')
                 ->header('Cache-Control', 'public, max-age=1800')
                 ->header('X-Cache', 'HIT');
+        }
+        if (Redis::get('ipma:point:fail')) {
+            return response()->json(['error' => 'upstream_unavailable'], 503);
         }
 
         $refTime = $this->resolveAromeReferenceTime();
@@ -315,12 +327,14 @@ class ApiController extends Controller
             $dailyTimes[] = Carbon::parse($refTimeIso)->addDays($d)->format('Y-m-d\TH:i:s');
         }
 
-        $client = new GuzzleHttp\Client(['timeout' => 20]);
+        // Two serial calls must fit well inside FPM's 30 s request_terminate_timeout.
+        $client = new GuzzleHttp\Client(['connect_timeout' => 2, 'timeout' => 8]);
 
         $aromeRaw = $this->fetchGfi($client, $aromeLayers, $hourlyTimes, $refTimeIso, $bbox);
         $satRaw   = $this->fetchGfi($client, $satLayers,   $dailyTimes,  $refTimeIso, $bbox);
 
         if ($aromeRaw === null && $satRaw === null) {
+            Redis::set('ipma:point:fail', 1, 'EX', 60);
             return response()->json(['error' => 'upstream_unavailable'], 503);
         }
 
@@ -385,6 +399,17 @@ class ApiController extends Controller
         if ($req === 'GetLegendGraphic' && empty($params['LAYER'])) {
             return response()->json(['error' => 'missing_layer'], 400);
         }
+        // Every distinct query is cached for 24 h — bound the key space so
+        // the proxy can't be used to fill Redis with arbitrary huge images.
+        foreach (['WIDTH', 'HEIGHT'] as $dim) {
+            if (isset($params[$dim]) && (!ctype_digit($params[$dim]) || (int) $params[$dim] < 1 || (int) $params[$dim] > 1024)) {
+                return response()->json(['error' => 'bad_size'], 400);
+            }
+        }
+        $layerParam = $params['LAYERS'] ?? $params['LAYER'];
+        if (!preg_match('/^(arome|lsasaf|ipma)\.[A-Za-z0-9_.,]+$/', $layerParam)) {
+            return response()->json(['error' => 'bad_layer'], 400);
+        }
 
         // Stable, sorted query string for cache-key derivation. mf2 receives
         // the same shape (leaflet sends mixed case; this normalises).
@@ -426,7 +451,9 @@ class ApiController extends Controller
 
         $bytes = (string) $resp->getBody();
 
-        Redis::set($cacheKey, base64_encode($bytes), 'EX', 86400);
+        if (strlen($bytes) <= 1024 * 1024) {
+            Redis::set($cacheKey, base64_encode($bytes), 'EX', 86400);
+        }
 
         return response($bytes, 200)
             ->header('Content-Type', 'image/png')
@@ -519,7 +546,7 @@ class ApiController extends Controller
             . '&query_layers=' . urlencode($layer);
 
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 6]);
+            $client = new GuzzleHttp\Client(['connect_timeout' => 2, 'timeout' => 5]);
             $resp = $client->request('GET', $url, ['http_errors' => false]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'upstream_unavailable'], 502);

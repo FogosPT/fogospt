@@ -24,8 +24,10 @@ class TrustProxies extends Middleware
      *
      * @var int
      */
+    // X-Forwarded-Host is deliberately not trusted: with $proxies = '*' any
+    // client could set it and poison canonical/og:url/share links in pages
+    // that the CDN caches publicly.
     protected $headers = Request::HEADER_X_FORWARDED_FOR |
-        Request::HEADER_X_FORWARDED_HOST |
         Request::HEADER_X_FORWARDED_PORT |
         Request::HEADER_X_FORWARDED_PROTO |
         Request::HEADER_X_FORWARDED_AWS_ELB;

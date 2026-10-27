@@ -38,7 +38,10 @@ services:
 
   redispt:
     image: redis
-    command: redis-server
+    # Bounded memory + LRU eviction: everything stored here is a cache
+    # (page fragments, IPMA tiles, OG payloads), so evicting is always safe,
+    # whereas an unbounded Redis can OOM the host.
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
 
   # Headless-Chromium sidecar. PHP renders the per-fire OG Blade to HTML,
   # POSTs it here, and this container does `page.setContent + screenshot`

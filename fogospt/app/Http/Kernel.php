@@ -15,6 +15,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middleware = [
 		\App\Http\Middleware\TrustProxies::class,
+		\App\Http\Middleware\SecurityHeaders::class,
 		\Illuminate\Http\Middleware\HandleCors::class,
 		\App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 		\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
@@ -28,20 +29,10 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $middlewareGroups = [
-		'web' => [
-			\App\Http\Middleware\SetLanguage::class,
-			//            \App\Http\Middleware\EncryptCookies::class,
-			//            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-			// \Illuminate\Session\Middleware\AuthenticateSession::class,
-			//            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-			//            \App\Http\Middleware\VerifyCsrfToken::class,
-			//            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-		],
-
-		'api' => [
-			\Illuminate\Routing\Middleware\ThrottleRequests::class.':60,1',
-			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		],
+		// Deliberately stateless: no session, cookies or CSRF, so every page
+		// can be cached publicly by the CDN (a Set-Cookie would bypass it).
+		// Locale comes from the URL prefix (LocaleMatch).
+		'web' => [],
 	];
 
 	/**
@@ -50,12 +41,7 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $middlewareAliases = [
-		'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
-		'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-		'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
 		'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-		'can'           => \Illuminate\Auth\Middleware\Authorize::class,
-		'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
 		'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'locale.match'  => \App\Http\Middleware\LocaleMatch::class,

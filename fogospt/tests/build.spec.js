@@ -31,14 +31,6 @@ test.describe('Build output verification', () => {
     expect(css).toContain('.marker.\\38 7D37C');
   });
 
-  test('app.js compiles without syntax errors', () => {
-    const js = fs.readFileSync('public/js/app.js', 'utf8');
-
-    expect(js.length).toBeGreaterThan(1000);
-    expect(js).toContain('lodash');
-    expect(js).toContain('axios');
-  });
-
   test('app.css.gz compresses if available', () => {
     try {
       const gz = fs.readFileSync('public/css/app.css.gz');
@@ -58,7 +50,7 @@ test.describe('Served static assets', () => {
   });
 
   test('JS file loads with correct content-type', async ({ page }) => {
-    const resp = await page.goto('/js/app.js');
+    const resp = await page.goto('/js/main.js');
     expect(resp.status()).toBe(200);
     expect(resp.headers()['content-type']).toContain('javascript');
   });

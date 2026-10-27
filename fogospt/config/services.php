@@ -29,10 +29,10 @@ return [
         'secret' => env('SPARKPOST_SECRET'),
     ],
 
-    'stripe' => [
-        'model' => App\User::class,
-        'key' => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET'),
+    // Token for source.fogos.pt (sent as the FPTS header by LegacyApi only).
+    'fogos' => [
+        'url'  => env('FOGOS_API_URL', 'https://source.fogos.pt'),
+        'fpts' => env('FPTS', ''),
     ],
 
     'gaia' => [
@@ -47,6 +47,8 @@ return [
     'firebase' => [
         'app_id' => env('FIREBASE_APP_ID', ''),
         'vapid_key' => env('FIREBASE_VAPID_KEY', ''),
+        // Service account JSON used to mint FCM OAuth tokens (topic subscribe).
+        'service_account' => env('FIREBASE_SERVICE_ACCOUNT_PATH') ?: env('GOOGLE_APPLICATION_CREDENTIALS'),
     ],
 
     // Headless-Chrome sidecar that renders the per-fire OG card. The
