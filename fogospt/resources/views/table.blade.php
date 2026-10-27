@@ -1,7 +1,7 @@
 @extends('app')
 
 @push('styles')
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 @endpush
 @section('content')
     <main role="main" class="mb-auto margin-top-10">
@@ -43,7 +43,6 @@
                     </tbody>
                 </table>
 
-
             </div>
             <div class="row">
                 <div class="col-12">@lang('pages.table.reload')</div>
@@ -56,7 +55,7 @@
 @endsection
 
 @push('scripts')
-    <script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready( function () {
             $('#fires').DataTable({

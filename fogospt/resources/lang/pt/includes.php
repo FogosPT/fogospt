@@ -19,6 +19,10 @@
             'cookies'     => 'Gerir cookies',
             'active'      => '(atual)'
         ],
+        'siteWarning' => [
+            'title' => 'Aviso',
+            'close' => 'Fechar',
+        ],
         'meta' => [
             'content' => 'fogos Portugal, incêndios Portugal, fogos ativos, fogos hoje, incêndios hoje, mapa de fogos, mapa de incêndios, incêndios florestais, fogos Madeira, ANEPC, ICNF, IPMA, proteção civil, avisos meteorológicos, bombeiros'
         ]

@@ -2,13 +2,10 @@
 // Layout
 $header-height: 56px;
 
-// Body
-$body-bg: #f5f8fa;
-
-// Typography
-$font-family-sans-serif: "Raleway", sans-serif;
-$font-size-base: 0.9rem;
-$line-height-base: 1.6;
+// Brand — use these instead of hard-coded hex values.
+$brand: #ff512f;
+$brand-hover: #f09819;
+$focus-ring: 0 0 0 .2rem rgba(255, 81, 47, .45);
 
 // danger
 $status-max: #711313;
@@ -29,11 +26,3 @@ $c-green: #6ABF59;
 $c-blue: #65C4ED;
 $c-grey: #BDBDBD;
 
-
-/* old danger colors
-$status-max: #6f263d;
-$status-vhigh: #cb333b;
-$status-high: #e87722;
-$status-mod: #ffe900;
-$status-min: #509e2f;
-*/

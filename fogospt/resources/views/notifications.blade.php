@@ -1,7 +1,7 @@
 @extends('app')
 
 @push('scripts')
-    <script src="/js/vendor/store2.min.js"></script>
+    <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
     <script src="/js/notifications.js?v={{ filemtime(public_path('js/notifications.js')) }}"></script>
 @endpush
 
@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-12 col-sm-7 col-md-6">
                                 <button type="button"
-                                        class="btn btn-outline-success btn-lg btn-block js-notifications-auth">Quero
+                                        class="btn btn-outline-success btn-lg w-100 js-notifications-auth">Quero
                                     receber notificações.
                                 </button>
                             </div>
@@ -139,7 +139,7 @@
                             <div class="col-12">
                                 <h3>Problemas com as notificações?</h3>
                                 <button type="button"
-                                        class="btn btn-outline-success btn-lg btn-block js-notifications-reset">Clique Aqui</button>
+                                        class="btn btn-outline-success btn-lg w-100 js-notifications-reset">Clique Aqui</button>
                             </div>
                         </div>
                     </div>

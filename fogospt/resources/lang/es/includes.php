@@ -19,6 +19,10 @@
             'cookies'     => 'Gestionar cookies',
             'active'      => '(actual)'
         ],
+        'siteWarning' => [
+            'title' => 'Aviso',
+            'close' => 'Cerrar',
+        ],
         'meta' => [
             'content' => 'incendios Portugal, incendios forestales Portugal, mapa incendios Portugal, fuegos en Portugal, incendios Portugal hoy, protección civil Portugal, alertas Portugal, incendios Madeira, ANEPC, bomberos Portugal'
         ]

@@ -18,6 +18,10 @@ return [
         'cookies'     => 'Manage cookies',
         'active' => 'Now'
     ],
+    'siteWarning' => [
+        'title' => 'Notice',
+        'close' => 'Close',
+    ],
     'meta' => [
         'content' => 'Portugal wildfires, Portugal forest fires, Portugal fires map, active fires Portugal, wildfires today Portugal, ANEPC, Portugal civil protection, Madeira wildfires, rural fires, firefighting Portugal'
     ]

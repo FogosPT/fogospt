@@ -1,7 +1,7 @@
 @extends('app')
 
-@push('head')
-    <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css">
+@push('styles')
+    <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css?v={{ filemtime(public_path('css/vendor/leaflet-openweathermap.css')) }}">
 @endpush
 
 @section('content')
@@ -10,19 +10,18 @@
         <p class="visually-hidden">{{ __('pages.seo.madeira.intro') }}</p>
         @include('includes.sidebar')
         <div id="map">
-            <a href="http://mapbox.com/about/maps" class='mapbox-wordmark' target="_blank">Mapbox</a>
+            <a href="https://www.mapbox.com/about/maps" class="mapbox-wordmark" target="_blank" rel="noopener">Mapbox</a>
         </div>
     </main>
 @endsection
 
-
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-    <script src="/js/concelhos.js"></script>
-    <script src="/js/vendor/leaflet-openweathermap.js"></script>
-    <script src="/js/vendor/store2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="/js/concelhos.js?v={{ filemtime(public_path('js/concelhos.js')) }}"></script>
+    <script src="/js/vendor/leaflet-openweathermap.js?v={{ filemtime(public_path('js/vendor/leaflet-openweathermap.js')) }}"></script>
+    <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
     <script src="/js/satellite.js?v={{ filemtime(public_path('js/satellite.js')) }}"></script>
     <script src="/js/main2.js?v={{ filemtime(public_path('js/main2.js')) }}"></script>
 @endpush

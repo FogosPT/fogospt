@@ -4,25 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Fogos.pt is a Portuguese forest fire monitoring web application built with Laravel 7 (PHP). It aggregates real-time fire data from an external backend (`source.fogos.pt`) and displays it on an interactive map with statistics, warnings, and fire detail cards.
+Fogos.pt is a Portuguese forest fire monitoring web application built with Laravel 10 (PHP 8.3, `php:8.3.36-fpm` in docker-compose). It aggregates real-time fire data from an external backend (`source.fogos.pt`) and displays it on an interactive map with statistics, warnings, and fire detail cards.
 
 ## Development Setup
 
 ### Requirements
 - Docker Desktop
-- Node.js 14 (npm 6) — use `nvm use 14` or `fnm use 14`
-- Python 2.7 (for node-gyp) — use `pyenv shell 2.7`
-- PHP 7.2+ and Composer 1 (or use Docker for Composer, see below)
+- Node.js 16 (the lockfile is v3, so npm ≥ 7; Laravel Mix 5 / webpack 4 still needs Node ≤ 16)
+  — or build in Docker: `docker run --rm -v "$PWD:/app" -w /app node:16 sh -c 'npm ci && npm run production'`
+- PHP 8.3 and Composer 2 (or run them via Docker, e.g. `docker run --rm -v "$PWD:/app" -w /app php:8.3.36-fpm php vendor/bin/phpunit`)
 
 ### Starting the stack
 ```bash
-docker-compose up          # Starts PHP-FPM (port 9001), Nginx (port 8093), Redis
+docker-compose up          # PHP-FPM (127.0.0.1:9001, for the host nginx), Redis, og-renderer sidecar
 ```
 
 ### Installing dependencies
 ```bash
 cd fogospt
-composer install           # or: docker run --rm -it -v "$(pwd):/app" composer:1.10.19 install
+composer install           # or: docker run --rm -it -v "$(pwd):/app" composer:2 install
 npm install
 ```
 
@@ -51,7 +51,7 @@ php artisan db:seed
 ## Architecture
 
 ### Data flow
-The app has **no local fire data** — everything is fetched from the external API at `source.fogos.pt` via `app/Libs/LegacyApi.php`. This class makes authenticated HTTP requests using a `FPTS` header token (env var). Weather data is fetched from OpenWeatherMap and cached in Redis for 3 hours.
+The app has **no local fire data and no database** — everything is fetched from the external API at `source.fogos.pt` via `app/Libs/LegacyApi.php`. All requests go through `LegacyApi::request()`, which sends the `FPTS` token (config `services.fogos.fpts`) only to source.fogos.pt and always returns an array — either decoded JSON or `['error' => <code>]`, never an exception. Per-fire lookups are cached for 30–60 s. The `web` middleware group is intentionally stateless (no session/cookies/CSRF) so pages can be cached publicly.
 
 ### Key components
 
@@ -70,11 +70,10 @@ The app has **no local fire data** — everything is fetched from the external A
 - Language switching via `/change-language/{lang}`
 
 ### Frontend
-Vue.js 2 components compiled via Laravel Mix (Webpack). Source in `resources/js/` and `resources/sass/`. Compiled output goes to `public/`.
+Hand-written jQuery/Leaflet scripts in `public/js/` (served as-is, cache-busted with `?v={{ filemtime(...) }}`). Laravel Mix only compiles `resources/assets/sass/app.scss` → `public/css/app.css` (committed). Upstream/third-party text must be escaped before it reaches `.html()`/`innerHTML`/popups — use `escapeFireText()` (main*.js) or the module-local `esc()` helpers.
 
 ### Environment variables (key ones)
 - `FPTS` — API token for `source.fogos.pt`
-- `OPENWEATHER_API` — OpenWeatherMap API key
-- `MAPBOX_KEY` — Mapbox token for maps
 - `REDIS_HOST` / `CACHE_DRIVER=redis` — Redis connection
-- `APP_ENV` — Some features (Redis weather caching, mobile contributors) only run in `production`
+- `APP_ENV` — FCM topics get a `dev-` prefix outside `production`
+- Never call `env()` outside `config/` — it returns null once `config:cache` runs

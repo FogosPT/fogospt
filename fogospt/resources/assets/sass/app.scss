@@ -1,10 +1,5 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 // Variables
 @import "variables";
-
-// Bootstrap
-//@import '~bootstrap/scss/bootstrap';
 
 .mapbox-wordmark {
   position: absolute;
@@ -51,10 +46,10 @@ html, body {
   background-color: #f5f5f5;
 
   a {
-    color: #ff512f !important;
+    color: $brand !important;
   }
   a:hover {
-    color: #f09819 !important;
+    color: $brand-hover !important;
   }
 }
 
@@ -79,6 +74,10 @@ header {
       border: 0;
       &:focus {
         outline: none;
+        box-shadow: none;
+      }
+      &:focus-visible {
+        box-shadow: $focus-ring;
       }
       .navbar-toggler-icon {
         background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
@@ -113,7 +112,7 @@ header {
         color: #444 !important;
       }
       a:hover {
-        color: #ff512f !important;
+        color: $brand !important;
       }
     }
 
@@ -148,12 +147,12 @@ header {
         }
 
         &.active {
-          border-left-color: #ff512f;
+          border-left-color: $brand;
           font-weight: 600;
-          color: #ff512f !important;
+          color: $brand !important;
 
           i {
-            color: #ff512f;
+            color: $brand;
           }
         }
       }
@@ -176,7 +175,7 @@ header {
         color: #888 !important;
 
         &:hover {
-          color: #ff512f !important;
+          color: $brand !important;
         }
       }
     }
@@ -202,9 +201,9 @@ header {
     }
   }
   nav {
-    background: -moz-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
-    background: -webkit-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
-    background: linear-gradient(135deg, #f09819 0%, #ff512f 100%);
+    background: -moz-linear-gradient(-45deg, $brand-hover 0%, $brand 100%);
+    background: -webkit-linear-gradient(-45deg, $brand-hover 0%, $brand 100%);
+    background: linear-gradient(135deg, $brand-hover 0%, $brand 100%);
   }
   .compare {
     font-size: .875rem;
@@ -411,7 +410,7 @@ main {
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: .02em;
-    color: #ff512f
+    color: $brand
   }
   h6 {
     text-transform: uppercase;
@@ -512,7 +511,7 @@ main {
     }
     .current-icon {
       margin-right: 1rem;
-      fill: #f09819;
+      fill: $brand-hover;
     }
     .current-temp {
       font-size: 3.5rem;
@@ -747,48 +746,6 @@ main {
     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
   }
 }
-
-//.fire-status {
-//  background: #e4e4e4;
-//  margin: 0 0 1rem 0;
-//  border-radius: .25rem;
-//  overflow: hidden;
-//}
-//.fire-status > * {
-//  padding-top: 10px;
-//  padding-bottom: 10px;
-//  display: none;
-//  align-items: center;
-//  justify-content: center;
-//}
-//.fire-status .show {
-//  display: flex;
-//}
-//.fire-status .status-max.active {
-//  color: #fff;
-//  background-color: #6f263d;
-//  display: flex;
-//}
-//.fire-status .status-vhigh.active {
-//  color: #fff;
-//  background-color: #cb333b;
-//  display: flex;
-//}
-//.fire-status .status-high.active {
-//  color: #fff;
-//  background-color: #e87722;
-//  display: flex;
-//}
-//.fire-status .status-mod.active {
-//  color: #665d00;
-//  background-color: #ffe900;
-//  display: flex;
-//}
-//.fire-status .status-min.active {
-//  color: #fff;
-//  background-color: #509e2f;
-//  display: flex;
-//}
 
 .timeline {
   position: relative;
@@ -1091,7 +1048,7 @@ main {
   .status-hour {
     margin-left: 15px;
     margin-bottom: 0;
-    color: #ff512f;
+    color: $brand;
   }
 
   .status-label {
@@ -1162,13 +1119,13 @@ main {
     }
 
     .custom-control-input:checked ~ .custom-control-indicator {
-      background-color: #ff512f;
+      background-color: $brand;
       background-image: none;
       box-shadow: none !important;
     }
 
     .custom-control-input:checked ~ .custom-control-indicator:after {
-      background-color: #ff512f;
+      background-color: $brand;
       left: 15px;
     }
 
@@ -1299,7 +1256,7 @@ têm margens uniformes. */
     align-items: center;
     justify-content: space-between;
     padding: 10px 12px;
-    background: linear-gradient(135deg, #f09819, #ff512f);
+    background: linear-gradient(135deg, $brand-hover, $brand);
     color: #fff;
     font-weight: 500;
     font-size: 14px;
@@ -1323,6 +1280,10 @@ têm margens uniformes. */
 
     &:focus {
       outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: $focus-ring;
     }
 
     i {
@@ -1366,7 +1327,7 @@ têm margens uniformes. */
 
     &:hover {
       background: #f3f3f3;
-      color: #ff512f;
+      color: $brand;
     }
 
     i {
@@ -1398,13 +1359,13 @@ têm margens uniformes. */
 
       input {
         margin-right: 8px;
-        accent-color: #ff512f;
+        accent-color: $brand;
         cursor: pointer;
       }
     }
 
     &.is-on label {
-      color: #ff512f;
+      color: $brand;
       font-weight: 500;
     }
   }
