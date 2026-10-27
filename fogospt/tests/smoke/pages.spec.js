@@ -129,6 +129,12 @@ test('risk layer lazy-loads concelhos and draws the choropleth', async ({ page }
     const concelhos = page.waitForRequest(/\/js\/concelhos\.js/, { timeout: 20000 });
     await page.goto('/pt?risk=1', { waitUntil: 'domcontentloaded' });
     await concelhos;
+    // Drawing needs live risk values from source.fogos.pt, which CI runners
+    // can't always reach — only assert the choropleth when it answers.
+    const upstream = await page.request.get('https://source.fogos.pt/v1/risk-today', {
+        headers: { origin: 'https://fogos.pt', referer: 'https://fogos.pt/' }, timeout: 10000,
+    }).then((r) => r.ok(), () => false);
+    test.skip(!upstream, 'source.fogos.pt unreachable from this runner');
     await expect(page.locator('#map.risk-layer-ready')).toHaveCount(1, { timeout: 20000 });
     expect(await page.locator('#map path.leaflet-interactive').count()).toBeGreaterThan(200);
     expect(errors).toEqual([]);

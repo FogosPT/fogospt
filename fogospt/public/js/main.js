@@ -1371,12 +1371,14 @@ function addRisk(mymap) {
     function loadRisk(kind, onReady) {
         if (loaded[kind]) { if (onReady) onReady(); return; }
         loaded[kind] = true;
+        // Download the boundaries in parallel with the risk values.
+        var concelhosReady = fogosLoadConcelhos();
         $.ajax({
             url: endpoints[kind],
             method: 'GET',
             success: function (data) {
                 if (!data || !data.success) { loaded[kind] = false; return; }
-                fogosLoadConcelhos().then(function (concelhos) {
+                concelhosReady.then(function (concelhos) {
                     var geo = L.geoJson(concelhos, {
                         style: function (feature) {
                             var d = data.data.local[feature.properties.DICO].data.rcm
