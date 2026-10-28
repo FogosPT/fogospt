@@ -1,0 +1,35 @@
+# Optional override: run the CI-built image instead of bind-mounting the code.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.image.yml pull fogospt fogospt-assets
+#   docker compose -f docker-compose.yml -f docker-compose.image.yml up -d
+#
+# Deploy becomes `pull + up -d`; rollback is pinning FOGOSPT_IMAGE_TAG to a
+# previous commit SHA. Only storage/ (logs, OG cache) and .env stay on the host.
+#
+# Static files: the host nginx serves /js, /css and /img straight from disk,
+# so they must come from the same image as the PHP code or pages would load
+# stale or missing assets. `fogospt-assets` copies the image's public/ into
+# ./runtime/public on every `up` (before PHP-FPM starts). In this mode point
+# the nginx `root` at <repo>/runtime/public instead of <repo>/fogospt/public.
+services:
+  fogospt-assets:
+    image: ghcr.io/fogospt/fogospt:${FOGOSPT_IMAGE_TAG:-latest}
+    user: "${UID:-1000}:${GID:-1000}"
+    restart: "no"
+    volumes:
+      - ./runtime/public:/export
+    # Mirror (not merge) so files removed in this version disappear too.
+    command: ["sh", "-c", "find /export -mindepth 1 -delete && cp -R /var/www/html/public/. /export/"]
+    networks: []
+
+  fogospt:
+    image: ghcr.io/fogospt/fogospt:${FOGOSPT_IMAGE_TAG:-latest}
+    volumes: !override
+      - ./fogospt/.env:/var/www/html/.env:ro
+      - ./fogospt/storage:/var/www/html/storage
+      - ./secrets/firebase-sa.json:/run/secrets/firebase-sa.json:ro
+    depends_on: !override
+      redispt:
+        condition: service_started
+      fogospt-assets:
+        condition: service_completed_successfully

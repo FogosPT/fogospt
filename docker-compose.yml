@@ -35,13 +35,31 @@ services:
       - ./assets/php/www.conf:/usr/local/etc/php-fpm.d/zz-fogospt.conf:ro
     environment:
       - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
+    networks:
+      - default
+      - render
+    depends_on:
+      - redispt
 
   redispt:
-    image: redis
+    # Pinned so a host re-pull can't silently jump a major version.
+    image: redis:8.2-alpine
+    restart: unless-stopped
     # Bounded memory + LRU eviction: everything stored here is a cache
     # (page fragments, IPMA tiles, OG payloads), so evicting is always safe,
-    # whereas an unbounded Redis can OOM the host.
-    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    # whereas an unbounded Redis can OOM the host. Password is optional:
+    # set REDIS_PASSWORD in the project .env AND in fogospt/.env.
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    command: >-
+      sh -c 'exec redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+      --save "" --appendonly no
+      $${REDIS_PASSWORD:+--requirepass "$$REDIS_PASSWORD"}'
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli $${REDIS_PASSWORD:+-a \"$$REDIS_PASSWORD\"} --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # Headless-Chromium sidecar. PHP renders the per-fire OG Blade to HTML,
   # POSTs it here, and this container does `page.setContent + screenshot`
@@ -59,6 +77,19 @@ services:
     # zombies they pile up until the PID limit is hit and every launch fails
     # with `posix_spawn … Resource temporarily unavailable (11)`.
     init: true
+    # Hard ceilings so a misbehaving Chrome can only take this container
+    # down, never the host. 12 renders × ~200 MB fits well under 4 GB.
+    pids_limit: 2048
+    mem_limit: 4g
+    # Only PHP talks to the renderer; it has no route to Redis.
+    networks:
+      - render
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     environment:
       - PORT=3000
       # Name must match the var read in assets/og-renderer/server.js.
@@ -71,3 +102,4 @@ services:
 
 networks:
   default:
+  render:

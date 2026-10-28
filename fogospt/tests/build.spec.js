@@ -16,7 +16,7 @@ test.describe('Build output verification', () => {
     expect(css).toContain('.menu-divider');
     expect(css).toContain('.menu-social');
     expect(css).toContain('.menu-lang');
-    expect(css).toContain('border-left:3px solid transparent');
+    expect(css).toMatch(/border-left:3px solid (transparent|rgba\(0,0,0,0\))/);
 
     expect(css).toContain('border-radius:.5rem');
     expect(css).toContain('box-shadow:0 1px 3px rgba(0,0,0,.06)');

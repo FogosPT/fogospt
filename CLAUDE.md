@@ -10,8 +10,7 @@ Fogos.pt is a Portuguese forest fire monitoring web application built with Larav
 
 ### Requirements
 - Docker Desktop
-- Node.js 16 (the lockfile is v3, so npm ≥ 7; Laravel Mix 5 / webpack 4 still needs Node ≤ 16)
-  — or build in Docker: `docker run --rm -v "$PWD:/app" -w /app node:16 sh -c 'npm ci && npm run production'`
+- Node.js 20+ (CSS is built with the `sass` CLI + autoprefixer — no webpack)
 - PHP 8.3 and Composer 2 (or run them via Docker, e.g. `docker run --rm -v "$PWD:/app" -w /app php:8.3.36-fpm php vendor/bin/phpunit`)
 
 ### Starting the stack
@@ -28,9 +27,10 @@ npm install
 
 ### Frontend assets
 ```bash
-npm run dev        # Development build
-npm run watch      # Watch mode
-npm run production # Minified production build
+npm run build      # Minified public/css/app.css (commit it — CI checks it's up to date)
+npm run watch      # Rebuild on change
+npm run lint:js    # Syntax-check every public/js script
+npm run test:smoke # Playwright smoke test against SMOKE_URL (default http://127.0.0.1:8091)
 ```
 
 ### Running tests
@@ -42,11 +42,8 @@ php vendor/bin/phpunit tests/Unit/            # Unit suite only
 php vendor/bin/phpunit tests/Feature/         # Feature suite only
 ```
 
-### Database migrations
-```bash
-php artisan migrate
-php artisan db:seed
-```
+### Deploy
+`./scripts/deploy.sh` on the production host: pulls master, installs PHP deps without dev packages, rebuilds/recreates containers, warms the Laravel caches, restarts FPM and runs smoke checks. CI (`.github/workflows/ci.yml`) runs PHPUnit, `composer audit`, the CSS build, a JS syntax check and the Playwright smoke test, and pushes the production image to `ghcr.io/fogospt/fogospt` on master (see `docker-compose.image.yml`).
 
 ## Architecture
 
@@ -70,7 +67,7 @@ The app has **no local fire data and no database** — everything is fetched fro
 - Language switching via `/change-language/{lang}`
 
 ### Frontend
-Hand-written jQuery/Leaflet scripts in `public/js/` (served as-is, cache-busted with `?v={{ filemtime(...) }}`). Laravel Mix only compiles `resources/assets/sass/app.scss` → `public/css/app.css` (committed). Upstream/third-party text must be escaped before it reaches `.html()`/`innerHTML`/popups — use `escapeFireText()` (main*.js) or the module-local `esc()` helpers.
+Hand-written jQuery/Leaflet scripts in `public/js/` (served as-is, cache-busted with `?v={{ filemtime(...) }}`). `npm run build` compiles `resources/assets/sass/app.scss` → `public/css/app.css` (committed, cache-busted with filemtime). Upstream/third-party text must be escaped before it reaches `.html()`/`innerHTML`/popups — use `escapeFireText()` (main*.js) or the module-local `esc()` helpers.
 
 ### Environment variables (key ones)
 - `FPTS` — API token for `source.fogos.pt`
