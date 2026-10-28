@@ -100,7 +100,7 @@ $(document).ready(function () {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success) {
 
                 for (i in data.data) {
@@ -411,7 +411,7 @@ function plot(id) {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success && data.data.length) {
                 labels = []
                 var man = []
@@ -557,7 +557,7 @@ function addRisk(mymap) {
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success) {
                 var riskToday = L.geoJson(concelhos, {
                     style: function (feature) {
@@ -578,7 +578,7 @@ function addRisk(mymap) {
                     url: url,
                     method: 'GET',
                     success: function (data) {
-                        data = JSON.parse(data)
+                        if (typeof data === 'string') data = JSON.parse(data)
                         if (data.success) {
                             var riskTomorrow = L.geoJson(concelhos, {
                                 style: function (feature) {
@@ -599,7 +599,7 @@ function addRisk(mymap) {
                                 url: url,
                                 method: 'GET',
                                 success: function (data) {
-                                    data = JSON.parse(data)
+                                    if (typeof data === 'string') data = JSON.parse(data)
                                     if (data.success) {
                                         var riskAfter = L.geoJson(concelhos, {
                                             style: function (feature) {
