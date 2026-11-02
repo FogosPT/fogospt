@@ -90,7 +90,9 @@ return [
                 'inResolution' => 'IN RESOLUTION – Fire with no danger of spreading beyond the current perimeter.',
                 'inConclusion' => 'IN CONCLUSION – Fire extinguished, with small combustion spots within the fire perimeter.',
                 'surveillance' => 'SURVEILLANCE – Units on site to act in case of need.',
-                'closed' => 'CLOSED – Return of all involved units to the base concluded.'
+                'closed' => 'CLOSED – Return of all involved units to the base concluded.',
+                'fake' => 'False alert',
+                'false' => 'False alarm'
             ]
         ],
         'typeOfUnits' => [
@@ -255,7 +257,13 @@ return [
         'today' => 'Today',
         'yesterday' => 'Yesterday',
         'last-night' => 'Last Night',
-        'last-night-footer' => 'Wildfires between 21pm and 09am',
+        'last-night-footer' => 'Wildfires between 9 pm and 9 am',
+        'burn-area-last-days' => 'Burnt area in the last days',
+        'burn-area-last-days-footer' => 'Data recorded by ICNF; not every fire has it. In hectares.',
+        'motives' => [
+            'title' => 'Fire causes this month',
+            'footer' => 'Data recorded by ICNF; not every fire has it.'
+        ],
         'last-days' => 'Last Days',
     ],
     'table' => [

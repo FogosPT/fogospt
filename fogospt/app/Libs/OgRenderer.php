@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Log;
 // keeps a crawler storm from starving the PHP-FPM pool.
 class OgRenderer
 {
-    // Keep the disk cache path shape stable so a small cronjob can vacuum
-    // old files by mtime later. `$hash` is already narrowed to 8 chars by
-    // the caller — that's enough entropy for a per-fire bucket.
+    // Keep the disk cache path shape stable: prune() vacuums by this glob.
+    // `$hash` is already narrowed to 8 chars by the caller — that's enough
+    // entropy for a per-fire bucket.
     public static function cachePath(string $id, string $hash): string
     {
         return storage_path("app/og/fogo-{$id}-{$hash}.png");
@@ -103,6 +103,36 @@ class OgRenderer
             return null;
         }
         rename($tmp, $path);
+
+        // There is no scheduler on the host: a cheap lottery keeps the cache
+        // bounded (a new PNG per fire every 20-min bucket otherwise piles up
+        // forever). `php artisan og:prune` does the same on demand.
+        if (random_int(1, self::PRUNE_ODDS) === 1) {
+            self::prune();
+        }
+
         return $path;
+    }
+
+    private const PRUNE_ODDS = 200;
+
+    // Deletes cached cards (and orphaned temp files) older than $maxAge
+    // seconds. Returns how many files were removed.
+    public static function prune(int $maxAge = 86400): int
+    {
+        $dir = storage_path('app/og');
+        if (!is_dir($dir)) {
+            return 0;
+        }
+
+        $cutoff = time() - $maxAge;
+        $removed = 0;
+        foreach (glob($dir . '/fogo-*.{png,tmp}', GLOB_BRACE) ?: [] as $file) {
+            if (@filemtime($file) < $cutoff && @unlink($file)) {
+                $removed++;
+            }
+        }
+
+        return $removed;
     }
 }
