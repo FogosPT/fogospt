@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Fogos.pt is a Portuguese forest fire monitoring web application built with Laravel 10 (PHP 8.3, `php:8.3.36-fpm` in docker-compose). It aggregates real-time fire data from an external backend (`source.fogos.pt`) and displays it on an interactive map with statistics, warnings, and fire detail cards.
+Fogos.pt is a Portuguese forest fire monitoring web application built with Laravel 13 (PHP 8.3, `php:8.3.36-fpm` in docker-compose). It aggregates real-time fire data from an external backend (`source.fogos.pt`) and displays it on an interactive map with statistics, warnings, and fire detail cards.
 
 ## Development Setup
 

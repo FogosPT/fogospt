@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 // The OG card Blade compiles into raw HTML that the sidecar screenshots.
@@ -10,7 +11,7 @@ use Tests\TestCase;
 // pieces that matter show up.
 class OgFireBladeTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_renders_status_location_meios_bars_and_timeline(): void
     {
         $html = view('og.fire', [
@@ -53,7 +54,7 @@ class OgFireBladeTest extends TestCase
         $this->assertStringContainsString('width=1200', $html);
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_overflow_when_history_has_more_than_five_events(): void
     {
         $history = [];
@@ -76,7 +77,7 @@ class OgFireBladeTest extends TestCase
         $this->assertStringContainsString('18:00', $html); // kept
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_empty_state_when_history_is_missing(): void
     {
         $html = view('og.fire', [
@@ -88,7 +89,7 @@ class OgFireBladeTest extends TestCase
         $this->assertStringContainsString('Sem histórico', $html);
     }
 
-    /** @test */
+    #[Test]
     public function it_surfaces_unconfirmed_meios_when_upstream_sends_minus_one(): void
     {
         // The upstream API uses -1 to mean "not yet confirmed" on very
@@ -112,7 +113,7 @@ class OgFireBladeTest extends TestCase
         $this->assertStringNotContainsString('>-1<', $html);
     }
 
-    /** @test */
+    #[Test]
     public function it_survives_a_barebones_fire_payload_from_a_freshly_created_incident(): void
     {
         // Upstream can push a new fire before location/status are populated.

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use App\Http\Controllers\FeedController;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -13,7 +14,7 @@ use ReflectionMethod;
  */
 class FeedControllerTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function fires_feed_is_well_formed_and_maps_fields(): void
     {
         $xml = $this->render('renderFiresFeed', [$this->sampleFires()]);
@@ -40,7 +41,7 @@ class FeedControllerTest extends TestCase
         $this->assertStringContainsString('<pubDate>' . gmdate(DATE_RSS, 1782957840) . '</pubDate>', $xml);
     }
 
-    /** @test */
+    #[Test]
     public function fires_feed_marks_unconfirmed_when_upstream_sends_minus_one(): void
     {
         $fires = [[
@@ -57,7 +58,7 @@ class FeedControllerTest extends TestCase
         $this->assertStringNotContainsString('-1 aéreos', $xml);
     }
 
-    /** @test */
+    #[Test]
     public function warnings_feed_derives_time_from_objectid_and_escapes(): void
     {
         $xml = $this->render('renderWarningsFeed', [$this->sampleWarnings()]);
