@@ -8,11 +8,6 @@
 
 namespace App\Libs;
 
-use GuzzleHttp;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Redis;
 use Location\Coordinate;
 use Location\Polygon;
 
@@ -90,25 +85,22 @@ class HotSpots
             CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_CONNECTTIMEOUT => 3,
             CURLOPT_HTTPHEADER => array(
-                "Accept: */*",
-                "Cache-Control: no-cache",
-                "Connection: keep-alive",
-                "Host: firms.modaps.eosdis.nasa.gov",
-                "Postman-Token: f3349609-b9bb-4109-983f-8b3ac91742e3,ab836358-57bf-49a1-ac1b-da45dc8cdac1",
-                "User-Agent: PostmanRuntime/7.15.0",
-                "accept-encoding: gzip, deflate",
-                "cache-control: no-cache"
+                "Accept: text/csv, */*",
+                "User-Agent: fogos.pt",
             ),
         ));
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
 
-        if ($err) {
-            return json_encode([]);
+        // An error page parsed as CSV would otherwise get cached as "data".
+        if ($err || $status !== 200 || !is_string($response)) {
+            return [];
         } else {
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
@@ -201,25 +193,22 @@ class HotSpots
             CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_CONNECTTIMEOUT => 3,
             CURLOPT_HTTPHEADER => array(
-                "Accept: */*",
-                "Cache-Control: no-cache",
-                "Connection: keep-alive",
-                "Host: firms.modaps.eosdis.nasa.gov",
-                "Postman-Token: f3349609-b9bb-4109-983f-8b3ac91742e3,ab836358-57bf-49a1-ac1b-da45dc8cdac1",
-                "User-Agent: PostmanRuntime/7.15.0",
-                "accept-encoding: gzip, deflate",
-                "cache-control: no-cache"
+                "Accept: text/csv, */*",
+                "User-Agent: fogos.pt",
             ),
         ));
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
 
-        if ($err) {
-            return json_encode([]);
+        // An error page parsed as CSV would otherwise get cached as "data".
+        if ($err || $status !== 200 || !is_string($response)) {
+            return [];
         } else {
             $flat_array = array_map("str_getcsv", explode("\n", $response));
             $obj = NULL;
@@ -232,8 +221,10 @@ class HotSpots
                 if($row_index === 0) continue;
                 $json[$row_index] = [];
                 foreach ($row_data as $column_index => $column_value) {
-                    $label = $columns[$column_index];
-                    $json[$row_index][$label] = $column_value;
+                    if(isset($columns[$column_index])){
+                        $label = $columns[$column_index];
+                        $json[$row_index][$label] = $column_value;
+                    }
                 }
             }
 

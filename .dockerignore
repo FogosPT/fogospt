@@ -1,0 +1,14 @@
+.git
+.env
+secrets
+logs
+**/node_modules
+fogospt/vendor
+**/test-results
+**/.phpunit.result.cache
+fogospt/.env
+fogospt/storage/logs/*
+fogospt/storage/framework/cache/*
+fogospt/storage/framework/views/*
+fogospt/storage/app/og/*
+fogospt/bootstrap/cache/*.php

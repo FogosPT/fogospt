@@ -71,6 +71,22 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">
+                                <h3>@lang('pages.information.opacityOccurrences.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.opacityOccurrences.description')</p>
+                            <ul class="list-none">
+                                <li>@lang('pages.information.opacityOccurrences.items.fuelManagement')</li>
+                                <li>@lang('pages.information.opacityOccurrences.items.burning')</li>
+                                <li>@lang('pages.information.opacityOccurrences.items.burnPrevention')</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
                                 <h3>@lang('pages.information.riskIndexes.title')</h3>
 
                             </div>
@@ -85,6 +101,133 @@
                                 <li>@lang('pages.information.riskIndexes.items.dmc')</li>
                             </ul>
                             <p>@lang('pages.information.riskIndexes.source')</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="rural-fire-risk">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.ruralFireRisk.title')</h3>
+                            </div>
+                            <p>{!! __('pages.information.ruralFireRisk.intro') !!}</p>
+                            <p>@lang('pages.information.ruralFireRisk.classesTitle')</p>
+                            <ul>
+                                <li>@lang('pages.information.ruralFireRisk.classes.reduced')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.moderate')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.high')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.veryHigh')</li>
+                                <li>@lang('pages.information.ruralFireRisk.classes.maximum')</li>
+                            </ul>
+                            <p>@lang('pages.information.ruralFireRisk.legendNote')</p>
+                            <p>{!! __('pages.information.ruralFireRisk.source') !!}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="map-layers">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.mapLayers.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.mapLayers.intro')</p>
+
+                            <h5>@lang('pages.information.mapLayers.hotspots.title')</h5>
+                            <p>@lang('pages.information.mapLayers.hotspots.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.lightning.title')</h5>
+                            <p>@lang('pages.information.mapLayers.lightning.description')</p>
+                            <ul class="list-none">
+                                <li>
+                                    <span style="display:inline-block;width:16px;height:16px;background:#d62828;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.negative')
+                                </li>
+                                <li>
+                                    <span style="display:inline-block;width:16px;height:16px;background:#f77f00;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.positive')
+                                </li>
+                                <li>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#d62828;border:1px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.5);opacity:0.55;vertical-align:middle"></span>
+                                    @lang('pages.information.mapLayers.lightning.items.intracloud')
+                                </li>
+                                <li>@lang('pages.information.mapLayers.lightning.items.ageFade')</li>
+                            </ul>
+
+                            <h5>@lang('pages.information.mapLayers.gaia.title')</h5>
+                            <p>@lang('pages.information.mapLayers.gaia.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.windAnimated.title')</h5>
+                            <p>@lang('pages.information.mapLayers.windAnimated.description')</p>
+
+                            <h5>@lang('pages.information.mapLayers.ipmaValue.title')</h5>
+                            <p>@lang('pages.information.mapLayers.ipmaValue.description')</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="data-sources">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.sources.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.sources.intro')</p>
+                            <ul>
+                                <li>{!! __('pages.information.sources.items.anepc') !!}</li>
+                                <li>{!! __('pages.information.sources.items.ipma') !!}</li>
+                                <li>{!! __('pages.information.sources.items.nasa') !!}</li>
+                                <li>{!! __('pages.information.sources.items.gaia') !!}</li>
+                                <li>{!! __('pages.information.sources.items.basemaps') !!}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="satellite-perimeter">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.satellitePerimeter.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.satellitePerimeter.intro')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.perimeter.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.perimeter.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.simulation.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.simulation.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.use.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.use.description')</p>
+
+                            <h5>@lang('pages.information.satellitePerimeter.limits.title')</h5>
+                            <p>@lang('pages.information.satellitePerimeter.limits.description')</p>
+
+                            <p>{!! __('pages.information.satellitePerimeter.source') !!}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" id="ipma-charts">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h3>@lang('pages.information.ipmaCharts.title')</h3>
+                            </div>
+                            <p>@lang('pages.information.ipmaCharts.intro')</p>
+                            <ul>
+                                <li>@lang('pages.information.ipmaCharts.items.tempHum')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.wind')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.pressure')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.precip')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.fwiIsiBui')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.dcDmcFfmc')</li>
+                                <li>@lang('pages.information.ipmaCharts.items.frm')</li>
+                            </ul>
+                            <p>{!! __('pages.information.ipmaCharts.rcmNote') !!}</p>
+                            <p>@lang('pages.information.ipmaCharts.source')</p>
                         </div>
                     </div>
                 </div>

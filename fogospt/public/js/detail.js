@@ -1,11 +1,14 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
+
 $(document).ready(function () {
 
     var id = $('#myChart').data('id');
 
     plot(id);
+    if (typeof photos === 'function') photos(id);
 
     function plot(id) {
-        var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
+        var url = 'https://source.fogos.pt/fires/data?id=' + id
         $.ajax({
             url: url,
             method: 'GET',
@@ -32,24 +35,29 @@ $(document).ready(function () {
                                 data: man,
                                 fill: false,
                                 backgroundColor: '#EFC800',
-                                borderColor: '#EFC800'
+                                borderColor: '#EFC800',
+                                yAxisID: 'y-left'
                             },
                                 {
                                     label: 'Terrestres',
                                     data: terrain,
                                     fill: false,
                                     backgroundColor: '#6D720B',
-                                    borderColor: '#6D720B'
+                                    borderColor: '#6D720B',
+                                    yAxisID: 'y-left'
                                 }, {
                                     label: 'Aéreos',
                                     data: aerial,
                                     fill: false,
                                     backgroundColor: '#4E88B2',
-                                    borderColor: '#4E88B2'
+                                    borderColor: '#4E88B2',
+                                    yAxisID: 'y-right'
                                 }
                             ]
                         },
                         options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
                             elements: {
                                 line: {
                                     tension: 0 // disables bezier curves
@@ -57,7 +65,16 @@ $(document).ready(function () {
                             },
                             scales: {
                                 yAxes: [{
-                                    ticks: {}
+                                    id: 'y-left',
+                                    position: 'left',
+                                    ticks: { beginAtZero: true, precision: 0 },
+                                    scaleLabel: { display: true, labelString: 'Operacionais / Terrestres' }
+                                }, {
+                                    id: 'y-right',
+                                    position: 'right',
+                                    ticks: { beginAtZero: true, precision: 0 },
+                                    gridLines: { drawOnChartArea: false },
+                                    scaleLabel: { display: true, labelString: 'Aéreos' }
                                 }]
                             }
                         }

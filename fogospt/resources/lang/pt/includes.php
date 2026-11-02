@@ -8,15 +8,23 @@
             'notifications' => 'Notificações',
             'manifest'    => 'Manifesto',
             'partnerships' => 'Parcerias',
+            'api'          => 'API',
+            'api-termos'   => 'Termos API',
             'stats' => 'Estatísticas',
             'list' => 'Lista',
             'table' => 'Tabela',
             'warnings' => 'Avisos',
             'warnings-madeira' => 'Avisos Madeira',
-            'active'      => '(actual)'
+            'mapConfigurator'  => 'Mapa personalizado',
+            'cookies'     => 'Gerir cookies',
+            'active'      => '(atual)'
+        ],
+        'siteWarning' => [
+            'title' => 'Aviso',
+            'close' => 'Fechar',
         ],
         'meta' => [
-            'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANEPC, ANPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv'
+            'content' => 'fogos Portugal, incêndios Portugal, fogos ativos, fogos hoje, incêndios hoje, mapa de fogos, mapa de incêndios, incêndios florestais, fogos Madeira, ANEPC, ICNF, IPMA, proteção civil, avisos meteorológicos, bombeiros'
         ]
 
     ];

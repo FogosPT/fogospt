@@ -1,30 +1,105 @@
-version: '3.7'
-
 services:
   fogospt:
-    image: php:7.3-fpm-stretch
+    # Pinned to a patch release (not the floating 8.3-fpm tag) so a stale
+    # cached image can't silently run a vulnerable build. 8.3.36 fixes
+    # CVE-2026-109618 / CVE-2026-109619 (pre-app RCE, 2026-10-21 advisory).
+    # Bump deliberately; never go below 8.3.36.
+    image: php:8.3.36-fpm
     container_name: fogospt
     hostname: fogospt
     restart: unless-stopped
+    # Run PHP-FPM as the host user so storage/ and bootstrap/cache writes
+    # land with sane ownership on the bind-mounted volume. UID/GID are
+    # read from the project-level .env (see .env.example). Defaults to
+    # 1000:1000 (typical Linux); on macOS export your own (id -u/id -g).
+    user: "${UID:-1000}:${GID:-1000}"
+    # Expose PHP-FPM directly to the host's nginx, bound to loopback only.
+    # Never bind to 0.0.0.0 — PHP-FPM has no auth and exposes RCE by design.
+    # The host nginx uses fastcgi_pass 127.0.0.1:9001 to talk to it.
+    ports:
+      - "127.0.0.1:9001:9000"
     volumes:
       - ./fogospt/:/var/www/html
-    ports:
-      - "9001:9000"
-
-  nginx:
-    image: nginx
-    restart: always
-    volumes:
-      - ./fogospt/:/var/www/html
-      - ./logs:/var/log/nginx
-      - ./assets/nginx/default:/etc/nginx/conf.d/default.conf
-      - ./assets/nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "8093:80"
+      # Firebase service account JSON (used for FCM topic subscribe/unsubscribe
+      # via OAuth2). Place the file at ./secrets/firebase-sa.json on the host;
+      # ./secrets is gitignored. Path inside the container must match
+      # FIREBASE_SERVICE_ACCOUNT_PATH in fogospt/.env.
+      - ./secrets/firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      # OPcache + realpath cache + memory tuning. The base php:8.3-fpm image
+      # ships opcache as a shared extension but with conservative defaults that
+      # cause noticeable cold-start latency on a Laravel app.
+      - ./assets/php/php.ini:/usr/local/etc/php/conf.d/zz-fogospt.ini:ro
+      # FPM pool sizing + slowlog. The base image's pm.max_children=5 is too
+      # small for a public site — a few stalled upstream calls drain the pool
+      # and queue every other request.
+      - ./assets/php/www.conf:/usr/local/etc/php-fpm.d/zz-fogospt.conf:ro
+    environment:
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/run/secrets/firebase-sa.json
+    networks:
+      - default
+      - render
+    depends_on:
+      - redispt
 
   redispt:
-    image: redis
-    command: redis-server
+    # Pinned so a host re-pull can't silently jump a major version.
+    image: redis:8.2-alpine
+    restart: unless-stopped
+    # Bounded memory + LRU eviction: everything stored here is a cache
+    # (page fragments, IPMA tiles, OG payloads), so evicting is always safe,
+    # whereas an unbounded Redis can OOM the host. Password is optional:
+    # set REDIS_PASSWORD in the project .env AND in fogospt/.env.
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    command: >-
+      sh -c 'exec redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+      --save "" --appendonly no
+      $${REDIS_PASSWORD:+--requirepass "$$REDIS_PASSWORD"}'
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli $${REDIS_PASSWORD:+-a \"$$REDIS_PASSWORD\"} --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Headless-Chromium sidecar. PHP renders the per-fire OG Blade to HTML,
+  # POSTs it here, and this container does `page.setContent + screenshot`
+  # into a 1200x630 PNG. Not exposed to the host — called only from PHP via
+  # http://og-renderer:3000 on the compose network. Deps are baked into the
+  # image (see assets/og-renderer/Dockerfile). No extra_hosts needed:
+  # the sidecar never navigates back into this app.
+  og-renderer:
+    build:
+      context: ./assets/og-renderer
+    container_name: og-renderer
+    restart: unless-stopped
+    # Run tini as PID 1. Node never reaps the Chrome subprocesses left behind
+    # by each browser recycle (crashpad handler, zygotes, renderers); as
+    # zombies they pile up until the PID limit is hit and every launch fails
+    # with `posix_spawn … Resource temporarily unavailable (11)`.
+    init: true
+    # Hard ceilings so a misbehaving Chrome can only take this container
+    # down, never the host. 12 renders × ~200 MB fits well under 4 GB.
+    pids_limit: 2048
+    mem_limit: 4g
+    # Only PHP talks to the renderer; it has no route to Redis.
+    networks:
+      - render
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    environment:
+      - PORT=3000
+      # Name must match the var read in assets/og-renderer/server.js.
+      - HARD_RENDER_CAP_MS=15000
+      # Prod host has 12 cores and idles well under 20% CPU during a
+      # crawler storm — the 8-slot default was leaving capacity on the
+      # table. 12 concurrent renders × ~200 MB Chrome memory per page
+      # still fits comfortably in ~2.5 GB of the box's 7.7 GB RAM.
+      - MAX_CONCURRENT_RENDERS=12
 
 networks:
   default:
+  render:

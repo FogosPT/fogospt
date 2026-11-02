@@ -1,10 +1,5 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 // Variables
 @import "variables";
-
-// Bootstrap
-//@import '~bootstrap/scss/bootstrap';
 
 .mapbox-wordmark {
   position: absolute;
@@ -51,10 +46,10 @@ html, body {
   background-color: #f5f5f5;
 
   a {
-    color: #ff512f !important;
+    color: $brand !important;
   }
   a:hover {
-    color: #f09819 !important;
+    color: $brand-hover !important;
   }
 }
 
@@ -65,10 +60,13 @@ body {
 }
 
 header {
-  height: 80px;
+  height: $header-height;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
   .navbar {
-    padding: 0rem 1rem;
+    padding: 0 1rem;
     text-transform: uppercase;
+    min-height: $header-height;
+    align-items: center;
     .navbar-nav {
       padding-top: 1rem;
     }
@@ -76,6 +74,10 @@ header {
       border: 0;
       &:focus {
         outline: none;
+        box-shadow: none;
+      }
+      &:focus-visible {
+        box-shadow: $focus-ring;
       }
       .navbar-toggler-icon {
         background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
@@ -93,28 +95,115 @@ header {
     .navbar-collapse {
       position: fixed;
       right: 0;
-      top: 80px;
+      top: $header-height;
       bottom: 0;
-      width: 200px;
+      width: 260px;
       background: #fff;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, .12);
       transition: transform .3s !important;
       display: block;
       transform: translate3d(100%, 0, 0);
+      overflow-y: auto !important;
+      max-height: calc(100vh - #{$header-height});
       &.collapsing {
         height: auto !important;
       }
       a {
-        color: #ff512f !important;
+        color: #444 !important;
       }
       a:hover {
-        color: #f09819 !important;
+        color: $brand !important;
+      }
+    }
+
+    .menu-panel {
+      padding: .5rem 0 1.5rem;
+
+      .nav-item, .nav-link {
+        text-transform: none;
+      }
+    }
+
+    .menu-links {
+      display: flex;
+      flex-direction: column;
+
+      .nav-link {
+        padding: .625rem 1.5rem;
+        font-size: .9375rem;
+        font-weight: 400;
+        border-left: 3px solid transparent;
+        transition: background-color .15s ease, border-color .15s ease;
+
+        i {
+          width: 1.25rem;
+          margin-right: .5rem;
+          text-align: center;
+          color: #bbb;
+        }
+
+        &:hover {
+          background: #fdf3f0;
+        }
+
+        &.active {
+          border-left-color: $brand;
+          font-weight: 600;
+          color: $brand !important;
+
+          i {
+            color: $brand;
+          }
+        }
+      }
+    }
+
+    .menu-divider {
+      margin: .75rem 1.5rem;
+      border: 0;
+      border-top: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .menu-social {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: 0 1.5rem;
+
+      .menu-social-link {
+        font-size: 1.25rem;
+        color: #888 !important;
+
+        &:hover {
+          color: $brand !important;
+        }
+      }
+    }
+
+    .menu-lang {
+      padding: 0 1.5rem;
+      text-align: center;
+
+      .dropdown-toggle {
+        display: inline-block;
+        text-transform: uppercase;
+        font-size: .8125rem;
+        font-weight: 600;
+        letter-spacing: .05em;
+        padding: .25rem .75rem;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 1rem;
+
+        &::after {
+          margin-left: .4em;
+        }
       }
     }
   }
   nav {
-    background: -moz-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
-    background: -webkit-linear-gradient(-45deg, #f09819 0%, #ff512f 100%);
-    background: linear-gradient(135deg, #f09819 0%, #ff512f 100%);
+    background: -moz-linear-gradient(-45deg, $brand-hover 0%, $brand 100%);
+    background: -webkit-linear-gradient(-45deg, $brand-hover 0%, $brand 100%);
+    background: linear-gradient(135deg, $brand-hover 0%, $brand 100%);
   }
   .compare {
     font-size: .875rem;
@@ -177,7 +266,7 @@ img, svg {
 
 main {
   transition: opacity .5s linear;
-  padding-top: 80px;
+  padding-top: $header-height;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -258,6 +347,8 @@ main {
     width: 100%;
     background: #f5f5f5;
     flex-basis: 100%;
+    padding: .75rem;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, .08);
 
     &.active {
       display: block;
@@ -267,15 +358,36 @@ main {
       margin: 0;
     }
 
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: $c-orange;
+    }
 
+    .field-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: $c-orange;
+    }
   }
 
   .card {
-    margin-bottom: 1rem;
+    margin-bottom: .875rem;
     border: 0;
-    border-radius: 0;
+    border-radius: .5rem;
     background: white;
-    //overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .08);
+    transition: box-shadow .2s ease, transform .2s ease;
+    overflow: hidden;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
     .table {
       margin-top: 1rem;
     }
@@ -297,12 +409,14 @@ main {
   h1,h2,h3,h4 {
     font-weight: 300;
     text-transform: uppercase;
-    color: #ff512f
+    letter-spacing: .02em;
+    color: $brand
   }
   h6 {
     text-transform: uppercase;
     font-size: .875rem;
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: .03em;
   }
   .data-source {
     font-size: .75rem;
@@ -315,9 +429,11 @@ main {
     }
   }
   .fire-status {
+    position: relative;
     margin: 0 0 1rem 0;
     color: #fff;
     text-transform: uppercase;
+    min-height: calc(1em * 1.5 + 20px);
     li {
       padding: 10px 6px;
       border-radius: 3px;
@@ -345,6 +461,13 @@ main {
         width: 100%;
         &:before {
           content: attr(data-status);
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          text-align: center;
+          pointer-events: none;
         }
       }
     }
@@ -388,7 +511,7 @@ main {
     }
     .current-icon {
       margin-right: 1rem;
-      fill: #f09819;
+      fill: $brand-hover;
     }
     .current-temp {
       font-size: 3.5rem;
@@ -514,12 +637,22 @@ main {
       flex-basis: 40%;
       height: 100%;
       background: #f5f5f5;
-      overflow-y: scroll;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #ccc transparent;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+      }
     }
 
     #map {
       position: absolute;
-      top: 80px;
+      top: $header-height;
       right: 0;
       bottom: 0;
       width: 100%;
@@ -555,7 +688,36 @@ main {
 
 .notification-container{
   display:none;
-  margin-left: 1rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.field {
+  margin-bottom: .75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-label {
+  margin-bottom: .25rem;
+}
+
+.field-value {
+  margin-bottom: 0;
+  color: #333;
+}
+
+.field-divider {
+  margin: .75rem 0;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, .08);
+}
+
+.card .card-body {
+  position: relative;
 }
 
 .f-local{
@@ -580,52 +742,10 @@ main {
     background-image: url('https://fogos.pt/assets/images/markers/CE773C.png');
   }
 
-  &.87D37C {
+  &.\38 7D37C {
     background-image: url('https://fogos.pt/assets/images/markers/66FF33.png');
   }
 }
-
-//.fire-status {
-//  background: #e4e4e4;
-//  margin: 0 0 1rem 0;
-//  border-radius: .25rem;
-//  overflow: hidden;
-//}
-//.fire-status > * {
-//  padding-top: 10px;
-//  padding-bottom: 10px;
-//  display: none;
-//  align-items: center;
-//  justify-content: center;
-//}
-//.fire-status .show {
-//  display: flex;
-//}
-//.fire-status .status-max.active {
-//  color: #fff;
-//  background-color: #6f263d;
-//  display: flex;
-//}
-//.fire-status .status-vhigh.active {
-//  color: #fff;
-//  background-color: #cb333b;
-//  display: flex;
-//}
-//.fire-status .status-high.active {
-//  color: #fff;
-//  background-color: #e87722;
-//  display: flex;
-//}
-//.fire-status .status-mod.active {
-//  color: #665d00;
-//  background-color: #ffe900;
-//  display: flex;
-//}
-//.fire-status .status-min.active {
-//  color: #fff;
-//  background-color: #509e2f;
-//  display: flex;
-//}
 
 .timeline {
   position: relative;
@@ -822,12 +942,12 @@ main {
   }
   // despacho
   &.status-3 {
-    background-image: url('/img/ico_alarm.svg');
+    background-image: url('/img/ico_clock-countdown.svg');
     background-color: $c-red;
   }
   // despacho de 1_o_ alerta
   &.status-4 {
-    background-image: url('/img/ico_alarm.svg');
+    background-image: url('/img/ico_clock-countdown.svg');
     background-color: $c-orange;
   }
   // em curso
@@ -928,7 +1048,7 @@ main {
   .status-hour {
     margin-left: 15px;
     margin-bottom: 0;
-    color: #ff512f;
+    color: $brand;
   }
 
   .status-label {
@@ -999,13 +1119,13 @@ main {
     }
 
     .custom-control-input:checked ~ .custom-control-indicator {
-      background-color: #ff512f;
+      background-color: $brand;
       background-image: none;
       box-shadow: none !important;
     }
 
     .custom-control-input:checked ~ .custom-control-indicator:after {
-      background-color: #ff512f;
+      background-color: $brand;
       left: 15px;
     }
 
@@ -1045,4 +1165,643 @@ têm margens uniformes. */
 
 .f-extra pre {
   text-wrap: wrap;
+}
+
+/* IPMA weather warnings, per-incident (data delivered inline in the incident
+   payload — see docs/weatherWarnings integration). Card hides itself when
+   there are no active warnings, mirroring .extra. */
+.weather-warnings {
+  display: none;
+
+  &.active {
+    display: flex;
+  }
+}
+
+.weather-warnings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.weather-warnings-item {
+  padding: .5rem 0;
+
+  & + & {
+    border-top: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .25rem;
+  }
+}
+
+.weather-warnings-badge {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.weather-warnings-when {
+  font-size: .8rem;
+  color: #666;
+}
+
+.weather-warnings-text {
+  font-size: .9rem;
+  color: #333;
+}
+
+/* Unified map control panel */
+.fogos-panel {
+  width: 260px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+  user-select: none;
+
+  &.is-collapsed {
+    width: 44px;
+
+    .fogos-panel__title,
+    .fogos-panel__body {
+      display: none;
+    }
+
+    .fogos-panel__header {
+      cursor: pointer;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .fogos-panel__collapse i {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, $brand-hover, $brand);
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__title {
+    flex: 1;
+  }
+
+  &__collapse {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: $focus-ring;
+    }
+
+    i {
+      transition: transform 0.2s;
+      display: inline-block;
+      min-width: 14px;
+      text-align: center;
+    }
+  }
+
+  &__body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  &__section {
+    border-top: 1px solid #f0f0f0;
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    &.is-collapsed .fogos-panel__items {
+      display: none;
+    }
+  }
+
+  &__section-title {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafafa;
+
+    &:hover {
+      background: #f3f3f3;
+      color: $brand;
+    }
+
+    i {
+      font-size: 10px;
+      color: #999;
+    }
+  }
+
+  &__items {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+  }
+
+  &__item {
+    label {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      margin: 0;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      transition: background 0.15s;
+
+      &:hover {
+        background: #fff5f0;
+      }
+
+      input {
+        margin-right: 8px;
+        accent-color: $brand;
+        cursor: pointer;
+      }
+    }
+
+    &.is-on label {
+      color: $brand;
+      font-weight: 500;
+    }
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-panel {
+    width: 220px;
+
+    &.is-collapsed {
+      width: 44px;
+    }
+
+    &__body {
+      max-height: 50vh;
+    }
+  }
+}
+
+/* Photo gallery on fire pages */
+.photos-section {
+  .card-body {
+    padding-bottom: 1rem;
+  }
+
+  .photos-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 6px;
+    margin-bottom: 0.75rem;
+  }
+
+  .photos-item {
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #eee;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  .photos-load-more {
+    margin-top: 0.5rem;
+  }
+}
+
+.pswp__custom-caption {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* IPMA legend control */
+.fogos-legend {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  padding: 6px 8px;
+  margin-bottom: 24px !important;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-family: 'Roboto', sans-serif;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+    max-width: 100px;
+    line-height: 1.1;
+  }
+
+  img {
+    max-height: 220px;
+    max-width: 100px;
+    height: auto;
+    display: block;
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-legend {
+    max-height: 40vh;
+
+    img {
+      max-height: 150px;
+    }
+  }
+}
+
+/* RCM choropleth discrete legend (rural fire danger layers) */
+.fogos-risk-legend {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+  margin-bottom: 24px !important;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: #333;
+
+  &__title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  &__swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #666;
+    border-radius: 2px;
+    flex: none;
+  }
+}
+
+@media (max-width: 575px) {
+  .fogos-risk-legend {
+    font-size: 11px;
+
+    &__swatch {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+/* IPMA wind barbs — darken and slightly thicken the rendered tiles
+   for stronger contrast against the basemap. drop-shadow stacks
+   visually fatten the thin line drawings without server-side restyle. */
+.ipma-windbarbs-tile img {
+  filter:
+    brightness(0.25)
+    contrast(2)
+    drop-shadow(0.5px 0 0 #000)
+    drop-shadow(-0.5px 0 0 #000)
+    drop-shadow(0 0.5px 0 #000)
+    drop-shadow(0 -0.5px 0 #000);
+}
+
+/* IPMA forecast charts on fire detail page */
+.ipma-charts {
+  &__attribution {
+    margin-bottom: 0.75rem;
+  }
+
+  &__grid {
+    > [class^="col-"] {
+      margin-bottom: 1.25rem;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}
+
+.fogos-sat {
+  &-map {
+    height: 340px;
+    border-radius: .5rem;
+    overflow: hidden;
+  }
+
+  &-timestamp {
+    background: $c-orange;
+    color: #fff;
+    font-weight: 500;
+    font-size: .75rem;
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+  }
+
+  &-timestamp:empty {
+    display: none;
+  }
+
+  &-areas {
+    h5 {
+      font-size: .95rem;
+      color: $c-orange;
+      margin-top: .5rem;
+      margin-bottom: .25rem;
+    }
+    p {
+      color: #333;
+    }
+  }
+}
+
+.fogos-sat-badge {
+  background: rgba(255, 255, 255, .92);
+  color: #333;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.fogos-sat-badge:empty {
+  display: none;
+}
+
+// Stale — server flagged X-Stale: true (upstream FOCO cache >30 min old).
+// Keep the layer visible but visually warn the user.
+.fogos-sat-badge--stale {
+  background: rgba(255, 193, 7, .95);
+  color: #5a3a00;
+}
+
+.fogos-sat-popup {
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.fogos-sat-anim {
+  background: $c-orange;
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: .5px;
+}
+
+.fogos-sat-map .leaflet-interactive {
+  transition: opacity .35s ease, fill-opacity .35s ease;
+}
+
+// Detail page — card titles in fogos orange.
+main .card-title {
+  color: $c-orange;
+}
+
+// -------- First-party cookie consent (public/js/cookie-consent.js) --------
+
+.fogos-consent-banner {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 10000;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, .15);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 3px solid $c-orange;
+
+  &__body { flex: 1 1 260px; min-width: 240px; }
+  &__title {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $c-orange;
+  }
+  &__text {
+    margin: 0;
+    font-size: .875rem;
+    line-height: 1.4;
+    color: #333;
+    a { color: $c-orange; text-decoration: underline; }
+  }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+  }
+}
+
+.fogos-consent-btn {
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  padding: .5rem 1rem;
+  border-radius: .375rem;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+  border: 1px solid transparent;
+  line-height: 1.2;
+  min-width: 5rem;
+
+  &--primary {
+    background: $c-orange;
+    color: #fff;
+    border-color: $c-orange;
+    &:hover, &:focus { background: #e05f01; border-color: #e05f01; }
+  }
+  &--outline {
+    background: transparent;
+    color: #333;
+    border-color: rgba(0, 0, 0, .25);
+    &:hover, &:focus { background: rgba(0, 0, 0, .05); }
+  }
+  &--ghost {
+    background: transparent;
+    color: #555;
+    border-color: transparent;
+    text-decoration: underline;
+    &:hover, &:focus { color: $c-orange; }
+  }
+}
+
+.fogos-consent-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(0, 0, 0, .5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+
+  &__panel {
+    background: #fff;
+    color: #222;
+    border-radius: .5rem;
+    padding: 1.5rem 1.5rem 1.25rem;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
+    position: relative;
+  }
+  &__close {
+    position: absolute;
+    top: .5rem; right: .75rem;
+    background: transparent;
+    border: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    padding: .25rem .5rem;
+    &:hover, &:focus { color: $c-orange; }
+  }
+  &__title {
+    margin: 0 0 .75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $c-orange;
+  }
+  &__intro { margin: 0 0 1rem; font-size: .875rem; color: #444; }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, .08);
+  }
+}
+
+.fogos-consent-cat {
+  border-top: 1px solid rgba(0, 0, 0, .08);
+  padding: .75rem 0;
+  &:first-of-type { border-top: 0; padding-top: 0; }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 0;
+    cursor: pointer;
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      margin-top: 2px;
+      accent-color: $c-orange;
+      cursor: pointer;
+      &[disabled] { cursor: not-allowed; opacity: .6; }
+    }
+  }
+  &__label {
+    flex: 1;
+    font-size: .875rem;
+    line-height: 1.4;
+    color: #333;
+    strong { display: block; color: $c-orange; margin-bottom: .125rem; }
+  }
+  &__desc { display: block; font-size: .8125rem; color: #555; }
+}
+
+@media (max-width: 575px) {
+  .fogos-consent-banner {
+    padding: .75rem 1rem;
+    &__actions { width: 100%; }
+    &__actions .fogos-consent-btn { flex: 1 1 45%; min-width: 0; }
+  }
 }

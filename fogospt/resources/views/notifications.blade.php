@@ -1,8 +1,8 @@
 @extends('app')
 
 @push('scripts')
-    <script src="js/vendor/store2.min.js"></script>
-    <script src="js/notifications.js"></script>
+    <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
+    <script src="/js/notifications.js?v={{ filemtime(public_path('js/notifications.js')) }}"></script>
 @endpush
 
 @section('content')
@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-12 col-sm-7 col-md-6">
                                 <button type="button"
-                                        class="btn btn-outline-success btn-lg btn-block js-notifications-auth">Quero
+                                        class="btn btn-outline-success btn-lg w-100 js-notifications-auth">Quero
                                     receber notificações.
                                 </button>
                             </div>
@@ -47,35 +47,30 @@
                 </div>
             </div>
 
-            {{----}}
-            {{--<section class="auth bg-white">--}}
-                {{--<div class="card">--}}
-                    {{--<div class="card-body">--}}
-                        {{--<h2 class="card-title">Gerais</h2>--}}
-                        {{--@foreach(config('custom.notifications') as $item)--}}
-                            {{--<div class="row justify-content-start">--}}
-                                {{--<div class="col-sm"><strong>@lang($item["name"])</strong></div>--}}
-                                {{--<div class="col-sm">--}}
-                                    {{--<label class="custom-control custom-checkbox">--}}
-                                        {{--<input type="checkbox" class="custom-control-input"--}}
-                                               {{--data-value="{{$item["value"]}}"--}}
-                                               {{--data-type="site">--}}
-                                        {{--<span class="custom-control-indicator"></span>--}}
-                                    {{--</label>--}}
-                                {{--</div>--}}
-                                {{--<div class="col-sm d-none">--}}
-                                    {{--<label class="custom-control custom-checkbox">--}}
-                                        {{--<input type="checkbox" class="custom-control-input"--}}
-                                               {{--data-value="{{$item["value"]}}"--}}
-                                               {{--data-type="sms">--}}
-                                        {{--<span class="custom-control-indicator"></span>--}}
-                                    {{--</label>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-                        {{--@endforeach--}}
-                    {{--</div>--}}
-                {{--</div>--}}
-            {{--</section>--}}
+            <section class="auth bg-white">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Gerais</h2>
+                        <div class="row mb-auto margin-top-10">
+                            <div class="col-sm"></div>
+                            <div class="col-sm"><strong>Site</strong></div>
+                        </div>
+                        @foreach(config('custom.notifications') as $item)
+                            <div class="row justify-content-start">
+                                <div class="col-sm"><strong>@lang($item["name"])</strong></div>
+                                <div class="col-sm">
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               data-value="{{$item["value"]}}"
+                                               data-type="site">
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
 
             <section class="auth bg-white">
                 <div class="card">
@@ -112,13 +107,39 @@
             </section>
 
             <section class="auth bg-white">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Concelhos</h2>
+                        <p class="text-muted mb-2">Subscreva notificações para um ou mais concelhos. Use o filtro para pesquisar.</p>
+
+                        <div class="row align-items-center mb-2">
+                            <div class="col-12 col-md-6">
+                                <input type="text" class="form-control js-concelho-filter" placeholder="Filtrar concelhos…">
+                            </div>
+                            <div class="col-12 col-md-6 mt-2 mt-md-0">
+                                <label class="custom-control custom-checkbox d-inline-flex align-items-center">
+                                    <input type="checkbox" class="custom-control-input js-concelho-all-incidents">
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="ms-1">Receber todas as ocorrências (não só incêndios)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="js-concelho-list" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-muted py-3 js-concelho-loading">A carregar concelhos…</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="auth bg-white">
                 <div class="card col-12">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12">
                                 <h3>Problemas com as notificações?</h3>
                                 <button type="button"
-                                        class="btn btn-outline-success btn-lg btn-block js-notifications-reset">Clique Aqui</button>
+                                        class="btn btn-outline-success btn-lg w-100 js-notifications-reset">Clique Aqui</button>
                             </div>
                         </div>
                     </div>
@@ -127,9 +148,7 @@
 
             <div class="alert alert-warning alert-dismissible collapse" role="alert">
                 <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </main>
     </div>

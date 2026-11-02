@@ -1,46 +1,174 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
     <url>
-        <loc>https://fogos.pt/</loc>
+        <loc>https://fogos.pt/pt</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
         <priority>1.00</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/lista</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
+        <loc>https://fogos.pt/pt/madeira</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/madeira"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/madeira"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/madeira"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/madeira"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/outros</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/outros"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/outros"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/outros"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/outros"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
         <priority>0.80</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/tabela</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
+        <loc>https://fogos.pt/pt/avisos</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/avisos"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/avisos"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/avisos"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/avisos"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
         <priority>0.80</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/avisos</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
-        <priority>0.80</priority>
+        <loc>https://fogos.pt/pt/madeira/avisos</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/madeira/avisos"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/madeira/avisos"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/madeira/avisos"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/madeira/avisos"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.70</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/informacoes</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
-        <priority>0.80</priority>
+        <loc>https://fogos.pt/pt/lista</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/lista"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/lista"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/lista"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/lista"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.70</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/estatisticas</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
-        <priority>0.80</priority>
+        <loc>https://fogos.pt/pt/tabela</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/tabela"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/tabela"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/tabela"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/tabela"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.70</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/parceiros</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
-        <priority>0.80</priority>
+        <loc>https://fogos.pt/pt/estatisticas</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/estatisticas"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/estatisticas"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/estatisticas"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/estatisticas"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.70</priority>
     </url>
+
     <url>
-        <loc>https://fogos.pt/sobre</loc>
-        <lastmod>2018-08-02T14:13:22+00:00</lastmod>
-        <priority>0.80</priority>
+        <loc>https://fogos.pt/pt/informacoes</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/informacoes"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/informacoes"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/informacoes"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/informacoes"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.60</priority>
     </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/parceiros</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/parceiros"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/parceiros"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/parceiros"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/parceiros"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/sobre</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/sobre"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/sobre"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/sobre"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/sobre"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/api</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/api"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/api"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/api"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/api"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/api-termos</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/api-termos"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/api-termos"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/api-termos"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/api-termos"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.30</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/notificacoes</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/notificacoes"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/notificacoes"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/notificacoes"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/notificacoes"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.40</priority>
+    </url>
+
+    <url>
+        <loc>https://fogos.pt/pt/privacy-policy</loc>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://fogos.pt/pt/privacy-policy"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://fogos.pt/en/privacy-policy"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://fogos.pt/es/privacy-policy"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://fogos.pt/pt/privacy-policy"/>
+        <lastmod>2026-06-24</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.30</priority>
+    </url>
+
 </urlset>

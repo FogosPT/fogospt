@@ -2,28 +2,33 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class GenericControllerGetChangeLanguageTest extends TestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider supportedLanguagesProvider
-     * @param string $supportedLang
-     */
-    public function it_changes_language_to_a_supported_one(string $supportedLang): void
+    #[Test]
+    #[DataProvider('supportedLanguagesProvider')]
+    public function it_redirects_to_the_chosen_locale(string $supportedLang): void
     {
-        $this->get("/change-language/{$supportedLang}")
-            ->assertRedirect()
-            ->assertCookie('userLocale', $supportedLang, false);
+        $this->get("/pt/change-language/{$supportedLang}")
+            ->assertRedirect("/{$supportedLang}");
     }
 
-    public function supportedLanguagesProvider(): array
+    #[Test]
+    public function it_falls_back_to_the_default_locale_for_unknown_languages(): void
+    {
+        $this->get('/en/change-language/xx')
+            ->assertRedirect('/' . config('app.locale'));
+    }
+
+    public static function supportedLanguagesProvider(): array
     {
         return [
             'EN' => ['en'],
             'PT' => ['pt'],
+            'ES' => ['es'],
         ];
     }
 }

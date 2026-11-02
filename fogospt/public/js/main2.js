@@ -1,3 +1,5 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
+var locale = window.location.pathname.split('/')[1] || 'pt';
 $(document).ready(function () {
     const messaging = firebase.messaging()
 
@@ -36,20 +38,20 @@ $(document).ready(function () {
     var mymap = L.map('map').setView([32.753498, -16.982694], 10)
 
     var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjgppvcdp00aa2spjclz9sjst/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>',
         maxZoom: 18,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     }).addTo(mymap)
 
     var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>',
         maxZoom: 18,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>')
 
     var xx = {
         'Normal': normalLayer,
@@ -78,6 +80,8 @@ $(document).ready(function () {
         plot(res[1])
     }
 
+    if (window.FogosSat) FogosSat.installMain(mymap, null, { defaultOn: false });
+
     window.fogosLayers = []
     window.fogosLayers[3] = L.layerGroup()
     window.fogosLayers[4] = L.layerGroup()
@@ -91,12 +95,12 @@ $(document).ready(function () {
     window.fogosLayers[12] = L.layerGroup()
     window.fogosLayers[80] = L.layerGroup()
 
-    var url = 'https://api-beta.fogos.pt/v1/madeira/fires'
+    var url = 'https://source.fogos.pt/v1/madeira/fires'
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success) {
 
                 for (i in data.data) {
@@ -190,29 +194,6 @@ $(document).ready(function () {
                     'Nuvens': cloudLayer
                 }
 
-                // var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-
-                // //
-                // // url = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                // // prec_url = "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                // // clouds_url = "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                // // pressure_url = "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                // // wind_url = "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=793b3a933c50946491eeb8aad4339ad2";
-                // //
-                // // var tempLayer = L.tileLayer(url, {});
-                // // var precLayer = L.tileLayer(prec_url, {});
-                // // var cloudLayer = L.tileLayer(clouds_url, {});
-                // // var pressureLayer = L.tileLayer(pressure_url, {});
-                // // var windLayer = L.tileLayer(wind_url, {});
-                //
-                // var baseMaps = {
-                //     'Temperatura': tempLayer,
-                //     "Precipitação": precLayer,
-                //     "Nuvens": cloudLayer,
-                //     "Pressão": pressureLayer,
-                //     "Vento": windLayer,
-                // };
-
                 L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: 'topright'}).addTo(mymap)
             }
         }
@@ -227,7 +208,10 @@ function calculateImportanceValue(data) {
     const terrainFactor = 3
     const aerialFactor = 7
 
-    var importance = data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
+    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
+    var importance = hasUnknownMeios
+        ? 10 * manFactor
+        : data.man * manFactor + terrainFactor * terrainFactor + aerialFactor * aerialFactor
 
     DATA_FIRES.number += 1
     if (DATA_FIRES.topImportance < importance) {
@@ -275,6 +259,32 @@ function getPonderatedImportanceFactor(importance, statusCode) {
     return importanceSize
 }
 
+function escapeFireText(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function buildFireTooltip(item) {
+    var t = (window.trans && window.trans.fire) || {};
+    var loc = escapeFireText(item.location || '');
+    if (item.detailLocation) loc += ' — ' + escapeFireText(item.detailLocation);
+    else if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
+    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
+    var men     = parseInt(item.man,     10) || 0;
+    var terrain = parseInt(item.terrain, 10) || 0;
+    var aerial  = parseInt(item.aerial,  10) || 0;
+    return ''
+        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
+        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
+            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
+        + '<div class="fire-tooltip-row">'
+        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
+        + '</div>';
+}
+
 function addMaker(item, mymap) {
     console.log(item);
     var x = randomGeo(parseFloat(item.lat), parseFloat(item.lng))
@@ -297,7 +307,7 @@ function addMaker(item, mymap) {
     if (item.important) {
         iconHtml += '99'
     } else {
-        iconHtml += item.statusCode
+        iconHtml += parseInt(item.statusCode, 10)
     }
     if (isActive && isActive === item.id) {
         iconHtml += ' active'
@@ -315,7 +325,10 @@ function addMaker(item, mymap) {
     }
 
     iconHtml += '"'
-    iconHtml += 'id=' + item.id + '></i>'
+    if (['3111', '3109', '4335'].indexOf(String(item.naturezaCode)) !== -1) {
+        iconHtml += ' style="opacity:0.6"'
+    }
+    iconHtml += ' id="' + escapeFireText(item.id) + '"></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
     marker.sizeFactor = sizeFactor
     var size = sizeFactor * BASE_SIZE
@@ -331,6 +344,14 @@ function addMaker(item, mymap) {
 
     marker.addTo(mymap)
     marker.id = item.id
+
+    marker.bindTooltip(buildFireTooltip(item), {
+        direction: 'top',
+        offset: [0, -8],
+        opacity: 0.95,
+        className: 'fire-tooltip',
+        sticky: false
+    });
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor)
@@ -385,12 +406,12 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://api-lb.fogos.pt/v1/madeira/fires/data?id=' + id
+    var url = 'https://source.fogos.pt/v1/madeira/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success && data.data.length) {
                 labels = []
                 var man = []
@@ -453,7 +474,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/madeira/views/status/' + id
+    var url = '/' + locale + '/madeira/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -464,7 +485,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/madeira/views/risk/' + id
+    var url = '/' + locale + '/madeira/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -476,7 +497,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/madeira/views/meteo/' + id
+    var url = '/' + locale + '/madeira/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -488,7 +509,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/madeira/views/extra/' + id
+    var url = '/' + locale + '/madeira/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -531,12 +552,12 @@ function getColor(d) {
 
 function addRisk(mymap) {
     // lel
-    var url = 'https://api-lb.fogos.pt/v1/risk-today'
+    var url = 'https://source.fogos.pt/v1/risk-today'
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
-            data = JSON.parse(data)
+            if (typeof data === 'string') data = JSON.parse(data)
             if (data.success) {
                 var riskToday = L.geoJson(concelhos, {
                     style: function (feature) {
@@ -549,14 +570,15 @@ function addRisk(mymap) {
                 if (getParameterByName('risk')) {
                     riskToday.addTo(mymap)
                     $('main #map .map-marker').hide()
+                    document.getElementById('map').classList.add('risk-layer-ready')
                 }
 
-                var url = 'https://api-lb.fogos.pt/v1/risk-tomorrow'
+                var url = 'https://source.fogos.pt/v1/risk-tomorrow'
                 $.ajax({
                     url: url,
                     method: 'GET',
                     success: function (data) {
-                        data = JSON.parse(data)
+                        if (typeof data === 'string') data = JSON.parse(data)
                         if (data.success) {
                             var riskTomorrow = L.geoJson(concelhos, {
                                 style: function (feature) {
@@ -569,14 +591,15 @@ function addRisk(mymap) {
                             if (getParameterByName('risk-tomorrow')) {
                                 riskTomorrow.addTo(mymap)
                                 $('main #map .map-marker').hide()
+                                document.getElementById('map').classList.add('risk-layer-ready')
                             }
 
-                            var url = 'https://api-lb.fogos.pt/v1/risk-after'
+                            var url = 'https://source.fogos.pt/v1/risk-after'
                             $.ajax({
                                 url: url,
                                 method: 'GET',
                                 success: function (data) {
-                                    data = JSON.parse(data)
+                                    if (typeof data === 'string') data = JSON.parse(data)
                                     if (data.success) {
                                         var riskAfter = L.geoJson(concelhos, {
                                             style: function (feature) {

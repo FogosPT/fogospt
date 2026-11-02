@@ -4,177 +4,406 @@ namespace App\Http\Controllers;
 
 use App\Libs\LegacyApi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class GenericController extends Controller
 {
-    protected $pageName;
-
-    /**
-     * @return mixed
-     */
-    public function getPageName()
-    {
-        return $this->pageName;
-    }
-
-    /**
-     * @param mixed $pageName
-     */
-    public function setPageName($pageName)
-    {
-        $this->pageName = $pageName;
-    }
-
     public function getIndex()
     {
-        $this->setPageName('Início');
+        $this->seoKey = 'home';
         return view('index')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getIndexMadeira()
     {
-        $this->setPageName('Madeira - Início');
+        $this->seoKey = 'madeira';
         return view('index-madeira')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getMapCustom()
+    {
+        $this->seoKey = 'mapCustom';
+        return view('map-custom')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getMapConfigurator()
+    {
+        $this->seoKey = 'mapConfigurator';
+        return view('map-configurator')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getOtherFires()
     {
-        $this->setPageName('Outros incêndios');
+        $this->seoKey = 'otherFires';
         return view('other-fires')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getAbout()
     {
-        $this->setPageName(__('includes.menu.about'));
+        $this->seoKey = 'about';
         return view('about')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getInformation()
     {
-        $this->setPageName(__('includes.menu.information'));
+        $this->seoKey = 'information';
         return view('information')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getNotifications()
     {
-        $this->setPageName(__('includes.menu.notifications'));
+        $this->seoKey = 'notifications';
         return view('notifications')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getManifest()
     {
-        $this->setPageName(__('includes.menu.manifest'));
+        $this->seoKey = 'about';
         return view('manifest')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getPartnerships()
     {
-        $this->setPageName(__('includes.menu.partnerships'));
+        $this->seoKey = 'partnerships';
         return view('partnerships')->with(['metadata' => $this->generateMetadata()]);
     }
 
-    public function getList()
-    {
-        $this->setPageName(__('includes.menu.list'));
-        $fires = LegacyApi::getFires();
-
-        return view('list', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
-    }
-
+    // Upstream failures degrade to the views' "no data" state; LegacyApi
+    // always returns an array, never throws.
     public function getTable()
     {
-        $this->setPageName(__('includes.menu.table'));
+        $this->seoKey = 'table';
         $fires = LegacyApi::getFires();
 
-        return view('table', ['data' => @$fires['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('table', ['data' => $fires['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarnings()
     {
-        $this->setPageName(__('includes.menu.warnings'));
+        $this->seoKey = 'warnings';
         $warnings = LegacyApi::getWarnings();
 
-        return view('warnings', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings', ['data' => $warnings['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getWarningsMadeira()
     {
-        $this->setPageName(__('includes.menu.warnings'));
+        $this->seoKey = 'warningsMadeira';
         $warnings = LegacyApi::getWarningsMadeira();
 
-        return view('warnings-madeira', ['data' => $warnings['data']])->with(['metadata' => $this->generateMetadata()]);
+        return view('warnings-madeira', ['data' => $warnings['data'] ?? []])->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function getStats()
     {
-        $this->setPageName(__('includes.menu.stats'));
+        $this->seoKey = 'stats';
         $now = LegacyApi::getNow();
-        $data = array(
-            'now' => $now['data'],
-        );
 
-        return view('stats', ['data' => $data])->with(['metadata' => $this->generateMetadata()]);
+        return view('stats', ['data' => ['now' => $now['data'] ?? []]])->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function api()
+    {
+        $this->seoKey = 'api';
+
+        return view('api')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function apiTerms()
+    {
+        $this->seoKey = 'apiTerms';
+
+        return view('api-terms')->with(['metadata' => $this->generateMetadata()]);
+    }
+
+    public function getPrivacyPolicy()
+    {
+        $this->seoKey = 'privacyPolicy';
+
+        return view('privacy-policy')->with(['metadata' => $this->generateMetadata()]);
     }
 
     public function subscribe(Request $request)
     {
-        $headers = array
-        (
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
-            'Content-Type: application/json'
+        $token = $this->validToken($request->get('token'));
+        $topic = $this->resolveTopic($request->get('topic'));
+
+        if (!$token || !$topic) {
+            return \Response::json(['success' => false], 400);
+        }
+
+        [$httpcode, $body] = $this->fcmIidRequest(
+            'https://iid.googleapis.com/iid/v1/' . rawurlencode($token) . '/rel/topics/' . rawurlencode($topic),
+            null
         );
 
-        $ch = curl_init();
+        $fcmError = json_decode($body, true)['error'] ?? null;
+        $isStaleToken = ($fcmError === 'The registration is invalid.');
+        $clientError = $isStaleToken ? 'invalid-registration' : null;
 
-        $token = $request->get('token');
-        $topic = $request->get('topic');
-
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1/{$token}/rel/topics/web-{$topic}");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array());
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
-            return \Response::json(['success' => true]);
-        } else {
-            return \Response::json(['success' => false]);
+        if ($httpcode !== 200) {
+            // Stale tokens are expected and the client recovers transparently
+            // by refreshing and retrying, so they're noise at warning level.
+            $level = $isStaleToken ? 'info' : 'warning';
+            Log::{$level}('FCM topic subscribe failed', [
+                'topic'    => $topic,
+                'httpcode' => $httpcode,
+                'response' => $body,
+            ]);
         }
+
+        return \Response::json(['success' => $httpcode === 200, 'error' => $clientError]);
     }
 
     public function unsubscribe(Request $request)
     {
-        $headers = array
-        (
-            'Authorization: key=' . env('FIREBASE_TOKEN'),
-            'Content-Type: application/json'
+        $token = $this->validToken($request->get('token'));
+        $topic = $this->resolveTopic($request->get('topic'));
+
+        if (!$token || !$topic) {
+            return \Response::json(['success' => false], 400);
+        }
+
+        [$httpcode, $body] = $this->fcmIidRequest(
+            'https://iid.googleapis.com/iid/v1:batchRemove',
+            json_encode([
+                'to' => "/topics/{$topic}",
+                'registration_tokens' => [$token],
+            ])
         );
+
+        if ($httpcode !== 200) {
+            // Same logic as subscribe: invalidated tokens just mean the topic
+            // relationship is gone too, which is the desired end state.
+            $fcmError = json_decode($body, true)['error'] ?? null;
+            $level = ($fcmError === 'The registration is invalid.') ? 'info' : 'warning';
+            Log::{$level}('FCM topic unsubscribe failed', [
+                'topic'    => $topic,
+                'httpcode' => $httpcode,
+                'response' => $body,
+            ]);
+        }
+
+        return \Response::json(['success' => $httpcode === 200]);
+    }
+
+    /**
+     * FCM registration tokens are URL-safe base64 plus `:`. Anything else is
+     * rejected before it can reach the IID URL path (where `/` or `?` would
+     * let a caller rewrite the request and bypass the topic whitelist).
+     */
+    private function validToken($token)
+    {
+        return is_string($token) && preg_match('/^[A-Za-z0-9_:\-]{20,512}$/', $token) ? $token : null;
+    }
+
+    private function fcmIidRequest($url, $jsonBody)
+    {
+        $accessToken = $this->fcmAccessToken();
+        if (!$accessToken) {
+            return [0, 'FCM OAuth token unavailable'];
+        }
 
         $ch = curl_init();
-
-        $token = $request->get('token');
-        $topic = $request->get('topic');
-
-        $params = array(
-            "to" => "/topics/web-" . $topic,
-            "registration_tokens" => [$token]
-        );
-
-        curl_setopt($ch, CURLOPT_URL, "https://iid.googleapis.com/iid/v1:batchRemove");
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken,
+            'Content-Type: application/json',
+            'access_token_auth: true',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonBody === null ? '' : $jsonBody);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        $body = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if( $httpcode === 200){
-            return \Response::json(['success' => true]);
-        } else {
-            return \Response::json(['success' => false]);
+        curl_close($ch);
+        return [$httpcode, $body];
+    }
+
+    /**
+     * Obtain (and cache) a Google OAuth2 access token for the FCM scope,
+     * signed with the project's service account JSON. Required because the
+     * legacy `Authorization: key=<server-key>` flow was deprecated by Google.
+     *
+     * Service account JSON path is read from FIREBASE_SERVICE_ACCOUNT_PATH
+     * (absolute path) or GOOGLE_APPLICATION_CREDENTIALS as fallback.
+     */
+    private function fcmAccessToken()
+    {
+        // A missing/broken service account would otherwise be retried (and
+        // logged) on every request — back off for a minute after a failure.
+        if (Cache::has('fcm_oauth_failed')) {
+            return null;
         }
+
+        $token = Cache::remember('fcm_oauth_access_token', 3300, function () {
+            $path = config('services.firebase.service_account');
+            if (!$path || !is_readable($path)) {
+                Log::error('FCM OAuth: service account JSON not readable', [
+                    'path'     => $path,
+                    'exists'   => $path ? file_exists($path) : null,
+                    'perms'    => $path && file_exists($path) ? substr(sprintf('%o', fileperms($path)), -4) : null,
+                    'php_uid'  => function_exists('posix_geteuid') ? posix_geteuid() : null,
+                ]);
+                return null;
+            }
+
+            $sa = json_decode(file_get_contents($path), true);
+            if (!isset($sa['client_email'], $sa['private_key'], $sa['token_uri'])) {
+                Log::error('FCM OAuth: malformed service account JSON');
+                return null;
+            }
+
+            $now = time();
+            $header  = ['alg' => 'RS256', 'typ' => 'JWT'];
+            $payload = [
+                'iss'   => $sa['client_email'],
+                'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+                'aud'   => $sa['token_uri'],
+                'iat'   => $now,
+                'exp'   => $now + 3600,
+            ];
+
+            $b64 = function ($data) {
+                return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+            };
+            $signingInput = $b64(json_encode($header)) . '.' . $b64(json_encode($payload));
+            $signature = '';
+            if (!openssl_sign($signingInput, $signature, $sa['private_key'], 'sha256WithRSAEncryption')) {
+                Log::error('FCM OAuth: JWT signing failed', ['err' => openssl_error_string()]);
+                return null;
+            }
+            $jwt = $signingInput . '.' . $b64($signature);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $sa['token_uri']);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion'  => $jwt,
+            ]));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+            $resp = curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            $data = json_decode($resp, true);
+            if ($code !== 200 || !isset($data['access_token'])) {
+                Log::error('FCM OAuth: token exchange failed', ['code' => $code, 'body' => $resp]);
+                return null;
+            }
+            return $data['access_token'];
+        });
+
+        if (!$token) {
+            Cache::forget('fcm_oauth_access_token');
+            Cache::put('fcm_oauth_failed', 1, 60);
+        }
+
+        return $token;
+    }
+
+    /**
+     * Serve the Firebase Cloud Messaging service worker with the app config
+     * injected from env. Kept behind a route (instead of a static file in
+     * public/) so the same env-driven appId / VAPID values used by the page
+     * stay in sync with the SW. The Service-Worker-Allowed header makes sure
+     * the SW can control the whole origin.
+     */
+    public function firebaseMessagingSw()
+    {
+        $appId = (string) config('services.firebase.app_id', '');
+
+        $config = json_encode([
+            'apiKey'            => 'AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M',
+            'authDomain'        => 'admob-app-id-6663345165.firebaseapp.com',
+            'databaseURL'       => 'https://admob-app-id-6663345165.firebaseio.com',
+            'projectId'         => 'admob-app-id-6663345165',
+            'storageBucket'     => 'admob-app-id-6663345165.appspot.com',
+            'messagingSenderId' => '726949968874',
+            'appId'             => $appId,
+        ], JSON_UNESCAPED_SLASHES);
+
+        $js = <<<JS
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+
+firebase.initializeApp({$config});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function (payload) {
+    const n = (payload && payload.notification) || {};
+    const data = (payload && payload.data) || {};
+
+    if (!n.title && !n.body) {
+        return Promise.resolve();
+    }
+
+    const title = n.title || 'Fogos.pt';
+    const options = {
+        body: n.body || '',
+        icon: n.icon || '/img/logo.svg',
+        data: data,
+    };
+
+    if (data.fireId) {
+        options.data.click_url = '/fogo/' + data.fireId;
+    }
+
+    return self.registration.showNotification(title, options);
+});
+
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    const url = (event.notification.data && event.notification.data.click_url) || '/';
+    event.waitUntil(clients.openWindow(url));
+});
+JS;
+
+        return response($js, 200, [
+            'Content-Type'           => 'application/javascript',
+            'Service-Worker-Allowed' => '/',
+            'Cache-Control'          => 'no-cache, max-age=0, must-revalidate',
+        ]);
+    }
+
+    /**
+     * Resolve a client-provided topic value to the canonical FCM topic name.
+     *
+     * Whitelists topics from the unified catalogue and prefixes with `dev-`
+     * outside of production, matching the backend's environment scheme.
+     */
+    private function resolveTopic($topic)
+    {
+        if (!is_string($topic) || $topic === '') {
+            return null;
+        }
+
+        // DICO topics accept both 4-digit distrito codes (`<dd>00`, e.g. 1100)
+        // and 6-digit concelho codes (`<dd><cc>00`, e.g. 110600), always ending
+        // in "00" — matching the convention used by the fogos backend / mobile.
+        $allowed =
+            $topic === 'incident-important'
+            || $topic === 'warnings'
+            || $topic === 'planes'
+            || $topic === 'madeira'
+            || preg_match('/^incident-[A-Za-z0-9_-]{1,64}$/', $topic)
+            || preg_match('/^district-(\d{2}|\d{4})00$/', $topic)
+            || preg_match('/^district-all-(\d{2}|\d{4})00$/', $topic);
+
+        if (!$allowed) {
+            return null;
+        }
+
+        $prefix = app()->environment('production') ? '' : 'dev-';
+        return $prefix . $topic;
     }
 
     /**
@@ -188,12 +417,23 @@ class GenericController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function getChangeLanguage(Request $request, string $lang)
+    public function getChangeLanguage(Request $request, string $locale, string $lang)
     {
-        $languageCookie = in_array($lang, config('custom.availableLocales'), true)
+        $newLocale = in_array($lang, config('custom.availableLocales'), true)
             ? $lang
             : config('app.locale');
 
-        return back()->withCookie('userLocale', $languageCookie, config('session.lifetime'));
+        $currentPath = $request->getPathInfo();
+        
+        $pathWithoutLocale = preg_replace('~^/' . preg_quote($locale) . '~', '', $currentPath);
+        $pathWithoutChangeLanguage = preg_replace('~^/change-language/[a-z]{2}$~', '', $pathWithoutLocale);
+        
+        if ($pathWithoutChangeLanguage === $pathWithoutLocale) {
+            $newPath = '/' . $newLocale;
+        } else {
+            $newPath = '/' . $newLocale . $pathWithoutChangeLanguage;
+        }
+
+        return redirect($newPath);
     }
 }

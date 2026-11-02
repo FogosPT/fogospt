@@ -14,13 +14,13 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $middleware = [
-		\Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+		\App\Http\Middleware\TrustProxies::class,
+		\App\Http\Middleware\SecurityHeaders::class,
+		\Illuminate\Http\Middleware\HandleCors::class,
+		\App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 		\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-		\App\Http\Middleware\TrustProxies::class,
-		//\Illuminate\Session\Middleware\StartSession::class,
-
 	];
 
 	/**
@@ -29,37 +29,21 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $middlewareGroups = [
-		'web' => [
-			\App\Http\Middleware\SetLanguage::class,
-			//            \App\Http\Middleware\EncryptCookies::class,
-			//            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-			// \Illuminate\Session\Middleware\AuthenticateSession::class,
-			//            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-			//            \App\Http\Middleware\VerifyCsrfToken::class,
-			//            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-		],
-
-		'api' => [
-			'throttle:60,1',
-			'bindings',
-		],
+		// Deliberately stateless: no session, cookies or CSRF, so every page
+		// can be cached publicly by the CDN (a Set-Cookie would bypass it).
+		// Locale comes from the URL prefix (LocaleMatch).
+		'web' => [],
 	];
 
 	/**
-	 * The application's route middleware.
-	 *
-	 * These middleware may be assigned to groups or used individually.
+	 * The application's route middleware aliases.
 	 *
 	 * @var array
 	 */
-	protected $routeMiddleware = [
-		'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
-		'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-		'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+	protected $middlewareAliases = [
 		'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-		'can'           => \Illuminate\Auth\Middleware\Authorize::class,
-		'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
 		'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+		'locale.match'  => \App\Http\Middleware\LocaleMatch::class,
 	];
 }

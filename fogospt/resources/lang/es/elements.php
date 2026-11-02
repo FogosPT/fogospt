@@ -11,7 +11,9 @@
                 'district' => 'Distrito',
                 'concelho' => 'Condado',
                 'freguesia' => 'Parroquia',
-                'localidade' => 'Localidad'
+                'localidade' => 'Localidad',
+                'cb' => 'Cuerpo de Bomberos',
+                'alertFrom' => 'Fuente de alerta'
             ],
             'resources' => [
                 'units' => 'Medios',
@@ -30,16 +32,52 @@
                 'wind' => [
                     'speed' => 'Velocidad del Viento',
                     'deg' => 'Dirección del Viento'
-                ]
+                ],
+                'precipitation' => 'Precipitación acumulada',
+                'radiation'     => 'Radiación',
+                'station'       => 'Estación',
+                'data_from'     => 'Datos de',
+                'source'        => 'Fuente',
             ],
             'extra' => [
                 'title' => 'Información extra'
             ],
-            'twitter' => [
-                'title' => 'Twitter'
-            ],
             'shares' => [
                 'title' => 'Compartir'
+            ],
+            'weatherWarnings' => [
+                'title' => 'Avisos meteorológicos',
+                'source' => 'Fuente: IPMA',
+            ],
+            'photos' => [
+                'title' => 'Fotos',
+                'loadMore' => 'Cargar más',
+            ],
+            'ipmaCharts' => [
+                'title'  => 'Previsión IPMA en este punto',
+                'source' => 'Datos:',
+                'error'  => 'No se pudieron obtener datos de IPMA para esta ubicación.',
+                'learnMore' => '¿Qué significan estos gráficos?',
+                'run' => 'Corrida del modelo: :time (hora local)',
+            ],
+            'satellite' => [
+                'title'              => 'Perímetro y propagación (satélite)',
+                'legend'             => 'Evidencia de satélite MTG (LSA SAF/EUMETSAT). Complementa — no sustituye — la información oficial de la ANEPC.',
+                'empty'              => 'Sin datos satélite disponibles para esta incidencia.',
+                'noPerimeter'        => 'Sin perímetro posible para esta incidencia: :message',
+                'lastUpdate'         => 'Satélite',
+                'stale'              => 'Datos de hace :mins min',
+                'affectedConcelhos'  => 'Municipios afectados',
+                'affectedFreguesias' => 'Parroquias afectadas',
+                'none'               => '—',
+            ],
+            'detail' => [
+                'burn' => [
+                    'title' => 'Área quemada'
+                ],
+                'cause' => [
+                    'title' => 'Causa'
+                ]
             ]
         ],
         'riskLevels' => [

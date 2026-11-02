@@ -1,5 +1,14 @@
 @extends('app')
 
+@php
+    $partners = [
+        ['name' => 'PTServidor',    'url' => 'https://ptservidor.pt/',  'img' => 'img/partners/ptservidor.png'],
+        ['name' => 'Officelan',     'url' => 'https://officelan.pt/',   'img' => 'img/partners/officelan.png'],
+        ['name' => 'VOST Portugal', 'url' => 'https://vost.pt/',        'img' => 'img/partners/vostpt.png'],
+        ['name' => 'Mapbox',        'url' => 'https://www.mapbox.com/', 'img' => 'img/partners/mapbox.png'],
+    ];
+@endphp
+
 @section('content')
     <main role="main" class="mb-auto margin-top-10">
         <div class="container">
@@ -9,71 +18,23 @@
                 </div>
             </div>
 
-
-            <div class="card-deck mb-3 text-center">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">PTServidor</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-body">
-                            <a href="https://ptservidor.pt/">
-                                <img src="{{asset('img/partners/ptservidor.png')}}" alt="PTServodor">
-                            </a>
-                        </div>
-                        <a type="button" href="https://ptservidor.pt/"
-                           class="btn btn-lg btn-block btn-primary">Visitar</a>
-                    </div>
-                </div>
-
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">Officelan</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-body">
-                            <a href="https://officelan.pt/">
-                                <img src="{{asset('img/partners/officelan.png')}}" alt="Officelan">
-                            </a>
-                        </div>
-                        <a type="button" href="https://officelan.pt/"
-                           class="btn btn-lg btn-block btn-primary">Visitar</a>
-                    </div>
-                </div>
-
-                <div class="card-deck mb-3 text-center">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header">
-                            <h4 class="my-0 font-weight-normal">VOST Portugal</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-body">
-                                <a href="https://vost.pt/">
-                                    <img src="{{asset('img/partners/vostpt.png')}}" alt="VOST Portugal">
-                                </a>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4 text-center">
+                @foreach($partners as $partner)
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header">
+                                <h4 class="my-0 fw-normal">{{ $partner['name'] }}</h4>
                             </div>
-                            <a type="button" href="https://vost.pt/"
-                               class="btn btn-lg btn-block btn-primary">Visitar</a>
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header">
-                            <h4 class="my-0 font-weight-normal">MAPBOX</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-body">
-                                <a href="https://www.mapbox.com">
-                                    <img src="{{asset('img/partners/mapbox.png')}}" alt="Mapbox">
+                            <div class="card-body d-flex flex-column">
+                                <a href="{{ $partner['url'] }}" target="_blank" rel="noopener" class="flex-grow-1 d-flex align-items-center justify-content-center mb-3">
+                                    <img src="{{ asset($partner['img']) }}" alt="{{ $partner['name'] }}" class="img-fluid" loading="lazy">
                                 </a>
+                                <a href="{{ $partner['url'] }}" target="_blank" rel="noopener" class="btn btn-lg btn-primary w-100">Visitar</a>
                             </div>
-                            <a type="button" href="https://www.mapbox.com" class="btn btn-lg btn-block btn-primary">Visitar</a>
                         </div>
                     </div>
-                </div>
-                <div class="row  bg-white">
-
-                </div>
+                @endforeach
             </div>
+        </div>
     </main>
 @endsection

@@ -12,5 +12,8 @@
 **/.env
 .idea
 logs
-.open-next
-.wrangler
+secrets/
+
+.DS_Store
+test-results/
+runtime/

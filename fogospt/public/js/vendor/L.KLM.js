@@ -268,8 +268,39 @@ L.Util.extend(L.KML, {
         }
 
         if (name) {
-            layer.bindPopup('<h2>' + name + '</h2>' + descr, { className: 'kml-popup'});
+            // KML comes from upstream perimeters (third-party / uploaded files):
+            // the name is plain text and the description is sanitised HTML.
+            var h2 = document.createElement('h2');
+            h2.textContent = name;
+            layer.bindPopup(h2.outerHTML + this.sanitizeHtml(descr), { className: 'kml-popup'});
         }
+    },
+
+    // Minimal allowlist sanitiser — keeps formatting markup (tables, lists,
+    // links, images) that KML descriptions use, drops everything executable.
+    sanitizeHtml: function (html) {
+        var doc = new DOMParser().parseFromString('<body>' + (html || '') + '</body>', 'text/html');
+        var BLOCKED = /^(script|style|iframe|object|embed|link|meta|base|form|input|button|textarea|select|svg|math|template)$/i;
+        var walk = function (node) {
+            var children = Array.prototype.slice.call(node.children);
+            for (var i = 0; i < children.length; i++) {
+                var el = children[i];
+                if (BLOCKED.test(el.tagName)) { el.remove(); continue; }
+                var attrs = Array.prototype.slice.call(el.attributes);
+                for (var k = 0; k < attrs.length; k++) {
+                    var n = attrs[k].name.toLowerCase(), v = attrs[k].value;
+                    if (n.indexOf('on') === 0 || n === 'style' || n === 'srcdoc' ||
+                        ((n === 'href' || n === 'src' || n === 'xlink:href' || n === 'action') &&
+                         !/^\s*(https?:|mailto:|#|\/)/i.test(v))) {
+                        el.removeAttribute(attrs[k].name);
+                    }
+                }
+                if (el.tagName === 'A') { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer'); }
+                walk(el);
+            }
+        };
+        walk(doc.body);
+        return doc.body.innerHTML;
     },
 
     parseCoords: function (xml) {

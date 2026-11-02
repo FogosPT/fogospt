@@ -2,32 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Libs\HelperFuncs;
 use App\Libs\LegacyApi;
+use App\Libs\OgRenderer;
+use GuzzleHttp;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Jorenvh\Share\Share;
 use Illuminate\Support\Facades\Redis;
+use Jorenvh\Share\Share;
 
 
 class FireController extends Controller
 {
     public $fire;
 
-    public function get($id)
+    public function get($locale, $id)
     {
-        if (!$id) {
-            return view('index');
-        }
-
         $this->setFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
@@ -36,44 +27,26 @@ class FireController extends Controller
             $this->fire['statusHistory'] = false;
         }
 
-        $this->fire['meteo'] = $meteo;
-
-        $feed = array();
-
-        if (isset($this->fire['concelho'])) {
-          $feed = $this->getTwitter($this->fire['concelho']);
-        }
-
-        $metadata = $this->generateMetadata();
+        $hash = OgRenderer::hash($this->fire);
+        $metadata = $this->generateMetadata($id, $hash);
         $shares = new Share();
         $s = $shares->page($metadata['url'])
             ->facebook()
-            ->twitter()
             ->whatsapp();
 
-
-        return view('index', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata));
+        return view('index', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
 
-    public function getDetails($id)
+    public function getDetails($locale, $id)
     {
-        if (!$id) {
-            return view('index');
-        }
-
         $this->setFireById($id);
 
-        if(!$this->fire){
+        if ($this->fire === null) {
             abort(404);
         }
 
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFire($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
 
         $this->fire['risk'] = @$risk['data'][0]['hoje'];
         if (isset($status['data'])) {
@@ -82,19 +55,11 @@ class FireController extends Controller
             $this->fire['statusHistory'] = false;
         }
 
-        $this->fire['meteo'] = $meteo;
-
-        $feed = array();
-
-        if (isset($this->fire['concelho'])) {
-            $feed = $this->getTwitter($this->fire['concelho']);
-        }
-
-        $metadata = $this->generateMetadata();
+        $hash = OgRenderer::hash($this->fire);
+        $metadata = $this->generateMetadata($id, $hash);
         $shares = new Share();
         $s = $shares->page($metadata['url'])
             ->facebook()
-            ->twitter()
             ->whatsapp();
 
         if(isset($this->fire['kml'])){
@@ -109,14 +74,82 @@ class FireController extends Controller
             $kmlVost = null;
         }
 
-
-        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'feed' => $feed, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
+        return view('detail', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata, 'kml' => $kml, 'kmlVost' => $kmlVost));
     }
 
-    public function getSharesCard($id)
+    // Public endpoint that FB/WhatsApp/X hit for og:image. Always answers
+    // 200 with a PNG — even for missing / broken fires we fall back to the
+    // legacy static card, because a 404 makes the crawler give up on the
+    // preview entirely.
+    //
+    // Pipeline: fetch fire+status → render the Blade to HTML in this same
+    // worker → POST the HTML to the sidecar → sidecar setContent + screenshot.
+    // No second HTTP hop back into PHP-FPM, so a crawler storm can't starve
+    // the pool by pinning every worker on a sidecar wait while the sidecar
+    // itself needs a free worker to navigate.
+    public function getOgImage($id)
     {
+        $this->setFireByIdCached($id);
+        if ($this->fire === null) {
+            return $this->serveStaticOg(60);
+        }
 
+        // Only statusHistory participates in the hash — risk is not used by
+        // the OG blade, so skipping getRiskByFire drops a wasted API round
+        // trip from this side of the pipeline.
+        $status = LegacyApi::getStatusByFireCached($id);
+        $this->fire['statusHistory'] = isset($status['data']) ? $status['data'] : false;
+
+        $hash = OgRenderer::hash($this->fire);
+        $path = OgRenderer::cachePath((string) $id, $hash);
+
+        // Fast path: PNG already on disk. Skip both the Blade render and
+        // the sidecar hop entirely.
+        if (!is_file($path) || filesize($path) === 0) {
+            $html = view('og.fire', [
+                'fire'    => $this->fire,
+                'kml'     => null,
+                'kmlVost' => null,
+            ])->render();
+
+            $path = OgRenderer::render((string) $id, $hash, $html);
+        }
+
+        if ($path === null) {
+            // Sidecar failed — serve the fallback with a short TTL so we
+            // can retry soon without poisoning the CDN with a stale error.
+            return $this->serveStaticOg(60, 'MISS-FALLBACK');
+        }
+
+        return response()->file($path, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => 'public, max-age=600, s-maxage=1200, stale-while-revalidate=86400',
+            'X-Cache'       => is_file($path) && (time() - filemtime($path) > 5) ? 'HIT' : 'MISS',
+        ]);
+    }
+
+    // Return type intentionally untyped: response()->file() returns
+    // Symfony\BinaryFileResponse, which is NOT Illuminate\Http\Response
+    // (they share a Symfony base but not a Laravel one). Declaring
+    // : Response caused every fallback to crash with TypeError.
+    private function serveStaticOg(int $maxAge, string $xCache = 'STATIC')
+    {
+        $path = public_path('img/og-image.png');
+        return response()->file($path, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => "public, max-age={$maxAge}, s-maxage={$maxAge}",
+            'X-Cache'       => $xCache,
+        ]);
+    }
+
+    public function getSharesCard($locale, $id)
+    {
         $this->setFireById($id);
+
+        if ($this->fire === null) {
+            return view('elements.shares', ['shares' => '', 'fire' => [], 'metadata' => []]);
+        }
+
         $metadata = $this->generateMetadata();
 
         $shares = new Share();
@@ -130,37 +163,42 @@ class FireController extends Controller
         return view('elements.shares', array('shares' => $s, 'fire' => $this->fire, 'metadata' => $metadata));
     }
 
-    public function getGeneralCard($id)
+    public function getGeneralCard($locale, $id)
     {
         $this->setFireById($id);
+
+        if ($this->fire === null) {
+            return view('elements.risk', ['fire' => []]);
+        }
+
         $risk = LegacyApi::getRiskByFire($id);
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'] ?? null;
 
         return view('elements.risk', array('fire' => $this->fire));
     }
 
-    public function getStatusCard($id)
+    public function getStatusCard($locale, $id)
     {
         $this->setFireById($id);
+
+        if ($this->fire === null) {
+            return view('elements.status', ['fire' => []]);
+        }
+
         $status = LegacyApi::getStatusByFire($id);
-        $this->fire['statusHistory'] = @$status['data'];
+        $this->fire['statusHistory'] = $status['data'] ?? [];
 
         return view('elements.status', array('fire' => $this->fire));
     }
 
-    public function getMeteoCard($id)
+    public function getMeteoCard($locale, $id)
     {
         $this->setFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-        $this->fire['meteo'] = $meteo;
 
-        return view('elements.meteo', array('fire' => $this->fire));
+        return view('elements.meteo', array('fire' => $this->fire ?? []));
     }
 
-    public function getExtraCard($id)
+    public function getExtraCard($locale, $id)
     {
         $this->setFireById($id);
 
@@ -173,78 +211,60 @@ class FireController extends Controller
     }
 
 
-    public function getTwitterCard($id)
+    public function getMadeira($locale, $id)
     {
-        $this->setFireById($id);
+        $this->setMadeiraFireById($id);
 
-        $feed = $this->getTwitter($this->fire['concelho']);
-
-        return view('elements.twitter', array('fire' => $this->fire, 'feed' => $feed));
-    }
-
-    public function getAll()
-    {
-        return \Response::json(LegacyApi::getFires());
-    }
-
-    public function getMadeira($id)
-    {
-        if (!$id) {
-            return view('index-madeira');
+        if ($this->fire === null) {
+            // Unknown/finished fire (or upstream down): show the Madeira map.
+            $this->seoKey = 'madeira';
+            return view('index-madeira', ['metadata' => $this->generateMetadata()]);
         }
 
-        $this->setMadeiraFireById($id);
         $risk = LegacyApi::getRiskByFire($id);
         $status = LegacyApi::getStatusByFireMadeira($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
-        if (isset($status['data'])) {
-            $this->fire['statusHistory'] = $status['data'];
-        } else {
-            $this->fire['statusHistory'] = false;
-        }
-
-        $this->fire['meteo'] = $meteo;
+        $this->fire['risk'] = $risk['data'][0]['hoje'] ?? null;
+        $this->fire['statusHistory'] = $status['data'] ?? false;
 
         return view('index-madeira', array('fire' => $this->fire, 'metadata' => $this->generateMetadata()));
     }
 
-    public function getGeneralCardMadeira($id)
+    public function getGeneralCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
+
+        if ($this->fire === null) {
+            return view('elements.risk', ['fire' => []]);
+        }
+
         $risk = LegacyApi::getRiskByFire($id);
-        $this->fire['risk'] = @$risk['data'][0]['hoje'];
+        $this->fire['risk'] = $risk['data'][0]['hoje'] ?? null;
 
         return view('elements.risk', array('fire' => $this->fire));
     }
 
-    public function getStatusCardMadeira($id)
+    public function getStatusCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
+
+        if ($this->fire === null) {
+            return view('elements.status', ['fire' => []]);
+        }
+
         $status = LegacyApi::getStatusByFireMadeira($id);
-        $this->fire['statusHistory'] = @$status['data'];
+        $this->fire['statusHistory'] = $status['data'] ?? [];
 
         return view('elements.status', array('fire' => $this->fire));
     }
 
-    public function getMeteoCardMadeira($id)
+    public function getMeteoCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
-        $meteo = LegacyApi::getMeteoByFire($this->fire['lat'], $this->fire['lng']);
-        if (isset($meteo['wind']['deg'])) {
-            $meteo['wind']['deg'] = HelperFuncs::wind_cardinals($meteo['wind']['deg']);
-        }
-        $this->fire['meteo'] = $meteo;
 
-        return view('elements.meteo', array('fire' => $this->fire));
+        return view('elements.meteo', array('fire' => $this->fire ?? []));
     }
 
-    public function getExtraCardMadeira($id)
+    public function getExtraCardMadeira($locale, $id)
     {
         $this->setMadeiraFireById($id);
 
@@ -256,15 +276,25 @@ class FireController extends Controller
 
     }
 
-    public function getAllMadeira()
-    {
-        return \Response::json(LegacyApi::getFires());
-    }
-
 
     private function setFireById($id)
     {
         $fire = LegacyApi::getFire($id);
+
+        if (isset($fire['data'])) {
+            $this->fire = $fire['data'];
+        } else {
+            $this->fire = null;
+        }
+    }
+
+    // OG-only variant that reads from the Redis-cached fetcher. A burst of
+    // crawlers hitting the same fresh incident would otherwise fan out to
+    // as many upstream calls. See LegacyApi::getFireCached for the caching
+    // contract.
+    private function setFireByIdCached($id)
+    {
+        $fire = LegacyApi::getFireCached($id);
 
         if (isset($fire['data'])) {
             $this->fire = $fire['data'];
@@ -285,91 +315,168 @@ class FireController extends Controller
 
     }
 
-    private function getTwitter($concelho)
-    {
-        $hashtag = preg_replace('/\s+/', '', $concelho);
-
-        if(env('APP_ENV') === 'production'){
-            $exists = Redis::get('twitter:'. $hashtag);
-            if($exists){
-                return json_decode($exists);
-            } else {
-                $url = 'https://api.twitter.com/1.1/search/tweets.json';
-                $requestMethod = 'GET';
-                $getfield = "?q=#IR{$hashtag}&result_type=recent";
-
-                $settings = array(
-                    'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
-                    'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
-                    'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-                    'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-                );
-
-                try{
-                    $twitter = new \TwitterAPIExchange($settings);
-                    $result = $twitter->setGetfield($getfield)
-                        ->buildOauth($url, $requestMethod)
-                        ->performRequest();
-                } catch (\Exception $e){
-                    Log::error('twitter error');
-                    return [];
-                }
-
-
-                $feed = array();
-
-                if ($result) {
-                    $feed = json_decode($result);
-                    if (isset($feed->statuses)) {
-                        $feed = $feed->statuses;
-                    }
-                }
-
-
-                if(!empty($feed)){
-                    Redis::set('twitter:'. $hashtag, json_encode($feed),'EX', 1280);
-                }
-
-                return $feed;
-            }
-        } else {
-            $url = 'https://api.twitter.com/1.1/search/tweets.json';
-            $requestMethod = 'GET';
-            $getfield = "?q=#IR{$hashtag}&result_type=recent";
-
-            $settings = array(
-                'oauth_access_token' => ENV('TWITTER_OAUTH_ACCESS_TOKEN'),
-                'oauth_access_token_secret' => ENV('TWITTER_OAUTH_ACCESS_TOKEN_SECRET'),
-                'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-                'consumer_secret' => env('TWITTER_CONSUMER_SECRET')
-            );
-
-
-            $twitter = new \TwitterAPIExchange($settings);
-            $result = $twitter->setGetfield($getfield)
-                ->buildOauth($url, $requestMethod)
-                ->performRequest();
-
-            $feed = array();
-
-            if ($result) {
-                $feed = json_decode($result);
-                if (isset($feed->statuses)) {
-                    $feed = $feed->statuses;
-                }
-            }
-
-            return $feed;
-
-        }
-    }
-
-
     public function getLightnings()
     {
-        return [];
-        $json = file_get_contents('https://www.ipma.pt/resources.www/transf/dea/dea.json');
-        return $json;
+        $cacheKey = 'lightnings:dea:v2';
+        $lockKey  = 'lightnings:dea:lock';
+        $softTtl  = 300;    // 5 min — considered fresh
+        $hardTtl  = 3600;   // 1 h  — usable as stale fallback
+
+        $cached = Redis::get($cacheKey);
+        $entry = $cached ? json_decode($cached, true) : null;
+        $hasEntry = is_array($entry) && isset($entry['payload'], $entry['fetched_at']);
+        $isFresh = $hasEntry && (time() - (int) $entry['fetched_at']) < $softTtl;
+
+        if ($isFresh) {
+            return response($entry['payload'], 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=300')
+                ->header('X-Cache', 'HIT');
+        }
+
+        // Single-flight: only one worker may probe IPMA at a time. Anyone else
+        // serves the last stale payload (or empty) immediately — never block
+        // on the upstream, which is what was starving PHP-FPM under load.
+        $haveLock = Redis::set($lockKey, '1', 'EX', 15, 'NX');
+        if (!$haveLock) {
+            return $this->lightningsStaleOrEmpty($entry);
+        }
+
+        try {
+            $payload = $this->fetchLightningsPayload();
+        } finally {
+            Redis::del($lockKey);
+        }
+
+        if ($payload === null) {
+            return $this->lightningsStaleOrEmpty($entry);
+        }
+
+        Redis::set($cacheKey, json_encode(['payload' => $payload, 'fetched_at' => time()]), 'EX', $hardTtl);
+
+        return response($payload, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=300')
+            ->header('X-Cache', 'MISS');
+    }
+
+    private function lightningsStaleOrEmpty($entry)
+    {
+        if (is_array($entry) && isset($entry['payload'])) {
+            return response($entry['payload'], 200)
+                ->header('Content-Type', 'application/json')
+                ->header('Cache-Control', 'public, max-age=60')
+                ->header('X-Cache', 'STALE');
+        }
+        return response(json_encode(['data' => []]), 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'public, max-age=30')
+            ->header('X-Cache', 'EMPTY');
+    }
+
+    /**
+     * Scrape IPMA's obs.dea page for the live lightning GeoJSON embedded as
+     * `var data = {...FeatureCollection...};`. Returns the normalised JSON
+     * string the frontend expects, or null on any failure.
+     *
+     * Short 4s timeout because this runs inside a request-serving worker;
+     * we'd rather return stale than tie up a slot.
+     */
+    private function fetchLightningsPayload()
+    {
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 4, 'connect_timeout' => 2]);
+            $resp = $client->request('GET', 'https://www.ipma.pt/pt/otempo/obs.dea/', [
+                'http_errors' => false,
+                'headers'     => ['User-Agent' => 'Mozilla/5.0 (fogos.pt lightnings proxy)'],
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
+        if ($resp->getStatusCode() !== 200) return null;
+
+        $json = $this->extractBalancedJson((string) $resp->getBody(), 'var data = ');
+        if ($json === null) return null;
+        $geo = json_decode($json, true);
+        if (!is_array($geo) || !isset($geo['features']) || !is_array($geo['features'])) return null;
+
+        $items = [];
+        foreach ($geo['features'] as $f) {
+            $coords = $f['geometry']['coordinates'] ?? null;
+            $props  = $f['properties']             ?? null;
+            if (!is_array($coords) || count($coords) < 2 || !is_array($props)) continue;
+            // IPMA serves the strike time as a naive ISO string (no Z / no
+            // offset) but the values are UTC. Append Z so the frontend
+            // doesn't misread it as local time.
+            $time = $props['time'] ?? null;
+            if (is_string($time) && $time !== '' && !preg_match('/[zZ]|[+\-]\d{2}:?\d{2}$/', $time)) {
+                $time .= 'Z';
+            }
+            $items[] = [
+                'timestamp' => $time,
+                'payload'   => [
+                    'latitude'  => (float) $coords[1],
+                    'longitude' => (float) $coords[0],
+                    'intensity' => isset($props['amplitude']) ? (float) $props['amplitude'] : null,
+                    'icloud'    => !empty($props['icloud']),
+                ],
+            ];
+        }
+
+        return json_encode([
+            'data'    => $items,
+            'updated' => $geo['update_date'] ?? null,
+        ]);
+    }
+
+    /**
+     * Find a JSON object literal that follows $marker in $haystack, matching
+     * braces while respecting string quoting. Returns the JSON text or null.
+     * Needed because IPMA's inlined GeoJSON has nested objects, so a naive
+     * regex would either stop at the first `}` or grab too much.
+     */
+    private function extractBalancedJson($haystack, $marker)
+    {
+        $start = strpos($haystack, $marker);
+        if ($start === false) {
+            return null;
+        }
+        $i = $start + strlen($marker);
+        $len = strlen($haystack);
+        while ($i < $len && ctype_space($haystack[$i])) {
+            $i++;
+        }
+        if ($i >= $len || $haystack[$i] !== '{') {
+            return null;
+        }
+        $objStart = $i;
+        $depth = 0;
+        $inStr = false;
+        $esc = false;
+        for (; $i < $len; $i++) {
+            $c = $haystack[$i];
+            if ($inStr) {
+                if ($esc) {
+                    $esc = false;
+                } elseif ($c === '\\') {
+                    $esc = true;
+                } elseif ($c === '"') {
+                    $inStr = false;
+                }
+                continue;
+            }
+            if ($c === '"') {
+                $inStr = true;
+            } elseif ($c === '{') {
+                $depth++;
+            } elseif ($c === '}') {
+                $depth--;
+                if ($depth === 0) {
+                    return substr($haystack, $objStart, $i - $objStart + 1);
+                }
+            }
+        }
+        return null;
     }
 
 

@@ -1,4 +1,6 @@
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
 var layerControl2 = null;
+var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
     const messaging = firebase.messaging()
@@ -52,13 +54,13 @@ $(document).ready(function () {
 
 
     var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a>',
         maxZoom: 18,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
     })
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a> Flight Data <a href="https://www.radarbox.com/">RadarBox <img style="height:9px;background:black;padding:1px " src="https://cdn.radarbox.com/img/assets/airnav_radarbox_logo.svg" /></a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com">Mapbox</a> Flight Data <a href="https://www.radarbox.com/">RadarBox <img style="height:9px;background:black;padding:1px " src="https://cdn.radarbox.com/img/assets/airnav_radarbox_logo.svg" /></a>')
 
     var xx = {
         'Normal': normalLayer,
@@ -155,100 +157,85 @@ $(document).ready(function () {
     }).addTo(mymap)
 
 
-    $.ajax({
-        url: '/lightnings',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.lightningLayer = []
-            window.lightningLayer[0] = L.layerGroup()
+    // Lightnings — defer the /lightnings fetch until the user actually
+    // enables the layer in the control. Most visitors never do, and the
+    // upstream IPMA scrape is expensive even when cached.
+    window.lightningLayer = [L.layerGroup()]
+    var lightningLoaded = false
 
-            var objLightning = {}
-            objLightning['Descargas Elétricas'] = window.lightningLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objLightning, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data.data) {
-                var date = new Date(data.data[i].timestamp)
-                var hours = Math.floor((new Date() - date) / 3600000);
-                if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
-                    addLightning(data.data[i], mymap);
-                }
-            }
-
-        }
-    })
-
-    $.ajax({
-        url: '/v1/modis',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.modisLayer = []
-            window.modisLayer[0] = L.layerGroup()
-
-            var objModis = {}
-            objModis['MODIS'] = window.modisLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objModis, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data) {
-                if (data[i].latitude && data[i].longitude) {
-                    if (insidePT([data[i].longitude, data[i].latitude])) {
-                        addModisPoint(data[i], mymap);
-                    }
-
-                }
-            }
-
-            $.ajax({
-                url: '/v1/viirs',
-                dataType: "json",
-                method: 'GET',
-                success: function (data) {
-                    window.modisLayer[1] = L.layerGroup()
-
-                    var objviirs = {}
-                    objviirs['VIIRS'] = window.modisLayer[1]
-
-
-                    layerControl4 = L.control.layers(null, objviirs, {
-                        position: 'topleft',
-                        collapsed: false,
-                    })
-
-                    layerControl4.addTo(mymap)
-
-                    for (i in data) {
-                        if (data[i].latitude && data[i].longitude) {
-                            if (insidePT([data[i].longitude, data[i].latitude])) {
-                                addVIIRSPoint(data[i], mymap);
-                            }
-                        }
+    window.lightningLayer[0].on('add', function () {
+        if (lightningLoaded) return;
+        lightningLoaded = true;
+        $.ajax({
+            url: '/lightnings',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data.data) {
+                    var date = new Date(data.data[i].timestamp);
+                    var hours = Math.floor((new Date() - date) / 3600000);
+                    if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
+                        addLightning(data.data[i], mymap);
                     }
                 }
-            })
-        }
-    })
+            },
+            error: function () { lightningLoaded = false; }
+        })
+    });
+
+    L.control.layers(null, { 'Descargas Elétricas': window.lightningLayer[0] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
+
+    // NASA FIRMS hotspots — heavy upstream fetch, so we only hit /v1/modis and
+    // /v1/viirs when the user enables the layer in the control. Each layer
+    // fetches once per session and reuses the markers afterwards.
+    window.modisLayer = [L.layerGroup(), L.layerGroup()]
+    var hotspotLoaded = [false, false]
+
+    function loadHotspots(index, url, addPoint) {
+        if (hotspotLoaded[index]) return;
+        hotspotLoaded[index] = true;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data) {
+                    if (data[i].latitude && data[i].longitude
+                        && insidePT([data[i].longitude, data[i].latitude])) {
+                        addPoint(data[i], mymap);
+                    }
+                }
+            },
+            error: function () { hotspotLoaded[index] = false; }
+        })
+    }
+
+    window.modisLayer[0].on('add', function () {
+        loadHotspots(0, '/v1/modis', addModisPoint);
+    });
+    window.modisLayer[1].on('add', function () {
+        loadHotspots(1, '/v1/viirs', addVIIRSPoint);
+    });
+
+    L.control.layers(null, { 'MODIS': window.modisLayer[0] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
+
+    L.control.layers(null, { 'VIIRS': window.modisLayer[1] }, {
+        position: 'topleft',
+        collapsed: false,
+    }).addTo(mymap)
 
     $.ajax({
         type: "GET",
-        url: 'https://api-dev.fogos.pt/v1/warnings/site',
+        url: 'https://source.fogos.pt/v1/warnings/site',
         success: function (data) {
             if (data.success && data.data[0] && data.data[0].active) {
-                $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
+                $('#warning-site').find('.modal-body').empty().append($('<p>').text(data.data[0].text));
                 $('#warning-site').modal('show');
             }
         },
@@ -259,10 +246,19 @@ $(document).ready(function () {
         getNewFires(mymap, true);
     });
 
-    setInterval(function (){
-        toastr.success('A actualizar dados...', {timeOut: 1000});
+    // Skip refreshes while the tab is hidden; catch up as soon as it's
+    // visible again (saves upstream calls from background tabs).
+    var lastFiresRefresh = Date.now();
+    function refreshFires() {
+        if (document.hidden) return;
+        lastFiresRefresh = Date.now();
+        toastr.success(window.trans.map.updating, {timeOut: 1000});
         getNewFires(mymap, true);
-    },60000)
+    }
+    setInterval(refreshFires, 60000);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && Date.now() - lastFiresRefresh >= 60000) refreshFires();
+    });
 
 })
 
@@ -316,7 +312,8 @@ function addModisPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
     var confidence = '';
@@ -327,12 +324,12 @@ function addModisPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(date).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(date).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Data: ' + date + '</p><p>Confiança: ' + confidence + '%</p>';
     marker.bindPopup(content);
 
@@ -351,7 +348,8 @@ function addVIIRSPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [30, 30]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
 
@@ -363,12 +361,12 @@ function addVIIRSPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(data).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p><p>Confiança: ' + confidence + '</p>';
     marker.bindPopup(content);
 
@@ -388,7 +386,10 @@ function calculateImportanceValue(data) {
     const terrainFactor = 3
     const aerialFactor = 7
 
-    var importance = data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
+    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
+    var importance = hasUnknownMeios
+        ? 10 * manFactor
+        : data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
 
     DATA_FIRES.number += 1
     if (DATA_FIRES.topImportance < importance) {
@@ -436,6 +437,32 @@ function getPonderatedImportanceFactor(importance, statusCode) {
     return importanceSize
 }
 
+function escapeFireText(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function buildFireTooltip(item) {
+    var t = (window.trans && window.trans.fire) || {};
+    var loc = escapeFireText(item.location || '');
+    if (item.detailLocation) loc += ' — ' + escapeFireText(item.detailLocation);
+    else if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
+    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
+    var men     = parseInt(item.man,     10) || 0;
+    var terrain = parseInt(item.terrain, 10) || 0;
+    var aerial  = parseInt(item.aerial,  10) || 0;
+    return ''
+        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
+        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
+            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
+        + '<div class="fire-tooltip-row">'
+        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
+        + '</div>';
+}
+
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng)
     var coords = [x['latitude'], x['longitude']]
@@ -455,7 +482,7 @@ function addMaker(item, mymap) {
     if (item.important) {
         iconHtml += '99'
     } else {
-        iconHtml += item.statusCode
+        iconHtml += parseInt(item.statusCode, 10)
     }
     if (isActive && isActive === item.id) {
         iconHtml += ' active'
@@ -478,7 +505,7 @@ function addMaker(item, mymap) {
     }
 
     iconHtml += '"'
-    iconHtml += 'id=' + item.id + '></i>'
+    iconHtml += ' id="' + escapeFireText(item.id) + '"></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
     marker.sizeFactor = sizeFactor
     var size = sizeFactor * BASE_SIZE
@@ -494,6 +521,14 @@ function addMaker(item, mymap) {
 
     marker.addTo(mymap);
     marker.id = item.id
+
+    marker.bindTooltip(buildFireTooltip(item), {
+        direction: 'top',
+        offset: [0, -8],
+        opacity: 0.95,
+        className: 'fire-tooltip',
+        sticky: false
+    });
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor)
@@ -518,14 +553,15 @@ function addMaker(item, mymap) {
 
         var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
 
-        var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
+        // Upstream (ANEPC) text — escape everything that lands in .html().
+        var location = '<a href="https://www.google.com/maps/search/' + encodeURIComponent(item.lat + ',' + item.lng) + '" target="_blank" rel="noopener"><i class="far fa-map"></i></a> ' + escapeFireText(item.lat + ',' + item.lng);
 
-        var locationText = item.location;
+        var locationText = escapeFireText(item.location);
         if(item.detailLocation){
-            locationText += ' - ' + item.detailLocation;
+            locationText += ' - ' + escapeFireText(item.detailLocation);
         }
 
-        locationText += ' <a href="/fogo/' + item.id + '/detalhe"><i class="fas fa-link"></i></a>';
+        locationText += ' <a href="/' + locale + '/fogo/' + encodeURIComponent(item.id) + '/detalhe"><i class="fas fa-link"></i></a>';
         $('.sidebar').addClass('active').scrollTop(0)
         $('.f-local').html(locationText)
         $('.f-man').text(item.man)
@@ -564,7 +600,7 @@ function addMaker(item, mymap) {
 }
 
 function plot(id) {
-    var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
+    var url = 'https://source.fogos.pt/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -632,7 +668,7 @@ function plot(id) {
 
 function status(id) {
     $('#status').empty()
-    var url = '/views/status/' + id
+    var url = '/' + locale + '/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -643,7 +679,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/views/risk/' + id
+    var url = '/' + locale + '/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -655,7 +691,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/views/meteo/' + id
+    var url = '/' + locale + '/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -667,7 +703,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/views/extra/' + id
+    var url = '/' + locale + '/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -686,7 +722,7 @@ function extra(id) {
 
 
 function twitter(id) {
-    var url = '/views/twitter/' + id
+    var url = '/' + locale + '/views/twitter/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -697,7 +733,7 @@ function twitter(id) {
 }
 
 function shares(id) {
-    var url = '/views/shares/' + id
+    var url = '/' + locale + '/views/shares/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -734,7 +770,7 @@ function getColor(d) {
 
 function addRisk(mymap) {
     // lel
-    var url = 'https://api-dev.fogos.pt/v1/risk-today'
+    var url = 'https://source.fogos.pt/v1/risk-today'
     $.ajax({
         url: url,
         method: 'GET',
@@ -758,7 +794,7 @@ function addRisk(mymap) {
                     $('main #map .map-marker').hide()
                 }
 
-                var url = 'https://api-dev.fogos.pt/v1/risk-tomorrow'
+                var url = 'https://source.fogos.pt/v1/risk-tomorrow'
                 $.ajax({
                     url: url,
                     method: 'GET',
@@ -782,7 +818,7 @@ function addRisk(mymap) {
                                 $('main #map .map-marker').hide()
                             }
 
-                            var url = 'https://api-dev.fogos.pt/v1/risk-after'
+                            var url = 'https://source.fogos.pt/v1/risk-after'
                             $.ajax({
                                 url: url,
                                 method: 'GET',
@@ -923,7 +959,7 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[80] = L.layerGroup()
     }
 
-    var url = 'https://api.fogos.pt/v2/incidents/active?otherfire=1&all=1'
+    var url = 'https://source.fogos.pt/v2/incidents/active?otherfire=1&all=1'
     $.ajax({
         url: url,
         method: 'GET',
@@ -979,7 +1015,7 @@ function getNewFires(mymap, refresh = false)
 }
 
 function addPlane(icao, mymap){
-    var url = 'https://api-dev.fogos.pt/v2/planes/' + icao
+    var url = 'https://source.fogos.pt/v2/planes/' + icao
     $.ajax({
         url: url,
         method: 'GET',
@@ -1010,7 +1046,7 @@ function addPlanePoint(data, mymap) {
     }))
 
 
-    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p>';
     marker.bindPopup(content);
 

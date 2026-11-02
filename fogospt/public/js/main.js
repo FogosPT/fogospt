@@ -1,17 +1,24 @@
-var layerControl2 = null;
+// cache-bust: force a fresh mtime after CF cached a stale copy under an old
+// ?v= querystring (see e893807 — the fix was on origin but the CDN kept
+// serving pre-fix bytes for the same versioned URL).
+$.ajaxSetup({ headers: { "FPTSC": "xw2gfca9l7" } });
+var locale = window.location.pathname.split('/')[1] || 'pt';
 
 $(document).ready(function () {
-    const messaging = firebase.messaging()
-
-    messaging.onMessage(function (payload) {
-        toastr.warning(payload.notification.body)
-    })
+    try {
+        const messaging = firebase.messaging()
+        messaging.onMessage(function (payload) {
+            toastr.warning(payload.notification.body)
+        })
+    } catch (e) {
+        // Firebase Messaging not supported in this environment (e.g. headless renderer)
+    }
 
 
     $('.click-notification').on('click', function (e) {
         $that = $(e.currentTarget);
 
-        const url = '/notifications/subscribe';
+        const url = '/' + locale + '/notifications/subscribe';
 
         const topic = $that.data('value');
         const data = {
@@ -25,12 +32,12 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 if (data.success) {
-                    toastr.success('Registado com sucesso');
+                    toastr.success(window.trans.notifications.success);
                     $('.notification-container').find('i').removeClass('far').addClass('fas')
-                    store.set('fire-' + window.location.pathname.split('/')[2], true);
+                    store.set('fire-' + window.location.pathname.split('/')[3], true);
                 } else {
-                    toastr.error('Ocorreu um erro');
-                    store.set('fire-' + window.location.pathname.split('/')[2], false);
+                    toastr.error(window.trans.notifications.error);
+                    store.set('fire-' + window.location.pathname.split('/')[3], false);
                 }
             },
         });
@@ -41,51 +48,195 @@ $(document).ready(function () {
         $('#map').css({top:0});
     }
 
+    // Shareable-map URL params (used by /mapa?...):
+    //   c=<dico,dico,…>  concelho DICO codes to keep — filters markers and
+    //                    fits the view to the union of those polygons.
+    //   s=<statusCode,…> incident statusCodes to keep.
+    //   k=todos          include non-fire incidents (equivalent to
+    //                    enabling filters:allIncidents; adds ?all=1 upstream).
+    //   b=satellite      pick the satellite basemap by default.
+    //   l=<alias,alias,…> extra layers to force ON via the panel; aliases
+    //                    map to sectionKey:itemId below.
+    // All params are optional; when none are set the map behaves like /.
+    var LAYER_ALIASES = {
+        'modis':               'satellite:modis',
+        'viirs':               'satellite:viirs',
+        'frp':                 'satellite:frp',
+        'lightning':           'lightning:dea',
+        'planes':              'aerial:planes',
+        'planesTracks':        'aerial:planesTracks',
+        'risk-today':          'risk:today',
+        'risk-tomorrow':       'risk:tomorrow',
+        'risk-after':          'risk:after',
+        'ipma-temperature':    'ipma:temperature',
+        'ipma-wind':           'ipma:wind',
+        'ipma-wind-direction': 'ipma:windDirection',
+        'ipma-wind-animated':  'ipma:windAnimated',
+        'ipma-precipitation':  'ipma:precipitation',
+        'ipma-humidity':       'ipma:humidity',
+        'perimeters':          'perimeters:active'
+    };
+    window.fogosForceOnLayers = new Set();
+    (function readShareableParams() {
+        var cParam = getParameterByName('c');
+        if (cParam) {
+            window.fogosDicoFilter = new Set(cParam.split(',').filter(Boolean));
+        }
+        var sParam = getParameterByName('s');
+        if (sParam) {
+            window.fogosStatusFilter = new Set(sParam.split(',').map(function (v) {
+                return parseInt(v, 10);
+            }).filter(function (n) { return !isNaN(n); }));
+        }
+        if (getParameterByName('k') === 'todos') {
+            window.fogosShowAllIncidents = true;
+            window.fogosForceOnLayers.add('filters:allIncidents');
+        }
+        if (getParameterByName('b') === 'satellite') {
+            window.fogosForceOnLayers.add('base:satellite');
+        }
+        var lParam = getParameterByName('l');
+        if (lParam) {
+            lParam.split(',').forEach(function (alias) {
+                var key = LAYER_ALIASES[alias];
+                if (key) window.fogosForceOnLayers.add(key);
+            });
+        }
+    })();
 
-    var mymap = L.map('map').setView([40.5050025, -7.9053189], 7)
+    var mymap = L.map('map');
+    var didFitToDicos = false;
+    if (window.fogosDicoFilter && typeof concelhos !== 'undefined') {
+        var wanted = window.fogosDicoFilter;
+        var subset = concelhos.features.filter(function (f) {
+            return wanted.has(f.properties.DICO);
+        });
+        if (subset.length) {
+            var bounds = L.geoJson({ type: 'FeatureCollection', features: subset }).getBounds();
+            if (bounds.isValid()) {
+                mymap.fitBounds(bounds, { padding: [20, 20] });
+                didFitToDicos = true;
+            }
+        }
+    }
+    if (!didFitToDicos) {
+        mymap.setView([40.5050025, -7.9053189], 7);
+    }
 
     if (getParameterByName('icao')) {
         addPlane(getParameterByName('icao'), mymap);
     }
 
-    /*var normalLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
-        tileSize: 512,
-        maxZoom: 18,
-        zoomOffset: -1,
-        id: 'mapbox/streets-v11',
-        accessToken: 'pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg'
-    }).addTo(mymap);*/
-
-
-
-
     var normalLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     }).addTo(mymap);
 
-    /*var satLayer = L.tileLayer('https://api.mapbox.com/styles/v1/fogospt/cjksgciqsctfg2rp9x9uyh37g/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm9nb3NwdCIsImEiOiJjbDV0YnQza24wZmY1M2pwM3g4eHowZnRoIn0.MxbsPA-TJa-4ouvsnd99mg', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoidG9tYWhvY2siLCJhIjoiY2pmYmgydHJnMzMwaTJ3azduYzI2eGZteiJ9.4Z0iB0Pgbb3M_8t9VG10kQ'
-    })*/
+    // Hybrid satellite = imagery + transportation (roads) + places & boundaries overlays.
+    // Each tile request is a separate Esri request; the LayerGroup just glues them so the
+    // panel can toggle them together as a single "base" choice.
+    var satelliteLayer = L.layerGroup([
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Imagery &copy; <a href="https://www.esri.com" target="_blank">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community'
+        }),
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
+        }),
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
+        })
+    ]);
 
-    mymap.attributionControl.addAttribution('Map data &copy; <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a>')
+    mymap.attributionControl.addAttribution('Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors, <a target="_blank" href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © - Patrocinado por <a target="_blank" href="https://www.officelan.pt">Officelan</a> <a target="_blank" href="https://www.ptservidor.pt">PTServidor</a> <a target="_blank" href="https://www.mapbox.com">Mapbox</a>')
 
-    var xx = {
-        'Normal': normalLayer,
-        //'Satélite': satLayer
+    // Unified map control panel — single home for all layer/filter toggles.
+    var panel = new L.Control.FogosPanel();
+    panel.addTo(mymap);
+    window.fogosPanel = panel;
+
+    // Shareable-map hook: every panel.addItem call is intercepted so any
+    // sectionKey:id present in fogosForceOnLayers (populated from ?l= / ?b= /
+    // ?k=todos above) is forced ON regardless of what localStorage says. Uses
+    // the panel's own force=true arg so state is written back consistently.
+    if (window.fogosForceOnLayers && window.fogosForceOnLayers.size) {
+        var _origAddItem = panel.addItem.bind(panel);
+        panel.addItem = function (sectionKey, id, label, layer, defaultOn, force) {
+            if (window.fogosForceOnLayers.has(sectionKey + ':' + id)) {
+                return _origAddItem(sectionKey, id, label, layer, true, true);
+            }
+            return _origAddItem(sectionKey, id, label, layer, defaultOn, force);
+        };
     }
 
-    L.control.layers(xx, {}, {
-        collapsed: false,
-        position: 'topleft'
-    }).addTo(mymap)
+    // Custom map summary control — only rendered on the /mapa route (the view
+    // sets window.fogosCustomMap = true). Shows the chosen concelhos plus a
+    // link back to /mapa/configurar with the current querystring so users can
+    // tweak the selection instead of hand-editing the URL.
+    if (window.fogosCustomMap) {
+        var mcLocale = (window.location.pathname.split('/')[1] || 'pt');
+        var mcNames = [];
+        if (window.fogosDicoFilter && typeof concelhos !== 'undefined') {
+            window.fogosDicoFilter.forEach(function (dico) {
+                var f = concelhos.features.find(function (feat) {
+                    return feat.properties.DICO === dico;
+                });
+                if (f) mcNames.push(f.properties.Concelho);
+            });
+            mcNames.sort(function (a, b) { return a.localeCompare(b, 'pt'); });
+        }
+        var mcTexts = (window.trans && window.trans.mapConfig) || {};
+        var mcListHtml;
+        if (mcNames.length) {
+            var preview = mcNames.slice(0, 4);
+            // NB: don't shadow the outer `extra` — a plain `var extra` here
+            // hoists to the enclosing $(document).ready closure and clobbers
+            // the global `function extra(id)`, breaking `extra(fireId)` on
+            // every /fogo/{id} load (which then bails out of ready() and
+            // kills every panel section registered later on).
+            var extraCount = mcNames.length - preview.length;
+            var moreTmpl = mcTexts.moreCount || '+ {n} more';
+            mcListHtml = preview.map(function (n) { return n.toLowerCase(); }).join(', ')
+                + (extraCount > 0 ? ' <span class="fogos-map-summary__more">'
+                    + moreTmpl.replace('{n}', extraCount) + '</span>' : '');
+        } else {
+            mcListHtml = '<span class="fogos-map-summary__more">'
+                + (mcTexts.allMunicipalities || 'Portugal continental') + '</span>';
+        }
+        var mcEditHref = '/' + mcLocale + '/mapa/configurar' + (window.location.search || '');
+        var mcControl = L.control({ position: 'bottomleft' });
+        mcControl.onAdd = function () {
+            var div = L.DomUtil.create('div', 'fogos-map-summary leaflet-control');
+            L.DomEvent.disableClickPropagation(div);
+            div.innerHTML =
+                '<div class="fogos-map-summary__title">' + (mcTexts.selectedInfo || 'Custom map') + '</div>'
+                + '<div class="fogos-map-summary__list">' + mcListHtml + '</div>'
+                + '<a class="fogos-map-summary__edit" href="' + escapeFireText(mcEditHref) + '">'
+                + '<i class="fa-solid fa-pen-to-square"></i> '
+                + (mcTexts.editOptions || 'Edit options') + '</a>';
+            return div;
+        };
+        mcControl.addTo(mymap);
+    }
 
+    var tp = (window.trans && window.trans.panel) || {};
+    panel.registerSection('base', tp.base || 'Base', 'radio');
+    panel.addItem('base', 'normal',    window.trans.map.normal,    normalLayer,    true);
+    panel.addItem('base', 'satellite', window.trans.map.satellite, satelliteLayer, false);
+
+    panel.registerSection('status', tp.fires || 'Estado dos fogos', 'checkbox');
+    panel.registerSection('filters', tp.filters || 'Filtros', 'checkbox');
+    panel.registerSection('risk', tp.risk || 'Perigo de Incêndio Rural', 'radio');
+    panel.registerSection('satellite', tp.satellite || 'Hotspots satélite', 'checkbox');
+    panel.registerSection('lightning', tp.lightning || 'Trovoadas', 'checkbox');
+    panel.registerSection('aerial', tp.aerial || 'Meios aéreos', 'radio');
+    panel.registerSection('ipma', tp.ipma || 'Previsão IPMA', 'radio');
 
     addRisk(mymap)
     mymap.on('click', function (e) {
-        mymap.setView(e.latlng)
+        // While an IPMA forecast layer is on, the click is the cursor
+        // value query (see ipma-value handler) — don't recenter the map.
+        if (!(typeof currentIpmaKindOnMap === 'function' && currentIpmaKindOnMap())) {
+            mymap.setView(e.latlng)
+        }
         window.history.pushState('obj', 'Fogos.pt', '/')
 
         var previouslyActive = $('#map').find('.active')
@@ -97,9 +248,17 @@ $(document).ready(function () {
         $('.sidebar').removeClass('active')
     })
 
-    var res = window.location.pathname.match(/^\/fogo\/(\d+)/)
+    var res = window.location.pathname.match(/\/fogo\/(\d+)/)
     if (res && res.length === 2) {
-        plot(res[1])
+        var fireId = res[1]
+        $('.sidebar').addClass('active').scrollTop(0)
+        plot(fireId)
+        status(fireId)
+        danger(fireId)
+        meteo(fireId)
+        extra(fireId)
+        shares(fireId)
+        if (typeof photos === 'function') photos(fireId)
     }
 
     window.fogosLayers = []
@@ -116,154 +275,746 @@ $(document).ready(function () {
     window.fogosLayers[80] = L.layerGroup()
     window.fogosLayers[81] = L.layerGroup()
 
+    // Groups must be on the map before addMaker runs so that
+    // group.addLayer(marker) propagates the marker (and its DOM) to the
+    // map. Panel.addItem below toggles them off when persisted state says so.
+    window.fogosLayers[3].addTo(mymap)
+    window.fogosLayers[4].addTo(mymap)
+    window.fogosLayers[5].addTo(mymap)
+    window.fogosLayers[6].addTo(mymap)
+    window.fogosLayers[7].addTo(mymap)
+    window.fogosLayers[8].addTo(mymap)
+    window.fogosLayers[9].addTo(mymap)
+    window.fogosLayers[10].addTo(mymap)
+    window.fogosLayers[11].addTo(mymap)
+    window.fogosLayers[12].addTo(mymap)
     window.fogosLayers[81].addTo(mymap)
+
+    // "Show all incidents" filter. The stub layer carries no markers; its
+    // onAdd/onRemove flip a flag and refetch fires with ?all=1, so the
+    // backend returns non-fire incidents too.
+    var allIncidentsLayer = L.layerGroup();
+    allIncidentsLayer.onAdd = function (map) {
+        L.LayerGroup.prototype.onAdd.call(this, map);
+        window.fogosShowAllIncidents = true;
+        if (window.fogosFiresLoaded) getNewFires(mymap, true);
+    };
+    allIncidentsLayer.onRemove = function (map) {
+        L.LayerGroup.prototype.onRemove.call(this, map);
+        window.fogosShowAllIncidents = false;
+        if (window.fogosFiresLoaded) getNewFires(mymap, true);
+    };
+    panel.addItem('filters', 'allIncidents',
+        tp.allIncidents || 'Mostrar todos os incidentes',
+        allIncidentsLayer, false);
+
+    window.fogosFiltersControl = new L.Control.FogosFilters();
+    window.fogosFiltersControl.addTo(mymap);
 
     var obj = getNewFires(mymap);
 
 
-    var cloudLayer = L.OWM.cloudsClassic({
-        legendPosition: 'bottomright',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var precLayer = L.OWM.precipitationClassic({
-        legendPosition: 'bottomright',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var pressureLayer = L.OWM.pressure({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var tempLayer = L.OWM.temperature({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-    var windLayer = L.OWM.wind({
-        legendPosition: 'bottomleft',
-        showLegend: true,
-        opacity: 0.5,
-        appId: '793b3a933c50946491eeb8aad4339ad2'
-    })
-
     var baseLayers = {
     }
 
+    // IPMA AROME forecast overlays. Each product has three regional variants
+    // (continent / madeira / azores) — wrapped in a LayerGroup so the panel
+    // toggles them as one item. Default time = current model run; WMS GetMap
+    // returns the current forecast without needing TIME= explicitly.
+    //
+    // Each tile carries _legendUrl/_legendLabel so the bottom-left legend
+    // control can render the IPMA-provided color scale while the layer is on.
+    // Tracks every AROME WMS tile so we can inject reference_time once
+    // /v1/ipma-reference-time resolves. Without that param the IPMA WMS
+    // returns 404 for every GetMap, so layers are effectively dead until
+    // we set it.
+    window.fogosIpmaAromeTiles = [];
 
-    var overlayLayers = {
-        'Temperatura': tempLayer,
-        'Pressão': pressureLayer,
-        'Vento': windLayer,
-        'Precipitação': precLayer,
-        'Nuvens': cloudLayer
+    function makeIpmaLayer(layerNames, attribution, label, extraOpts) {
+        var legendUrl = '/v1/ipma-wms?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=' +
+            encodeURIComponent(layerNames[0]) + '&format=image/png&STYLE=default';
+        var group = L.layerGroup(layerNames.map(function (name) {
+            var opts = {
+                layers: name,
+                format: 'image/png',
+                transparent: true,
+                version: '1.3.0',
+                opacity: 0.6,
+                attribution: attribution
+            };
+            if (window.fogosIpmaRefTime) opts.reference_time = window.fogosIpmaRefTime;
+            if (extraOpts) {
+                for (var k in extraOpts) opts[k] = extraOpts[k];
+            }
+            var tile = L.tileLayer.wms('/v1/ipma-wms', opts);
+            tile._legendUrl = legendUrl;
+            tile._legendLabel = label;
+            window.fogosIpmaAromeTiles.push(tile);
+            return tile;
+        }));
+        group._isIpma = true;
+        return group;
     }
 
-    L.control.layers(baseLayers, overlayLayers, {
-        collapsed: false,
-        position: 'topright'
-    }).addTo(mymap)
-
-
-    /*$.ajax({
-        url: '/lightnings',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.lightningLayer = []
-            window.lightningLayer[0] = L.layerGroup()
-
-            var objLightning = {}
-            objLightning['Descargas Elétricas'] = window.lightningLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objLightning, {
-                position: 'topleft',
-                collapsed: false,
+    // Resolve the latest AROME run that the WMS will actually render, then
+    // backfill reference_time on every AROME tile. Deferred until the user
+    // actually enables an IPMA layer — most visitors never do, and the probe
+    // is server-side (cached, but still a request per page load otherwise).
+    var ipmaRefTimePending = false;
+    window.ensureIpmaRefTime = function () {
+        if (window.fogosIpmaRefTime || ipmaRefTimePending) return;
+        ipmaRefTimePending = true;
+        fetch('/v1/ipma-reference-time', { credentials: 'omit' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (!data || !data.reference_time) { ipmaRefTimePending = false; return; }
+                window.fogosIpmaRefTime = data.reference_time;
+                window.fogosIpmaAromeTiles.forEach(function (tile) {
+                    tile.setParams({ reference_time: data.reference_time });
+                });
             })
+            .catch(function () { ipmaRefTimePending = false; });
+    };
+    mymap.on('layeradd', function (e) {
+        var l = e.layer;
+        if (l && (l._isIpma || l._ipmaKind)) window.ensureIpmaRefTime();
+    });
+    var IPMA_ATTR = 'Previsão &copy; <a href="https://www.ipma.pt" target="_blank">IPMA</a> (modelo AROME)';
 
-            layerControl4.addTo(mymap)
-
-            for (i in data.data) {
-                var date = new Date(data.data[i].timestamp)
-                var hours = Math.floor((new Date() - date) / 3600000);
-                if (hours <= 24 && insidePT([data.data[i].payload.longitude, data.data[i].payload.latitude])) {
-                    addLightning(data.data[i], mymap);
-                }
+    // Lazy wrapper for the animated wind layer. Fetches the u/v JSON from
+    // our cached backend route only on first activation, then builds the
+    // L.velocityLayer and hands its lifecycle to Leaflet via add/remove.
+    var IpmaWindAnimated = L.Layer.extend({
+        _isIpma: true,
+        onAdd: function (map) {
+            this._map = map;
+            var self = this;
+            if (this._data) {
+                this._attachVelocity();
+                return this;
             }
-
-        }
-    })*/
-
-    $.ajax({
-        url: '/v1/modis',
-        dataType: "json",
-        method: 'GET',
-        success: function (data) {
-            window.modisLayer = []
-            window.modisLayer[0] = L.layerGroup()
-
-            var objModis = {}
-            objModis['MODIS'] = window.modisLayer[0]
-
-
-            layerControl4 = L.control.layers(null, objModis, {
-                position: 'topleft',
-                collapsed: false,
-            })
-
-            layerControl4.addTo(mymap)
-
-            for (i in data) {
-                if (data[i].latitude && data[i].longitude) {
-                    if (insidePT([data[i].longitude, data[i].latitude])) {
-                        addModisPoint(data[i], mymap);
-                    }
-
-                }
+            fetch('/v1/ipma-wind', { credentials: 'omit' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (data) {
+                    if (!data || !Array.isArray(data) || data.length !== 2) return;
+                    self._data = data;
+                    if (self._map) self._attachVelocity();
+                })
+                .catch(function () { /* silent */ });
+            return this;
+        },
+        onRemove: function (map) {
+            if (this._velocity && map.hasLayer(this._velocity)) {
+                map.removeLayer(this._velocity);
             }
+            if (this._unitObserver) {
+                this._unitObserver.disconnect();
+                this._unitObserver = null;
+            }
+            this._velocity = null;
+            this._map = null;
+            return this;
+        },
+        _attachVelocity: function () {
+            if (!L.velocityLayer || !this._map) return;
+            this._velocity = L.velocityLayer({
+                displayValues: true,
+                displayOptions: {
+                    velocityType: window.trans.map.wind,
+                    position: 'bottomright',
+                    emptyString: '-',
+                    angleConvention: 'bearingCW',
+                    // leaflet-velocity converts using this token AND prints it
+                    // literally — so "k/h" gives the right value but the wrong
+                    // label. We keep it for the conversion and rewrite the
+                    // rendered string below.
+                    speedUnit: 'k/h'
+                },
+                data: this._data,
+                maxVelocity: 25,
+                velocityScale: 0.005,
+                particleAge: 60,
+                lineWidth: 1.5,
+                particleMultiplier: 1 / 300,
+                attribution: IPMA_ATTR
+            });
+            this._velocity.addTo(this._map);
+            this._installUnitRewrite();
+        },
+        _installUnitRewrite: function () {
+            var self = this;
+            // The readout div is created asynchronously on first mousemove.
+            // Poll briefly for it, then watch and rewrite "k/h" → "km/h" in
+            // place. Replacement only fires when the substring "k/h" is
+            // present, so the resulting "km/h" doesn't re-trigger us.
+            var tries = 0;
+            (function find() {
+                var el = document.querySelector('.leaflet-control-velocity, .velocity-mouse-position');
+                if (!el) {
+                    if (++tries < 40 && self._velocity) setTimeout(find, 100);
+                    return;
+                }
+                var rewrite = function () {
+                    var html = el.innerHTML;
+                    if (html.indexOf('k/h') !== -1) {
+                        el.innerHTML = html.replace(/k\/h/g, 'km/h');
+                    }
+                };
+                rewrite();
+                self._unitObserver = new MutationObserver(rewrite);
+                self._unitObserver.observe(el, { childList: true, characterData: true, subtree: true });
+            })();
+        }
+    });
 
-            $.ajax({
-                url: '/v1/viirs',
-                dataType: "json",
-                method: 'GET',
-                success: function (data) {
-                    window.modisLayer[1] = L.layerGroup()
+    function ipmaItem(id, kind, label, layer) {
+        layer._ipmaKind = kind;
+        // Sub-layers (WMS tiles inside a LayerGroup) end up as direct
+        // children of the map, so tag them too — map.eachLayer won't
+        // see the wrapping group.
+        if (typeof layer.eachLayer === 'function') {
+            layer.eachLayer(function (sub) { sub._ipmaKind = kind; });
+        }
+        panel.addItem('ipma', id, label, layer, false);
+    }
+    ipmaItem('temperature', 'temperature', window.trans.map.temperature,
+        makeIpmaLayer(['arome.2m.temperature.continent', 'arome.2m.temperature.madeira', 'arome.2m.temperature.azores'], IPMA_ATTR, window.trans.map.temperature));
+    ipmaItem('wind', 'wind', window.trans.map.wind,
+        makeIpmaLayer(['arome.10m.windintensity.continent', 'arome.10m.windintensity.madeira', 'arome.10m.windintensity.azores'], IPMA_ATTR, window.trans.map.wind));
+    ipmaItem('windDirection', 'windDirection', window.trans.map.windDirection,
+        makeIpmaLayer(['arome.10m.windbarbs.continent', 'arome.10m.windbarbs.madeira', 'arome.10m.windbarbs.azores'], IPMA_ATTR, window.trans.map.windDirection,
+            { opacity: 1.0, className: 'ipma-windbarbs-tile' }));
+    ipmaItem('windAnimated', 'windAnimated', window.trans.map.windAnimated,
+        new IpmaWindAnimated());
+    ipmaItem('precipitation', 'precipitation', window.trans.map.precipitation,
+        makeIpmaLayer(['arome.0m.precipitation.continent', 'arome.0m.precipitation.madeira', 'arome.0m.precipitation.azores'], IPMA_ATTR, window.trans.map.precipitation));
+    ipmaItem('humidity', 'humidity', window.trans.map.humidity,
+        makeIpmaLayer(['arome.2m.relative_humidity.continent', 'arome.2m.relative_humidity.madeira', 'arome.2m.relative_humidity.azores'], IPMA_ATTR, window.trans.map.humidity));
 
-                    var objviirs = {}
-                    objviirs['VIIRS'] = window.modisLayer[1]
+    // Bottom-right indicator showing the value of the active IPMA forecast
+    // layer at the cursor. WindAnimated has its own readout (from
+    // leaflet-velocity), so we hide ours while it is active.
+    var ipmaValueDisplay = L.control({ position: 'bottomright' });
+    ipmaValueDisplay.onAdd = function () {
+        var div = L.DomUtil.create('div', 'ipma-value-display leaflet-control');
+        div.style.cssText = 'background:rgba(255,255,255,0.9);padding:4px 8px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.18);font:12px/1.3 sans-serif;color:#333;display:none;pointer-events:none';
+        this._div = div;
+        return div;
+    };
+    ipmaValueDisplay.update = function (text) {
+        if (!this._div) return;
+        this._div.style.display = text ? '' : 'none';
+        this._div.innerHTML = text || '';
+    };
+    ipmaValueDisplay.addTo(mymap);
+
+    function currentIpmaKindOnMap() {
+        var kind = null;
+        mymap.eachLayer(function (l) {
+            if (l && l._ipmaKind) kind = l._ipmaKind;
+        });
+        return kind;
+    }
+
+    var ipmaValueReqId = 0;
+    var ipmaKindLabels = {
+        temperature:   window.trans.map.temperature,
+        wind:          window.trans.map.wind,
+        windDirection: window.trans.map.windDirection,
+        precipitation: window.trans.map.precipitation,
+        humidity:      window.trans.map.humidity
+    };
+
+    mymap.on('click', function (e) {
+        var kind = currentIpmaKindOnMap();
+        if (!kind || kind === 'windAnimated') return;
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        var rid = ++ipmaValueReqId;
+        ipmaValueDisplay.update('…');
+        fetch('/v1/ipma-value?kind=' + encodeURIComponent(kind)
+            + '&lat=' + lat.toFixed(4) + '&lng=' + lng.toFixed(4),
+            { credentials: 'omit' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (rid !== ipmaValueReqId) return;
+                if (!data || data.value === null || data.value === undefined) {
+                    ipmaValueDisplay.update('');
+                    return;
+                }
+                var label = ipmaKindLabels[kind] || kind;
+                var text;
+                if (kind === 'windDirection' && data.value && typeof data.value === 'object') {
+                    text = label + ': ' + data.value.speed + ' ' + data.unit + ' (' + data.value.direction + '°)';
+                } else {
+                    text = label + ': ' + data.value + ' ' + data.unit;
+                }
+                ipmaValueDisplay.update(text);
+            })
+            .catch(function () { ipmaValueDisplay.update(''); });
+    });
+    mymap.on('layerremove', function (e) {
+        if (e.layer && e.layer._isIpma) {
+            // Clear when an IPMA layer is turned off; the next click
+            // will refresh if another IPMA layer is still on.
+            ipmaValueDisplay.update('');
+        }
+    });
+
+    // When an IPMA forecast layer is active, mirror the mf2.ipma.pt viewer:
+    // hide normal/satellite and stack a CARTO Positron light_nolabels base
+    // under the WMS overlay, plus a Voyager labels-only tile on top in a
+    // dedicated pane so place names stay readable above the colours. Restore
+    // the user's chosen base (normal/satellite) when IPMA is turned off.
+    if (!mymap.getPane('ipmaLabels')) {
+        mymap.createPane('ipmaLabels');
+        mymap.getPane('ipmaLabels').style.zIndex = 450; // above overlayPane (400)
+        mymap.getPane('ipmaLabels').style.pointerEvents = 'none';
+    }
+    var ipmaBaseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+    });
+    var ipmaLabelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png?key=cb1_2wnc_1_fbd6ab0788dda0cae97e8f52', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        pane: 'ipmaLabels'
+    });
+
+    // Read directly off the map — panel state lags by a microtask during
+    // _toggleItem (state assigned after _addLayer/_removeLayer), so reading
+    // it caused us to react with stale info and tear down what was just
+    // being added (manifests as Leaflet "listener not found" warnings when
+    // a LayerGroup like satelliteLayer is removed mid-onAdd).
+    function isIpmaActive() {
+        var active = false;
+        mymap.eachLayer(function (l) {
+            if (l._isIpma || l._legendUrl) active = true;
+        });
+        return active;
+    }
+
+    function applyIpmaBaseMode() {
+        if (isIpmaActive()) {
+            if (mymap.hasLayer(normalLayer)) mymap.removeLayer(normalLayer);
+            if (mymap.hasLayer(satelliteLayer)) mymap.removeLayer(satelliteLayer);
+            if (!mymap.hasLayer(ipmaBaseLayer)) ipmaBaseLayer.addTo(mymap);
+            ipmaBaseLayer.bringToBack();
+            if (!mymap.hasLayer(ipmaLabelsLayer)) ipmaLabelsLayer.addTo(mymap);
+        } else {
+            if (mymap.hasLayer(ipmaBaseLayer)) mymap.removeLayer(ipmaBaseLayer);
+            if (mymap.hasLayer(ipmaLabelsLayer)) mymap.removeLayer(ipmaLabelsLayer);
+            // Only restore a base when neither is on — i.e. coming out of
+            // IPMA mode. During a normal/satellite radio toggle the panel
+            // is mid-swap; touching either layer here races with it.
+            if (!mymap.hasLayer(normalLayer) && !mymap.hasLayer(satelliteLayer)) {
+                var st = (window.fogosPanel && window.fogosPanel._state) || {};
+                var target = st['base:satellite'] ? satelliteLayer : normalLayer;
+                target.addTo(mymap);
+            }
+        }
+    }
+
+    mymap.on('layeradd layerremove', function (e) {
+        if (!e.layer) return;
+        var isIpmaLayer = e.layer._legendUrl || e.layer._isIpma;
+        if (isIpmaLayer) {
+            applyIpmaBaseMode();
+            return;
+        }
+        // Base layer add/remove: only re-apply while IPMA is active, so the
+        // CARTO base stays hidden behind the WMS overlay. Otherwise we'd
+        // race with the panel's radio swap (remove-then-add) and end up
+        // either restoring the layer that was just removed or removing
+        // the one that was just added.
+        if ((e.layer === normalLayer || e.layer === satelliteLayer) && isIpmaActive()) {
+            applyIpmaBaseMode();
+        }
+    });
+
+    applyIpmaBaseMode();
+
+    // Floating legend for active IPMA layers. Listens to layeradd/layerremove
+    // on the map and renders the GetLegendGraphic image for each unique active
+    // overlay. Hidden when nothing's on.
+    var FogosLegend = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function (map) {
+            var c = this._container = L.DomUtil.create('div', 'fogos-legend');
+            L.DomEvent.disableClickPropagation(c);
+            L.DomEvent.disableScrollPropagation(c);
+            this._map = map;
+            map.on('layeradd layerremove', this._refresh, this);
+            this._refresh();
+            return c;
+        },
+        _refresh: function () {
+            var seen = {};
+            var items = [];
+            this._map.eachLayer(function (layer) {
+                if (layer._legendUrl && !seen[layer._legendUrl]) {
+                    seen[layer._legendUrl] = true;
+                    items.push({ url: layer._legendUrl, label: layer._legendLabel || '' });
+                }
+            });
+            if (!items.length) {
+                this._container.style.display = 'none';
+                this._container.innerHTML = '';
+                return;
+            }
+            this._container.style.display = '';
+            this._container.innerHTML = items.map(function (it) {
+                var label = it.label
+                    ? '<div class="fogos-legend__label">' + it.label + '</div>'
+                    : '';
+                return '<div class="fogos-legend__item">' + label +
+                    '<img src="' + it.url + '" alt="" loading="lazy">' +
+                    '</div>';
+            }).join('');
+        }
+    });
+    new FogosLegend().addTo(mymap);
+
+    // Discrete legend for the rural fire danger (RCM) choropleth layers.
+    // Visible only while one of the risk layers (today/tomorrow/after) is on.
+    var FogosRiskLegend = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function (map) {
+            var c = this._container = L.DomUtil.create('div', 'fogos-risk-legend');
+            L.DomEvent.disableClickPropagation(c);
+            L.DomEvent.disableScrollPropagation(c);
+            this._map = map;
+            map.on('layeradd layerremove', this._refresh, this);
+            this._refresh();
+            return c;
+        },
+        _refresh: function () {
+            var active = false;
+            this._map.eachLayer(function (layer) {
+                if (layer._isRisk) active = true;
+            });
+            if (!active) {
+                this._container.style.display = 'none';
+                this._container.innerHTML = '';
+                return;
+            }
+            var cls = (window.trans && window.trans.risk && window.trans.risk.classes) || {};
+            var rows = [
+                { d: 1, label: cls.reduced  || 'Reduzido' },
+                { d: 2, label: cls.moderate || 'Moderado' },
+                { d: 3, label: cls.high     || 'Elevado' },
+                { d: 4, label: cls.veryHigh || 'Muito Elevado' },
+                { d: 5, label: cls.maximum  || 'Máximo' }
+            ];
+            this._container.style.display = '';
+            this._container.innerHTML =
+                '<div class="fogos-risk-legend__title">' +
+                ((window.trans && window.trans.panel && window.trans.panel.risk) || 'Perigo de Incêndio Rural') +
+                '</div>' +
+                rows.map(function (r) {
+                    return '<div class="fogos-risk-legend__row">' +
+                        '<span class="fogos-risk-legend__swatch" style="background:' + getColor(r.d) + '"></span>' +
+                        '<span class="fogos-risk-legend__label">' + r.label + '</span>' +
+                        '</div>';
+                }).join('');
+        }
+    });
+    new FogosRiskLegend().addTo(mymap);
 
 
-                    layerControl4 = L.control.layers(null, objviirs, {
-                        position: 'topleft',
-                        collapsed: false,
-                    })
+    // Lightning strikes (IPMA DEA feed, ~5-min refresh upstream). The full
+    // 24h is cached client-side; the map only renders the strikes in the
+    // selected 1-hour window. A floating control (slider + play/pause)
+    // lets the user step through the last 24 hours.
+    //
+    // IPMA timestamps are normalised to UTC server-side (a "Z" is appended
+    // when missing) so new Date() and Date.now() compare in absolute time
+    // regardless of the viewer's local zone.
+    var lightningRefreshInterval = null;
+    var lightningPlayInterval = null;
+    var lightningStrikes = [];
+    var lightningHourOffset = 0;     // 0 = last hour, 1 = previous, … up to 23
+    var LIGHTNING_HOURS = 24;
+    var LIGHTNING_FRAME_MS = 900;
+    var lightningControl = null;
 
-                    layerControl4.addTo(mymap)
+    function renderLightningsForOffset() {
+        if (!window.lightningLayer || !window.lightningLayer[0]) return;
+        window.lightningLayer[0].clearLayers();
+        var now = Date.now();
+        var windowEnd   = now - lightningHourOffset * 3600000;
+        var windowStart = windowEnd - 3600000;
+        var shown = 0;
+        for (var i = 0; i < lightningStrikes.length; i++) {
+            var d = lightningStrikes[i];
+            if (!d || !d.payload || !d.timestamp) continue;
+            var t = new Date(d.timestamp).getTime();
+            if (isNaN(t)) continue;
+            if (t < windowStart || t >= windowEnd) continue;
+            addLightning(d, mymap);
+            shown++;
+        }
+        if (lightningControl) lightningControl.refresh(shown);
+    }
 
-                    for (i in data) {
-                        if (data[i].latitude && data[i].longitude) {
-                            if (insidePT([data[i].longitude, data[i].latitude])) {
-                                addVIIRSPoint(data[i], mymap);
-                            }
-                        }
+    function refreshLightnings() {
+        $.ajax({
+            url: '/lightnings',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                var items = (data && data.data) || [];
+                var now = Date.now();
+                lightningStrikes = items.filter(function (d) {
+                    if (!d || !d.payload || !d.timestamp) return false;
+                    var t = new Date(d.timestamp).getTime();
+                    if (isNaN(t)) return false;
+                    var ageH = (now - t) / 3600000;
+                    return ageH >= -0.1 && ageH <= LIGHTNING_HOURS;
+                });
+                renderLightningsForOffset();
+            }
+        });
+    }
+
+    function lightningHourLabel(offset) {
+        var t = (window.trans && window.trans.panel) || {};
+        if (offset === 0) return t.lightningLastHour || 'Última hora';
+        var tpl = t.lightningHoursAgo || 'Há {n}h';
+        return tpl.replace('{n}', offset);
+    }
+
+    function buildLightningControl() {
+        var t = (window.trans && window.trans.panel) || {};
+        var ctrl = L.control({ position: 'bottomleft' });
+        // Slider value runs left → right as time moves forward (0 = 24h
+        // ago, SMAX = most recent hour). The internal hourOffset keeps
+        // the "hours ago" semantics so rendering stays simple.
+        var SMAX = LIGHTNING_HOURS - 1;
+        var sliderValueFor = function (off) { return SMAX - off; };
+        var offsetForSlider = function (v) { return SMAX - v; };
+
+        ctrl.onAdd = function () {
+            var div = L.DomUtil.create('div', 'lightning-control');
+            div.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.18);font:12px/1.3 sans-serif;width:320px;display:none';
+            var tickAgora = t.lightningNow || 'agora';
+            // Custom slider: a rail + thumb in a track div. Avoids the
+            // event conflicts that a native <input type="range"> has when
+            // nested inside a Leaflet control (the map captures mousedown
+            // even with stopPropagation in some browsers and the thumb
+            // drag never starts).
+            div.innerHTML =
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+                '  <strong>' + (t.lightningTitle || 'Descargas — janela de 1h') + '</strong>' +
+                '  <span data-role="count" style="color:#666;font-size:11px"></span>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">' +
+                '  <button type="button" data-role="play" style="border:1px solid #ccc;background:#fafafa;border-radius:4px;width:30px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>' +
+                '  <div data-role="track" style="position:relative;flex:1;height:24px;cursor:pointer;touch-action:none">' +
+                '    <div style="position:absolute;left:0;right:0;top:10px;height:4px;background:#d0d4d9;border-radius:2px"></div>' +
+                '    <div data-role="progress" style="position:absolute;left:0;top:10px;height:4px;background:#3b6db5;border-radius:2px;pointer-events:none"></div>' +
+                '    <div data-role="thumb" style="position:absolute;top:4px;left:0;width:16px;height:16px;margin-left:-8px;background:#3b6db5;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.4);pointer-events:none"></div>' +
+                '  </div>' +
+                '</div>' +
+                '<div style="display:flex;justify-content:space-between;font-size:10px;color:#888;padding:0 38px 0 38px;margin-bottom:4px">' +
+                '  <span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>' + tickAgora + '</span>' +
+                '</div>' +
+                '<div data-role="label" style="color:#333;font-size:12px;text-align:center"></div>' +
+                '<div data-role="window" style="color:#666;font-size:11px;text-align:center;margin-top:2px"></div>';
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.disableScrollPropagation(div);
+            ctrl._div = div;
+
+            var track    = div.querySelector('[data-role="track"]');
+            var progress = div.querySelector('[data-role="progress"]');
+            var thumb    = div.querySelector('[data-role="thumb"]');
+
+            ctrl._setThumb = function () {
+                var pct = sliderValueFor(lightningHourOffset) / SMAX * 100;
+                thumb.style.left    = pct + '%';
+                progress.style.width = pct + '%';
+            };
+
+            var dragging = false;
+            function clientXFromEvent(e) {
+                if (e.touches && e.touches.length) return e.touches[0].clientX;
+                if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
+                return e.clientX;
+            }
+            function offsetFromClientX(x) {
+                var r = track.getBoundingClientRect();
+                if (r.width <= 0) return lightningHourOffset;
+                var rel = (x - r.left) / r.width;
+                if (rel < 0) rel = 0; else if (rel > 1) rel = 1;
+                return offsetForSlider(Math.round(rel * SMAX));
+            }
+            function pointerDown(e) {
+                L.DomEvent.stop(e);
+                dragging = true;
+                lightningStopPlay();
+                lightningHourOffset = offsetFromClientX(clientXFromEvent(e));
+                renderLightningsForOffset();
+            }
+            function pointerMove(e) {
+                if (!dragging) return;
+                L.DomEvent.preventDefault(e);
+                lightningHourOffset = offsetFromClientX(clientXFromEvent(e));
+                renderLightningsForOffset();
+            }
+            function pointerUp() { dragging = false; }
+
+            L.DomEvent.on(track, 'mousedown',  pointerDown);
+            L.DomEvent.on(track, 'touchstart', pointerDown);
+            L.DomEvent.on(document, 'mousemove',  pointerMove);
+            L.DomEvent.on(document, 'touchmove',  pointerMove);
+            L.DomEvent.on(document, 'mouseup',    pointerUp);
+            L.DomEvent.on(document, 'touchend',   pointerUp);
+            L.DomEvent.on(document, 'touchcancel', pointerUp);
+
+            L.DomEvent.on(div.querySelector('[data-role="play"]'), 'click', function (e) {
+                L.DomEvent.stop(e);
+                if (lightningPlayInterval) lightningStopPlay();
+                else lightningStartPlay();
+            });
+            return div;
+        };
+        ctrl.show = function () { if (this._div) this._div.style.display = ''; this.refresh(); };
+        ctrl.hide = function () { if (this._div) this._div.style.display = 'none'; };
+        ctrl.refresh = function (shown) {
+            if (!this._div) return;
+            if (this._setThumb) this._setThumb();
+            this._div.querySelector('[data-role="label"]').textContent = lightningHourLabel(lightningHourOffset);
+            var end = new Date(Date.now() - lightningHourOffset * 3600000);
+            var start = new Date(end.getTime() - 3600000);
+            var fmt = function (d) {
+                return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            };
+            this._div.querySelector('[data-role="window"]').textContent = fmt(start) + ' – ' + fmt(end);
+            var c = this._div.querySelector('[data-role="count"]');
+            if (c) c.textContent = (typeof shown === 'number') ? (shown + ' / ' + lightningStrikes.length) : '';
+            var pb = this._div.querySelector('[data-role="play"]');
+            if (pb) pb.innerHTML = lightningPlayInterval ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        };
+        ctrl.addTo(mymap);
+        return ctrl;
+    }
+
+    function lightningStartPlay() {
+        if (lightningPlayInterval) return;
+        // Start at the oldest hour and walk forward to the most recent so the
+        // animation feels like time moving forward.
+        lightningHourOffset = LIGHTNING_HOURS - 1;
+        renderLightningsForOffset();
+        lightningPlayInterval = setInterval(function () {
+            lightningHourOffset--;
+            if (lightningHourOffset < 0) {
+                // Loop: stop at "last hour" and reset to oldest after a pause.
+                lightningStopPlay();
+                lightningHourOffset = 0;
+                renderLightningsForOffset();
+                return;
+            }
+            renderLightningsForOffset();
+        }, LIGHTNING_FRAME_MS);
+        if (lightningControl) lightningControl.refresh();
+    }
+    function lightningStopPlay() {
+        if (lightningPlayInterval) {
+            clearInterval(lightningPlayInterval);
+            lightningPlayInterval = null;
+        }
+        if (lightningControl) lightningControl.refresh();
+    }
+
+    var lightningLayer = L.layerGroup();
+    lightningLayer.onAdd = function (map) {
+        L.LayerGroup.prototype.onAdd.call(this, map);
+        if (!lightningControl) lightningControl = buildLightningControl();
+        lightningHourOffset = 0;
+        lightningControl.show();
+        refreshLightnings();
+        if (!lightningRefreshInterval) lightningRefreshInterval = setInterval(function () { if (!document.hidden) refreshLightnings(); }, 300000);
+    };
+    lightningLayer.onRemove = function (map) {
+        lightningStopPlay();
+        if (lightningRefreshInterval) { clearInterval(lightningRefreshInterval); lightningRefreshInterval = null; }
+        if (lightningControl) lightningControl.hide();
+        this.clearLayers();
+        L.LayerGroup.prototype.onRemove.call(this, map);
+    };
+    window.lightningLayer = [lightningLayer];
+    window.fogosPanel.addItem('lightning', 'dea',
+        (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descargas elétricas',
+        lightningLayer, false);
+
+    // NASA FIRMS hotspots — heavy upstream fetch, so we only hit /v1/modis and
+    // /v1/viirs when the user actually enables the layer in the panel. Each
+    // layer fetches once per session and reuses the markers afterwards.
+    window.modisLayer = [L.layerGroup(), L.layerGroup()]
+    var hotspotLoaded = [false, false]
+
+    function loadHotspots(index, url, addPoint) {
+        if (hotspotLoaded[index]) return;
+        hotspotLoaded[index] = true;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                for (var i in data) {
+                    if (data[i].latitude && data[i].longitude
+                        && insidePT([data[i].longitude, data[i].latitude])) {
+                        addPoint(data[i], mymap);
                     }
                 }
-            })
-        }
-    })
+            },
+            error: function () { hotspotLoaded[index] = false; }
+        })
+    }
+
+    window.modisLayer[0].on('add', function () {
+        loadHotspots(0, '/v1/modis', addModisPoint);
+    });
+    window.modisLayer[1].on('add', function () {
+        loadHotspots(1, '/v1/viirs', addVIIRSPoint);
+    });
+
+    window.fogosPanel.addItem('satellite', 'modis', 'MODIS', window.modisLayer[0], false)
+    window.fogosPanel.addItem('satellite', 'viirs', 'VIIRS', window.modisLayer[1], false)
+
+    // Live tracking of DECIR firefighting aircraft (FR24-fed backend).
+    // Two mutually-exclusive entries in the radio "aerial" section: default
+    // shows markers only (per-aircraft track appears on popup open); the
+    // second draws every aircraft's full track.
+    if (typeof window.createPlanesLayer === 'function') {
+        window.planesLayer = window.createPlanesLayer(mymap, { showAllTracks: false });
+        window.planesLayerWithTracks = window.createPlanesLayer(mymap, { showAllTracks: true });
+        window.fogosPanel.addItem('aerial', 'planes',
+            (tp.planes || 'Aviões e helicópteros'),
+            window.planesLayer, false);
+        window.fogosPanel.addItem('aerial', 'planesTracks',
+            (tp.planesTracks || 'Aviões e helicópteros com trajetos'),
+            window.planesLayerWithTracks, false);
+    }
+
+    // IPMA Fire Radiative Power (LSA-SAF satellite product, 15-min refresh)
+    window.fogosPanel.addItem('satellite', 'frp', 'IPMA FRP',
+        L.tileLayer.wms('/v1/ipma-wms', {
+            layers: 'lsasaf.frp.continent',
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            opacity: 0.7,
+            attribution: 'Fire Radiative Power &copy; LSA-SAF / <a href="https://www.ipma.pt" target="_blank">IPMA</a>'
+        }), false)
 
     $.ajax({
         type: "GET",
-        url: 'https://api-dev.fogos.pt/v1/warnings/site',
+        url: 'https://source.fogos.pt/v1/warnings/site',
         success: function (data) {
             if (data.success && data.data[0] && data.data[0].active) {
-                $('#warning-site').find('.modal-body').html('<p>' + data.data[0].text + '</p>');
+                $('#warning-site').find('.modal-body').empty().append($('<p>').text(data.data[0].text));
                 $('#warning-site').modal('show');
             }
         },
@@ -274,10 +1025,21 @@ $(document).ready(function () {
         getNewFires(mymap, true);
     });
 
-    setInterval(function (){
-        toastr.success('A actualizar dados...', {timeOut: 1000});
+    // Skip refreshes while the tab is hidden; catch up as soon as it's
+    // visible again (saves upstream calls from background tabs).
+    var lastFiresRefresh = Date.now();
+    function refreshFires() {
+        if (document.hidden) return;
+        lastFiresRefresh = Date.now();
+        toastr.success(window.trans.map.updating, {timeOut: 1000});
         getNewFires(mymap, true);
-    },60000)
+    }
+    setInterval(refreshFires, 60000);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && Date.now() - lastFiresRefresh >= 60000) refreshFires();
+    });
+
+    if (window.FogosSat) FogosSat.installMain(mymap, panel, { defaultOn: false });
 
 })
 
@@ -301,21 +1063,43 @@ function insidePT(point) {
 
 
 function addLightning(data, mymap) {
-    var marker = L.marker([data.payload.latitude, data.payload.longitude])
+    // Fade older strikes so the freshest ones stand out.
+    var ageH = (Date.now() - new Date(data.timestamp).getTime()) / 3600000;
+    var opacity = ageH <= 1 ? 1 : (ageH <= 6 ? 0.75 : (ageH <= 12 ? 0.55 : 0.35));
 
-    marker.properties = {}
+    // Negative = cloud-to-ground, more dangerous → red; positive → orange.
+    // Intracloud strikes (icloud=true) get a smaller, dimmer dot.
+    var amp = data.payload && data.payload.intensity;
+    var negative = (typeof amp === 'number' && amp < 0);
+    var color = negative ? '#d62828' : '#f77f00';
+    var intra = !!(data.payload && data.payload.icloud);
+    var size  = intra ? 16 : 22;
 
-    iconHtml = '<i class="fas fa-bolt" style="color: #F96E5B"></i>'
+    var iconHtml =
+        '<div style="display:flex;align-items:center;justify-content:center;width:' + size + 'px;height:' + size + 'px;' +
+        'background:' + color + ';color:#fff;border:1px solid #fff;border-radius:50%;' +
+        'box-shadow:0 0 3px rgba(0,0,0,0.5);opacity:' + opacity + ';font-size:' + (size - 6) + 'px;line-height:1">' +
+        '<i class="fas fa-bolt"></i></div>';
 
-    marker.sizeFactor = 1
+    var marker = L.marker([data.payload.latitude, data.payload.longitude], {
+        icon: L.divIcon({
+            className: 'lightning-marker',
+            html: iconHtml,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
+        })
+    });
+    marker.properties = { item: data };
 
-    marker.setIcon(L.divIcon({
-        className: 'count-icon-emergency',
-        html: iconHtml,
-        iconSize: [80, 80]
-    }))
+    var when = new Date(data.timestamp);
+    var label = (window.trans && window.trans.panel && window.trans.panel.lightningLabel) || 'Descarga elétrica';
+    var popup = '<strong>' + label + '</strong>'
+        + '<br>' + when.toLocaleString('pt-PT')
+        + (typeof amp === 'number' ? '<br>' + amp.toFixed(2) + ' kA' : '')
+        + '<br>' + (intra ? 'Entre nuvens' : 'Nuvem – Solo');
+    marker.bindPopup(popup);
 
-    window.lightningLayer[0].addLayer(marker)
+    window.lightningLayer[0].addLayer(marker);
 }
 
 
@@ -331,7 +1115,8 @@ function addModisPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [80, 80]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
     var confidence = '';
@@ -342,12 +1127,12 @@ function addModisPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(date).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(date).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Data: ' + date + '</p><p>Confiança: ' + confidence + '%</p>';
     marker.bindPopup(content);
 
@@ -366,7 +1151,8 @@ function addVIIRSPoint(data, mymap) {
     marker.setIcon(L.divIcon({
         className: 'count-icon-emergency',
         html: iconHtml,
-        iconSize: [80, 80]
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
     }))
 
 
@@ -378,12 +1164,12 @@ function addVIIRSPoint(data, mymap) {
     } else if (data.confidence === 'high') {
         confidence = 'alta';
     } else {
-        confidence = data.confidence;
+        confidence = escapeFireText(data.confidence);
     }
 
     var date = data.acq_date + ' ' + data.acq_time.substr(0, 2) + ':' + data.acq_time.substr(2);
 
-    date = moment.utc(data).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p><p>Confiança: ' + confidence + '</p>';
     marker.bindPopup(content);
 
@@ -403,7 +1189,10 @@ function calculateImportanceValue(data) {
     const terrainFactor = 3
     const aerialFactor = 7
 
-    var importance = data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
+    var hasUnknownMeios = data.man == -1 || data.terrain == -1 || data.aerial == -1
+    var importance = hasUnknownMeios
+        ? 10 * manFactor
+        : data.man * manFactor + data.terrain * terrainFactor + data.aerial * aerialFactor;
 
     DATA_FIRES.number += 1
     if (DATA_FIRES.topImportance < importance) {
@@ -451,6 +1240,141 @@ function getPonderatedImportanceFactor(importance, statusCode) {
     return importanceSize
 }
 
+function fillSidebar(item) {
+    var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY')
+    // Upstream (ANEPC) text — escape everything that lands in .html().
+    var coords = escapeFireText(item.lat + ',' + item.lng)
+    var location = '<a href="https://www.google.com/maps/search/' + encodeURIComponent(item.lat + ',' + item.lng) + '" target="_blank" rel="noopener"><i class="far fa-map"></i></a> ' + coords
+    var locationText = escapeFireText(item.location)
+    if (item.localidade) {
+        locationText += ' - ' + escapeFireText(item.localidade)
+    }
+    locationText += ' <a href="/' + locale + '/fogo/' + encodeURIComponent(item.id) + '/detalhe">' + escapeFireText(window.trans.fire.moreDetails) + '</a>'
+
+    $('.sidebar').addClass('active').scrollTop(0)
+    $('.f-local').html(locationText)
+    $('.f-man').text(item.man)
+    $('.f-aerial').text(item.aerial)
+    $('.f-terrain').text(item.terrain)
+    $('.f-location').html(location)
+    $('.f-nature').text(item.natureza)
+    $('.f-update').text(momentDate)
+    $('.f-start').text(item.date + ' ' + item.hour)
+    $('.click-notification').data('id', item.id)
+    updateWeatherWarningsSidebar(item)
+
+    var notificationsAuth = store.get('notificationsAuth')
+    if (notificationsAuth) {
+        $('.notification-container').css({ 'display': 'inline-block' })
+        $('.click-notification').css({ 'display': 'inline-block' })
+        var notifyFire = store.get('fire-' + item.id)
+        if (notifyFire) {
+            $('.notification-container').find('i').removeClass('far').addClass('fas')
+        } else {
+            $('.notification-container').find('i').removeClass('fas').addClass('far')
+        }
+    }
+}
+
+function escapeFireText(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// IPMA weather warnings for the fire's district, injected inline in the
+// incident payload by the backend. Rendered client-side because the data
+// arrives with each incident from /v2/incidents/active — no extra fetch.
+var WEATHER_WARNING_BG = { yellow: '#FFB202', orange: '#FF6E02', red: '#B81E1F' };
+
+function formatWeatherWarningTime(iso) {
+    if (!iso) return '';
+    // Backend delivers a naive Europe/Lisbon ISO string ("YYYY-MM-DDTHH:MM:SS"
+    // with no timezone). Feeding it straight to new Date() interprets it as
+    // browser-local time, which is correct enough for a PT-facing site — the
+    // vast majority of visitors are already in Europe/Lisbon and matching the
+    // clock they see on the wall is what they expect.
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return escapeFireText(iso);
+    var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+function renderWeatherWarnings(warnings) {
+    if (!Array.isArray(warnings) || warnings.length === 0) return '';
+    var html = '<ul class="weather-warnings-list">';
+    for (var i = 0; i < warnings.length; i++) {
+        var w = warnings[i] || {};
+        var level = WEATHER_WARNING_BG[w.awarenessLevelID] ? w.awarenessLevelID : 'yellow';
+        var bg = WEATHER_WARNING_BG[level];
+        var type = escapeFireText(w.awarenessTypeName || '');
+        var start = formatWeatherWarningTime(w.startTime);
+        var end = formatWeatherWarningTime(w.endTime);
+        var text = escapeFireText(w.text || '');
+        html += '<li class="weather-warnings-item weather-warnings-item--' + level + '">'
+            + '<div class="weather-warnings-item__head">'
+            +   '<span class="weather-warnings-badge" style="background:' + bg + ';">' + type + '</span>'
+            +   (start && end ? '<span class="weather-warnings-when">' + start + ' → ' + end + '</span>' : '')
+            + '</div>'
+            + (text ? '<p class="weather-warnings-text mb-0">' + text + '</p>' : '')
+            + '</li>';
+    }
+    html += '</ul>';
+    return html;
+}
+
+function highestWeatherWarningLevel(warnings) {
+    var rank = { yellow: 1, orange: 2, red: 3 };
+    var best = 0;
+    var bestLevel = null;
+    for (var i = 0; i < warnings.length; i++) {
+        var lvl = warnings[i] && warnings[i].awarenessLevelID;
+        var r = rank[lvl] || 0;
+        if (r > best) { best = r; bestLevel = lvl; }
+    }
+    return bestLevel;
+}
+
+function updateWeatherWarningsSidebar(item) {
+    var $container = $('.f-weather-warnings');
+    if (!$container.length) return;
+    var warnings = (item && Array.isArray(item.weatherWarnings)) ? item.weatherWarnings : [];
+    var $wrapper = $('.weather-warnings');
+    var $card = $wrapper.find('.card');
+    if (warnings.length === 0) {
+        $container.empty();
+        $wrapper.removeClass('active').css('display', 'none');
+        $card.css('border-left', '');
+        return;
+    }
+    $container.html(renderWeatherWarnings(warnings));
+    $wrapper.addClass('active').css('display', '');
+    var top = highestWeatherWarningLevel(warnings);
+    $card.css('border-left', top ? '4px solid ' + WEATHER_WARNING_BG[top] : '');
+}
+
+// Hover summary on each fire marker: location, start time and the
+// resource counts (men / ground / aerial). Lets visitors triage the
+// map without clicking through to the sidebar/detail page.
+function buildFireTooltip(item) {
+    var t = (window.trans && window.trans.fire) || {};
+    var loc = escapeFireText(item.location || '');
+    if (item.localidade) loc += ' — ' + escapeFireText(item.localidade);
+    var start = escapeFireText((item.date || '') + (item.hour ? ' ' + item.hour : ''));
+    var men     = parseInt(item.man,     10) || 0;
+    var terrain = parseInt(item.terrain, 10) || 0;
+    var aerial  = parseInt(item.aerial,  10) || 0;
+    return ''
+        + '<div class="fire-tooltip-title">' + (loc || '&nbsp;') + '</div>'
+        + (start ? '<div class="fire-tooltip-row"><i class="far fa-clock"></i> '
+            + escapeFireText(t.tooltipStart || 'Início') + ': ' + start + '</div>' : '')
+        + '<div class="fire-tooltip-row">'
+        +   '<span title="' + escapeFireText(t.tooltipMen     || 'Operacionais') + '"><i class="fas fa-user"></i> ' + men     + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipTerrain || 'Terrestres') + '"><i class="fas fa-truck"></i> ' + terrain + '</span>'
+        +   ' &nbsp;<span title="' + escapeFireText(t.tooltipAerial  || 'Aéreos') + '"><i class="fas fa-helicopter"></i> ' + aerial  + '</span>'
+        + '</div>';
+}
+
 function addMaker(item, mymap) {
     var x = randomGeo(item.lat, item.lng)
     var coords = [x['latitude'], x['longitude']]
@@ -463,7 +1387,7 @@ function addMaker(item, mymap) {
     marker.properties = {}
     marker.properties.item = item
 
-    isActive = window.location.pathname.split('/')[2]
+    isActive = window.location.pathname.split('/')[3]
 
     //Base iconHtml
     iconHtml = '<i class="dot status-'
@@ -472,7 +1396,7 @@ function addMaker(item, mymap) {
     } else if (item.important) {
         iconHtml += '99'
     } else {
-        iconHtml += item.statusCode
+        iconHtml += parseInt(item.statusCode, 10)
     }
     if (isActive && isActive === item.id) {
         iconHtml += ' active'
@@ -495,7 +1419,10 @@ function addMaker(item, mymap) {
     }
 
     iconHtml += '"'
-    iconHtml += 'id=' + item.id + '></i>'
+    if (['3111', '3109', '4335'].indexOf(String(item.naturezaCode)) !== -1) {
+        iconHtml += ' style="opacity:0.6"'
+    }
+    iconHtml += ' id="' + escapeFireText(item.id) + '"></i>'
     var sizeFactor = getPonderatedImportanceFactor(item.importance, item.statusCode)
     marker.sizeFactor = sizeFactor
     var size = sizeFactor * BASE_SIZE
@@ -509,11 +1436,19 @@ function addMaker(item, mymap) {
 
     window.fogosLayers[item.statusCode].addLayer(marker)
 
-    marker.addTo(mymap);
     marker.id = item.id
+
+    marker.bindTooltip(buildFireTooltip(item), {
+        direction: 'top',
+        offset: [0, -8],
+        opacity: 0.95,
+        className: 'fire-tooltip',
+        sticky: false
+    });
 
     if (isActive && isActive === item.id) {
         changeElementSizeById(item.id, 48 + sizeFactor)
+        fillSidebar(item)
     } else {
         changeElementSizeById(item.id, size)
     }
@@ -533,48 +1468,15 @@ function addMaker(item, mymap) {
 
         var item = e.sourceTarget.properties.item
 
-        var momentDate = moment.unix(item.updated.sec).format('HH:mm DD-MM-YYYY');
-
-        var location = '<a href="https://www.google.com/maps/search/' + item.lat + ',' + item.lng + '" target="_blank"><i class="far fa-map"></i></a> ' + item.lat + ',' + item.lng;
-
-        var locationText = item.location;
-        if(item.localidade){
-            locationText += ' - ' + item.localidade;
-        }
-
-        locationText += ' <a href="/fogo/' + item.id + '/detalhe">Mais detalhes</a>';
-        $('.sidebar').addClass('active').scrollTop(0)
-        $('.f-local').html(locationText)
-        $('.f-man').text(item.man)
-        $('.f-aerial').text(item.aerial)
-        $('.f-terrain').text(item.terrain)
-        $('.f-location').html(location)
-        $('.f-nature').text(item.natureza)
-        $('.f-update').text(momentDate)
-        $('.f-start').text(item.date + ' ' + item.hour)
-        $('.click-notification').data('id', item.id)
-
-        if (notificationsAuth) {
-            $('.notification-container').css({
-                'display': 'inline-block'
-            });
-            let notifyFire = store.get('fire-' + item.id);
-            if (notifyFire) {
-                $('.notification-container').find('i').removeClass('far').addClass('fas')
-            } else {
-                $('.notification-container').find('i').removeClass('fas').addClass('far')
-            }
-        }
-
-
-        window.history.pushState('obj', 'newtitle', '/fogo/' + item.id)
+        fillSidebar(item)
+        window.history.pushState('obj', 'newtitle', '/' + locale + '/fogo/' + item.id)
         status(item.id)
         plot(item.id)
         danger(item.id)
         meteo(item.id)
         extra(item.id)
-        twitter(item.id)
         shares(item.id)
+        if (typeof photos === 'function') photos(item.id)
         addPageview()
     });
 
@@ -602,7 +1504,7 @@ function addMaker(item, mymap) {
 let detailsChart
 
 function plot(id) {
-    var url = 'https://api-dev.fogos.pt/fires/data?id=' + id
+    var url = 'https://source.fogos.pt/fires/data?id=' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -629,24 +1531,27 @@ function plot(id) {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Operacionais',
+                            label: window.trans.chart.humans,
                             data: man,
                             fill: false,
                             backgroundColor: '#EFC800',
-                            borderColor: '#EFC800'
+                            borderColor: '#EFC800',
+                            yAxisID: 'y-left'
                         },
                             {
-                                label: 'Terrestres',
+                                label: window.trans.chart.terrestrial,
                                 data: terrain,
                                 fill: false,
                                 backgroundColor: '#6D720B',
-                                borderColor: '#6D720B'
+                                borderColor: '#6D720B',
+                                yAxisID: 'y-left'
                             }, {
-                                label: 'Aéreos',
+                                label: window.trans.chart.aerial,
                                 data: aerial,
                                 fill: false,
                                 backgroundColor: '#4E88B2',
-                                borderColor: '#4E88B2'
+                                borderColor: '#4E88B2',
+                                yAxisID: 'y-right'
                             }
                         ]
                     },
@@ -658,7 +1563,16 @@ function plot(id) {
                         },
                         scales: {
                             yAxes: [{
-                                ticks: {}
+                                id: 'y-left',
+                                position: 'left',
+                                ticks: { beginAtZero: true, precision: 0 },
+                                scaleLabel: { display: true, labelString: window.trans.chart.humans + ' / ' + window.trans.chart.terrestrial }
+                            }, {
+                                id: 'y-right',
+                                position: 'right',
+                                ticks: { beginAtZero: true, precision: 0 },
+                                gridLines: { drawOnChartArea: false },
+                                scaleLabel: { display: true, labelString: window.trans.chart.aerial }
                             }]
                         }
                     }
@@ -673,8 +1587,7 @@ function plot(id) {
 }
 
 function status(id) {
-    $('#status').empty()
-    var url = '/views/status/' + id
+    var url = '/' + locale + '/views/status/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -685,7 +1598,7 @@ function status(id) {
 }
 
 function danger(id) {
-    var url = '/views/risk/' + id
+    var url = '/' + locale + '/views/risk/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -697,7 +1610,7 @@ function danger(id) {
 }
 
 function meteo(id) {
-    var url = '/views/meteo/' + id
+    var url = '/' + locale + '/views/meteo/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -709,7 +1622,7 @@ function meteo(id) {
 }
 
 function extra(id) {
-    var url = '/views/extra/' + id
+    var url = '/' + locale + '/views/extra/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -727,19 +1640,8 @@ function extra(id) {
 }
 
 
-function twitter(id) {
-    var url = '/views/twitter/' + id
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            $('.f-twitter').html(data)
-        }
-    })
-}
-
 function shares(id) {
-    var url = '/views/shares/' + id
+    var url = '/' + locale + '/views/shares/' + id
     $.ajax({
         url: url,
         method: 'GET',
@@ -774,15 +1676,34 @@ function getColor(d) {
     return color;
 }
 
+// Risk overlays — three concelho-level choropleths (today / tomorrow /
+// after) backed by source.fogos.pt. The fetches are deferred until the
+// user activates the layer in the panel (or arrives with ?risk /
+// ?risk-tomorrow), so a default visit no longer pays for three sequential
+// AJAX calls on page load. Each layer fetches once per session.
 function addRisk(mymap) {
-    // lel
-    var url = 'https://api-dev.fogos.pt/v1/risk-today'
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function (data) {
-            if (data.success) {
-                var riskToday = L.geoJson(concelhos, {
+    var endpoints = {
+        today:    'https://source.fogos.pt/v1/risk-today',
+        tomorrow: 'https://source.fogos.pt/v1/risk-tomorrow',
+        after:    'https://source.fogos.pt/v1/risk-after'
+    };
+    var loaded = { today: false, tomorrow: false, after: false };
+    var groups = {
+        today:    L.layerGroup(),
+        tomorrow: L.layerGroup(),
+        after:    L.layerGroup()
+    };
+    Object.keys(groups).forEach(function (k) { groups[k]._isRisk = true; });
+
+    function loadRisk(kind, onReady) {
+        if (loaded[kind]) { if (onReady) onReady(); return; }
+        loaded[kind] = true;
+        $.ajax({
+            url: endpoints[kind],
+            method: 'GET',
+            success: function (data) {
+                if (!data || !data.success) { loaded[kind] = false; return; }
+                var geo = L.geoJson(concelhos, {
                     style: function (feature) {
                         var d = data.data.local[feature.properties.DICO].data.rcm
                         return {
@@ -792,79 +1713,45 @@ function addRisk(mymap) {
                             fillColor: getColor(d)
                         }
                     }
-                })
+                });
+                groups[kind].addLayer(geo);
+                if (onReady) onReady();
+            },
+            error: function () { loaded[kind] = false; }
+        });
+    }
 
-                // for phantom
-                if (getParameterByName('risk')) {
-                    riskToday.addTo(mymap)
-                    $('main #map .map-marker').hide()
-                }
+    // Phantom-screenshot signal — only flip the ready class once the
+    // GeoJSON is actually drawn, mirroring the old behaviour where the
+    // class was set after the AJAX resolved.
+    function markRiskReady() {
+        $('main #map .map-marker').hide();
+        document.getElementById('map').classList.add('risk-layer-ready');
+    }
 
-                var url = 'https://api-dev.fogos.pt/v1/risk-tomorrow'
-                $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function (data) {
-                        if (data.success) {
-                            var riskTomorrow = L.geoJson(concelhos, {
-                                style: function (feature) {
-                                    var d = data.data.local[feature.properties.DICO].data.rcm
-                                    return {
-                                        weight: 1.0,
-                                        color: '#666',
-                                        fillOpacity: 0.6,
-                                        fillColor: getColor(d)
-                                    }
-                                }
-                            })
+    groups.today.on('add',    function () { loadRisk('today'); });
+    groups.tomorrow.on('add', function () { loadRisk('tomorrow'); });
+    groups.after.on('add',    function () { loadRisk('after'); });
 
-                            // for phantom
-                            if (getParameterByName('risk-tomorrow')) {
-                                riskTomorrow.addTo(mymap)
-                                $('main #map .map-marker').hide()
-                            }
+    if (window.fogosPanel) {
+        var riskForced     = !!getParameterByName('risk')
+        var tomorrowForced = !!getParameterByName('risk-tomorrow')
+        window.fogosPanel.addItem('risk', 'today',    window.trans.risk.today,    groups.today,    riskForced,    riskForced)
+        window.fogosPanel.addItem('risk', 'tomorrow', window.trans.risk.tomorrow, groups.tomorrow, tomorrowForced, tomorrowForced)
+        window.fogosPanel.addItem('risk', 'after',    window.trans.risk.after,    groups.after,    false)
+    }
 
-                            var url = 'https://api-dev.fogos.pt/v1/risk-after'
-                            $.ajax({
-                                url: url,
-                                method: 'GET',
-                                success: function (data) {
-                                    if (data.success) {
-                                        var riskAfter = L.geoJson(concelhos, {
-                                            style: function (feature) {
-                                                var d = data.data.local[feature.properties.DICO].data.rcm
-                                                return {
-                                                    weight: 1.0,
-                                                    color: '#666',
-                                                    fillOpacity: 0.6,
-                                                    fillColor: getColor(d)
-                                                }
-                                            }
-                                        })
-
-                                        var baseMaps = {
-                                            'Risco Hoje': riskToday,
-                                            'Risco Amanhã': riskTomorrow,
-                                            'Risco Depois': riskAfter
-                                        }
-
-                                        //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
-                                        //map.addControl(riskLayerControl);
-                                        L.control.layers([],baseMaps, {
-                                            collapsed: false,
-                                            position: 'topright'
-                                        }).addTo(mymap)
-                                    }
-                                }
-                            })
-
-                        }
-                    }
-                })
-
-            }
-        }
-    })
+    // ?risk / ?risk-tomorrow URL hooks — keep the phantom-render path
+    // working by adding the layer to the map and flipping the ready class
+    // once the fetch resolves.
+    if (getParameterByName('risk')) {
+        groups.today.addTo(mymap);
+        loadRisk('today', markRiskReady);
+    }
+    if (getParameterByName('risk-tomorrow')) {
+        groups.tomorrow.addTo(mymap);
+        loadRisk('tomorrow', markRiskReady);
+    }
 }
 
 function getParameterByName(name, url) {
@@ -935,10 +1822,23 @@ function changeElementSizeById(id, size) {
     markerHtml.style.width = size + 'px'
 }
 
+// Maps status code -> { id, labelKey }. Order defines panel display order.
+var FIRE_STATUS_DEFS = [
+    { code: 3,  id: 'dispatch',           labelKey: 'dispatch' },
+    { code: 4,  id: 'firstAlertDispatch', labelKey: 'firstAlertDispatch' },
+    { code: 6,  id: 'arrival',            labelKey: 'arrival' },
+    { code: 5,  id: 'ongoing',            labelKey: 'ongoing' },
+    { code: 7,  id: 'inResolution',       labelKey: 'inResolution' },
+    { code: 8,  id: 'conclusion',         labelKey: 'conclusion' },
+    { code: 9,  id: 'surveillance',       labelKey: 'surveillance' },
+    { code: 10, id: 'closed',             labelKey: 'closed' },
+    { code: 11, id: 'falseAlarm',         labelKey: 'falseAlarm' },
+    { code: 12, id: 'falseAlert',         labelKey: 'falseAlert' },
+]
+
 function getNewFires(mymap, refresh = false)
 {
     if(refresh){
-        layerControl2.remove();
         window.fogosLayers[3].remove()
         window.fogosLayers[4].remove()
         window.fogosLayers[5].remove()
@@ -966,67 +1866,118 @@ function getNewFires(mymap, refresh = false)
         window.fogosLayers[80] = L.layerGroup()
         window.fogosLayers[81] = L.layerGroup()
 
+        // Mirror the init: mount status groups so addMaker can create marker DOM.
+        // updateLayer below removes the ones whose panel state is off.
+        window.fogosLayers[3].addTo(mymap)
+        window.fogosLayers[4].addTo(mymap)
+        window.fogosLayers[5].addTo(mymap)
+        window.fogosLayers[6].addTo(mymap)
+        window.fogosLayers[7].addTo(mymap)
+        window.fogosLayers[8].addTo(mymap)
+        window.fogosLayers[9].addTo(mymap)
+        window.fogosLayers[10].addTo(mymap)
+        window.fogosLayers[11].addTo(mymap)
+        window.fogosLayers[12].addTo(mymap)
         window.fogosLayers[81].addTo(mymap)
     }
 
-    var url = 'https://api-dev.fogos.pt/new/fires'
+    var url = 'https://source.fogos.pt/v2/incidents/active'
+    if (window.fogosShowAllIncidents) {
+        url += '?all=1'
+    }
     $.ajax({
         url: url,
         method: 'GET',
         success: function (data) {
             if (data.success) {
+                window.fogosFiresLoaded = true;
+                window.fogosLastFires = data.data;
+                window.fogosLastMap = mymap;
 
                 for (i in data.data) {
                     calculateImportanceValue(data.data[i])
                 }
+                var shown = 0;
                 for (i in data.data) {
+                    if (!fireMatchesFilters(data.data[i])) continue;
                     addMaker(data.data[i], mymap)
+                    shown++;
+                }
+                window.fogosFilterCount = { shown: shown, total: data.data.length };
+                if (window.fogosFiltersControl && window.fogosFiltersControl.refreshCount) {
+                    window.fogosFiltersControl.refreshCount();
                 }
 
-                var obj = {}
-                obj['Despacho'] = window.fogosLayers[3]
-                obj['Despacho de 1º Alerta'] = window.fogosLayers[4]
-                obj['Chegada ao TO'] = window.fogosLayers[6]
-                obj['Em Curso'] = window.fogosLayers[5]
-                obj['Em Resolução'] = window.fogosLayers[7]
-                obj['Conclusão'] = window.fogosLayers[8]
-                obj['Vigilância'] = window.fogosLayers[9]
-                obj['Encerrada'] = window.fogosLayers[10]
-                obj['Falso Alarme'] = window.fogosLayers[11]
-                obj['Falso Alerta'] = window.fogosLayers[12]
-
-                obj['Despacho'].addTo(mymap)
-                obj['Despacho de 1º Alerta'].addTo(mymap)
-                obj['Chegada ao TO'].addTo(mymap)
-                obj['Em Curso'].addTo(mymap)
-                obj['Em Resolução'].addTo(mymap)
-                obj['Conclusão'].addTo(mymap)
-                obj['Vigilância'].addTo(mymap)
-                obj['Encerrada'].addTo(mymap)
-                obj['Falso Alarme'].addTo(mymap)
-                obj['Falso Alerta'].addTo(mymap)
-
-
-                layerControl2 = L.control.layers(null, obj, {
-                    position: 'topright'
+                var t = window.trans.status
+                FIRE_STATUS_DEFS.forEach(function (def) {
+                    var layer = window.fogosLayers[def.code]
+                    var label = t[def.labelKey]
+                    if (refresh && window.fogosPanel._findItem('status', def.id)) {
+                        // Swap the new layer reference in place; on/off state preserved.
+                        window.fogosPanel.updateLayer('status', def.id, layer)
+                    } else {
+                        window.fogosPanel.addItem('status', def.id, label, layer, true)
+                    }
                 })
-
-                layerControl2.addTo(mymap)
-                $controls = $(layerControl2.getContainer())
-                $controls.find('a').css({
-                    'background-image': 'none',
-                    'font-size': '33px',
-                    'text-align': 'center',
-                    'color': '#333333'
-                }).append('<i class="fas fa-map-marker"></i>')
             }
         }
     })
 
 }
 
+// Parses item.date ("DD-MM-YYYY") + item.hour ("HH:MM") as local time.
+function parseFireStart(item) {
+    if (!item || !item.date) return null;
+    var d = String(item.date).split('-');
+    if (d.length !== 3) return null;
+    var h = String(item.hour || '00:00').split(':');
+    var dt = new Date(
+        parseInt(d[2], 10),
+        parseInt(d[1], 10) - 1,
+        parseInt(d[0], 10),
+        parseInt(h[0], 10) || 0,
+        parseInt(h[1], 10) || 0
+    );
+    var t = dt.getTime();
+    return isNaN(t) ? null : t;
+}
+
+function fireMatchesFilters(item) {
+    // Shareable-map filters (from /mapa?c=…&s=…): reject early so the
+    // upstream refresh loop keeps applying them on every 60s tick.
+    if (window.fogosDicoFilter && !window.fogosDicoFilter.has(String(item.dico))) {
+        return false;
+    }
+    if (window.fogosStatusFilter && !window.fogosStatusFilter.has(parseInt(item.statusCode, 10))) {
+        return false;
+    }
+    var f = window.fogosFilters;
+    if (!f) return true;
+    if (f.minMeios > 0) {
+        var meios = (parseInt(item.man, 10) || 0)
+                  + (parseInt(item.terrain, 10) || 0)
+                  + (parseInt(item.aerial, 10) || 0);
+        if (meios < f.minMeios) return false;
+    }
+    if (f.minHours > 0) {
+        var start = parseFireStart(item);
+        if (start !== null) {
+            var hoursActive = (Date.now() - start) / 3600000;
+            if (hoursActive < f.minHours) return false;
+        }
+    }
+    return true;
+}
+
+// Reuses the existing refresh path so the layer cleanup and panel
+// re-wiring stay in one place. The filter is then applied in the
+// success callback before addMaker.
+window.fogosApplyFilters = function () {
+    if (window.fogosLastMap) getNewFires(window.fogosLastMap, true);
+};
+
 function addPlane(icao, mymap){
-    var url = 'https://api-dev.fogos.pt/v2/planes/' + icao
+    var url = 'https://source.fogos.pt/v2/planes/' + encodeURIComponent(icao)
     $.ajax({
         url: url,
         method: 'GET',
@@ -1057,7 +2008,7 @@ function addPlanePoint(data, mymap) {
     }))
 
 
-    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:MM');
+    date = moment.utc(data.created).local().format('DD-MM-YYYY HH:mm');
     var content = '<p>Date: ' + date + '</p>';
     marker.bindPopup(content);
 

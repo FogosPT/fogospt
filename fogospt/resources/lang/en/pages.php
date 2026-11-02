@@ -1,12 +1,84 @@
 <?php
 
 return [
+    'seo' => [
+        'brand_suffix' => ' | Fogos.pt',
+        'home' => [
+            'title'       => 'Portugal Wildfires – Forest Fires Map',
+            'h1'          => 'Portugal Wildfires & Forest Fires Map',
+            'description' => 'Real-time tracking of wildfires in Portugal. Live map with active fires, deployed resources, weather warnings and official ANEPC, ICNF and IPMA statistics.',
+            'intro'       => 'Real-time tracking of wildfires across mainland Portugal and Madeira. View active fires, firefighting resources, IPMA weather warnings and official statistics from ANEPC and ICNF.',
+            'menu_label'  => 'Home',
+        ],
+        'madeira' => [
+            'title'       => 'Madeira Wildfires – Live Map',
+            'h1'          => 'Madeira Wildfires Map',
+            'description' => 'Real-time tracking of wildfires in the Autonomous Region of Madeira. Live map with active fires, deployed resources and weather warnings.',
+            'intro'       => 'Real-time tracking of wildfires in the Madeira Autonomous Region. Active fires, deployed resources and official warnings.',
+            'menu_label'  => 'Madeira',
+        ],
+        'list'        => [ 'title' => 'Portugal Fires List',                'description' => 'Up-to-date list of all wildfires recorded in mainland Portugal.' ],
+        'table'       => [ 'title' => 'Portugal Fires Table',               'description' => 'Detailed table with status, resources and location for fires in Portugal.' ],
+        'stats'       => [ 'title' => 'Portugal Fires Statistics',          'description' => 'Up-to-date statistics: number of fires, burned area, causes and resources deployed in Portugal.' ],
+        'warnings'    => [ 'title' => 'Weather Warnings – Portugal',        'description' => 'IPMA weather warnings and civil protection alerts for mainland Portugal.' ],
+        'warningsMadeira' => [ 'title' => 'Weather Warnings – Madeira',     'description' => 'IPMA weather warnings and civil protection alerts for Madeira.' ],
+        'otherFires'  => [ 'title' => 'Other Incidents – Portugal',         'description' => 'Other incidents reported by ANEPC: controlled burns, fuel management.' ],
+        'mapCustom'   => [ 'title' => 'Custom Wildfires Map',               'description' => 'Portugal wildfires map filtered by chosen municipalities, statuses and layers.' ],
+        'mapConfigurator' => [ 'title' => 'Build a Shareable Map',          'description' => 'Create a custom map with a fixed URL — pick municipalities, statuses and layers.' ],
+        'about'       => [ 'title' => 'About Fogos.pt',                     'description' => 'About the Fogos.pt project, operated by VOST Portugal. Data sources, partners and mission.' ],
+        'information' => [ 'title' => 'Fire Information & Resources',       'description' => 'Meaning of fire states, types of resources, risk indices and map layers.' ],
+        'partnerships'=> [ 'title' => 'Fogos.pt Partners',                  'description' => 'Institutional and technology partners of Fogos.pt: ANEPC, AGIF, PTServidor, Cloudflare, Mapbox.' ],
+        'api'         => [ 'title' => 'Fogos.pt Public API',                'description' => 'Public API documentation of Fogos.pt for fire data in Portugal.' ],
+        'apiTerms'    => [ 'title' => 'API Terms',                          'description' => 'Terms of use for the Fogos.pt public API.' ],
+        'notifications'=> [ 'title' => 'Wildfire Notifications',            'description' => 'Subscribe to wildfire notifications in Portugal by district or specific incident.' ],
+        'privacyPolicy'=> [ 'title' => 'Privacy Policy',                    'description' => 'Fogos.pt privacy policy.' ],
+        'fire' => [
+            'title'             => '[:date :hour] Wildfire in :location (:concelho) — :status',
+            'title_no_concelho' => '[:date :hour] Wildfire in :location — :status',
+            'description'       => '[:date :hour] Wildfire in :location (:concelho). Status: :status. :man personnel, :terrain ground vehicles, :aerial aircraft.',
+        ],
+    ],
+
     'about' => [
-        'entries_from' => 'Data retrieved from <a href="http://www.prociv.pt/">Portuguese Civil Protection webpage</a> (ANEPC - Portuguese Civil Protection)',
-        'update_interval' => 'Updates every 2 minutes',
-        'near_location' => 'Aproximate location.',
-        'suggestion_bugs' => 'Suggestions / Bugs - <a href="mailto:mail@fogos.pt">mail@fogos.pt</a>',
-        'made_by' => 'Made with ♥ by <a href="https://twitter.com/tomahock">Tomahock</a>'
+        'entries_from' => 'Data based on ANEPC – Portuguese National Emergency and Civil Protection Authority records.',
+        'update_interval' => 'Frequent updates.',
+        'near_location' => 'Approximate location.',
+        'suggestion_bugs' => 'Suggestions: <a href="mailto:mail@fogos.pt">mail@fogos.pt</a>',
+        'made_by' => 'Made with ♥ by <a href="https://twitter.com/tomahock">Tomahock</a>',
+
+        'about_title' => 'About Fogos.pt',
+        'about_text' => 'Fogos.pt is one of the main sources of information about wildfires in Portugal, providing near real-time data.',
+        'about_text_2' => 'The platform was originally developed by João Pina, and is now operated by VOST Portugal, which ensures the integration, processing and publication of information to the public and operational entities, under the technical leadership of João Pina, also a founder of VOST Portugal.',
+        'about_text_3' => 'More than an aggregator, Fogos.pt works as an integration layer that transforms complex data into clear, useful and actionable information.',
+
+        'data_title' => 'Data origin and processing',
+        'data_intro' => 'The information results from the combination of multiple official and technological sources, including:',
+        'data_authorities_title' => 'Authorities',
+        'data_authorities_anepc' => 'ANEPC – Portuguese National Emergency and Civil Protection Authority',
+        'data_authorities_icnf' => 'ICNF – Institute for Nature Conservation and Forests',
+        'data_authorities_agif' => 'AGIF – Agency for the Integrated Management of Rural Fires',
+        'data_satellites_title' => 'Satellites and technology',
+        'data_satellites_text' => 'Copernicus, NASA, Meteosat and Mapbox',
+        'data_other_title' => 'Other complementary sources',
+        'data_other_text' => 'Waze and OSINT contributions by VOST Portugal volunteers',
+        'data_aerial_title' => 'Aerial assets (real-time tracking)',
+        'data_aerial_intro' => 'Tracking of DECIR aerial firefighting assets uses three complementary ADS-B sources:',
+        'data_aerial_fr24' => '<strong><a href="https://www.flightradar24.com" target="_blank" rel="noopener">Flightradar24</a></strong> — market-leading commercial aggregator, accessed via API subscription.',
+        'data_aerial_alive' => '<strong><a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a></strong> — community-driven ADS-B aggregator.',
+        'data_aerial_adsbfi' => '<strong><a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a></strong> — open data from volunteer ADS-B receivers.',
+        'data_aerial_disclaimer' => 'Positions may lag by seconds to minutes. Coverage depends on the ADS-B receiver network — low-flying aircraft or those in mountainous terrain may temporarily lose signal.',
+        'data_footer' => 'All data is integrated, processed and validated by VOST Portugal, including verification, normalisation and operational contextualisation processes.',
+
+        'partners_title' => 'Partners and supporters',
+        'partners_intro' => 'The continuity of the service is supported by:',
+        'partners_anepc' => 'ANEPC — through the cooperation protocol with VOST Portugal',
+        'partners_pt_servidor' => 'PTServidor — technical infrastructure (pro bono)',
+        'partners_cloudflare' => 'Cloudflare — security and resilience (Project Galileo)',
+        'partners_mapbox' => 'Mapbox — cartographic visualisation',
+        'partners_agif' => 'AGIF — institutional framework',
+
+        'commitment_title' => 'Commitment',
+        'commitment_text' => 'Fogos.pt and VOST Portugal ensure the continuous operation of Fogos.pt, maintaining high standards of transparency, reliability and public utility, especially in critical contexts.',
     ],
     'information' => [
         'statesOfOccurrences' => [
@@ -18,7 +90,9 @@ return [
                 'inResolution' => 'IN RESOLUTION – Fire with no danger of spreading beyond the current perimeter.',
                 'inConclusion' => 'IN CONCLUSION – Fire extinguished, with small combustion spots within the fire perimeter.',
                 'surveillance' => 'SURVEILLANCE – Units on site to act in case of need.',
-                'closed' => 'CLOSED – Return of all involved units to the base concluded.'
+                'closed' => 'CLOSED – Return of all involved units to the base concluded.',
+                'fake' => 'False alert',
+                'false' => 'False alarm'
             ]
         ],
         'typeOfUnits' => [
@@ -33,12 +107,21 @@ return [
         'numberDescription' => 'The number displayed match the total number of dispatched units. This number may differ from the units on site, as some of the dispatched units may still be in transit to the operational theater',
         'hoursDescription' => 'The time displayed, both on the units graph and on the fire status timeline, are the ones in which our system detected a change of data in the ANPEC website and it may not match the exact time that change occurred.',
         'source' => 'Fire risk data retrieved from IPMA (Portuguese Institute for Sea and Atmosphere).',
+        'opacityOccurrences' => [
+            'title' => 'Icons with reduced opacity',
+            'description' => 'Icons displayed with reduced opacity correspond to occurrences whose nature is:',
+            'items' => [
+                'fuelManagement' => 'Fuel Management',
+                'burning' => 'Burning',
+                'burnPrevention' => 'Burn Prevention',
+            ]
+        ],
         'riskIndexes' => [
             'title' => 'Fire Risk Index',
             'items' => [
                 'fwi' => '(FWI) Fire Weather Index - This is the final Canadian index system, calculated based on the sub-indexes ISI and BUI.',
                 'fmc' => '(FFMC) Fine Fuel Moisture Code - This index classifies the fine fuel moisture regarding moisture percentage. It is related to the degree of flammability of the fuel located at surface level. The moisture percentage at 12 UTC for a given day, depends on the moisture percentage at the same time the precious day, 24 hours (12-12 UTC) precipitation (mm), temperature (ºC) and relative humidity (%) at 12 UTC that day. Wind speed affects only the drying speed of the material.',
-                'isi' => '(ISI) Initial Spread Index -  This index classifies the inicial propagation of the fire. It depends on the sub-index FFMC and wind speed (Km/h) at 12 UTC.',
+                'isi' => '(ISI) Initial Spread Index -  This index classifies the inicial propagation of the fire. It depends on the sub-index FFMC and wind speed (km/h) at 12 UTC.',
                 'bui' => '(BUI) Build Up Index - The build up index, is a index of evaluation of the vegatation that is able to feed a fire ("heavy" fuel on the ground). It is calculated from two sub-indexes: DMC e DC.',
                 'dc' => '(DC) Drought Code - This index translates de moisture percentage of the húmus and medium sized firewood materials located below surface up to 8 cm. It is calculated from the precipitation for 24 hours (12-12 UTC), temperature e relative humidity at 12 UTC and DC the previous day.',
                 'dmc' => '(DMC) Duff Moisture Code - This index is a good index of the effects of seasonal drought on forest fuel (húmus and large sized firewood materials), located below surface, from 8 to 20 cm deep. The index is calculated from precipitation from the previous 24 hours, temperature at 12 UTC and drought code the previous day.'
@@ -46,6 +129,97 @@ return [
 
             ],
             'source' => 'Information retrieved from IPMA. (Portuguese Institute for Sea and Atmosphere).'
+        ],
+        'ruralFireRisk' => [
+            'title' => 'Rural Fire Danger (RCM)',
+            'intro' => 'The RCM (Risco Conjuntural e Meteorológico) combines the FWI with the territorial hazard map. <strong>It is not the FWI</strong> — it is an integrated index, computed per municipality, and the official indicator used in public alerts.',
+            'classesTitle' => 'RCM is split into five classes:',
+            'classes' => [
+                'reduced' => 'Low',
+                'moderate' => 'Moderate',
+                'high' => 'High',
+                'veryHigh' => 'Very High',
+                'maximum' => 'Maximum',
+            ],
+            'legendNote' => 'Whenever this layer is active on the map, its colour legend shows in the bottom-left corner.',
+            'source' => 'More info at <a href="https://www.ipma.pt/pt/riscoincendio/rcm.pt/" target="_blank" rel="noopener">IPMA — Rural Fire Danger</a>.',
+        ],
+        'mapLayers' => [
+            'title' => 'Additional map layers',
+            'intro' => 'On top of the incident icons, the main map can show several optional layers, toggled from the "Map" panel (top right). What each layer means and what the icons stand for:',
+            'hotspots' => [
+                'title' => 'Satellite hotspots (MODIS, VIIRS, IPMA FRP)',
+                'description' => 'Hotspots detected from space in the last few hours. MODIS (Aqua/Terra) and VIIRS (Suomi NPP / NOAA-20) come from NASA FIRMS; "IPMA FRP" is the Fire Radiative Power product from LSA-SAF, refreshed every 15 minutes. A hotspot is not a fire confirmation — any thermal anomaly (wildfire, volcano, factory, controlled burn) can show up. Useful for spotting active fires visible from space.',
+            ],
+            'lightning' => [
+                'title' => 'Lightning strikes',
+                'description' => 'Strikes detected by the IPMA network over the last 24 hours. Colour encodes amplitude polarity; size encodes the strike type.',
+                'items' => [
+                    'negative' => 'Negative strike (cloud-to-ground) — usually more energetic and more likely to ignite fires.',
+                    'positive' => 'Positive strike (cloud-to-ground).',
+                    'intracloud' => 'Intracloud strike — drawn smaller and dimmer.',
+                    'ageFade' => 'Older strikes fade out (≤1h opaque, then 1–6h, 6–12h, 12–24h progressively more transparent).',
+                ],
+            ],
+            'gaia' => [
+                'title' => 'Satellite events (Gaia)',
+                'description' => 'Available on the <a href="/en/gaia">/gaia</a> view. Red markers = active satellite-detected events; grey = inactive. Click an event to load its current footprint polygon; the "Ver evolução" button opens an animated timeline of the historical perimeter.',
+            ],
+            'windAnimated' => [
+                'title' => 'Animated wind',
+                'description' => 'Particles drifting through the wind field forecast by IPMA\'s AROME model (u/v components at 10 m, current hour). The local intensity in km/h shows in the bottom-right corner while the cursor is over the map.',
+            ],
+            'ipmaValue' => [
+                'title' => 'Point value for IPMA layers',
+                'description' => 'With any IPMA forecast layer on (temperature, wind, humidity, precipitation, wind direction), clicking or tapping the map shows the layer\'s value at that point in the bottom-right corner. The query hits the same AROME model used to render the layer.',
+            ],
+        ],
+        'sources' => [
+            'title' => 'Data sources',
+            'intro' => 'Information on fogos.pt is aggregated from several official sources, all publicly credited:',
+            'items' => [
+                'anepc' => '<strong>ANEPC</strong> — Incident status (dispatched, ongoing, in resolution, etc.), allocated resources (personnel, ground, aerial), incident location and nature. Collected in real time via our internal backend.',
+                'ipma' => '<strong>IPMA</strong> — Hourly weather forecast (AROME model for temperature, wind, humidity, precipitation), Rural Fire Danger (RCM), Canadian indices (FWI/ISI/BUI/DC/DMC/FFMC, ECMWF model), Fire Radiative Power (LSA-SAF) and lightning strikes. <a href="https://www.ipma.pt" target="_blank" rel="noopener">ipma.pt</a>.',
+                'nasa' => '<strong>NASA FIRMS</strong> — Satellite hotspots from MODIS (Aqua/Terra) and VIIRS (S-NPP, NOAA-20). <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noopener">firms.modaps.eosdis.nasa.gov</a>.',
+                'gaia' => '<strong>Gaia platform</strong> — Satellite-based detection and delineation of fire events, with current polygons and a historical perimeter timeline.',
+                'basemaps' => '<strong>Basemaps</strong> — OpenStreetMap (CC-BY-SA), Esri World Imagery / Transportation / Boundaries (satellite view), CARTO Positron (IPMA mode).',
+            ],
+        ],
+        'satellitePerimeter' => [
+            'title' => 'Perimeter and spread (satellite)',
+            'intro' => 'At the bottom of every incident page there is a map with two satellite-derived products provided by <a href="https://foco.vost.pt" target="_blank" rel="noopener">FOCO</a> (Fire Observation and Characterisation Observatory, from VOST Portugal): the current fire <strong>perimeter</strong> and a <strong>6-hour spread simulation</strong>. The Meteosat Third Generation (MTG) product is generated every 10 minutes; the block only appears when satellite data is associated with that incident.',
+            'perimeter' => [
+                'title' => 'Perimeter (red polygon)',
+                'description' => 'Traces the area the Meteosat Third Generation (MTG) satellites are seeing with enough radiated energy. Each satellite pixel is 2 to 4 km wide over Portugal; FOCO clusters the recent FRP (Fire Radiative Power, in megawatts) detections and draws a polygon around them. This is <strong>not</strong> the official ICNF burned-area figure (compiled after the fact); it is a near-real-time view of where the fire is currently releasing energy.',
+            ],
+            'simulation' => [
+                'title' => 'Spread (isochrones +1 h to +6 h)',
+                'description' => 'The concentric rings show how far the fire could reach in each of the next 6 hours, hour by hour. It is a minimum-travel-time simulation (Dijkstra\'s algorithm on a 100 m grid) that combines: the reference rate of spread calibrated for Portugal (PyroCast), the IPMA wind forecast (a directional exponential multiplier that speeds up the head fire and slows the flanks), the terrain slope (Copernicus GLO-90 DEM — spread rate roughly doubles for every 10° of upslope, following McArthur\'s empirical law), and the fuel moisture (dead-fine-fuel moisture, DFMC, is the dominant factor; above ≈30% fire barely progresses). On the map, the isochrones animate hour by hour.',
+            ],
+            'use' => [
+                'title' => 'What it is for',
+                'description' => 'This is situational-awareness information. The perimeter helps you gauge how much is actually burning right now; the simulation helps anticipate what lies in the fire\'s path — villages, roads, infrastructure — over the coming hours. The block also carries the list of affected municipalities and parishes, computed by spatial intersection with DGT\'s CAOP 2025. The badge under the title shows the time of the last processed satellite pass.',
+            ],
+            'limits' => [
+                'title' => 'Complements — never replaces. Important caveats.',
+                'description' => 'FOCO is <strong>not a nascent-fire detector</strong>: a 1 or 2 hectare fire rarely reaches the energy threshold (50–100 MW) needed for the satellite to see it. Fires typically only show up on MTG once they escape initial attack and grow. In short: <em>fogos.pt detects the dispatch</em> (the fire may still be small); <em>FOCO detects the actual radiated energy</em> — they are complementary. The simulation is a heuristic envelope, not a forecast: it does not model spotting (flying embers), active suppression or pyroconvection; it assumes the forecast wind — a sudden shift or a passing front can drive the real behaviour away from the modelled scenario. Fires mostly on the Spanish side of the border show up as "Outside simulation coverage" because the fuel-load rasters only cover mainland Portugal. These products <strong>never replace</strong> the ANEPC, IPMA or ICNF official channels.',
+            ],
+            'source' => 'Data provided by <a href="https://foco.vost.pt" target="_blank" rel="noopener">FOCO — VOST Portugal</a>, based on the LSA SAF MTG MTFRPPixel product (EUMETSAT, hosted at IPMA), PyroCast (VOST) for rate of spread and fuel moisture, COS2023 (DGT) for land cover and fuel load, Copernicus GLO-90 DEM for terrain slope, and CAOP 2025 (DGT) for the municipality and parish boundaries.',
+        ],
+        'ipmaCharts' => [
+            'title' => 'IPMA forecast charts (detail page)',
+            'intro' => 'Every incident has an IPMA forecast panel for the exact fire location. Hourly weather variables (next 48 h) are fed by the AROME model. The FWI and the Canadian sub-indices are computed at 12 UTC from the ECMWF model — not from AROME. The LSA-SAF products (daily, 7 days) combine satellite observation with ECMWF forecasts. The dashed red vertical line marks the current hour.',
+            'items' => [
+                'tempHum' => 'Temperature and humidity — air temperature at 2 m (°C, left axis) and relative humidity (%, right axis). Key dryness indicator: humidity below 30% combined with high temperatures accelerates fire spread sharply.',
+                'wind' => 'Wind and gust — mean wind intensity at 10 m and peak gust (km/h). Arrows on top show direction: the arrow head points to where the wind is blowing.',
+                'pressure' => 'Atmospheric pressure — sea-level pressure (hPa). Sharp variations may signal an approaching or passing weather front.',
+                'precip' => 'Accumulated precipitation — forecast precipitation accumulated over one hour (mm). Useful to gauge relief or worsening on the ground.',
+                'fwiIsiBui' => 'FWI / ISI / BUI — Canadian fire weather indices, computed at 12 UTC from the ECMWF model. FWI is the final composite; ISI captures initial spread; BUI captures available fuel. Higher = more dangerous.',
+                'dcDmcFfmc' => 'DC / DMC / FFMC — fuel moisture indices. DC tracks deep fuels (long-term drought), DMC mid-layer, FFMC fine surface fuels (fast response to recent weather).',
+                'frm' => 'FRM — extremes probability (%) and anomaly (%) against climatology. Flags atypical conditions for the time of year.',
+            ],
+            'rcmNote' => 'The RCM (Risco Conjuntural e Meteorológico) — equivalent to the <strong>Rural Fire Danger</strong> — has no dedicated chart on this page; it is shown as a layer on the main map, with its own legend.',
+            'source' => 'Source: IPMA (AROME model for the hourly variables, ECMWF model for the Canadian indices, and LSA-SAF products for the daily indicators). Refreshed every model run (00 and 12 UTC).',
         ]
     ],
     'notifications' => [
@@ -71,6 +245,8 @@ return [
 
         'important' => 'Important events',
         'alerts' => 'Alerts',
+        'warnings' => 'Weather warnings (ANEPC / IPMA)',
+        'planes' => 'Aerial assets movements',
     ],
     'stats' => [
         'now' => [
@@ -81,13 +257,24 @@ return [
         'today' => 'Today',
         'yesterday' => 'Yesterday',
         'last-night' => 'Last Night',
-        'last-night-footer' => 'Wildfires between 21pm and 09am',
+        'last-night-footer' => 'Wildfires between 9 pm and 9 am',
+        'burn-area-last-days' => 'Burnt area in the last days',
+        'burn-area-last-days-footer' => 'Data recorded by ICNF; not every fire has it. In hectares.',
+        'motives' => [
+            'title' => 'Fire causes this month',
+            'footer' => 'Data recorded by ICNF; not every fire has it.'
+        ],
         'last-days' => 'Last Days',
     ],
     'table' => [
         'reload' => 'This page auto refreshes.'
     ],
     'list' => [
-        'no-data' => 'Sem registo de incêndios'
+        'no-data'       => 'No fire incidents',
+        'search'        => 'Search:',
+        'info'          => 'Showing _TOTAL_ fires',
+        'info-empty'    => 'Showing 0 fires',
+        'info-filtered' => '(filtered from _MAX_ total fires)',
+        'zero-records'  => 'No matching fires found',
     ]
 ];

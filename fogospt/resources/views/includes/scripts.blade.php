@@ -1,37 +1,47 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 @stack('scripts')
-<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{env('GOOGLE_ANALYTICS')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', '{{env('GOOGLE_ANALYTICS')}}');
+    // Toast bodies carry upstream/FCM text — never render them as HTML.
+    toastr.options.escapeHtml = true;
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+@php($gaId = config('services.google_analytics'))
+@if($gaId)
+<!-- Google Analytics — the gtag script is loaded on demand by
+     cookie-consent.js only if the user grants the "analytics" category.
+     Do NOT add a direct <script src="…/gtag/js"> here. -->
+<script>window.__FOGOS_GA_ID__ = @json($gaId);</script>
+@endif
+
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 <script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M",
-        authDomain: "admob-app-id-6663345165.firebaseapp.com",
-        databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
-        projectId: "admob-app-id-6663345165",
-        storageBucket: "admob-app-id-6663345165.appspot.com",
-        messagingSenderId: "726949968874"
-    };
-    firebase.initializeApp(config);
+    // Web Push VAPID key — Firebase Console → Project Settings → Cloud Messaging → Web configuration.
+    window.__FIREBASE_VAPID_KEY__ = @json(config('services.firebase.vapid_key'));
+    // Firebase SDK scripts above use `defer` so they don't block parsing; the
+    // SDK is only consumed inside user-triggered handlers, never at parse
+    // time. Defer guarantees they run before DOMContentLoaded, so this init
+    // is safe in that event.
+    document.addEventListener('DOMContentLoaded', function () {
+        firebase.initializeApp({
+            apiKey: "AIzaSyCxxu_jTrBrGE8Em1kaqn3wTbCBa8_Ra7M",
+            authDomain: "admob-app-id-6663345165.firebaseapp.com",
+            databaseURL: "https://admob-app-id-6663345165.firebaseio.com",
+            projectId: "admob-app-id-6663345165",
+            storageBucket: "admob-app-id-6663345165.appspot.com",
+            messagingSenderId: "726949968874",
+            appId: @json(config('services.firebase.app_id'))
+        });
+    });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
 
-<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="55340827-93d2-4bcc-a2e2-2e3ba451bafb" type="text/javascript" async></script>
+{{-- First-party cookie consent (replaces Cookiebot). Reads window.trans.consent
+     for labels, so this must come after the window.trans blob is set in
+     app.blade.php's inline script. Loading it after all other scripts here
+     keeps the banner from blocking anything else. --}}
+<script src="/js/cookie-consent.js?v={{ filemtime(public_path('js/cookie-consent.js')) }}" defer></script>

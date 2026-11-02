@@ -1,7 +1,7 @@
 @extends('app')
 
 @push('styles')
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 @endpush
 @section('content')
     <main role="main" class="mb-auto margin-top-10">
@@ -26,11 +26,11 @@
                     <tbody>
                     @foreach($data as $fire)
                         <tr>
-                            <td><a href="{{route('fireDetail', $fire['id'])}}">{{$fire['id']}}</a></td>
+                            <td><a href="{{route('fireDetail', ['locale' => \App::getLocale(), 'id' => $fire['id']])}}">{{$fire['id']}}</a></td>
                             <td>{{ $fire['date'] }} {{ $fire['hour'] }}</td>
                             <td>{{ $fire['district'] }}</td>
                             <td>{{ $fire['concelho'] }}</td>
-                            <td>{{ @$fire['freguesia'] }}</td>
+                            <td>{{ trim(str_replace('Informação recolhida via Fogos.pt', '', @$fire['freguesia'])) }}</td>
                             <td>{{ $fire['localidade'] }}@isset($fire['detailLocation']) - {{$fire['detailLocation']}} @endisset</td>
                             <td>
                                 <div><span class="dot status-{{ $fire['statusCode'] }}" style="display:inline-block;position:relative"></span> <span class="status-label">{{ $fire['status'] }}</span></div>
@@ -42,7 +42,6 @@
                     @endforeach
                     </tbody>
                 </table>
-
 
             </div>
             <div class="row">
@@ -56,13 +55,20 @@
 @endsection
 
 @push('scripts')
-    <script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready( function () {
             $('#fires').DataTable({
                 paging: false,
                 stateSave: true,
-                order: [[ 0, 'desc' ]]
+                order: [[ 0, 'desc' ]],
+                language: {
+                    search:       @json(__('pages.list.search')),
+                    info:         @json(__('pages.list.info')),
+                    infoEmpty:    @json(__('pages.list.info-empty')),
+                    infoFiltered: @json(__('pages.list.info-filtered')),
+                    zeroRecords:  @json(__('pages.list.zero-records'))
+                }
             });
 
             setTimeout(function() {

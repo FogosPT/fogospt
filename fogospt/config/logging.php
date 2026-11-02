@@ -35,7 +35,9 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            // Daily rotation (7 days) — a single laravel.log grows unbounded
+            // when upstream outages log a warning per request.
+            'channels' => ['daily'],
         ],
 
         'single' => [
@@ -47,7 +49,7 @@ return [
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => env('LOG_LEVEL', 'debug'),
             'days' => 7,
         ],
 

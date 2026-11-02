@@ -7,14 +7,22 @@ return [
         'notifications' => 'Notifications',
         'manifest' => 'Manifest',
         'partnerships' => 'Partnerships',
+        'api'          => 'API',
+        'api-termos'   => 'API Terms',
         'stats' => 'Stats',
         'list' => 'List',
         'table' => 'Table',
         'warnings' => 'Warnings',
         'warnings-madeira' => 'Warnings Madeira',
+        'mapConfigurator' => 'Custom map',
+        'cookies'     => 'Manage cookies',
         'active' => 'Now'
     ],
+    'siteWarning' => [
+        'title' => 'Notice',
+        'close' => 'Close',
+    ],
     'meta' => [
-        'content' => 'fogos, incendios, activos, portugal, florestais, hoje, tomahock, ocorrencias, bombeiros, ANPC, ANEPC, protecção civil, verão, piromanos, android, ios, app, apple, notificações, aplicação, prociv, forest fires, forest fires portugal, forest fires app portugal, forest fires, rural fires'
+        'content' => 'Portugal wildfires, Portugal forest fires, Portugal fires map, active fires Portugal, wildfires today Portugal, ANEPC, Portugal civil protection, Madeira wildfires, rural fires, firefighting Portugal'
     ]
 ];

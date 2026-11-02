@@ -6,7 +6,7 @@
                 'start_at' => 'Início',
                 'nature' => 'Natureza',
                 'location' => 'Localização',
-                'fireRisk' => 'Risco de Incêndio',
+                'fireRisk' => 'Perigo de Incêndio',
                 'updated' => 'Última atualização',
                 'district' => 'Distrito',
                 'concelho' => 'Concelho',
@@ -31,17 +31,45 @@
                 'pressure' => 'Pressão atmosférica',
                 'wind' => [
                     'speed' => 'Velocidade do Vento',
-                    'deg' => 'Direcção do Vento'
-                ]
+                    'deg' => 'Direção do Vento'
+                ],
+                'precipitation' => 'Precipitação acumulada',
+                'radiation'     => 'Radiação',
+                'station'       => 'Estação',
+                'data_from'     => 'Dados de',
+                'source'        => 'Fonte',
             ],
             'extra' => [
                 'title' => 'Informação extra'
             ],
-            'twitter' => [
-                'title' => 'Twitter'
+            'weatherWarnings' => [
+                'title' => 'Avisos meteorológicos',
+                'source' => 'Fonte: IPMA',
             ],
             'shares' => [
                 'title' => 'Partilhar'
+            ],
+            'photos' => [
+                'title' => 'Fotos',
+                'loadMore' => 'Carregar mais',
+            ],
+            'ipmaCharts' => [
+                'title'  => 'Previsão IPMA neste ponto',
+                'source' => 'Dados:',
+                'error'  => 'Não foi possível obter dados do IPMA para esta localização.',
+                'learnMore' => 'O que significam estes gráficos?',
+                'run' => 'Corrida do modelo: :time (hora local)',
+            ],
+            'satellite' => [
+                'title'              => 'Perímetro e propagação (satélite)',
+                'legend'             => 'Evidência de satélite MTG (LSA SAF/EUMETSAT). Complementa — não substitui — a informação oficial da ANEPC.',
+                'empty'              => 'Sem dados satélite disponíveis para esta ocorrência.',
+                'noPerimeter'        => 'Sem perímetro possível para esta ocorrência: :message',
+                'lastUpdate'         => 'Satélite',
+                'stale'              => 'Dados de há :mins min',
+                'affectedConcelhos'  => 'Concelhos afetados',
+                'affectedFreguesias' => 'Freguesias afetadas',
+                'none'               => '—',
             ],
             'detail' => [
                 'burn' => [
