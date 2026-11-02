@@ -1,51 +1,62 @@
-# Fogos.pt
+# Fogos.pt (Next.js)
 
-```
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////,*/////////////////////////////////
-////////////////////////////////////////////*  *///////////////////////////////
-////////////////////////////////////////////*   ,//////////////////////////////
-////////////////////////////////////////////*    ,/////////////////////////////
-////////////////////////////////////////////.     *////////////////////////////
-///////////////////////////////////////////.      .////////////////////////////
-/////////////////////////////////////////*         ////////////////////////////
-///////////////////////////////////////*           ////////////////////////////
-////////////////////////////////////*.             ////////////////////////////
-/////////////////////////////////,                .////////////////////////////
-//////////////////////////////*                   *//////*/////////////////////
-////////////////////////////*                    ./////. */////////////////////
-//////////////////////////*.                     *///,   */////////////////////
-/////////////////////////*                      .///     */////////////////////
-////////////////////////*                       *//.     ./////////////////////
-///////////////////////*                        */*       ,////////////////////
-///////////////////////.                        */*        *///////////////////
-//////////////////////*                         ,/*         ,//////////////////
-///////////////////* **                          */.         ./////////////////
-/////////////////*   /*                           ,*           ////////////////
-////////////////.   ./*                                         *//////////////
-//////////////*      //*                                         */////////////
-/////////////,        ,,.                                         *////////////
-////////////,                                                      *///////////
-///////////,                                                       .///////////
-//////////*                                                         *//////////
-//////////,                           ,.                            ,//////////
-//////////,                          */*                            .//////////
-//////////*                         *////.                          .//////////
-///////////                        ,//////*                         *//////////
-///////////*                       //////////,                      ///////////
-////////////*       ,             ,////////////*                   *///////////
-//////////////,     ,*            *//////////////.                *////////////
-////////////////.    */,          ////////////////,             .//////////////
-//////////////////*   ,////*,     /////////////////.          .*///////////////
-/////////////////////*  *//////.  *////////////////*        ,//////////////////
-////////////////////////*,*//////,./////////////////.    ,*////////////////////
-///////////////////////////////////*////////////////,,*////////////////////////
+Este repositório foi migrado para **Next.js (App Router)**, com foco em performance e SEO.
+
+## Incluído nesta fase
+
+- Estrutura base Next.js 16 + React 19
+- Página inicial com mapa Leaflet e ocorrências ativas (equivalente funcional ao `main.js` legado)
+- Rotas públicas principais migradas para `app/`
+- Páginas `/lista` (cards) e `/tabela` (tabular) ligadas ao feed de ocorrências
+- Painel `/estatisticas` implementado com dados equivalentes ao legado (`v1/now/data`, semana, 8h, distritos, área ardida e motivos)
+- Página `/notificacoes` integrada com Firebase Messaging (subscrição por tópicos/distritos)
+- **SEO por página** com `metadata`, Open Graph, Twitter Card e canonical
+- `robots.ts` e `sitemap.ts`
+- Integração de **estado do tempo** via API pública Open-Meteo
+- Bloco de **procura no Twitter/X** com link de pesquisa e embed da conta `@fogospt`
+
+## Requisitos
+
+- Node.js 18+
+- npm 9+
+
+## Execução local
+
+```bash
+npm install
+npm run dev
 ```
 
-## Run & Go
+Abrir: `http://localhost:3000`
 
-### Requirements
+## Scripts
 
+- `npm run dev` — ambiente de desenvolvimento
+- `npm run lint` — linting do Next.js
+- `npm run build` — build de produção
+- `npm run start` — servidor da build de produção
+
+## Código legado
+
+O código Laravel/PHP original permanece na pasta `fogospt/` para referência e migração gradual de regras de negócio.
+
+
+## Deploy em Cloudflare Workers
+
+Este projeto está preparado para deploy em Workers com **Wrangler 4** usando OpenNext. O `wrangler deploy` executa o build automaticamente via `wrangler.toml`.
+
+```bash
+npm install
+npx wrangler deploy
+```
+
+### Variáveis/segredos
+
+Defina os segredos necessários no Worker (ex.: `FIREBASE_TOKEN`):
+
+```bash
+npx wrangler secret put FIREBASE_TOKEN
+```
 1. [Docker](https://www.docker.com/products/docker-desktop/)
 2. [Node.js](https://nodejs.org/) 20+ (only to rebuild the CSS)
 3. PHP 8.3 and [Composer](https://getcomposer.org/) 2 — or use the Docker images below
@@ -110,22 +121,3 @@ Create a Cache Rule:
 Without this rule the `s-maxage` directive is wasted — every visit still hits
 the origin.
 
-## Slack
-
-https://communityinviter.com/apps/fogospt/fogos-pt
-
-## License
-
-Copyright 2018
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
