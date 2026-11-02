@@ -2,8 +2,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="/css/vendor/leaflet-openweathermap.css?v={{ filemtime(public_path('css/vendor/leaflet-openweathermap.css')) }}">
-    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.css">
+    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-velocity@2.1.4/dist/leaflet-velocity.css" integrity="sha384-pl8PC81aYCmcJzQSyvD5iTdjHL+H6KjRKasELwYyh1fgroB+bkJqt1+7zP7NRG5v" crossorigin="anonymous">
     <style>
         .fogos-map-summary {
             background: rgba(255, 255, 255, .96);
@@ -59,7 +59,6 @@
         <p class="visually-hidden">{{ __('pages.seo.mapCustom.description') }}</p>
         @include('includes.sidebar')
         <div id="map">
-            <a href="https://www.mapbox.com/about/maps" class="mapbox-wordmark" target="_blank" rel="noopener">Mapbox</a>
         </div>
     </main>
 
@@ -68,24 +67,26 @@
 
 @push('scripts')
     <script>window.fogosCustomMap = true;</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js" integrity="sha512-WoViKhKD4qI2WruSZqv9+kvM4WfFhUMQCLN4QlDTt5aU56fLQy2gYoxWIqlEnXqJy/+Ac5q/hk1oWfqnMDhwMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/resources-chart.js?v={{ filemtime(public_path('js/resources-chart.js')) }}"></script>
     <script src="/js/concelhos.js?v={{ filemtime(public_path('js/concelhos.js')) }}"></script>
     <script src="/js/portugal.js?v={{ filemtime(public_path('js/portugal.js')) }}"></script>
     <script src="/js/vendor/store2.min.js?v={{ filemtime(public_path('js/vendor/store2.min.js')) }}"></script>
     <script src="/js/share.js?v={{ filemtime(public_path('js/share.js')) }}"></script>
     <script src="/js/vendor/L.KLM.js?v={{ filemtime(public_path('js/vendor/L.KLM.js')) }}"></script>
-    <script src="https://unpkg.com/leaflet-velocity@2/dist/leaflet-velocity.min.js"></script>
+    <script src="https://unpkg.com/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.js" integrity="sha384-b85lDC0R/ZnDE6BRX2EtR/xRZkf9gN3t4x9Y63gB7Z+zJpZjgoa/9LEiMSVSVpAe" crossorigin="anonymous"></script>
     <script src="/js/map-panel.js?v={{ filemtime(public_path('js/map-panel.js')) }}"></script>
     <script src="/js/satellite.js?v={{ filemtime(public_path('js/satellite.js')) }}"></script>
     <script src="/js/map-filters.js?v={{ filemtime(public_path('js/map-filters.js')) }}"></script>
     <script src="/js/photos.js?v={{ filemtime(public_path('js/photos.js')) }}"></script>
     <script src="/js/planes.js?v={{ filemtime(public_path('js/planes.js')) }}"></script>
     <script type="module">
-        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+        import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.js';
         window.PhotoSwipeLightbox = PhotoSwipeLightbox;
         window.dispatchEvent(new Event('photoswipe-ready'));
     </script>
+    <script src="/js/fogos-core.js?v={{ filemtime(public_path('js/fogos-core.js')) }}"></script>
     <script src="/js/main.js?v={{ filemtime(public_path('js/main.js')) }}"></script>
 @endpush

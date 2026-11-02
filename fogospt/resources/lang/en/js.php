@@ -23,6 +23,7 @@ return [
         'humans'      => 'Firefighters',
         'terrestrial' => 'Terrestrial',
         'aerial'      => 'Aerial',
+        'noData'      => 'No data available',
     ],
     'risk' => [
         'today'    => 'Today',

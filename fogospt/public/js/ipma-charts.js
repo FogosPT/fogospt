@@ -139,20 +139,20 @@
         existing.textContent = text;
     }
 
-    // Chart.js 2.9 keeps the tooltip pinned after a touchend on mobile
+    // Chart.js keeps the tooltip pinned after a touchend on mobile
     // because there's no mouseleave to clear it. Wire a short auto-dismiss
     // timer on every chart so tapped tooltips fade after ~8 s if the user
     // walks away. Resets if the user touches again. No-op on desktop
     // because the listeners are touch-only.
     function setupTouchAutoDismiss(chart) {
         try {
-            var canvas = chart && (chart.canvas || (chart.chart && chart.chart.canvas));
+            var canvas = chart && chart.canvas;
             if (!canvas) return;
             var timer = null;
             var clearActive = function () {
                 try {
-                    if (chart.tooltip) chart.tooltip._active = [];
-                    chart.active = [];
+                    if (chart.tooltip) chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                    chart.setActiveElements([]);
                     chart.update();
                 } catch (e) {}
                 timer = null;
@@ -187,10 +187,9 @@
         return m ? { name: m[1], unit: m[2] } : { name: s, unit: '' };
     }
 
-    function formatTooltipLabel(item, data) {
-        var ds = data.datasets[item.datasetIndex] || {};
-        var lu = splitLabelUnit(ds.label);
-        var v = item.yLabel;
+    function formatTooltipLabel(context) {
+        var lu = splitLabelUnit(context.dataset && context.dataset.label);
+        var v = context.parsed ? context.parsed.y : null;
         if (v == null || isNaN(v)) return lu.name + ': —';
         var fixed = Math.abs(v) >= 100 ? 0 : 1;
         return lu.name + ': ' + Number(v).toFixed(fixed) + (lu.unit ? ' ' + lu.unit : '');
@@ -212,6 +211,31 @@
         return (v == null || isNaN(v)) ? NaN : Number(v);
     }
 
+    // Chart.js draws gaps for null, not NaN.
+    function gapsAsNull(values) {
+        return values.map(function (v) { return isNaN(v) ? null : v; });
+    }
+
+    // x pixel of a data point (Chart.js 3+ exposes it on the element itself).
+    function pointX(pt) {
+        return pt && typeof pt.x === 'number' ? pt.x : null;
+    }
+
+    var FONT_S = { size: 10 };
+    function axisTitle(text) {
+        return text ? { display: true, text: text, font: FONT_S } : { display: false };
+    }
+    function baseOptions(title, tooltipCallbacks) {
+        return {
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                title: { display: !!title, text: title, font: { size: 13 } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                tooltip: { mode: 'index', intersect: false, callbacks: tooltipCallbacks },
+            },
+        };
+    }
+
     function renderHourly(canvasId, hourly, title, series, opts) {
         opts = opts || {};
         var canvas = document.getElementById(canvasId);
@@ -229,7 +253,7 @@
             });
             var ds = {
                 label: s.label,
-                data: values,
+                data: gapsAsNull(values),
                 _hasData: values.some(function (v) { return !isNaN(v); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
@@ -238,9 +262,8 @@
                 borderWidth: 1.5,
                 spanGaps: true
             };
-            // Only attach yAxisID when the chart has multiple y-axes; otherwise
-            // Chart.js looks up a scale that doesn't exist and dies inside
-            // updateElement with 'Cannot read getBasePixel of undefined'.
+            // Only attach yAxisID when the chart has multiple y-axes; single
+            // axis charts use the default 'y' scale.
             if (hasDualAxis) {
                 ds.yAxisID = s.axis === 'R' ? 'right' : 'left';
             }
@@ -249,34 +272,28 @@
 
         if (!datasets.length) { canvas.parentElement.style.display = 'none'; return; }
 
-        var ticksFor = function (min) {
-            var t = { fontSize: 10 };
+        var axisFor = function (min, label, extra) {
+            var axis = { ticks: { font: FONT_S }, title: axisTitle(label) };
             if (typeof min === 'number') {
-                t.min = min;
-                t.beginAtZero = (min === 0);
+                axis.min = min;
+                axis.beginAtZero = (min === 0);
             }
-            return t;
+            for (var k in (extra || {})) axis[k] = extra[k];
+            return axis;
         };
-        var yAxes;
+        var scales = { x: { ticks: { maxTicksLimit: 8, font: FONT_S } } };
         if (hasDualAxis) {
-            yAxes = [
-                { id: 'left',  position: 'left',  ticks: ticksFor(opts.yMin),
-                  scaleLabel: opts.yLabel  ? { display: true, labelString: opts.yLabel,  fontSize: 10 } : { display: false } },
-                { id: 'right', position: 'right', ticks: ticksFor(opts.yMinR), gridLines: { display: false },
-                  scaleLabel: opts.yLabelR ? { display: true, labelString: opts.yLabelR, fontSize: 10 } : { display: false } }
-            ];
+            scales.left = axisFor(opts.yMin, opts.yLabel, { position: 'left' });
+            scales.right = axisFor(opts.yMinR, opts.yLabelR, { position: 'right', grid: { display: false } });
         } else {
-            yAxes = [{
-                ticks: ticksFor(opts.yMin),
-                scaleLabel: opts.yLabel ? { display: true, labelString: opts.yLabel, fontSize: 10 } : { display: false }
-            }];
+            scales.y = axisFor(opts.yMin, opts.yLabel);
         }
 
         var tooltipCallbacks = { label: formatTooltipLabel };
         if (opts.windArrows) {
             tooltipCallbacks.afterBody = function (items) {
                 if (!items || !items.length) return '';
-                var row = hourly[items[0].index];
+                var row = hourly[items[0].dataIndex];
                 if (!row) return '';
                 var dir = cardinalFromUV(row.windU, row.windV);
                 return dir ? 'Direção: ' + dir : '';
@@ -286,17 +303,10 @@
         var config = {
             type: opts.type || 'line',
             data: { labels: labels, datasets: datasets },
-            options: {
-                title: { display: !!title, text: title, fontSize: 13 },
-                legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
+            options: Object.assign(baseOptions(title, tooltipCallbacks), {
                 elements: { line: { tension: 0.1 } },
-                hover: { mode: 'index', intersect: false },
-                tooltips: { mode: 'index', intersect: false, callbacks: tooltipCallbacks },
-                scales: {
-                    xAxes: [{ ticks: { maxTicksLimit: 8, fontSize: 10 } }],
-                    yAxes: yAxes
-                }
-            }
+                scales: scales
+            })
         };
         config.plugins = [];
         config.plugins.push(nowLinePlugin(hourly.map(function (r) { return r.datetime; })));
@@ -321,7 +331,7 @@
         return {
             afterDatasetsDraw: function (chart) {
                 try {
-                    var ctx = (chart && chart.ctx) || (chart && chart.chart && chart.chart.ctx);
+                    var ctx = chart && chart.ctx;
                     if (!ctx || !chart.chartArea) return;
                     var meta = chart.getDatasetMeta && chart.getDatasetMeta(0);
                     if (!meta || !meta.data || !meta.data.length) return;
@@ -346,12 +356,12 @@
                         if (u == null || v == null || isNaN(u) || isNaN(v)) continue;
                         var mag = Math.sqrt(u * u + v * v);
                         if (mag < 0.1) continue;
-                        var pt = meta.data[i];
-                        if (!pt || !pt._model || typeof pt._model.x !== 'number') continue;
+                        var x = pointX(meta.data[i]);
+                        if (x === null) continue;
                         // Canvas Y is flipped: wind going north (v>0) should
                         // visually point UP, so negate v.
                         var angle = Math.atan2(-v, u);
-                        drawArrow(ctx, pt._model.x, top, angle, 11);
+                        drawArrow(ctx, x, top, angle, 11);
                     }
                     ctx.restore();
                 } catch (err) {
@@ -370,7 +380,7 @@
         return {
             afterDatasetsDraw: function (chart) {
                 try {
-                    var ctx = (chart && chart.ctx) || (chart && chart.chart && chart.chart.ctx);
+                    var ctx = chart && chart.ctx;
                     if (!ctx || !chart.chartArea || !timestamps || !timestamps.length) return;
 
                     var nowMs = Date.now();
@@ -388,16 +398,16 @@
                     if (bestIdx < 0) return;
                     var meta = chart.getDatasetMeta && chart.getDatasetMeta(0);
                     if (!meta || !meta.data || !meta.data[bestIdx]) return;
-                    var pt = meta.data[bestIdx];
-                    if (!pt || !pt._model || typeof pt._model.x !== 'number') return;
+                    var x = pointX(meta.data[bestIdx]);
+                    if (x === null) return;
 
                     ctx.save();
                     ctx.strokeStyle = 'rgba(220, 53, 69, 0.85)';
                     ctx.lineWidth = 1.5;
                     if (ctx.setLineDash) ctx.setLineDash([4, 4]);
                     ctx.beginPath();
-                    ctx.moveTo(pt._model.x, chart.chartArea.top);
-                    ctx.lineTo(pt._model.x, chart.chartArea.bottom);
+                    ctx.moveTo(x, chart.chartArea.top);
+                    ctx.lineTo(x, chart.chartArea.bottom);
                     ctx.stroke();
                     ctx.restore();
                 } catch (err) {
@@ -452,7 +462,7 @@
             var values = dates.map(function (d) { return numOrNaN(byDate[d]); });
             return {
                 label: s.label,
-                data: values,
+                data: gapsAsNull(values),
                 _hasData: values.some(function (v) { return !isNaN(v); }),
                 backgroundColor: s.color,
                 borderColor: s.color,
@@ -470,21 +480,14 @@
                 type: 'line',
                 data: { labels: dates.map(shortDay), datasets: datasets },
                 plugins: [nowLinePlugin(dates)],
-                options: {
-                    title: { display: !!title, text: title, fontSize: 13 },
-                    legend: { position: 'bottom', labels: { boxWidth: 12, fontSize: 11 } },
+                options: Object.assign(baseOptions(title, { label: formatTooltipLabel }), {
                     elements: { line: { tension: 0 } },
-                    hover: { mode: 'index', intersect: false },
-                    tooltips: { mode: 'index', intersect: false, callbacks: { label: formatTooltipLabel } },
                     scales: {
-                        xAxes: [{ ticks: { fontSize: 10 } }],
-                        yAxes: [{
-                            ticks: { fontSize: 10 },
-                            scaleLabel: opts.yLabel ? { display: true, labelString: opts.yLabel, fontSize: 10 } : { display: false }
-                        }]
+                        x: { ticks: { font: FONT_S } },
+                        y: { ticks: { font: FONT_S }, title: axisTitle(opts.yLabel) }
                     },
                     spanGaps: true
-                }
+                })
             });
             setupTouchAutoDismiss(chart);
         } catch (e) {
