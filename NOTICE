@@ -1,0 +1,29 @@
+Fogos.pt
+Copyright (C) 2021-2026 Tomahock e contribuidores — Fogos.pt / VOST Portugal
+https://github.com/FogosPT/fogospt
+
+Este programa é software livre: pode redistribuí-lo e/ou modificá-lo nos
+termos da GNU Affero General Public License, publicada pela Free Software
+Foundation, na versão 3 da licença ou (à sua escolha) em qualquer versão
+posterior. Ver o ficheiro LICENSE.
+
+Em particular, quem disponibilizar este programa ou uma versão modificada
+numa rede (por exemplo como site ou API) tem de oferecer aos utilizadores o
+código-fonte correspondente (secção 13 da AGPL-3.0).
+
+As versões anteriores a esta alteração foram publicadas em Apache License 2.0
+e continuam disponíveis nesses termos. As contribuições feitas nessas versões
+mantêm os respetivos avisos de copyright.
+
+-------------------------------------------------------------------------------
+Termo adicional (secção 7(b) da GNU AGPL-3.0) — atribuição
+-------------------------------------------------------------------------------
+
+Qualquer cópia ou versão modificada deste programa, e qualquer serviço em rede
+nele baseado, tem de manter, de forma visível na interface ou nas respostas
+públicas (por exemplo no rodapé ou na documentação da API) e na documentação,
+a seguinte atribuição com a ligação ativa:
+
+    Baseado no Fogos.pt (https://fogos.pt), por Tomahock
+    https://github.com/FogosPT/fogospt
+

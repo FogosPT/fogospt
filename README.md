@@ -121,3 +121,13 @@ Create a Cache Rule:
 Without this rule the `s-maxage` directive is wasted — every visit still hits
 the origin.
 
+## Licença
+
+Copyright (C) 2021-2026 Tomahock e contribuidores.
+
+Código aberto em **[GNU AGPL-3.0-or-later](LICENSE)**, com um termo adicional de atribuição (secção 7(b)):
+qualquer cópia, versão modificada ou serviço em rede baseado neste código tem de publicar o código-fonte e
+manter visível "Baseado no Fogos.pt, por Tomahock" com o link para este repositório. Ver [NOTICE](NOTICE).
+
+Até esta alteração o projeto era distribuído em Apache License 2.0; essas versões continuam disponíveis nesses termos.
+
