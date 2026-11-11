@@ -68,7 +68,9 @@ $(document).ready(function () {
     var overlays = {}
     overlays[tm.layer || 'Ocorrências (24 h)'] = occurrencesLayer
 
-    L.control.layers(xx, overlays, {collapsed: false, position: 'topleft'}).addTo(mymap)
+    // Expanded controls cover most of the map on phones.
+    var smallScreen = window.innerWidth < 768
+    L.control.layers(xx, overlays, {collapsed: smallScreen, position: 'topleft'}).addTo(mymap)
 
     addRisk(mymap)
 
@@ -123,7 +125,7 @@ function addWeatherLayers(mymap) {
         'Nuvens': cloudLayer
     }
 
-    L.control.layers(baseLayers, overlayLayers, {collapsed: false, position: 'topright'}).addTo(mymap)
+    L.control.layers(baseLayers, overlayLayers, {collapsed: window.innerWidth < 768, position: 'topright'}).addTo(mymap)
 }
 
 /**
@@ -600,7 +602,7 @@ function addRisk(mymap) {
                                         //var riskLayerControl = L.control.groupedLayers(null, riskOverlays, riskOptions);
                                         //map.addControl(riskLayerControl);
                                         L.control.layers(baseMaps, null, {
-                                            collapsed: false,
+                                            collapsed: window.innerWidth < 768,
                                             position: 'topright'
                                         }).addTo(mymap)
                                     }
